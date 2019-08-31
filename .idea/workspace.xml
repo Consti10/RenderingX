@@ -681,6 +681,7 @@
   <component name="PropertiesComponent">
     <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="ba1a1446" />
     <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2019-08-31T12:05:21.192Z" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
     <property name="device.picker.selection" value="Pixel_2_API_Q" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/RenderingXCore/libs" />
