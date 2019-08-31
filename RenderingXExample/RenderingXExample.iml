@@ -120,8 +120,5 @@
     <orderEntry type="library" name="Gradle: com.google.vr:sdk-base:1.190.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.dinuscxj:multitouchgesturedetector:1.0.0@aar" level="project" />
     <orderEntry type="module" module-name="RenderingXCore" />
-    <orderEntry type="module" module-name="RenderingXCore" />
-    <orderEntry type="module" module-name="RenderingXCore" />
-    <orderEntry type="module" module-name="RenderingXCore" />
   </component>
 </module>

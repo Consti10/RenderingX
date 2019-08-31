@@ -5,7 +5,6 @@
       "sdkFolder": "C:\\Users\\Consti10\\AppData\\Local\\Android\\Sdk",
       "isNativeCompilerSettingsCacheEnabled": false,
       "isBuildOnlyTargetAbiEnabled": true,
-      "ideBuildTargetAbi": "x86",
       "splitsAbiFilterSet": [],
       "intermediatesFolder": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\build\\intermediates",
       "gradleModulePathName": ":RenderingXCore",
@@ -44,6 +43,8 @@
     "gradleBuildOutputFolder": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\.cxx\\cxx\\debug",
     "isDebuggableEnabled": true,
     "validAbiList": [
+      "ARMEABI_V7A",
+      "ARM64_V8A",
       "X86"
     ],
     "buildTargetSet": []

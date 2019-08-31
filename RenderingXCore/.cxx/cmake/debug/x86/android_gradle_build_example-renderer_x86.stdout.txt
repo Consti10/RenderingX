@@ -1,3 +1,0 @@
-[1/3] Building CXX object CMakeFiles/example-renderer.dir/src/main/cpp/example_renderer.cpp.o
-[2/3] Building CXX object CMakeFiles/example-renderer.dir/src/main/cpp/example_supersync.cpp.o
-[3/3] Linking CXX shared library ..\..\..\..\build\intermediates\cmake\debug\obj\x86\libexample-renderer.so

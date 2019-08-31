@@ -1,7 +1,7 @@
 {
   "variant": {
     "module": {
-      "rootBuildGradleFolder": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\FPV_VR_Private",
+      "rootBuildGradleFolder": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX",
       "sdkFolder": "C:\\Users\\Consti10\\AppData\\Local\\Android\\Sdk",
       "isNativeCompilerSettingsCacheEnabled": false,
       "isBuildOnlyTargetAbiEnabled": true,
@@ -11,7 +11,7 @@
       "moduleRootFolder": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore",
       "makeFile": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\CMakeLists.txt",
       "buildSystem": "CMAKE",
-      "compilerSettingsCacheFolder": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\FPV_VR_Private\\.cxx",
+      "compilerSettingsCacheFolder": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\.cxx",
       "cxxFolder": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\.cxx",
       "ndkFolder": "C:\\Users\\Consti10\\AppData\\Local\\Android\\Sdk\\ndk-bundle",
       "ndkVersion": "20.0.5594570",

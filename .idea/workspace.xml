@@ -9,515 +9,93 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e770552e-8ed6-4e88-b86a-c4c93dcdb567" name="Default Changelist" comment="fix preferences issue">
-      <change afterPath="$PROJECT_DIR$/RenderingX.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/libs/google/gvr/headers/vr/gvr/capi/include/gvr.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/libs/google/gvr/headers/vr/gvr/capi/include/gvr_audio.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/libs/google/gvr/headers/vr/gvr/capi/include/gvr_audio_surround.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/libs/google/gvr/headers/vr/gvr/capi/include/gvr_beta.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/libs/google/gvr/headers/vr/gvr/capi/include/gvr_controller.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/libs/google/gvr/headers/vr/gvr/capi/include/gvr_gesture.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/libs/google/gvr/headers/vr/gvr/capi/include/gvr_types.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/libs/google/gvr/headers/vr/gvr/capi/include/gvr_version.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/libs/google/gvr/jni/arm64-v8a/libgvr.so" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/libs/google/gvr/jni/arm64-v8a/libgvr_audio.so" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/libs/google/gvr/jni/armeabi-v7a/libgvr.so" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/libs/google/gvr/jni/armeabi-v7a/libgvr_audio.so" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/libs/google/gvr/jni/x86/libgvr.so" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/libs/google/gvr/jni/x86/libgvr_audio.so" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/assets/Text/DistanceFields/TEXT_ATLAS_DF_0.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/assets/Text/DistanceFields/TEXT_ATLAS_DF_1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/assets/Text/DistanceFields/TEXT_ATLAS_DF_2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/assets/Text/DistanceFields/TEXT_ATLAS_DF_3.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/assets/Text/DistanceFields/TEXT_ATLAS_DF_4.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/assets/Text/DistanceFields/TEXT_ATLAS_DF_5.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/assets/Text/OtherData/TEXT_OTHER_DATA_0.ser" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/assets/Text/OtherData/TEXT_OTHER_DATA_1.ser" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/assets/Text/OtherData/TEXT_OTHER_DATA_2.ser" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/assets/Text/OtherData/TEXT_OTHER_DATA_3.ser" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/assets/Text/OtherData/TEXT_OTHER_DATA_4.ser" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/assets/Text/OtherData/TEXT_OTHER_DATA_5.ser" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/GLProgramLine.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/GLProgramLine.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/GLProgramText.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/GLProgramText.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/GLProgramTextureExt.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/GLProgramTextureExt.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/GLProgramVC.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/GLProgramVC.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/GeneralInfo" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/Helper/BasicGLPrograms.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/Helper/ColoredGeometry.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/Helper/GLHelper.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/Helper/MDebug.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/Helper/TexturedGeometry.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/HelperShader/VDDC.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/TextAssetsHelper.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/Types/Color.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/SuperSync/Extensions.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/SuperSync/FBRManager.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/SuperSync/FBRManager.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/Time/Chronometer.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/Time/Chronometer.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/Time/FPSCalculator.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/Time/FPSCalculator.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/Time/VRFrameCPUChronometer.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/Time/VRFrameCPUChronometer.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/example_renderer.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/example_supersync.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/cpp/example_supersync.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/java/constantin/renderingX/GLESInfo/AWriteGLESInfo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/java/constantin/renderingX/GLESInfo/GLESInfo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/java/constantin/renderingX/MyEGLConfigChooser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/java/constantin/renderingX/MyEGLWindowSurfaceFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/java/constantin/renderingX/NDKHelper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/java/constantin/renderingX/PerformanceHelper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXCore/src/main/java/constantin/renderingX/ViewSuperSync.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXExample/src/main/java/constantin/renderingx/example/ExampleRenderingA.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXExample/src/main/java/constantin/renderingx/example/ExampleSuperSyncA.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXExample/src/main/java/constantin/renderingx/example/GLRExample.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXExample/src/main/java/constantin/renderingx/example/GLRSuperSyncExample.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXExample/src/main/res/layout/activity_example_super_sync.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RenderingXExample/src/main/res/layout/activity_main.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Telemetry.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/TelemetryCore.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/jniLibs/arm64-v8a/libTelemetryReceiver.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/jniLibs/armeabi-v7a/libTelemetryReceiver.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/jniLibs/x86/libTelemetryReceiver.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/local.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/proguard-rules.pro" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/AndroidManifest.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/assets/testlog.frsky" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/assets/testlog.ltm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/assets/testlog.mavlink" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/Helper/CPUPriorities.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/Helper/FileReader.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/Helper/GroundRecorder.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/Helper/PositionHelper.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/Helper/SettingsN.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/Helper/StringHelper.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/IDT.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/TelemetryReceiver.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/TelemetryReceiver.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/UDPReceiver.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/UDPReceiver.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/WFBBackwardsCompatibility.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/WFBTelemetryData.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/UAVTelemetryData.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/frsky.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/frsky.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/ltm.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/ltm.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink2.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink2.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/ASLUAV.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/mavlink.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/mavlink_msg_asl_obctrl.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/mavlink_msg_aslctrl_data.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/mavlink_msg_aslctrl_debug.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/mavlink_msg_asluav_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/mavlink_msg_command_int_stamped.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/mavlink_msg_command_long_stamped.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/mavlink_msg_ekf_ext.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/mavlink_msg_fw_soaring_data.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/mavlink_msg_sens_atmos.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/mavlink_msg_sens_batmon.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/mavlink_msg_sens_mppt.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/mavlink_msg_sens_power.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/mavlink_msg_sens_power_board.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/mavlink_msg_sensorpod_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/testsuite.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ASLUAV/version.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/ardupilotmega.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_adap_tuning.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_ahrs.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_ahrs2.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_ahrs3.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_airspeed_autocal.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_aoa_ssa.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_ap_adc.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_autopilot_version_request.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_battery2.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_camera_feedback.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_camera_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_compassmot_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_data16.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_data32.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_data64.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_data96.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_deepstall.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_device_op_read.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_device_op_read_reply.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_device_op_write.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_device_op_write_reply.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_digicam_configure.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_digicam_control.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_ekf_status_report.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_esc_telemetry_1_to_4.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_esc_telemetry_5_to_8.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_esc_telemetry_9_to_12.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_fence_fetch_point.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_fence_point.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_fence_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_gimbal_control.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_gimbal_report.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_gimbal_torque_cmd_report.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_gopro_get_request.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_gopro_get_response.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_gopro_heartbeat.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_gopro_set_request.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_gopro_set_response.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_hwstatus.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_led_control.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_limits_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_mag_cal_progress.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_mag_cal_report.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_meminfo.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_mount_configure.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_mount_control.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_mount_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_pid_tuning.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_radio.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_rally_fetch_point.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_rally_point.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_rangefinder.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_remote_log_block_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_remote_log_data_block.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_rpm.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_sensor_offsets.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_set_mag_offsets.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_simstate.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_vision_position_delta.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/mavlink_msg_wind.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/testsuite.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/ardupilotmega/version.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/autoquad/autoquad.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/autoquad/mavlink.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/autoquad/mavlink_msg_aq_esc_telemetry.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/autoquad/mavlink_msg_aq_telemetry_f.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/autoquad/testsuite.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/autoquad/version.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/checksum.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/common.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_actuator_control_target.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_adsb_vehicle.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_altitude.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_att_pos_mocap.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_attitude.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_attitude_quaternion.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_attitude_quaternion_cov.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_attitude_target.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_auth_key.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_autopilot_version.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_battery_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_button_change.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_camera_capture_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_camera_image_captured.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_camera_information.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_camera_settings.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_camera_trigger.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_change_operator_control.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_change_operator_control_ack.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_collision.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_command_ack.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_command_int.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_command_long.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_control_system_state.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_data_stream.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_data_transmission_handshake.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_debug.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_debug_float_array.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_debug_vect.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_distance_sensor.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_encapsulated_data.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_estimator_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_extended_sys_state.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_file_transfer_protocol.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_flight_information.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_follow_target.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_global_position_int.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_global_position_int_cov.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_global_vision_position_estimate.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_gps2_raw.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_gps2_rtk.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_gps_global_origin.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_gps_inject_data.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_gps_input.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_gps_raw_int.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_gps_rtcm_data.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_gps_rtk.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_gps_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_heartbeat.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_high_latency.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_high_latency2.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_highres_imu.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_hil_actuator_controls.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_hil_controls.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_hil_gps.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_hil_optical_flow.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_hil_rc_inputs_raw.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_hil_sensor.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_hil_state.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_hil_state_quaternion.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_home_position.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_landing_target.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_local_position_ned.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_local_position_ned_cov.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_local_position_ned_system_global_offset.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_log_data.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_log_entry.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_log_erase.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_log_request_data.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_log_request_end.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_log_request_list.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_logging_ack.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_logging_data.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_logging_data_acked.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_manual_control.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_manual_setpoint.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_memory_vect.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_message_interval.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_mission_ack.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_mission_clear_all.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_mission_count.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_mission_current.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_mission_item.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_mission_item_int.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_mission_item_reached.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_mission_request.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_mission_request_int.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_mission_request_list.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_mission_request_partial_list.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_mission_set_current.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_mission_write_partial_list.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_mount_orientation.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_named_value_float.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_named_value_int.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_nav_controller_output.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_obstacle_distance.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_odometry.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_optical_flow.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_optical_flow_rad.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_param_ext_ack.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_param_ext_request_list.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_param_ext_request_read.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_param_ext_set.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_param_ext_value.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_param_map_rc.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_param_request_list.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_param_request_read.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_param_set.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_param_value.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_ping.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_play_tune.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_position_target_global_int.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_position_target_local_ned.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_power_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_protocol_version.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_radio_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_raw_imu.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_raw_pressure.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_rc_channels.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_rc_channels_override.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_rc_channels_raw.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_rc_channels_scaled.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_request_data_stream.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_resource_request.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_safety_allowed_area.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_safety_set_allowed_area.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_scaled_imu.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_scaled_imu2.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_scaled_imu3.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_scaled_pressure.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_scaled_pressure2.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_scaled_pressure3.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_serial_control.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_servo_output_raw.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_set_actuator_control_target.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_set_attitude_target.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_set_gps_global_origin.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_set_home_position.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_set_mode.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_set_position_target_global_int.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_set_position_target_local_ned.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_set_video_stream_settings.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_setup_signing.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_sim_state.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_statustext.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_storage_information.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_sys_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_system_time.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_terrain_check.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_terrain_data.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_terrain_report.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_terrain_request.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_timesync.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_trajectory_representation_bezier.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_trajectory_representation_waypoints.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_uavcan_node_info.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_uavcan_node_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_v2_extension.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_vfr_hud.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_vibration.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_vicon_position_estimate.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_video_stream_information.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_vision_position_estimate.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_vision_speed_estimate.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_wifi_config_ap.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/mavlink_msg_wind_cov.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/testsuite.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/common/version.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/icarous/icarous.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/icarous/mavlink.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/icarous/mavlink_msg_icarous_heartbeat.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/icarous/mavlink_msg_icarous_kinematic_bands.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/icarous/testsuite.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/icarous/version.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/matrixpilot.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_airspeeds.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_altitudes.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_flexifunction_buffer_function.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_flexifunction_buffer_function_ack.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_flexifunction_command.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_flexifunction_command_ack.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_flexifunction_directory.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_flexifunction_directory_ack.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_flexifunction_read_req.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_flexifunction_set.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f13.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f14.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f15.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f16.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f17.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f18.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f19.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f20.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f21.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f22.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f2_a.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f2_b.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f4.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f5.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f6.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f7.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/mavlink_msg_serial_udb_extra_f8.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/testsuite.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/matrixpilot/version.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/mavlink.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/mavlink_conversions.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/mavlink_get_info.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/mavlink_helpers.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/mavlink_sha256.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/mavlink_types.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/message_definitions/ASLUAV.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/message_definitions/ardupilotmega.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/message_definitions/autoquad.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/message_definitions/common.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/message_definitions/icarous.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/message_definitions/matrixpilot.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/message_definitions/minimal.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/message_definitions/paparazzi.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/message_definitions/python_array_test.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/message_definitions/slugs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/message_definitions/standard.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/message_definitions/test.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/message_definitions/uAvionix.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/message_definitions/ualberta.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/minimal/mavlink.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/minimal/mavlink_msg_heartbeat.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/minimal/minimal.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/minimal/testsuite.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/minimal/version.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/protocol.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_boot.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_control_surface.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_cpu_load.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_ctrl_srfc_pt.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_data_log.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_diagnostic.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_gps_date_time.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_isr_location.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_mid_lvl_cmds.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_novatel_diag.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_ptz_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_sensor_bias.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_sensor_diag.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_slugs_camera_order.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_slugs_configuration_camera.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_slugs_mobile_location.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_slugs_navigation.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_status_gps.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_uav_status.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/mavlink_msg_volt_sensor.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/slugs.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/testsuite.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/slugs/version.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/standard/mavlink.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/standard/standard.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/standard/testsuite.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/standard/version.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/test/mavlink.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/test/mavlink_msg_test_types.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/test/test.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/test/testsuite.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/test/version.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/uAvionix/mavlink.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/uAvionix/mavlink_msg_uavionix_adsb_out_cfg.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/uAvionix/mavlink_msg_uavionix_adsb_out_dynamic.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/uAvionix/mavlink_msg_uavionix_adsb_transceiver_health_report.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/uAvionix/testsuite.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/uAvionix/uAvionix.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/mavlink_v2/uAvionix/version.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/smartport.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/cFiles/smartport.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/java/constantin/telemetry/core/ASettingsTelemetry.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/java/constantin/telemetry/core/HomeLocation.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/java/constantin/telemetry/core/TelemetryReceiver.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/java/constantin/telemetry/core/TestReceiverTelemetry.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/res/values/array.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/res/values/default_values.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/res/values/pref_telemetry_ids.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryCore/src/main/res/xml/pref_telemetry.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/TelemetryExample.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/google-services.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/proguard-rules.pro" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/AndroidManifest.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/java/constantin/telemetry/example/MainActivity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/drawable-v24/ic_launcher_foreground.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/drawable/ic_launcher_background.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/layout/activity_main.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/mipmap-hdpi/ic_launcher.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/mipmap-hdpi/ic_launcher_round.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/mipmap-mdpi/ic_launcher.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/mipmap-mdpi/ic_launcher_round.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/mipmap-xhdpi/ic_launcher.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/mipmap-xhdpi/ic_launcher_round.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/mipmap-xxhdpi/ic_launcher.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/mipmap-xxhdpi/ic_launcher_round.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/mipmap-xxxhdpi/ic_launcher.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/values/array.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/values/colors.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/values/strings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TelemetryExample/src/main/res/values/styles.xml" beforeDir="false" />
+    <list default="true" id="e770552e-8ed6-4e88-b86a-c4c93dcdb567" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/classAnalysis.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/javaCompile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/gradle_models.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/gradle_models.ser" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_activity_activity_1_0_0_rc01_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_activity_activity_1_0_0_rc01_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_appcompat_appcompat_1_1_0_rc01_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_appcompat_appcompat_1_1_0_rc01_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_appcompat_appcompat_resources_1_1_0_rc01_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_appcompat_appcompat_resources_1_1_0_rc01_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_arch_core_core_runtime_2_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_arch_core_core_runtime_2_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_asynclayoutinflater_asynclayoutinflater_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_asynclayoutinflater_asynclayoutinflater_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_constraintlayout_constraintlayout_1_1_3_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_constraintlayout_constraintlayout_1_1_3_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_coordinatorlayout_coordinatorlayout_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_coordinatorlayout_coordinatorlayout_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_core_core_1_1_0_rc01_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_core_core_1_1_0_rc01_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_cursoradapter_cursoradapter_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_cursoradapter_cursoradapter_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_customview_customview_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_customview_customview_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_documentfile_documentfile_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_documentfile_documentfile_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_drawerlayout_drawerlayout_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_drawerlayout_drawerlayout_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_fragment_fragment_1_1_0_rc01_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_fragment_fragment_1_1_0_rc01_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_interpolator_interpolator_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_interpolator_interpolator_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_legacy_legacy_support_core_ui_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_legacy_legacy_support_core_ui_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_legacy_legacy_support_core_utils_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_legacy_legacy_support_core_utils_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_legacy_legacy_support_v4_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_legacy_legacy_support_v4_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_livedata_2_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_livedata_2_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_livedata_core_2_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_livedata_core_2_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_runtime_2_1_0_rc01_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_runtime_2_1_0_rc01_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_viewmodel_2_1_0_rc01_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_viewmodel_2_1_0_rc01_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_loader_loader_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_loader_loader_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_localbroadcastmanager_localbroadcastmanager_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_localbroadcastmanager_localbroadcastmanager_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_media_media_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_media_media_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_preference_preference_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_preference_preference_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_print_print_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_print_print_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_recyclerview_recyclerview_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_recyclerview_recyclerview_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_savedstate_savedstate_1_0_0_rc01_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_savedstate_savedstate_1_0_0_rc01_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_slidingpanelayout_slidingpanelayout_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_slidingpanelayout_slidingpanelayout_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_swiperefreshlayout_swiperefreshlayout_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_swiperefreshlayout_swiperefreshlayout_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_vectordrawable_vectordrawable_1_1_0_rc01_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_vectordrawable_vectordrawable_1_1_0_rc01_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_vectordrawable_vectordrawable_animated_1_1_0_rc01_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_vectordrawable_vectordrawable_animated_1_1_0_rc01_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_versionedparcelable_versionedparcelable_1_1_0_rc01_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_versionedparcelable_versionedparcelable_1_1_0_rc01_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_viewpager_viewpager_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_viewpager_viewpager_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_dinuscxj_multitouchgesturedetector_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_dinuscxj_multitouchgesturedetector_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_base_16_0_1_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_base_16_0_1_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_basement_16_0_1_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_basement_16_0_1_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_location_16_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_location_16_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_places_placereport_16_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_places_placereport_16_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_tasks_16_0_1_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_tasks_16_0_1_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_vr_sdk_base_1_190_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_vr_sdk_base_1_190_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/arm64-v8a/build_model.json" beforeDir="false" afterPath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/arm64-v8a/build_model.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/arm64-v8a/json_generation_record.json" beforeDir="false" afterPath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/arm64-v8a/json_generation_record.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/armeabi-v7a/build_model.json" beforeDir="false" afterPath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/armeabi-v7a/build_model.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/armeabi-v7a/json_generation_record.json" beforeDir="false" afterPath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/armeabi-v7a/json_generation_record.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/.ninja_deps" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/.ninja_log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/CMakeOutput.log" beforeDir="false" afterPath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/CMakeOutput.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/GLPrograms.dir/src/main/cpp/GLPrograms/GLProgramLine.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/GLPrograms.dir/src/main/cpp/GLPrograms/GLProgramText.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/GLPrograms.dir/src/main/cpp/GLPrograms/GLProgramTextureExt.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/GLPrograms.dir/src/main/cpp/GLPrograms/GLProgramVC.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/SuperSync.dir/src/main/cpp/SuperSync/FBRManager.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/Time.dir/src/main/cpp/Time/Chronometer.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/Time.dir/src/main/cpp/Time/FPSCalculator.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/Time.dir/src/main/cpp/Time/VRFrameCPUChronometer.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/example-renderer.dir/src/main/cpp/example_renderer.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/example-renderer.dir/src/main/cpp/example_supersync.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/android_gradle_build_GLPrograms_x86.command.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/android_gradle_build_GLPrograms_x86.stderr.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/android_gradle_build_GLPrograms_x86.stdout.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/android_gradle_build_SuperSync_x86.command.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/android_gradle_build_SuperSync_x86.stderr.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/android_gradle_build_SuperSync_x86.stdout.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/android_gradle_build_Time_x86.command.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/android_gradle_build_Time_x86.stderr.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/android_gradle_build_Time_x86.stdout.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/android_gradle_build_example-renderer_x86.command.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/android_gradle_build_example-renderer_x86.stderr.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/android_gradle_build_example-renderer_x86.stdout.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/build_model.json" beforeDir="false" afterPath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/build_model.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/json_generation_record.json" beforeDir="false" afterPath="$PROJECT_DIR$/RenderingXCore/.cxx/cmake/debug/x86/json_generation_record.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXCore/RenderingXCore.iml" beforeDir="false" afterPath="$PROJECT_DIR$/RenderingXCore/RenderingXCore.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RenderingXExample/RenderingXExample.iml" beforeDir="false" afterPath="$PROJECT_DIR$/RenderingXExample/RenderingXExample.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screenshots/Screenshot_2019-04-09-19-04-28.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -596,7 +174,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/TelemetryCore/src/main/res/xml/pref_telemetry.xml" />
         <option value="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/TelemetryReceiver.cpp" />
         <option value="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/WFBBackwardsCompatibility.h" />
         <option value="$PROJECT_DIR$/TelemetryCore/src/main/cpp/Telemetry/WFBTelemetryData.h" />
@@ -625,7 +202,6 @@
         <option value="$PROJECT_DIR$/RenderingXCore/src/main/java/constantin/renderingX/MyEGLWindowSurfaceFactory.java" />
         <option value="$PROJECT_DIR$/RenderingXCore/src/main/java/constantin/renderingX/NDKHelper.java" />
         <option value="$PROJECT_DIR$/RenderingXCore/build.gradle" />
-        <option value="$PROJECT_DIR$/build.gradle" />
         <option value="$PROJECT_DIR$/RenderingXCore/src/main/java/constantin/renderingX/PerformanceHelper.java" />
         <option value="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLRStereoSuperSync.h" />
         <option value="$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLRStereoSuperSync.cpp" />
@@ -647,6 +223,8 @@
         <option value="$PROJECT_DIR$/RenderingXCore/src/main/cpp/example_renderer.cpp" />
         <option value="$PROJECT_DIR$/RenderingXExample/src/main/java/constantin/renderingx/example/GLRExample.java" />
         <option value="$PROJECT_DIR$/RenderingXExample/src/main/java/constantin/renderingx/example/ExampleSuperSyncA.java" />
+        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/build.gradle" />
       </list>
     </option>
   </component>
@@ -662,7 +240,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
       <pane id="AndroidView" />
       <pane id="ProjectPane">
@@ -676,12 +253,14 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="ba1a1446" />
     <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2019-08-31T12:05:21.192Z" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="add_unversioned_files" value="true" />
     <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
     <property name="device.picker.selection" value="Pixel_2_API_Q" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/RenderingXCore/libs" />
@@ -887,7 +466,14 @@
       <option name="project" value="LOCAL" />
       <updated>1557129605043</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="first setup">
+      <created>1567265406916</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1567265406916</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TodoView">
@@ -918,8 +504,8 @@
       <window_info anchor="bottom" id="Terminal" order="4" weight="0.32969603" />
       <window_info anchor="bottom" id="Event Log" order="5" sideWeight="0.50053304" side_tool="true" weight="0.3391116" />
       <window_info anchor="bottom" id="Version Control" order="6" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Build" order="7" visible="true" weight="0.29577464" />
-      <window_info anchor="bottom" id="Android Profiler" order="8" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Build" order="7" visible="true" weight="0.3033586" />
+      <window_info anchor="bottom" id="Android Profiler" order="8" />
       <window_info anchor="bottom" id="Find" order="9" weight="0.324295" />
       <window_info anchor="bottom" id="Inspection Results" order="10" weight="0.3299532" />
       <window_info anchor="right" id="Device File Explorer" order="0" side_tool="true" />
@@ -937,14 +523,10 @@
     <MESSAGE value="add ground recording" />
     <MESSAGE value="Update wifibroadcast statistics" />
     <MESSAGE value="fix preferences issue" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix preferences issue" />
+    <MESSAGE value="first setup" />
+    <option name="LAST_COMMIT_MESSAGE" value="first setup" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/GLProgramTextureExt.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-458" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/RenderingXCore/src/main/cpp/GLPrograms/GLProgramLine.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="902">
@@ -995,23 +577,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/RenderingXExample/src/main/res/layout/activity_example_rendering.xml" />
     <entry file="file://$PROJECT_DIR$/RenderingXExample/src/main/res/layout/activity_main.xml">
-      <provider editor-type-id="android-designer2" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
           <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
         </state>
       </provider>
+      <provider editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/RenderingXExample/src/main/res/layout/activity_example_super_sync.xml">
-      <provider selected="true" editor-type-id="android-designer2" />
       <provider editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="261">
-          <caret line="29" column="40" lean-forward="true" selection-start-line="29" selection-start-column="40" selection-end-line="29" selection-end-column="40" />
-        </state>
-      </provider>
+      <provider selected="true" editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/RenderingXCore/src/main/java/constantin/renderingX/NDKHelper.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -1052,9 +627,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RenderingXExample/.gitignore">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/RenderingXExample/src/main/res/values/styles.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="340">
@@ -1073,23 +645,20 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/RenderingXCore/src/main/AndroidManifest.xml">
-      <provider editor-type-id="android-manifest" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
           <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
         </state>
       </provider>
+      <provider editor-type-id="android-manifest" />
     </entry>
     <entry file="file://$PROJECT_DIR$/RenderingXExample/src/main/AndroidManifest.xml">
-      <provider editor-type-id="android-manifest" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="561">
           <caret line="33" lean-forward="true" selection-start-line="33" selection-end-line="33" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor" />
+      <provider editor-type-id="android-manifest" />
     </entry>
     <entry file="file://$PROJECT_DIR$/RenderingX.iml">
       <provider selected="true" editor-type-id="text-editor" />
@@ -1146,13 +715,6 @@
             <element signature="e#1626#1627#0" expanded="true" />
             <element signature="e#1658#1659#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RenderingXExample/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="369">
-          <caret line="37" column="64" lean-forward="true" selection-start-line="37" selection-start-column="20" selection-end-line="37" selection-end-column="64" />
         </state>
       </provider>
     </entry>
@@ -1306,6 +868,33 @@
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/local.properties">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RenderingXExample/.gitignore">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RenderingXExample/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="24" selection-start-line="24" selection-end-line="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
         </state>
       </provider>
     </entry>
