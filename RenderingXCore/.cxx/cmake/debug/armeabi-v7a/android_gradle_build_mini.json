@@ -1,0 +1,34 @@
+{
+  "buildFiles": [
+    "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "C:\\Users\\Consti10\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\.cxx\\cmake\\debug\\armeabi-v7a --target clean"
+  ],
+  "libraries": {
+    "example-renderer-Debug-armeabi-v7a": {
+      "artifactName": "example-renderer",
+      "buildCommand": "C:\\Users\\Consti10\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\.cxx\\cmake\\debug\\armeabi-v7a --target example-renderer",
+      "abi": "armeabi-v7a",
+      "output": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\build\\intermediates\\cmake\\debug\\obj\\armeabi-v7a\\libexample-renderer.so"
+    },
+    "GLPrograms-Debug-armeabi-v7a": {
+      "artifactName": "GLPrograms",
+      "buildCommand": "C:\\Users\\Consti10\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\.cxx\\cmake\\debug\\armeabi-v7a --target GLPrograms",
+      "abi": "armeabi-v7a",
+      "output": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\build\\intermediates\\cmake\\debug\\obj\\armeabi-v7a\\libGLPrograms.so"
+    },
+    "SuperSync-Debug-armeabi-v7a": {
+      "artifactName": "SuperSync",
+      "buildCommand": "C:\\Users\\Consti10\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\.cxx\\cmake\\debug\\armeabi-v7a --target SuperSync",
+      "abi": "armeabi-v7a",
+      "output": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\build\\intermediates\\cmake\\debug\\obj\\armeabi-v7a\\libSuperSync.so"
+    },
+    "Time-Debug-armeabi-v7a": {
+      "artifactName": "Time",
+      "buildCommand": "C:\\Users\\Consti10\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\.cxx\\cmake\\debug\\armeabi-v7a --target Time",
+      "abi": "armeabi-v7a",
+      "output": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\build\\intermediates\\cmake\\debug\\obj\\armeabi-v7a\\libTime.so"
+    }
+  }
+}

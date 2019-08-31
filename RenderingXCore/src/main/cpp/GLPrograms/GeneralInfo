@@ -1,0 +1,18 @@
+This library does only depend on Android and OpenGL
+
+Abstractions for drawing different OpenGL elements
+-colored geometry (GLProgramVC) = GLProgramVertexColor
+-textured geometry
+        -using a "external texture" OpenGL sampler (GLProgramTextureExt)
+-text btw. strings in 3D OpenGL space (GLProgramText), sampling from a TextAtlas texture.
+Supports antialiased edges even without MSAA enabled
+-Lines with variable width (independent from glLineWidth)
+Also antialiased without MSAA
+
+
+All vertex fragment shaders are stored in the header files.
+FS means fragment shader, VS means vertex shader
+They all support vertex displacement distortion correction
+
+07.12.2017:
+They should be created using a shared_ptr in onSurfaceCreated()

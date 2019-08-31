@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.dinuscxj:multitouchgesturedetector:1.0.0@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/6f26d29709f6495f040dd66ebb4e1fc8/multitouchgesturedetector-1.0.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/6f26d29709f6495f040dd66ebb4e1fc8/multitouchgesturedetector-1.0.0/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.dinuscxj/multitouchgesturedetector/1.0.0/1cd35ce528db37f1c64f068b5dfafa24d3ba28b3/multitouchgesturedetector-1.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

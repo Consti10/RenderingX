@@ -1,0 +1,34 @@
+{
+  "buildFiles": [
+    "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "C:\\Users\\Consti10\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\.cxx\\cmake\\debug\\arm64-v8a --target clean"
+  ],
+  "libraries": {
+    "GLPrograms-Debug-arm64-v8a": {
+      "artifactName": "GLPrograms",
+      "buildCommand": "C:\\Users\\Consti10\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\.cxx\\cmake\\debug\\arm64-v8a --target GLPrograms",
+      "abi": "arm64-v8a",
+      "output": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\build\\intermediates\\cmake\\debug\\obj\\arm64-v8a\\libGLPrograms.so"
+    },
+    "SuperSync-Debug-arm64-v8a": {
+      "artifactName": "SuperSync",
+      "buildCommand": "C:\\Users\\Consti10\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\.cxx\\cmake\\debug\\arm64-v8a --target SuperSync",
+      "abi": "arm64-v8a",
+      "output": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\build\\intermediates\\cmake\\debug\\obj\\arm64-v8a\\libSuperSync.so"
+    },
+    "Time-Debug-arm64-v8a": {
+      "artifactName": "Time",
+      "buildCommand": "C:\\Users\\Consti10\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\.cxx\\cmake\\debug\\arm64-v8a --target Time",
+      "abi": "arm64-v8a",
+      "output": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\build\\intermediates\\cmake\\debug\\obj\\arm64-v8a\\libTime.so"
+    },
+    "example-renderer-Debug-arm64-v8a": {
+      "artifactName": "example-renderer",
+      "buildCommand": "C:\\Users\\Consti10\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\.cxx\\cmake\\debug\\arm64-v8a --target example-renderer",
+      "abi": "arm64-v8a",
+      "output": "C:\\Users\\Consti10\\Desktop\\FPV_VR_for_wifibroadcast\\RenderingX\\RenderingXCore\\build\\intermediates\\cmake\\debug\\obj\\arm64-v8a\\libexample-renderer.so"
+    }
+  }
+}

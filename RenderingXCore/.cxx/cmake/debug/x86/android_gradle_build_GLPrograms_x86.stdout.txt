@@ -1,0 +1,5 @@
+[1/5] Building CXX object CMakeFiles/GLPrograms.dir/src/main/cpp/GLPrograms/GLProgramVC.cpp.o
+[2/5] Building CXX object CMakeFiles/GLPrograms.dir/src/main/cpp/GLPrograms/GLProgramText.cpp.o
+[3/5] Building CXX object CMakeFiles/GLPrograms.dir/src/main/cpp/GLPrograms/GLProgramTextureExt.cpp.o
+[4/5] Building CXX object CMakeFiles/GLPrograms.dir/src/main/cpp/GLPrograms/GLProgramLine.cpp.o
+[5/5] Linking CXX shared library ..\..\..\..\build\intermediates\cmake\debug\obj\x86\libGLPrograms.so

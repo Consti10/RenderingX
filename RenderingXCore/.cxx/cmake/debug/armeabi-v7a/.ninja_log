@@ -1,0 +1,15 @@
+# ninja log v5
+8	10309	0	CMakeFiles/Time.dir/src/main/cpp/Time/Chronometer.cpp.o	7a5bc55da804a939
+4229	10316	0	CMakeFiles/Time.dir/src/main/cpp/Time/VRFrameCPUChronometer.cpp.o	5ced6b4e356ad1b0
+601	3677	0	CMakeFiles/GLPrograms.dir/src/main/cpp/GLPrograms/GLProgramLine.cpp.o	73d0dca6a8022711
+2436	10315	0	CMakeFiles/Time.dir/src/main/cpp/Time/FPSCalculator.cpp.o	c6c196b4849f85c5
+5433	11253	0	CMakeFiles/GLPrograms.dir/src/main/cpp/GLPrograms/GLProgramVC.cpp.o	63880b37b94d795
+10317	11532	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libTime.so	d5e90caa67494d08
+4	1374	0	CMakeFiles/GLPrograms.dir/src/main/cpp/GLPrograms/GLProgramText.cpp.o	937d10c428fddb60
+9193	13007	0	CMakeFiles/GLPrograms.dir/src/main/cpp/GLPrograms/GLProgramTextureExt.cpp.o	98fd9c7499b94ba1
+1374	1817	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libGLPrograms.so	fd79f32cab41a1cd
+11533	14218	0	CMakeFiles/SuperSync.dir/src/main/cpp/SuperSync/FBRManager.cpp.o	b37f9b587156ae03
+14218	15143	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libSuperSync.so	98c63202a725cf9c
+2083	3707	0	CMakeFiles/example-renderer.dir/src/main/cpp/example_supersync.cpp.o	fc971d08e5380d12
+4	1516	0	CMakeFiles/example-renderer.dir/src/main/cpp/example_renderer.cpp.o	29c0e3d6f5b43fc6
+1516	1924	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libexample-renderer.so	dd2a96778061442d

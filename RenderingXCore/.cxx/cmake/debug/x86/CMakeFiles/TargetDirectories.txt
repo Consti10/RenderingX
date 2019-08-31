@@ -1,0 +1,6 @@
+C:/Users/Consti10/Desktop/FPV_VR_for_wifibroadcast/RenderingX/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/Time.dir
+C:/Users/Consti10/Desktop/FPV_VR_for_wifibroadcast/RenderingX/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/GLPrograms.dir
+C:/Users/Consti10/Desktop/FPV_VR_for_wifibroadcast/RenderingX/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/SuperSync.dir
+C:/Users/Consti10/Desktop/FPV_VR_for_wifibroadcast/RenderingX/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/example-renderer.dir
+C:/Users/Consti10/Desktop/FPV_VR_for_wifibroadcast/RenderingX/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/edit_cache.dir
+C:/Users/Consti10/Desktop/FPV_VR_for_wifibroadcast/RenderingX/RenderingXCore/.cxx/cmake/debug/x86/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,4 @@
+[1/4] Building CXX object CMakeFiles/Time.dir/src/main/cpp/Time/Chronometer.cpp.o
+[2/4] Building CXX object CMakeFiles/Time.dir/src/main/cpp/Time/FPSCalculator.cpp.o
+[3/4] Building CXX object CMakeFiles/Time.dir/src/main/cpp/Time/VRFrameCPUChronometer.cpp.o
+[4/4] Linking CXX shared library ..\..\..\..\build\intermediates\cmake\debug\obj\x86\libTime.so
