@@ -28,29 +28,19 @@ void Chronometer::start() {
 void Chronometer::stop() {
     const auto now=steady_clock::now();
     const auto delta=(now-startTS);
-    timeSumUS+=duration_cast<microseconds>(delta).count();
-    timeCount++;
+    average.add(delta);
 }
 
 void Chronometer::reset() {
-    timeSumUS=0;
-    timeCount=0;
+    average.reset();
 }
 
-const int64_t Chronometer::getAvgUS()const {
-    if(timeCount>0){
-        return (timeSumUS/timeCount);
-    }
-    return 0;
+int64_t Chronometer::getAvgUS()const {
+    return average.getAvgUS();
 }
 
-
-const float Chronometer::getAvgMS()const{
-    if(timeCount>0){
-        const auto avgUS=(timeSumUS/timeCount);
-        return avgUS/1000.0f;
-    }
-    return 0;
+float Chronometer::getAvgMS()const{
+    return average.getAvgMS();
 }
 
 
@@ -65,3 +55,17 @@ void Chronometer::printAvg(int intervalMS) {
 }
 
 
+int64_t DurationAccumulator::getAvgUS() const {
+    if(acc>0){
+        return std::chrono::duration_cast<std::chrono::nanoseconds>(accDuration).count()/acc;
+    }
+    return 0;
+}
+
+float DurationAccumulator::getAvgMS() const {
+    if(acc>0){
+        const auto avgUS=std::chrono::duration_cast<std::chrono::microseconds>(accDuration).count()/acc;
+        return avgUS/1000.0f;
+    }
+    return 0;
+}

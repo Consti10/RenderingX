@@ -9,6 +9,23 @@
 #include <string>
 #include <chrono>
 
+class DurationAccumulator{
+public:
+    void add(const std::chrono::steady_clock::duration& duration){
+        accDuration+=duration;
+        acc++;
+    }
+    int64_t getAvgUS()const;
+    float getAvgMS()const;
+    void reset(){
+        accDuration=std::chrono::nanoseconds::zero();
+        acc=0;
+    }
+private:
+    std::chrono::steady_clock::duration accDuration{0};
+    int acc=0;
+};
+
 class Chronometer {
 public:
     explicit Chronometer(const std::string& name);
@@ -16,15 +33,14 @@ public:
     void start();
     void stop();
     void reset();
-    const int64_t getAvgUS()const;
-    const float getAvgMS()const;
+    int64_t getAvgUS()const;
+    float getAvgMS()const;
     void printAvg(int intervalMS);
 private:
     const std::string mName;
     std::chrono::steady_clock::time_point startTS;
     std::chrono::steady_clock::time_point lastLog;
-    uint64_t timeSumUS;
-    int timeCount;
+    DurationAccumulator average;
 };
 
 

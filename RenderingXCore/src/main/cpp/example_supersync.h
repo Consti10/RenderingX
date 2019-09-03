@@ -48,8 +48,9 @@ private:
      * @param offsetNS  time since eye event
      */
     void renderNewEyeCallback(JNIEnv* env,bool whichEye,int64_t offsetNS);
+    void drawEye(JNIEnv* env,bool whichEye);
 private:
-    VRFrameCPUChronometer mFrameCPUChronometer;
+    VRFrameTimeAccumulator mFrameTimeAcc;
     std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
     std::unique_ptr<FBRManager> mFBRManager= nullptr;
     int ViewPortW=0,ViewPortH=0;
