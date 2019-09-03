@@ -12,7 +12,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <array>
-#include <HelperShader/VDDC.hpp>
+#include <DistortionCorrection/VDDC.hpp>
 
 class GLProgramTextureExt {
 private:

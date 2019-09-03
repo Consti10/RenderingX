@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="entriesRenderedElements" >
+        <item>Smooth Text</item>
+        <item>Icons</item>
+        <item>Smooth Lines</item>
+        <item>Colored Geometry</item>
+    </string-array>
+
+</resources>

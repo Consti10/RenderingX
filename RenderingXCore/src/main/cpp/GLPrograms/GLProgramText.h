@@ -27,7 +27,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <Types/Color.hpp>
-#include <HelperShader/VDDC.hpp>
+#include <DistortionCorrection/VDDC.hpp>
 
 class GLProgramText {
 private:
@@ -54,27 +54,29 @@ public:
         Vertex lowerRight;
         Vertex upperRight;
     };
-    static constexpr const int VERTICES_PER_CHARACTER=4; //2 quads,but indexed
+    static constexpr const int VERTICES_PER_CHARACTER=4; //2 quads
+    static constexpr const int INDICES_PER_CHARACTER=6;
 public:
     explicit GLProgramText(bool enableDist=false,const std::array<float,7> *optionalCoeficients= nullptr);
     void loadTextRenderingData(JNIEnv *env, jobject androidContext,const TextAssetsHelper::TEXT_STYLE& textStyle)const;
-    const void beforeDraw(GLuint buffer) const;
+    void beforeDraw(GLuint buffer) const;
     void updateOutline(const glm::vec3 &outlineColor, float outlineStrength)const;
-    void draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, int verticesOffset, int numberVertices) const;
+    void draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, int verticesOffset, int numberIndices) const;
     void afterDraw() const;
 public:
     static int convertStringToRenderingData(float X, float Y, float Z, float charHeight,
             const std::wstring &text, TrueColor color, Character array[],int arrayOffset);
     static float getStringLength(std::wstring s,float scale);
     static float getFontWidthSafe(int idx);
-    static constexpr const wchar_t ICON_BATTERY=(wchar_t)192;
-    static constexpr const wchar_t ICON_CHIP=(wchar_t)192+1;
-    static constexpr const wchar_t ICON_HOME=(wchar_t)192+2;
-    static constexpr const wchar_t ICON_LATITUDE=(wchar_t)192+3;
-    static constexpr const wchar_t ICON_LONGITUDE=(wchar_t)192+4;
-    static constexpr const wchar_t ICON_SATELITE=(wchar_t)192+5;
-    static constexpr const wchar_t ICON_SPACING=(wchar_t)192+6;
-    static constexpr const wchar_t ICON_ARTIFICIAL_HORIZON=(wchar_t)192+7;
+    static constexpr int ICONS_OFFSET=192;
+    static constexpr const wchar_t ICON_BATTERY=(wchar_t)ICONS_OFFSET;
+    static constexpr const wchar_t ICON_CHIP=(wchar_t)ICONS_OFFSET+1;
+    static constexpr const wchar_t ICON_HOME=(wchar_t)ICONS_OFFSET+2;
+    static constexpr const wchar_t ICON_LATITUDE=(wchar_t)ICONS_OFFSET+3;
+    static constexpr const wchar_t ICON_LONGITUDE=(wchar_t)ICONS_OFFSET+4;
+    static constexpr const wchar_t ICON_SATELITE=(wchar_t)ICONS_OFFSET+5;
+    static constexpr const wchar_t ICON_SPACING=(wchar_t)ICONS_OFFSET+6;
+    static constexpr const wchar_t ICON_ARTIFICIAL_HORIZON=(wchar_t)ICONS_OFFSET+7;
 private:
     static const std::string VS(const bool eVDDC,
                                 const std::array<float, VDDC::N_UNDISTORTION_COEFICIENTS> *optionalCoeficients){

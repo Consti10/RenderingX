@@ -9,6 +9,11 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+
+import constantin.renderingX.PerformanceHelper;
 
 public class ExampleRenderingA extends AppCompatActivity {
     private GLSurfaceView gLView;
@@ -18,7 +23,8 @@ public class ExampleRenderingA extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        gLView = new GLSurfaceView(this);
+        setContentView(R.layout.activity_example_rendering);
+        gLView = findViewById(R.id.GLSurfaceView);
         gLView.setEGLContextClientVersion(2);
         renderer=new GLRExample(this);
         gLView.setRenderer(renderer);
@@ -30,40 +36,22 @@ public class ExampleRenderingA extends AppCompatActivity {
                 return true;
             }
         });
-        setContentView(gLView);
+        gLView.setZOrderOnTop(false);
+        final Spinner spinner=findViewById(R.id.spinner);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                renderer.selectedMode(position);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setImmersiveSticky(this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    public static void setImmersiveSticky(final Activity c){
-        final View decorView = c.getWindow().getDecorView();
-        decorView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        decorView.setOnSystemUiVisibilityChangeListener(
-                new View.OnSystemUiVisibilityChangeListener() {
-                    @Override
-                    public void onSystemUiVisibilityChange(int visibility) {
-                        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                            c.getWindow().getDecorView().setSystemUiVisibility(
-                                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-                        }
-                        //System.out.println("visibility changed again");
-                    }
-                });
-    }
 }

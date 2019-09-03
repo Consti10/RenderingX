@@ -7,6 +7,7 @@
 
 #include "jni.h"
 #include <GLES2/gl2.h>
+#include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <GLProgramTextureExt.h>
@@ -15,8 +16,7 @@
 #include "Extensions.hpp"
 #include <sys/resource.h>
 #include <FBRManager.h>
-#include "../Time/VRFrameCPUChronometer.h"
-#include <vector>
+#include <VRFrameCPUChronometer.h>
 
 //in contrast to example_renderer, here we are using an object-oriented native binding approach - the lifecycle of the cpp object  is tied to the lifecycle of the same named java object
 //See implementation for more details on SuperSnyc

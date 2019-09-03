@@ -14,7 +14,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <array>
 #include <Types/Color.hpp>
-#include <HelperShader/VDDC.hpp>
+#include <DistortionCorrection/VDDC.hpp>
 
 using Mat4x4=const GLfloat*;
 

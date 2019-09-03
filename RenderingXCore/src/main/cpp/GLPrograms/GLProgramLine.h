@@ -13,7 +13,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <Types/Color.hpp>
-#include <HelperShader/VDDC.hpp>
+#include <DistortionCorrection/VDDC.hpp>
 
 class GLProgramLine {
 private:

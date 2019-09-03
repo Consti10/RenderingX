@@ -16,9 +16,9 @@
 #include <Helper/ColoredGeometry.hpp>
 #include <TextAssetsHelper.hpp>
 
-#include "GLProgramLine.h"
-#include "Time/Chronometer.h"
-#include "Time/FPSCalculator.h"
+#include <GLProgramLine.h>
+#include <Chronometer.h>
+#include <FPSCalculator.h>
 
 //Render a simple scene consisting of a colored triangle, smooth lines and smooth text
 
@@ -42,6 +42,8 @@ GLProgramText* glProgramText;
 GLuint glBufferVC;
 //holds text vertices
 GLuint glBufferText;
+//holds icon vertices (also interpreted as text)
+GLuint glBufferIcons;
 //holds smooth line vertices
 GLuint glBufferLine;
 
@@ -50,8 +52,10 @@ Chronometer cpuFrameTime{"CPU frame time"};
 FPSCalculator fpsCalculator{"OpenGL FPS",2000}; //print every 2 seconds
 
 constexpr auto EXAMPLE_TEXT=L"HELLO,World";
-constexpr int EXAMPLE_TEXT_LENGTH=5+1+5;
-constexpr int N_LINES=10;
+constexpr int EXAMPLE_TEXT_LENGTH=11;
+constexpr int EXAMPLE_TEXT_N_LINES=4;
+constexpr int N_LINES=10*2;
+constexpr int N_ICONS=8;
 constexpr auto LOREM_IPSUM=L"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
                            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
                            "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
@@ -68,26 +72,48 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     glGenBuffers(1,&glBufferVC);
     glGenBuffers(1,&glBufferText);
     glGenBuffers(1,&glBufferLine);
+    glGenBuffers(1,&glBufferIcons);
     //create the geometry for our simple test scene
     //some colored geometry
     GLProgramVC::Vertex coloredVertices[3];
-    ColoredGeometry::makeColoredTriangle1(coloredVertices,glm::vec3(0,0,0),5.0f,5.0f,Color::RED);
+    const float triangleWidth=5.0F;
+    ColoredGeometry::makeColoredTriangle1(coloredVertices,glm::vec3(-triangleWidth/2,0,0),triangleWidth,triangleWidth,Color::RED);
     GLHelper::allocateGLBufferStatic(glBufferVC,coloredVertices,3*sizeof(GLProgramVC::Vertex));
     //some smooth lines
     //create 5 lines of increasing stroke width
     GLProgramLine::Vertex lines[N_LINES*GLProgramLine::VERTICES_PER_LINE];
-    const float lineLength=1;
+    const float lineLength=4;
     float yOffset=0;
     for(int i=0;i<N_LINES;i++){
-        const float strokeWidth=i*0.01F;
+        const float strokeWidth=(i%10)*0.01F;
+        TrueColor baseColor=i>=N_LINES/2 ? Color::GREEN : Color::WHITE;
+        TrueColor outlineColor=i>=N_LINES/2 ? Color::YELLOW : Color::BLUE;
         yOffset+=strokeWidth*3;
-        GLProgramLine::convertLineToRenderingData({-lineLength,yOffset,0},{0,yOffset,0},strokeWidth,lines,i*GLProgramLine::VERTICES_PER_LINE,Color::GREEN,Color::WHITE);
+        GLProgramLine::convertLineToRenderingData({-lineLength/2,yOffset,0},{lineLength/2,yOffset,0},strokeWidth,lines,i*GLProgramLine::VERTICES_PER_LINE,
+                baseColor,outlineColor);
     }
     GLHelper::allocateGLBufferStatic(glBufferLine,lines,sizeof(lines));
     //some smooth characters
-    GLProgramText::Character charactersAsVertices[EXAMPLE_TEXT_LENGTH];
-    GLProgramText::convertStringToRenderingData(0,0,0,1,{EXAMPLE_TEXT},Color::YELLOW,charactersAsVertices,0);
+    GLProgramText::Character charactersAsVertices[EXAMPLE_TEXT_LENGTH*EXAMPLE_TEXT_N_LINES];
+    yOffset=0;
+    float textHeight=0.5f;
+    for(int i=0;i<EXAMPLE_TEXT_N_LINES;i++){
+        float textLength=GLProgramText::getStringLength({EXAMPLE_TEXT},textHeight);
+        GLProgramText::convertStringToRenderingData(-textLength/2.0f,yOffset,0,textHeight,{EXAMPLE_TEXT},Color::YELLOW,charactersAsVertices,i*EXAMPLE_TEXT_LENGTH);
+        yOffset+=textHeight;
+        textHeight+=0.3;
+    }
     GLHelper::allocateGLBufferStatic(glBufferText,charactersAsVertices,sizeof(charactersAsVertices));
+    //some icons
+    GLProgramText::Character iconsAsVertices[N_ICONS];
+    yOffset=0;
+    for(int i=0;i<N_ICONS;i++){
+        const float textHeight=0.8F;
+        GLProgramText::convertStringToRenderingData(0,yOffset,0,textHeight,{(wchar_t)GLProgramText::ICONS_OFFSET+i},
+                Color::YELLOW,iconsAsVertices,i);
+        yOffset+=textHeight;
+    }
+    GLHelper::allocateGLBufferStatic(glBufferIcons,iconsAsVertices,sizeof(iconsAsVertices));
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
@@ -105,19 +131,29 @@ static void onSurfaceChanged(int width, int height){
 }
 
 //draw a frame
-static void onDrawFrame(){
+//mode selects which elements to draw
+static void onDrawFrame(int mode){
     glClearColor(0,0,0.2,0);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     cpuFrameTime.start();
     //Drawing with the OpenGL Programs is easy - call beforeDraw() with the right OpenGL Buffer and then draw until done
-    glProgramVC->beforeDraw(glBufferVC);
-    glProgramVC->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,3,GL_TRIANGLES);
-    glProgramVC->afterDraw();
-    glProgramText->beforeDraw(glBufferText);
-    glProgramText->draw(eyeView,projection,0,EXAMPLE_TEXT_LENGTH*GLProgramText::VERTICES_PER_CHARACTER);
-    glProgramText->afterDraw();
-    glProgramLine->beforeDraw(glBufferLine);
-    glProgramLine->draw(eyeView,projection,0,N_LINES*GLProgramLine::VERTICES_PER_LINE);
+    if(mode==0){ //Smooth text
+        glProgramText->beforeDraw(glBufferText);
+        glProgramText->draw(eyeView,projection,0,EXAMPLE_TEXT_N_LINES*EXAMPLE_TEXT_LENGTH*GLProgramText::INDICES_PER_CHARACTER);
+        glProgramText->afterDraw();
+    } else if(mode==1){
+        glProgramText->beforeDraw(glBufferIcons);
+        glProgramText->draw(eyeView,projection,0,N_ICONS*GLProgramText::INDICES_PER_CHARACTER);
+        glProgramText->afterDraw();
+    }else if(mode==2){
+        glProgramLine->beforeDraw(glBufferLine);
+        glProgramLine->draw(eyeView,projection,0,N_LINES*GLProgramLine::VERTICES_PER_LINE);
+        glProgramLine->afterDraw();
+    }else if(mode==3){
+        glProgramVC->beforeDraw(glBufferVC);
+        glProgramVC->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,3,GL_TRIANGLES);
+        glProgramVC->afterDraw();
+    }
     GLHelper::checkGlError("example_renderer::onDrawFrame");
     cpuFrameTime.stop();
     cpuFrameTime.printAvg(5000);
@@ -131,6 +167,7 @@ static void moveCamera(float distance,float x,float y){
     //LOGD("move %f %f %f",distance,x,y);
     //eyeView=glm::translate(eyeView,glm::vec3(x,y,distance));
 }
+
 
 #define JNI_METHOD(return_type, method_name) \
   JNIEXPORT return_type JNICALL              \
@@ -151,8 +188,8 @@ JNI_METHOD(void, nativeOnSurfaceChanged)
 }
 
 JNI_METHOD(void, nativeOnDrawFrame)
-(JNIEnv *env, jobject obj) {
-    onDrawFrame();
+(JNIEnv *env, jobject obj,jint mode) {
+    onDrawFrame((int)mode);
 }
 
 JNI_METHOD(void, nativeMoveCamera)

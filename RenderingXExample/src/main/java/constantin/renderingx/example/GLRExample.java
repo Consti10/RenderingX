@@ -17,7 +17,7 @@ public class GLRExample implements GLSurfaceView.Renderer, MultiTouchGestureDete
     }
     private native void nativeOnSurfaceCreated(final Context context);
     private native void nativeOnSurfaceChanged(int width,int height);
-    private native void nativeOnDrawFrame();
+    private native void nativeOnDrawFrame(int renderingMode);
     private native void nativeMoveCamera(float scale,float x,float y);
 
     private final Context mContext;
@@ -26,6 +26,7 @@ public class GLRExample implements GLSurfaceView.Renderer, MultiTouchGestureDete
     private float distance =10;
     private float moveX=0,moveY=0;
     private float width,height;
+    private int renderingMode=0; //Lines or text usw
 
 
     public GLRExample(final Context context){
@@ -48,12 +49,19 @@ public class GLRExample implements GLSurfaceView.Renderer, MultiTouchGestureDete
     @Override
     public void onDrawFrame(GL10 gl) {
         nativeMoveCamera(distance,moveX,moveY);
-        nativeOnDrawFrame();
+        nativeOnDrawFrame(renderingMode);
     }
 
     public void touch(MotionEvent event) {
         mMultiTouchGestureDetector.onTouchEvent(event);
         //System.out.println("touch");
+    }
+
+    public void selectedMode(int mode){
+        distance=10;
+        moveX=0;
+        moveY=0;
+        renderingMode=mode;
     }
 
 

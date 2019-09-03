@@ -5,7 +5,7 @@
 #include <android/asset_manager_jni.h>
 #include <vector>
 
-#define TAG "GLRenderText"
+constexpr auto TAG="GLRenderText";
 #define LOGD1(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
 
 constexpr const int CHAR_START = 0;           // First Character (ASCII Code)
@@ -134,7 +134,7 @@ float GLProgramText::getStringLength(const std::wstring s, const float charHeigh
 }
 
 
-const void GLProgramText::beforeDraw(const GLuint buffer) const{
+void GLProgramText::beforeDraw(const GLuint buffer) const{
     glUseProgram((GLuint)mProgram);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D,mTexture[0]);
@@ -154,19 +154,19 @@ void GLProgramText::updateOutline(const glm::vec3 &outlineColor, const float out
     glUniform1f(mOutlineStrengthHandle,outlineStrength);
 }
 
-void GLProgramText::draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, const int verticesOffset, const int numberVertices) const {
-    if(verticesOffset+numberVertices>INDEX_BUFFER_SIZE){
-        LOGD1("Error n vert:%d n Indices:%d",numberVertices,verticesOffset);
+void GLProgramText::draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, const int verticesOffset, const int numberIndices) const {
+    if(verticesOffset+numberIndices>INDEX_BUFFER_SIZE){
+        LOGD1("Error n vert:%d n Indices:%d",numberIndices,verticesOffset);
     }
     glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
     glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
 #ifdef WIREFRAME
     glUniform1f(mOverrideColorHandle,1.0f);
     glLineWidth(1);
-    glDrawElements(GL_LINES,numberVertices,GL_UNSIGNED_SHORT, (void*)(sizeof(INDEX_DATA)*verticesOffset));
-    glDrawElements(GL_POINTS,numberVertices,GL_UNSIGNED_SHORT, (void*)(sizeof(INDEX_DATA)*verticesOffset));
+    glDrawElements(GL_LINES,numberIndices,GL_UNSIGNED_SHORT, (void*)(sizeof(INDEX_DATA)*verticesOffset));
+    glDrawElements(GL_POINTS,numberIndices,GL_UNSIGNED_SHORT, (void*)(sizeof(INDEX_DATA)*verticesOffset));
 #else
-    glDrawElements(GL_TRIANGLES,numberVertices,GL_UNSIGNED_SHORT, (void*)(sizeof(INDEX_DATA)*verticesOffset));
+    glDrawElements(GL_TRIANGLES,numberIndices,GL_UNSIGNED_SHORT, (void*)(sizeof(INDEX_DATA)*verticesOffset));
 #endif
 }
 

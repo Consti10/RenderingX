@@ -8,6 +8,7 @@ include_directories(libs/glm)
 ##########################################################################################################
 #Time & SuperSync
 ##########################################################################################################
+include_directories(src/main/cpp/Time)
 add_library( Time SHARED
         src/main/cpp/Time/Chronometer.cpp
         src/main/cpp/Time/VRFrameCPUChronometer.cpp
