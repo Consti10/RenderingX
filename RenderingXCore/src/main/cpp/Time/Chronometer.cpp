@@ -11,6 +11,22 @@
 
 using namespace std::chrono;
 
+int64_t DurationAccumulator::getAvgUS() const {
+    if(acc>0){
+        return std::chrono::duration_cast<std::chrono::microseconds>(accDuration).count()/acc;
+    }
+    return 0;
+}
+
+float DurationAccumulator::getAvgMS() const {
+    if(acc>0){
+        const auto avgUS=std::chrono::duration_cast<std::chrono::microseconds>(accDuration).count()/acc;
+        return avgUS/1000.0f;
+    }
+    return 0;
+}
+
+
 Chronometer::Chronometer(const std::string& name): mName(name) {
     lastLog=startTS=steady_clock::now();
     reset();
@@ -48,24 +64,8 @@ void Chronometer::printAvg(int intervalMS) {
     const auto now=steady_clock::now();
     if(duration_cast<milliseconds>(now-lastLog).count()>intervalMS){
         lastLog=now;
-        const int64_t currAvgT= getAvgUS();
-        LOGT("Avg: %s:%f",mName.c_str(),(float)(((double)currAvgT)*0.001f));
+        LOGT("Avg: %s:%fms",mName.c_str(),getAvgMS());
         reset();
     }
 }
 
-
-int64_t DurationAccumulator::getAvgUS() const {
-    if(acc>0){
-        return std::chrono::duration_cast<std::chrono::nanoseconds>(accDuration).count()/acc;
-    }
-    return 0;
-}
-
-float DurationAccumulator::getAvgMS() const {
-    if(acc>0){
-        const auto avgUS=std::chrono::duration_cast<std::chrono::microseconds>(accDuration).count()/acc;
-        return avgUS/1000.0f;
-    }
-    return 0;
-}
