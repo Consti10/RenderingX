@@ -36,6 +36,7 @@ private:
     GLuint mMVMatrixHandle,mPMatrixHandle;
     GLuint mOutlineColorHandle,mOutlineStrengthHandle;
     GLuint mOverrideColorHandle;
+    GLuint uEdge,uBorderEdge;
     GLuint mTexture[1];
     static constexpr int INDEX_BUFFER_SIZE=65535; //max size of GL unsigned short
     using INDEX_DATA=GLushort;
@@ -60,7 +61,9 @@ public:
     explicit GLProgramText(bool enableDist=false,const std::array<float,7> *optionalCoeficients= nullptr);
     void loadTextRenderingData(JNIEnv *env, jobject androidContext,const TextAssetsHelper::TEXT_STYLE& textStyle)const;
     void beforeDraw(GLuint buffer) const;
-    void updateOutline(const glm::vec3 &outlineColor, float outlineStrength)const;
+    //Outline with: 0==no outline, 0.2==default outline size
+    void updateOutline(const glm::vec3 &outlineColor=glm::vec3(1,1,1), float outlineStrength=0.2f)const;
+    void setOtherUniforms(float edge=0.1f,float borderEdge=0.1f)const;
     void draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, int verticesOffset, int numberIndices) const;
     void afterDraw() const;
 public:
@@ -128,16 +131,16 @@ private:
         s<<"uniform sampler2D sTexture;\n";
         s<<"uniform vec3 uOutlineColor;";
         s<<"const float width=0.5;";
-        s<<"const float edge=0.01;";
-        s<<"const float borderEdge=0.01;";
+        s<<"uniform float uEdge;";
+        s<<"uniform float uBorderEdge;";
         s<<"uniform float uOutlineStrength;";  //s<<"float borderWidth=0.7;";
         //s<<"uniform float uOverrideColor;";
 
         s<<"void main() {\n";
 
         s<<"float distance = 1.0 - texture2D( sTexture, vTexCoord ).a;\n";
-        s<<"float alpha = 1.0 - smoothstep(width,width+edge,distance);";
-        s<<"float outlineAlpha = 1.0 - smoothstep(width+uOutlineStrength,width+uOutlineStrength+borderEdge,distance);";
+        s<<"float alpha = 1.0 - smoothstep(width,width+uEdge,distance);";
+        s<<"float outlineAlpha = 1.0 - smoothstep(width+uOutlineStrength,width+uOutlineStrength+uBorderEdge,distance);";
         s<<"float overallAlpha= alpha + (1.0 - alpha) * outlineAlpha ;";
         s<<"vec3 overallColor= mix(uOutlineColor,vVertexColor.rgb, alpha / overallAlpha);\n";
         s<<"gl_FragColor=vec4(overallColor*overallAlpha,overallAlpha);";

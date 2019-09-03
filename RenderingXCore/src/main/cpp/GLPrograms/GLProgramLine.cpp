@@ -13,6 +13,9 @@ GLProgramLine::GLProgramLine(bool enableDist, const std::array<float, 7> *option
     mLineWidthHandle=(GLuint)glGetAttribLocation((GLuint)mProgram,"aLineWidth");
     mBaseColorHandle=(GLuint)glGetAttribLocation((GLuint)mProgram,"aBaseColor");
     mOutlineColorHandle=(GLuint)glGetAttribLocation((GLuint)mProgram,"aOutlineColor");
+    uEdge=(GLuint)glGetUniformLocation(mProgram,"uEdge");
+    uBorderEdge=(GLuint)glGetUniformLocation(mProgram,"uBorderEdge");
+    setOtherUniforms();
     GLHelper::checkGlError("glGetAttribLocation GLProgramLine");
 }
 
@@ -29,6 +32,11 @@ void GLProgramLine::beforeDraw(GLuint buffer) const {
     glVertexAttribPointer(mBaseColorHandle,4,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,baseColor));
     glEnableVertexAttribArray(mOutlineColorHandle);
     glVertexAttribPointer(mOutlineColorHandle,4,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,outlineColor));
+}
+
+void GLProgramLine::setOtherUniforms(float edge, float borderEdge) const {
+    glUniform1f(uEdge,edge);
+    glUniform1f(uBorderEdge,borderEdge);
 }
 
 void GLProgramLine::draw(const glm::mat4x4 &ViewM, const glm::mat4x4 &ProjM, int verticesOffset,
@@ -100,4 +108,6 @@ void GLProgramLine::convertLineToRenderingData(const glm::vec3 &start,const glm:
     writeNormal(p6,down,lineWidth);
     writeColor(p6,baseColor,outlineColor);
 }
+
+
 

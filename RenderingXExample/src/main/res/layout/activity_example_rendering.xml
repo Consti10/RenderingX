@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ExampleSuperSyncA">
-
     <Spinner
         android:id="@+id/spinner"
         android:layout_gravity="start"
@@ -15,9 +14,41 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <android.opengl.GLSurfaceView
-        android:id="@+id/GLSurfaceView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <android.opengl.GLSurfaceView
+            android:id="@+id/GLSurfaceView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <SeekBar
+                android:id="@+id/seekBar1"
+                android:max="100"
+                android:progress="20"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <SeekBar
+                android:id="@+id/seekBar2"
+                android:max="100"
+                android:progress="10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <SeekBar
+                android:id="@+id/seekBar3"
+                android:max="100"
+                android:progress="10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+    </FrameLayout>
+
 
 </LinearLayout>

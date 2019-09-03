@@ -19,6 +19,7 @@ public class GLRExample implements GLSurfaceView.Renderer, MultiTouchGestureDete
     private native void nativeOnSurfaceChanged(int width,int height);
     private native void nativeOnDrawFrame(int renderingMode);
     private native void nativeMoveCamera(float scale,float x,float y);
+    private native void nativeSetSeekBarValues(float val1,float val2,float val3);
 
     private final Context mContext;
     //Handles the user input
@@ -64,6 +65,9 @@ public class GLRExample implements GLSurfaceView.Renderer, MultiTouchGestureDete
         renderingMode=mode;
     }
 
+    public void setSeekBarValues(float val1,float val2,float val3){
+        nativeSetSeekBarValues(val1,val2,val3);
+    }
 
     @Override
     public void onScale(MultiTouchGestureDetector detector) {

@@ -34,6 +34,8 @@ GLProgramText::GLProgramText(const bool enableDist,const std::array<float,7> *op
     mSamplerHandle = glGetUniformLocation (mProgram, "sTexture" );
     mOutlineColorHandle=(GLuint)glGetUniformLocation(mProgram,"uOutlineColor");
     mOutlineStrengthHandle=(GLuint)glGetUniformLocation(mProgram,"uOutlineStrength");
+    uEdge=(GLuint)glGetUniformLocation(mProgram,"uEdge");
+    uBorderEdge=(GLuint)glGetUniformLocation(mProgram,"uBorderEdge");
     GLHelper::checkGlError("GLProgramText() uniforms3");
 #ifdef WIREFRAME
     mOverrideColorHandle=(GLuint)glGetUniformLocation(mProgram,"uOverrideColor");
@@ -58,9 +60,59 @@ GLProgramText::GLProgramText(const bool enableDist,const std::array<float,7> *op
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     //
     glGenTextures(1, mTexture);
+    updateOutline();
+    setOtherUniforms();
     GLHelper::checkGlError("GLProgramText()");
 }
 
+void GLProgramText::beforeDraw(const GLuint buffer) const{
+    glUseProgram((GLuint)mProgram);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D,mTexture[0]);
+    glUniform1i(mSamplerHandle,0);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glEnableVertexAttribArray((GLuint)mPositionHandle);
+    glVertexAttribPointer((GLuint)mPositionHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE, sizeof(Vertex),nullptr);
+    glEnableVertexAttribArray((GLuint)mTextureHandle);
+    glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,u));
+    glEnableVertexAttribArray((GLuint)mColorHandle);
+    glVertexAttribPointer((GLuint)mColorHandle,4/*r,g,b,a*/,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,color));
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndicesB);
+}
+
+void GLProgramText::setOtherUniforms(float edge, float borderEdge)const {
+    glUniform1f(uEdge,edge);
+    glUniform1f(uBorderEdge,borderEdge);
+}
+
+void GLProgramText::updateOutline(const glm::vec3 &outlineColor, const float outlineStrength) const{
+    glUniform3f(mOutlineColorHandle,outlineColor.r,outlineColor.g,outlineColor.b);
+    glUniform1f(mOutlineStrengthHandle,outlineStrength);
+}
+
+void GLProgramText::draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, const int verticesOffset, const int numberIndices) const {
+    if(verticesOffset+numberIndices>INDEX_BUFFER_SIZE){
+        LOGD1("Error n vert:%d n Indices:%d",numberIndices,verticesOffset);
+    }
+    glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
+    glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
+#ifdef WIREFRAME
+    glUniform1f(mOverrideColorHandle,1.0f);
+    glLineWidth(1);
+    glDrawElements(GL_LINES,numberIndices,GL_UNSIGNED_SHORT, (void*)(sizeof(INDEX_DATA)*verticesOffset));
+    glDrawElements(GL_POINTS,numberIndices,GL_UNSIGNED_SHORT, (void*)(sizeof(INDEX_DATA)*verticesOffset));
+#else
+    glDrawElements(GL_TRIANGLES,numberIndices,GL_UNSIGNED_SHORT, (void*)(sizeof(INDEX_DATA)*verticesOffset));
+#endif
+}
+
+
+void GLProgramText::afterDraw() const {
+    glDisableVertexAttribArray((GLuint)mPositionHandle);
+    glDisableVertexAttribArray((GLuint)mTextureHandle);
+    glBindTexture(GL_TEXTURE_2D,0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+}
 
 int GLProgramText::convertStringToRenderingData(const float X, const float Y, const float Z, const float charHeight,
                                                 const std::wstring &text,const TrueColor color, Character *array,
@@ -134,50 +186,6 @@ float GLProgramText::getStringLength(const std::wstring s, const float charHeigh
 }
 
 
-void GLProgramText::beforeDraw(const GLuint buffer) const{
-    glUseProgram((GLuint)mProgram);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D,mTexture[0]);
-    glUniform1i(mSamplerHandle,0);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glEnableVertexAttribArray((GLuint)mPositionHandle);
-    glVertexAttribPointer((GLuint)mPositionHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE, sizeof(Vertex),nullptr);
-    glEnableVertexAttribArray((GLuint)mTextureHandle);
-    glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,u));
-    glEnableVertexAttribArray((GLuint)mColorHandle);
-    glVertexAttribPointer((GLuint)mColorHandle,4/*r,g,b,a*/,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,color));
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndicesB);
-}
-
-void GLProgramText::updateOutline(const glm::vec3 &outlineColor, const float outlineStrength) const{
-    glUniform3f(mOutlineColorHandle,outlineColor.r,outlineColor.g,outlineColor.b);
-    glUniform1f(mOutlineStrengthHandle,outlineStrength);
-}
-
-void GLProgramText::draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, const int verticesOffset, const int numberIndices) const {
-    if(verticesOffset+numberIndices>INDEX_BUFFER_SIZE){
-        LOGD1("Error n vert:%d n Indices:%d",numberIndices,verticesOffset);
-    }
-    glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
-    glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
-#ifdef WIREFRAME
-    glUniform1f(mOverrideColorHandle,1.0f);
-    glLineWidth(1);
-    glDrawElements(GL_LINES,numberIndices,GL_UNSIGNED_SHORT, (void*)(sizeof(INDEX_DATA)*verticesOffset));
-    glDrawElements(GL_POINTS,numberIndices,GL_UNSIGNED_SHORT, (void*)(sizeof(INDEX_DATA)*verticesOffset));
-#else
-    glDrawElements(GL_TRIANGLES,numberIndices,GL_UNSIGNED_SHORT, (void*)(sizeof(INDEX_DATA)*verticesOffset));
-#endif
-}
-
-
-void GLProgramText::afterDraw() const {
-    glDisableVertexAttribArray((GLuint)mPositionHandle);
-    glDisableVertexAttribArray((GLuint)mTextureHandle);
-    glBindTexture(GL_TEXTURE_2D,0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
-}
-
 void  GLProgramText::loadTextRenderingData(JNIEnv *env, jobject androidContext,
                                            const TextAssetsHelper::TEXT_STYLE& textStyle)const {
     glActiveTexture(GL_TEXTURE0);
@@ -233,4 +241,5 @@ float GLProgramText::getFontWidthSafe(int idx) {
     }
     return FONTS_WIDTHS_U[idx];
 }
+
 

@@ -26,6 +26,7 @@
 constexpr float MAX_Z_DISTANCE=20.0f;
 constexpr float MIN_Z_DISTANCE=0.05f;
 constexpr float CAMERA_DISTANCE=5.0f;
+constexpr float TEXT_Y_OFFSET=-1.0f;
 
 //the projection matrix. Should be re calculated in each onSurfaceChanged with new width and height
 glm::mat4x4 projection;
@@ -60,7 +61,9 @@ constexpr auto LOREM_IPSUM=L"Lorem ipsum dolor sit amet, consectetur adipiscing 
                            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
                            "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
                            "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-
+float seekBarValue1=20.0f;
+float seekBarValue2=10.0f;
+float seekBarValue3=10.0f;
 
 static void onSurfaceCreated(JNIEnv* env,jobject context){
     //Instantiate all our OpenGL rendering 'Programs'
@@ -83,7 +86,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     //create 5 lines of increasing stroke width
     GLProgramLine::Vertex lines[N_LINES*GLProgramLine::VERTICES_PER_LINE];
     const float lineLength=4;
-    float yOffset=0;
+    float yOffset=TEXT_Y_OFFSET;
     for(int i=0;i<N_LINES;i++){
         const float strokeWidth=(i%10)*0.01F;
         TrueColor baseColor=i>=N_LINES/2 ? Color::GREEN : Color::WHITE;
@@ -95,7 +98,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     GLHelper::allocateGLBufferStatic(glBufferLine,lines,sizeof(lines));
     //some smooth characters
     GLProgramText::Character charactersAsVertices[EXAMPLE_TEXT_LENGTH*EXAMPLE_TEXT_N_LINES];
-    yOffset=0;
+    yOffset=TEXT_Y_OFFSET;
     float textHeight=0.5f;
     for(int i=0;i<EXAMPLE_TEXT_N_LINES;i++){
         float textLength=GLProgramText::getStringLength({EXAMPLE_TEXT},textHeight);
@@ -106,7 +109,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     GLHelper::allocateGLBufferStatic(glBufferText,charactersAsVertices,sizeof(charactersAsVertices));
     //some icons
     GLProgramText::Character iconsAsVertices[N_ICONS];
-    yOffset=0;
+    yOffset=TEXT_Y_OFFSET;
     for(int i=0;i<N_ICONS;i++){
         const float textHeight=0.8F;
         GLProgramText::convertStringToRenderingData(0,yOffset,0,textHeight,{(wchar_t)GLProgramText::ICONS_OFFSET+i},
@@ -136,17 +139,23 @@ static void onDrawFrame(int mode){
     glClearColor(0,0,0.2,0);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     cpuFrameTime.start();
+    //
     //Drawing with the OpenGL Programs is easy - call beforeDraw() with the right OpenGL Buffer and then draw until done
     if(mode==0){ //Smooth text
         glProgramText->beforeDraw(glBufferText);
+        glProgramText->updateOutline(Color::toRGBA(Color::RED),seekBarValue1/100.0f);
+        glProgramText->setOtherUniforms(seekBarValue2/100.0f,seekBarValue3/100.0f);
         glProgramText->draw(eyeView,projection,0,EXAMPLE_TEXT_N_LINES*EXAMPLE_TEXT_LENGTH*GLProgramText::INDICES_PER_CHARACTER);
         glProgramText->afterDraw();
     } else if(mode==1){
         glProgramText->beforeDraw(glBufferIcons);
+        glProgramText->updateOutline(Color::toRGBA(Color::RED),seekBarValue1/100.0f);
+        glProgramText->setOtherUniforms(seekBarValue2/100.0f,seekBarValue3/100.0f);
         glProgramText->draw(eyeView,projection,0,N_ICONS*GLProgramText::INDICES_PER_CHARACTER);
         glProgramText->afterDraw();
     }else if(mode==2){
         glProgramLine->beforeDraw(glBufferLine);
+        glProgramLine->setOtherUniforms(seekBarValue2/100.0f,seekBarValue3/100.0f);
         glProgramLine->draw(eyeView,projection,0,N_LINES*GLProgramLine::VERTICES_PER_LINE);
         glProgramLine->afterDraw();
     }else if(mode==3){
@@ -197,5 +206,11 @@ JNI_METHOD(void, nativeMoveCamera)
    moveCamera((float)scale,(float)x,(float)y);
 }
 
+JNI_METHOD(void, nativeSetSeekBarValues)
+(JNIEnv *env, jobject obj,jfloat val1,jfloat val2,jfloat val3) {
+    seekBarValue1=val1;
+    seekBarValue2=val2;
+    seekBarValue3=val3;
+}
 
 }
