@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "294812551124",
+    "firebase_url": "https://renderingx-d504f.firebaseio.com",
+    "project_id": "renderingx-d504f",
+    "storage_bucket": "renderingx-d504f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:294812551124:android:0acad8e36f092320",
+        "android_client_info": {
+          "package_name": "constantin.renderingx.example"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "294812551124-siain7hmsvaqn6ffoj4jr832ovd6f1o1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9jJAvfxL2slMG6OJKSSBWI7s5bRPW12A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "294812551124-siain7hmsvaqn6ffoj4jr832ovd6f1o1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

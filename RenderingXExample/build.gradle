@@ -37,6 +37,8 @@ dependencies {
     //for touch input
     implementation 'com.dinuscxj:multitouchgesturedetector:1.0.0'
 
+    implementation 'com.google.firebase:firebase-core:17.2.0'
     implementation project(path: ':RenderingXCore')
 
 }
+apply plugin: 'com.google.gms.google-services'
