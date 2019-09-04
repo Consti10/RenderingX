@@ -1,6 +1,6 @@
 #include "GLProgramText.h"
 #include "TextAssetsHelper.hpp"
-#include "Types/Color.hpp"
+#include "Color/Color.hpp"
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #include <vector>

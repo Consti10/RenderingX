@@ -23,7 +23,7 @@ public class GLRExample implements GLSurfaceView.Renderer, MultiTouchGestureDete
 
     private final Context mContext;
     //Handles the user input
-    private MultiTouchGestureDetector mMultiTouchGestureDetector;
+    public MultiTouchGestureDetector mMultiTouchGestureDetector;
     private float distance =10;
     private float moveX=0,moveY=0;
     private float width,height;
@@ -53,12 +53,7 @@ public class GLRExample implements GLSurfaceView.Renderer, MultiTouchGestureDete
         nativeOnDrawFrame(renderingMode);
     }
 
-    public void touch(MotionEvent event) {
-        mMultiTouchGestureDetector.onTouchEvent(event);
-        //System.out.println("touch");
-    }
-
-    public void selectedMode(int mode){
+    public void setSelectedMode(int mode){
         distance=10;
         moveX=0;
         moveY=0;

@@ -26,7 +26,7 @@
 #include "TextAssetsHelper.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <Types/Color.hpp>
+#include "Color/Color.hpp"
 #include <DistortionCorrection/VDDC.hpp>
 
 class GLProgramText {
@@ -133,7 +133,7 @@ private:
         s<<"const float width=0.5;";
         s<<"uniform float uEdge;";
         s<<"uniform float uBorderEdge;";
-        s<<"uniform float uOutlineStrength;";  //s<<"float borderWidth=0.7;";
+        s<<"uniform float uOutlineStrength;";
         //s<<"uniform float uOverrideColor;";
 
         s<<"void main() {\n";

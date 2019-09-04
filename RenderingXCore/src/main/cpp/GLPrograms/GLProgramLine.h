@@ -12,7 +12,7 @@
 #include "android/log.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <Types/Color.hpp>
+#include "Color/Color.hpp"
 #include <DistortionCorrection/VDDC.hpp>
 
 class GLProgramLine {
@@ -20,7 +20,7 @@ private:
     GLuint mProgram;
     GLuint mPositionHandle,mNormalHandle,mLineWidthHandle,mBaseColorHandle,mOutlineColorHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
-    GLuint uEdge,uBorderEdge;
+    GLuint uEdge,uBorderEdge,uOutlineStrength;
     const bool distortionCorrection;
 public:
     struct Vertex{
@@ -33,7 +33,7 @@ public:
     static constexpr int VERTICES_PER_LINE=6;
     explicit GLProgramLine(bool enableDist=false,const std::array<float,7> *optionalCoeficients= nullptr);
     void beforeDraw(GLuint buffer) const;
-    void setOtherUniforms(float edge=0.1f,float borderEdge=0.1f)const;
+    void setOtherUniforms(float outlineWidth=0.4f,float edge=0.1f,float borderEdge=0.1f)const;
     void draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, int verticesOffset, int numberVertices) const;
     void afterDraw() const;
 public:
@@ -77,7 +77,7 @@ private:
 
         s<<"const float width=0.5;";
         s<<"uniform float uEdge;";
-        s<<"const float outlineStrength=0.4;";
+        s<<"uniform float  uOutlineStrength;"; //0.4
         s<<"uniform float uBorderEdge;";
 
         s<<"void main(){\n";
@@ -92,7 +92,7 @@ private:
         s<<"gl_FragColor=color;";*/
 
         s<<"float alpha = 1.0- smoothstep(width,width+uEdge,distanceInv);";
-        s<<"float outlineAlpha = 1.0 - smoothstep(width+outlineStrength,width+outlineStrength+uBorderEdge,distanceInv);";
+        s<<"float outlineAlpha = 1.0 - smoothstep(width+uOutlineStrength,width+uOutlineStrength+uBorderEdge,distanceInv);";
         s<<"float overallAlpha= alpha + (1.0 - alpha) * outlineAlpha ;";
         s<<"vec3 overallColor= mix(vOutlineColor.rgb,vBaseColor.rgb, alpha / overallAlpha);\n";
         s<<"gl_FragColor=vec4(overallColor*overallAlpha,overallAlpha);";

@@ -6,7 +6,7 @@
 #define FPV_VR_GLPROGRAMS_HELPER_GEOMETRYHELPER2_H
 
 #include "GLProgramVC.h"
-#include "Types/Color.hpp"
+#include "Color/Color.hpp"
 
 class ColoredGeometry {
 public:

@@ -15,6 +15,7 @@ GLProgramLine::GLProgramLine(bool enableDist, const std::array<float, 7> *option
     mOutlineColorHandle=(GLuint)glGetAttribLocation((GLuint)mProgram,"aOutlineColor");
     uEdge=(GLuint)glGetUniformLocation(mProgram,"uEdge");
     uBorderEdge=(GLuint)glGetUniformLocation(mProgram,"uBorderEdge");
+    uOutlineStrength=(GLuint)glGetUniformLocation(mProgram,"uOutlineStrength");
     setOtherUniforms();
     GLHelper::checkGlError("glGetAttribLocation GLProgramLine");
 }
@@ -34,7 +35,8 @@ void GLProgramLine::beforeDraw(GLuint buffer) const {
     glVertexAttribPointer(mOutlineColorHandle,4,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,outlineColor));
 }
 
-void GLProgramLine::setOtherUniforms(float edge, float borderEdge) const {
+void GLProgramLine::setOtherUniforms(float outlineWidth,float edge, float borderEdge) const {
+    glUniform1f(uOutlineStrength,outlineWidth);
     glUniform1f(uEdge,edge);
     glUniform1f(uBorderEdge,borderEdge);
 }

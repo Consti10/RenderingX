@@ -89,8 +89,8 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     float yOffset=TEXT_Y_OFFSET;
     for(int i=0;i<N_LINES;i++){
         const float strokeWidth=(i%10)*0.01F;
-        TrueColor baseColor=i>=N_LINES/2 ? Color::GREEN : Color::WHITE;
-        TrueColor outlineColor=i>=N_LINES/2 ? Color::YELLOW : Color::BLUE;
+        TrueColor baseColor=i>=N_LINES/2 ? Color::YELLOW : Color::BLUE;
+        TrueColor outlineColor=i>=N_LINES/2 ? Color::RED : Color::WHITE;
         yOffset+=strokeWidth*3;
         GLProgramLine::convertLineToRenderingData({-lineLength/2,yOffset,0},{lineLength/2,yOffset,0},strokeWidth,lines,i*GLProgramLine::VERTICES_PER_LINE,
                 baseColor,outlineColor);
@@ -155,7 +155,7 @@ static void onDrawFrame(int mode){
         glProgramText->afterDraw();
     }else if(mode==2){
         glProgramLine->beforeDraw(glBufferLine);
-        glProgramLine->setOtherUniforms(seekBarValue2/100.0f,seekBarValue3/100.0f);
+        glProgramLine->setOtherUniforms(seekBarValue1/100.0F,seekBarValue2/100.0F,seekBarValue3/100.0F);
         glProgramLine->draw(eyeView,projection,0,N_LINES*GLProgramLine::VERTICES_PER_LINE);
         glProgramLine->afterDraw();
     }else if(mode==3){

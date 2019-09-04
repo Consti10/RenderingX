@@ -13,7 +13,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <array>
-#include <Types/Color.hpp>
+#include "Color/Color.hpp"
 #include <DistortionCorrection/VDDC.hpp>
 
 using Mat4x4=const GLfloat*;

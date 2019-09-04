@@ -3,18 +3,14 @@ package constantin.renderingx.example;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
 import android.widget.Spinner;
-
-import constantin.renderingX.PerformanceHelper;
 
 public class ExampleRenderingA extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
     private GLSurfaceView gLView;
@@ -37,7 +33,7 @@ public class ExampleRenderingA extends AppCompatActivity implements SeekBar.OnSe
         gLView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                renderer.touch(event);
+                renderer.mMultiTouchGestureDetector.onTouchEvent(event);
                 return true;
             }
         });
@@ -46,12 +42,9 @@ public class ExampleRenderingA extends AppCompatActivity implements SeekBar.OnSe
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                renderer.selectedMode(position);
-                if(position==0 || position==1){
-                    enableDisableSeekBars(true);
-                }else{
-                    enableDisableSeekBars(false);
-                }
+                renderer.setSelectedMode(position);
+                enableDisableSeekBars(position);
+                setDefaultValues(position);
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) { }
@@ -59,7 +52,8 @@ public class ExampleRenderingA extends AppCompatActivity implements SeekBar.OnSe
         seekBar1.setOnSeekBarChangeListener(this);
         seekBar2.setOnSeekBarChangeListener(this);
         seekBar3.setOnSeekBarChangeListener(this);
-        enableDisableSeekBars(true);
+        enableDisableSeekBars(0);
+        setDefaultValues(0);
     }
 
     @Override
@@ -68,8 +62,8 @@ public class ExampleRenderingA extends AppCompatActivity implements SeekBar.OnSe
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    private void enableDisableSeekBars(boolean enable){
-        if(enable){
+    private void enableDisableSeekBars(final int mode){
+        if(mode==0 || mode==1 || mode==2){
             seekBar1.setVisibility(View.VISIBLE);
             seekBar2.setVisibility(View.VISIBLE);
             seekBar3.setVisibility(View.VISIBLE);
@@ -77,6 +71,18 @@ public class ExampleRenderingA extends AppCompatActivity implements SeekBar.OnSe
             seekBar1.setVisibility(View.GONE);
             seekBar2.setVisibility(View.GONE);
             seekBar3.setVisibility(View.GONE);
+        }
+    }
+
+    private void setDefaultValues(final int mode){
+        if(mode==0 || mode==1){
+            seekBar1.setProgress(20);
+            seekBar2.setProgress(10);
+            seekBar3.setProgress(10);
+        }else{
+            seekBar1.setProgress(40);
+            seekBar2.setProgress(10);
+            seekBar3.setProgress(10);
         }
     }
 
