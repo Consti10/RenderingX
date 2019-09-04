@@ -4,6 +4,12 @@ Core library (with example) for rendering smooth lines and Text with OpenGL.
 Vertex displacment distortion correction
 SuperSync
 
+<img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/main.png" alt="Example" width="240">
+<img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/smoothText.png" alt="Example" width="240">
+<img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/smoothIcons.png" alt="Example" width="240">
+<img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/smoothLines.png" alt="Example" width="240">
+<img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/geometry.png" alt="Example" width="240">
+
 **Setup Dependencies**\
 2. Forking the repo and including sources manually:
 * To your top level settings.gradle file, add
