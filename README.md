@@ -1,5 +1,7 @@
 # RenderingX
 
+[![](https://jitci.com/gh/Consti10/RenderingX/svg)](https://jitci.com/gh/Consti10/RenderingX)
+
 Core library (with example) for rendering smooth lines and Text with OpenGL.
 Vertex displacment distortion correction
 SuperSync
@@ -8,8 +10,8 @@ SuperSync
 <img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/smoothText.png" width="240"/> <img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/smoothIcons.png" width="240"/>
 <img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/smoothLines.png" width="240"/> <img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/geometry.png" width="240"/>
 
-**Setup Dependencies**\
-2. Forking the repo and including sources manually:
+**Setup Dependencies** \
+**Forking the repo and including sources manually:** \
 * To your top level settings.gradle file, add
 ```
 include ':VideoCore'
