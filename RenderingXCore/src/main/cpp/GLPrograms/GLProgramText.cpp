@@ -60,8 +60,10 @@ GLProgramText::GLProgramText(const bool enableDist,const std::array<float,7> *op
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     //
     glGenTextures(1, mTexture);
+    glUseProgram(mProgram);
     updateOutline();
     setOtherUniforms();
+    glUseProgram(0);
     GLHelper::checkGlError("GLProgramText()");
 }
 

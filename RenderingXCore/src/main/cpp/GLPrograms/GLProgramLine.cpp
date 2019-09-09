@@ -16,7 +16,9 @@ GLProgramLine::GLProgramLine(bool enableDist, const std::array<float, 7> *option
     uEdge=(GLuint)glGetUniformLocation(mProgram,"uEdge");
     uBorderEdge=(GLuint)glGetUniformLocation(mProgram,"uBorderEdge");
     uOutlineStrength=(GLuint)glGetUniformLocation(mProgram,"uOutlineStrength");
+    glUseProgram(mProgram);
     setOtherUniforms();
+    glUseProgram(0);
     GLHelper::checkGlError("glGetAttribLocation GLProgramLine");
 }
 

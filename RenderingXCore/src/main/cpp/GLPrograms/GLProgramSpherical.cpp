@@ -19,15 +19,12 @@
 #include "GLProgramSpherical.h"
 #include "Helper/GLHelper.hpp"
 
-static constexpr auto TAG="GLProgramSpherical";
-#define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, TAG, __VA_ARGS__)
-#define GL_TEXTURE_EXTERNAL_OES 0x00008d65
+constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
-GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture) {
+GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture):
+    mSphere{1.0, 280, 90}
+{
     mTexture[0]=videoTexture;
-
-    // Create the sphere class
-    mSphere = new Sphere(1.0, 280, 90);
 
     // Create the GLSL program
     mProgram = GLHelper::createProgram(vs_textureExt_360(), fs_textureExt_360());
@@ -52,13 +49,13 @@ GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture) {
     // Load the sphere.
     glGenBuffers(2,mGLBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, mGLBuffer[0]);
-    glBufferData(GL_ARRAY_BUFFER, mSphere->getInterleavedVertexSize(), mSphere->getInterleavedVertices(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, mSphere.getInterleavedVertexSize(), mSphere.getInterleavedVertices(), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLBuffer[1]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mSphere->getIndexSize(), mSphere->getIndices(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mSphere.getIndexSize(), mSphere.getIndices(), GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    GLHelper::checkGlError(TAG);
+    GLHelper::checkGlError("GLProgramSpherical()");
 }
 
 void GLProgramSpherical::draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM) const{
@@ -82,14 +79,14 @@ void GLProgramSpherical::draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM) 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLBuffer[1]);
 
     // set the attribute arrays
-    int stride = mSphere->getInterleavedStride();
+    int stride = mSphere.getInterleavedStride();
     glVertexAttribPointer((GLuint)mPositionHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE, stride, 0);
     glVertexAttribPointer((GLuint)mNormalHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE,stride,(GLvoid*)(3*sizeof(float)));
     glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,stride,(GLvoid*)(6*sizeof(float)));
 
     glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
     glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
-    glDrawElements(GL_TRIANGLES, mSphere->getIndexCount(), GL_UNSIGNED_INT, (void*)0);
+    glDrawElements(GL_TRIANGLES, mSphere.getIndexCount(), GL_UNSIGNED_INT, (void*)0);
 
     glDisableVertexAttribArray((GLuint)mPositionHandle);
     glDisableVertexAttribArray((GLuint)mNormalHandle);
@@ -98,4 +95,6 @@ void GLProgramSpherical::draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM) 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glUseProgram(0);
+
+    GLHelper::checkGlError("GLProgramSpherical::draw()");
 }

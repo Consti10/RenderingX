@@ -38,7 +38,7 @@ private:
     GLuint mMVMatrixHandle,mNormalHandle,mPMatrixHandle;
     GLuint mGLBuffer[2];
     GLuint mTexture[1];
-    Sphere* mSphere;
+    Sphere mSphere;
 public:
     GLProgramSpherical(const GLuint videoTexture);
     void draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM) const;

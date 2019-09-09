@@ -34,6 +34,12 @@ struct Matrices{
     glm::mat4x4 rightEyeViewTracked; //same for left eye
 
     gvr::Mat4f lastHeadPos;
+    //360
+    glm::mat4x4 monoViewTracked;
+    // The view matrix the defines the forward orientation
+    // This should be added into the rotation matrix
+    glm::mat4x4 monoForward360;
+    glm::mat4x4 projection360;
 };
 
 class MatricesManager {
