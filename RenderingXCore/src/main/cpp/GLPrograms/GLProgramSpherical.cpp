@@ -16,21 +16,21 @@
  * along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  **/
 
-#include "GLRenderSpherical.h"
-#include "../Helper/GLHelper.h"
+#include "GLProgramSpherical.h"
+#include "Helper/GLHelper.hpp"
 
-#define TAG "GLRenderSpherical"
+static constexpr auto TAG="GLProgramSpherical";
 #define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, TAG, __VA_ARGS__)
 #define GL_TEXTURE_EXTERNAL_OES 0x00008d65
 
-GLRenderSpherical::GLRenderSpherical(const GLuint videoTexture) {
+GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture) {
     mTexture[0]=videoTexture;
 
     // Create the sphere class
     mSphere = new Sphere(1.0, 280, 90);
 
     // Create the GLSL program
-    mProgram = createProgram(vs_textureExt_360(), fs_textureExt_360());
+    mProgram = GLHelper::createProgram(vs_textureExt_360(), fs_textureExt_360());
 
     // Get the location of the uniform variables
     mMVMatrixHandle = (GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
@@ -58,10 +58,10 @@ GLRenderSpherical::GLRenderSpherical(const GLuint videoTexture) {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, mSphere->getIndexSize(), mSphere->getIndices(), GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    checkGlError(TAG);
+    GLHelper::checkGlError(TAG);
 }
 
-void GLRenderSpherical::draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM) const{
+void GLProgramSpherical::draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM) const{
 
     // clear buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);

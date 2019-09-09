@@ -11,7 +11,6 @@
 
 #ifndef GEOMETRY_SPHERE_H
 #define GEOMETRY_SPHERE_H
-
 #include <vector>
 
 class Sphere

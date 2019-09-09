@@ -12,7 +12,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
-#include "GLRenderSphere.h"
+#include "Sphere.h"
 
 // constants //////////////////////////////////////////////////////////////////
 const int MIN_SECTOR_COUNT = 3;
