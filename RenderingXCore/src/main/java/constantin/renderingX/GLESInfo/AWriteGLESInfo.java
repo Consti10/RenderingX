@@ -27,7 +27,7 @@ import static constantin.renderingX.MyEGLConfigChooser.findConfigAttrib;
  * Started from main when
  * a) the app has been installed for the first time
  * b) an update made the check for HW settings necessary again
- * Writes hardware-specific settings
+ * Writes hardware-specific settings in GLESInfo
  */
 
 @SuppressLint("ApplySharedPref")
@@ -182,7 +182,6 @@ public class AWriteGLESInfo extends AppCompatActivity {
     private final class MyTestRenderer implements GLSurfaceView.Renderer {
         private int nFrames;
         private final float[] rgb = new float[3];
-        private final double MAX_TIME_MS=0;
         private double lastTS;
         boolean exitHasBeenCalled;
         boolean pulseGreenColor;
@@ -211,7 +210,8 @@ public class AWriteGLESInfo extends AppCompatActivity {
             if (nFrames == 2) {
                 GLESInfo.writeResultsWithGLESContextBound(context);
             }
-            if (nFrames > 2 && (System.currentTimeMillis()-lastTS>MAX_TIME_MS && !exitHasBeenCalled)) {
+            double MAX_TIME_MS = 0;
+            if (nFrames > 2 && (System.currentTimeMillis()-lastTS> MAX_TIME_MS && !exitHasBeenCalled)) {
                 exitHasBeenCalled=true;
                 exitAfterSuccessfulTesting();
                 pulseGreenColor=false;

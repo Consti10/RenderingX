@@ -15,6 +15,8 @@ import java.lang.annotation.Native;
 
 /**
  * Holds only static functions that can be called by cpp
+ * Including text rendering data without android assets (e.g. as raw data in .cpp files) would make this obsolete and the library
+ * more independent from Android
  */
 
 public class NDKHelper {

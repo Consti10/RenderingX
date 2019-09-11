@@ -56,6 +56,8 @@ private:
     int ViewPortW=0,ViewPortH=0;
     int swapColor=0;
     const float MAX_FOV_USABLE_FOR_VDDC=70;
+    glm::mat4 leftEyeView,rightEyeView;
+    glm::mat4 projection;
 };
 
 #endif //RENDERINGX_EXAMPLE_SUPERSYNC_H

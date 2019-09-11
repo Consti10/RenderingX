@@ -9,6 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/ext.hpp>
+
 #include <glm/gtx/matrix_decompose.hpp>
 #include <GLProgramVC.h>
 #include <GLProgramText.h>
@@ -46,11 +47,16 @@ void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext) {
     mBasicGLPrograms=std::make_unique<BasicGLPrograms>(false,nullptr);
     mBasicGLPrograms->text.loadTextRenderingData(env, androidContext,TextAssetsHelper::ARIAL_BOLD);
     mFrameTimeAcc.reset();
+    glm::mat4 eyeView;
+    const float IPD=0.2f;
+    leftEyeView=glm::translate(eyeView,glm::vec3(-IPD/2.0f,0,0));
+    rightEyeView=glm::translate(eyeView,glm::vec3(IPD/2.0f,0,0));
 }
 
 void GLRSuperSyncExample::onSurfaceChanged(int width, int height) {
     ViewPortW=width/2;
     ViewPortH=height;
+    //projection=glm::perspective(glm::radians(45), (int)((float) ViewPortW)/((float)ViewPortH), 0.1, 20.0);
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(0.0F,0,0,0.0F);
@@ -147,6 +153,7 @@ JNI_METHOD(void, nativeExitSuperSyncLoop)
 JNI_METHOD(void, nativeDoFrame)
 (JNIEnv *env, jobject obj, jlong glRendererStereo,jlong lastVSYNC) {
     native(glRendererStereo)->setLastVSYNC((int64_t) lastVSYNC);
+    //LOGD("nativeDoFrame");
 }
 
 }

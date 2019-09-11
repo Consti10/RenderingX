@@ -13,6 +13,9 @@
 #include <iomanip>
 #include <cmath>
 #include "Sphere.h"
+#include <jni.h>
+#include <sstream>
+#include <android/log.h>
 
 // constants //////////////////////////////////////////////////////////////////
 const int MIN_SECTOR_COUNT = 3;
@@ -81,7 +84,8 @@ void Sphere::setSmooth(bool smooth)
 ///////////////////////////////////////////////////////////////////////////////
 void Sphere::printSelf() const
 {
-    std::cout << "===== Sphere =====\n"
+    std::stringstream ss;
+    ss<< "===== Sphere =====\n"
               << "        Radius: " << radius << "\n"
               << "  Sector Count: " << sectorCount << "\n"
               << "   Stack Count: " << stackCount << "\n"
@@ -90,7 +94,11 @@ void Sphere::printSelf() const
               << "   Index Count: " << getIndexCount() << "\n"
               << "  Vertex Count: " << getVertexCount() << "\n"
               << "  Normal Count: " << getNormalCount() << "\n"
-              << "TexCoord Count: " << getTexCoordCount() << std::endl;
+              << "TexCoord Count: " << getTexCoordCount() << "\n"
+              << "   Index Size: " << getIndexSize() << "\n"
+              << "  Vertex Size: " << getVertexSize() << "\n"
+              <<std::endl;
+     __android_log_print(ANDROID_LOG_DEBUG,"Sphere","%s",ss.str().c_str());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

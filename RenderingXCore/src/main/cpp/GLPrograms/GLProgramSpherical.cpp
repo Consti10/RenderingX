@@ -36,7 +36,7 @@ GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture):
 
     // Get the location of the attributes
     mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
-    mNormalHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aNormal");
+    //mNormalHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aNormal");
     mTextureHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aTexCoord");
 
     // Configure the texture
@@ -47,11 +47,12 @@ GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture):
     glBindTexture(GL_TEXTURE_EXTERNAL_OES,0);
 
     // Load the sphere.
-    glGenBuffers(2,mGLBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, mGLBuffer[0]);
+    glGenBuffers(1,&mGLBufferVertices);
+    glGenBuffers(1,&mGLBufferIndices);
+    glBindBuffer(GL_ARRAY_BUFFER, mGLBufferVertices);
     glBufferData(GL_ARRAY_BUFFER, mSphere.getInterleavedVertexSize(), mSphere.getInterleavedVertices(), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLBuffer[1]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLBufferIndices);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, mSphere.getIndexSize(), mSphere.getIndices(), GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -59,9 +60,6 @@ GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture):
 }
 
 void GLProgramSpherical::draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM) const{
-
-    // clear buffer
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     // bind the GLSL texture
     glUseProgram((GLuint)mProgram);
@@ -71,25 +69,30 @@ void GLProgramSpherical::draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM) 
 
     // enable the attributes
     glEnableVertexAttribArray((GLuint)mPositionHandle);
-    glEnableVertexAttribArray((GLuint)mNormalHandle);
+    //glEnableVertexAttribArray((GLuint)mNormalHandle);
     glEnableVertexAttribArray((GLuint)mTextureHandle);
 
-    // bind the spchere
-    glBindBuffer(GL_ARRAY_BUFFER, mGLBuffer[0]);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLBuffer[1]);
+    // bind the sphere
+    glBindBuffer(GL_ARRAY_BUFFER, mGLBufferVertices);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,mGLBufferIndices);
 
     // set the attribute arrays
     int stride = mSphere.getInterleavedStride();
     glVertexAttribPointer((GLuint)mPositionHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE, stride, 0);
-    glVertexAttribPointer((GLuint)mNormalHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE,stride,(GLvoid*)(3*sizeof(float)));
+    //glVertexAttribPointer((GLuint)mNormalHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE,stride,(GLvoid*)(3*sizeof(float)));
     glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,stride,(GLvoid*)(6*sizeof(float)));
+
+    //emuglGLESv2_enc: a vertex attribute index out of boundary is detected. Skipping corresponding vertex attribute. buf=0xea118b10
+    //emuglGLESv2_enc: Out of bounds vertex attribute info: clientArray? 0 attribute 2 vbo 13 allocedBufferSize 172800 bufferDataSpecified? 1 wantedStart 0 wantedEnd 613660
+    //mSphere.printSelf();
 
     glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
     glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
-    glDrawElements(GL_TRIANGLES, mSphere.getIndexCount(), GL_UNSIGNED_INT, (void*)0);
+    //glDrawElements(GL_TRIANGLES, mSphere.getIndexCount(), GL_UNSIGNED_INT, (void*)nullptr);
+    glDrawElements(GL_TRIANGLES, 149520, GL_UNSIGNED_INT, (void*) nullptr);
 
     glDisableVertexAttribArray((GLuint)mPositionHandle);
-    glDisableVertexAttribArray((GLuint)mNormalHandle);
+    //glDisableVertexAttribArray((GLuint)mNormalHandle);
     glDisableVertexAttribArray((GLuint)mTextureHandle);
     glBindTexture(GL_TEXTURE_EXTERNAL_OES,0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
