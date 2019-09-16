@@ -88,8 +88,8 @@ void GLProgramSpherical::draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM) 
 
     glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
     glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
-    //glDrawElements(GL_TRIANGLES, mSphere.getIndexCount(), GL_UNSIGNED_INT, (void*)nullptr);
-    glDrawElements(GL_TRIANGLES, 149520, GL_UNSIGNED_INT, (void*) nullptr);
+    glDrawElements(GL_TRIANGLES, mSphere.getIndexCount(), GL_UNSIGNED_INT, (void*)nullptr);
+    //glDrawElements(GL_TRIANGLES, 149520, GL_UNSIGNED_INT, (void*) nullptr);
 
     glDisableVertexAttribArray((GLuint)mPositionHandle);
     //glDisableVertexAttribArray((GLuint)mNormalHandle);

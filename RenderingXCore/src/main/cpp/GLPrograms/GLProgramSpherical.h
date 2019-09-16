@@ -88,6 +88,7 @@ private:
         s.append("  }\n");
         //s.append("  vec3 normal = normalize(vNormal);\n");
         s.append("  gl_FragColor = texture2D(sTextureExt, vec2(s, t));\n");
+        //s.append("gl_FragColor=vec4(1.0,0.0,0.0,1.0);");
         s.append("}\n");
         return s;
     }
