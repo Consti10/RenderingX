@@ -24,7 +24,7 @@ constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture):
     mSphere{1.0,36*1,18*2}// 280, 90
 {
-    mTexture[0]=videoTexture;
+    mTexture=videoTexture;
 
     // Create the GLSL program
     mProgram = GLHelper::createProgram(vs_textureExt_360(), fs_textureExt_360());
@@ -41,7 +41,7 @@ GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture):
 
     // Configure the texture
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_EXTERNAL_OES,mTexture[0]);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES,mTexture);
     glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_EXTERNAL_OES,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
     glBindTexture(GL_TEXTURE_EXTERNAL_OES,0);
@@ -68,7 +68,7 @@ void GLProgramSpherical::draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM) 
     // bind the GLSL texture
     glUseProgram((GLuint)mProgram);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_EXTERNAL_OES,mTexture[0]);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES,mTexture);
     glUniform1i(mSamplerHandle,1);
 
     // enable the attributes

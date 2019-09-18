@@ -39,7 +39,7 @@ private:
     //GLuint mNormalHandle;
     GLuint mGLBufferVertices;
     GLuint mGLBufferIndices;
-    GLuint mTexture[1];
+    GLuint mTexture;
     const Sphere mSphere;
 public:
     GLProgramSpherical(const GLuint videoTexture);
