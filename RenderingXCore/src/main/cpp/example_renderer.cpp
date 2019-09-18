@@ -120,14 +120,18 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
+static void placeCamera(float distance, float x, float y){
+    glm::vec3 cameraPos   = glm::vec3(x,y,MAX_Z_DISTANCE-distance);
+    glm::vec3 cameraFront = glm::vec3(0.0F,0.0F,-1.0F);
+    eyeView=glm::lookAt(cameraPos,cameraPos+cameraFront,glm::vec3(0,1,0));
+    //LOGD("move %f %f %f",distance,x,y);
+    //eyeView=glm::translate(eyeView,glm::vec3(x,y,distance));
+}
+
 //recalculate matrices
 static void onSurfaceChanged(int width, int height){
     projection=glm::perspective(glm::radians(45.0F), (float)width/height, MIN_Z_DISTANCE, MAX_Z_DISTANCE);
-    eyeView=glm::lookAt(
-            glm::vec3(0,0,CAMERA_DISTANCE),
-            glm::vec3(0,0,-1),
-            glm::vec3(0,1,0)
-    );
+    placeCamera(0,0,0);
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glViewport(0,0,width,height);
@@ -169,13 +173,6 @@ static void onDrawFrame(int mode){
     fpsCalculator.tick();
 }
 
-static void moveCamera(float distance,float x,float y){
-    glm::vec3 cameraPos   = glm::vec3(x,y,MAX_Z_DISTANCE-distance);
-    glm::vec3 cameraFront = glm::vec3(0.0F,0.0F,-1.0F);
-    eyeView=glm::lookAt(cameraPos,cameraPos+cameraFront,glm::vec3(0,1,0));
-    //LOGD("move %f %f %f",distance,x,y);
-    //eyeView=glm::translate(eyeView,glm::vec3(x,y,distance));
-}
 
 
 #define JNI_METHOD(return_type, method_name) \
@@ -203,7 +200,7 @@ JNI_METHOD(void, nativeOnDrawFrame)
 
 JNI_METHOD(void, nativeMoveCamera)
 (JNIEnv *env, jobject obj,jfloat scale,jfloat x,jfloat y) {
-   moveCamera((float)scale,(float)x,(float)y);
+    //placeCamera((float) scale, (float) x, (float) y);
 }
 
 JNI_METHOD(void, nativeSetSeekBarValues)

@@ -8,16 +8,18 @@
 #include "FBRManager.h"
 #include "Extensions.hpp"
 
-#define TAG "FBRManager2"
+constexpr auto TAG="FBRManager";
 #define LOGD(...) __android_log_print(ANDROID_LOG_ERROR, TAG,__VA_ARGS__)
 
 //#define RELEASE
+constexpr auto MS_TO_NS=1000*1000;
 
 using namespace std::chrono;
 
-FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,const RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,const ERROR_CALLBACK onErrorCallback):
+FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,bool useVSYNC_CALLBACK_ADVANCE_NS,const RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,const ERROR_CALLBACK onErrorCallback):
         EGL_KHR_Reusable_Sync_Available(reusableSyncAvailable),
         directRenderingMode(qcomTiledRenderingAvailable ? QCOM_TILED_RENDERING : MALI_SoylentGraham),
+        useVSYNC_CALLBACK_ADVANCE_NS(useVSYNC_CALLBACK_ADVANCE_NS),
         onRenderNewEyeCallback(onRenderNewEyeCallback),
         onErrorCallback(onErrorCallback),
         vsyncStartWT("VSYNC start wait time"),
@@ -174,7 +176,7 @@ int64_t FBRManager::getVsyncRasterizerPosition() {
 }
 
 void FBRManager::setLastVSYNC(int64_t lastVsync) {
-    int64_t tmp=lastVsync-VSYNC_CALLBACK_ADVANCE;
+    int64_t tmp=lastVsync-VSYNC_CALLBACK_ADVANCE_NS;
     //int c=0;
     while(getSystemTimeNS()<tmp){
         //c++;
@@ -306,7 +308,7 @@ void FBRManager::printLog() {
         leAreGPUTimeNotMeasurablePerc=(leGPUTimeNotMeasurablePerc+reGPUTimeNotMeasurablePerc)*0.5;
         double advanceMS=0;
         if(leAreGPUTimeNotMeasurablePerc>50){
-            //more than half of all frames took too long to render.
+            //more than half of all frames took too long to render, increase latency by 2
             advanceMS=2;
         }
         if(leAreGPUTimeNotMeasurablePerc<1){
@@ -320,7 +322,9 @@ void FBRManager::printLog() {
                 advanceMS=0;
             }
         }
-        VSYNC_CALLBACK_ADVANCE=(int64_t)(1000.0*1000.0*advanceMS); //2ms
+        if(useVSYNC_CALLBACK_ADVANCE_NS){
+            VSYNC_CALLBACK_ADVANCE_NS=(int64_t)(MS_TO_NS*advanceMS);
+        }
 #ifndef MY_RELEASE
         std::ostringstream avgLog;
         avgLog<<"------------------------FBRManager Averages------------------------";
@@ -329,7 +333,7 @@ void FBRManager::printLog() {
         avgLog<<"\nVsync waitT:"<<" start:"<< vsyncStartWT.getAvgUS()/1000.0<<" | middle:"<<
                                                                                        vsyncMiddleWT.getAvgUS()/1000.0<<" | start&middle"<<(vsyncStartWT.getAvgUS()+
                                                                                                                                             vsyncMiddleWT.getAvgUS())/2.0/1000.0;
-        avgLog<<"\nVsync advance ms:"<<advanceMS;
+        avgLog<<"\nVsync advance ms:"<< advanceMS;
         //avgLog<<"\nDisplay refresh time ms:"<<DISPLAY_REFRESH_TIME/1000.0/1000.0;
         avgLog<<"\n----  -----  ----  ----  ----  ----  ----  ----  --- ---";
         LOGD("%s",avgLog.str().c_str());

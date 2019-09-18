@@ -58,7 +58,7 @@ using ERROR_CALLBACK=std::function<void(JNIEnv*,int)>;
 
 class FBRManager {
 public:
-    FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,ERROR_CALLBACK onErrorCallback);
+    FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,bool useVSYNC_CALLBACK_ADVANCE_NS,RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,ERROR_CALLBACK onErrorCallback);
     //has to be called from the OpenGL thread that is bound to the front buffer surface
     //blocks until requestExitSuperSyncLoop() is called (from any thread, e.g. the UI onPause )
     void enterDirectRenderingLoop(JNIEnv* env);
@@ -100,7 +100,7 @@ private:
     //dynamically. If the GPU fails too often, i set callback advance to 2ms (fixed value). If the gpu does not fail, I set the callback advance to
     //-(VsyncWaitTime-1)
     //poitive values mean the callback fires earlier
-    int64_t VSYNC_CALLBACK_ADVANCE=(int64_t)(1000.0*1000.0*0.0); //ms (16.666-8.33)
+    int64_t VSYNC_CALLBACK_ADVANCE_NS=(int64_t)(1000.0*1000.0*0.0); //ms (16.666-8.33)
     //rasterizerPosition range: 0<=position<displayRefreshTime
     int64_t getVsyncRasterizerPosition();
     //wait until right/left eye is ready to be rendered
@@ -126,6 +126,7 @@ private:
     void printLog();
     std::chrono::steady_clock::time_point lastLog;
     void resetTS();
+    const bool useVSYNC_CALLBACK_ADVANCE_NS;
 
 };
 

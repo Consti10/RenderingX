@@ -40,23 +40,32 @@ GLRSuperSyncExample::GLRSuperSyncExample(JNIEnv *env, jobject androidContext,
     std::function<void(JNIEnv *env2, bool whichEye, int64_t offsetNS)> f = [this](JNIEnv *env2, bool whichEye, int64_t offsetNS) {
         this->renderNewEyeCallback(env2,whichEye,offsetNS);
     };
-    mFBRManager=std::make_unique<FBRManager>(qcomTiledRenderingAvailable,reusableSyncAvailable,f, nullptr);
+    mFBRManager=std::make_unique<FBRManager>(qcomTiledRenderingAvailable,reusableSyncAvailable,false,f, nullptr);
 }
 
 void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext) {
-    mBasicGLPrograms=std::make_unique<BasicGLPrograms>(false,nullptr);
-    mBasicGLPrograms->text.loadTextRenderingData(env, androidContext,TextAssetsHelper::ARIAL_BOLD);
+    //mBasicGLPrograms=std::make_unique<BasicGLPrograms>(false,nullptr);
+    //mBasicGLPrograms->text.loadTextRenderingData(env, androidContext,TextAssetsHelper::ARIAL_BOLD);
+    glProgramVC=new GLProgramVC();
     mFrameTimeAcc.reset();
-    glm::mat4 eyeView;
+    eyeView=glm::lookAt(glm::vec3(0,0,20),glm::vec3(0.0F,0.0F,-1.0F),glm::vec3(0,1,0));
     const float IPD=0.2f;
     leftEyeView=glm::translate(eyeView,glm::vec3(-IPD/2.0f,0,0));
     rightEyeView=glm::translate(eyeView,glm::vec3(IPD/2.0f,0,0));
+    //some colored geometry
+    GLProgramVC::Vertex coloredVertices[N_COLOR_VERTICES];
+    const float triangleWidth=3.0F;
+    for(int i=0;i<N_TRIANGLES;i++){
+        ColoredGeometry::makeColoredTriangle1(&coloredVertices[i*3],glm::vec3(-triangleWidth/2,0,0),triangleWidth,triangleWidth,Color::RED);
+    }
+    GLHelper::allocateGLBufferStatic(glBufferVC,coloredVertices,sizeof(coloredVertices));
 }
+
 
 void GLRSuperSyncExample::onSurfaceChanged(int width, int height) {
     ViewPortW=width/2;
     ViewPortH=height;
-    //projection=glm::perspective(glm::radians(45), (int)((float) ViewPortW)/((float)ViewPortH), 0.1, 20.0);
+    projection=glm::perspective(glm::radians(45.0F),((float) ViewPortW)/((float)ViewPortH), 0.05f, 20.0f);
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(0.0F,0,0,0.0F);
@@ -102,11 +111,16 @@ void GLRSuperSyncExample::renderNewEyeCallback(JNIEnv *env, bool whichEye, int64
     //vrEyeTimeStamps.print();
     mFrameTimeAcc.add(vrEyeTimeStamps);
     mFrameTimeAcc.printEveryXSeconds(5);
-
 }
 
 void GLRSuperSyncExample::drawEye(JNIEnv *env, bool whichEye) {
-
+    //A typical application has way more than 1 draw call only
+    for(int i=0;i<5;i++){
+        const glm::mat4 leftOrRightEyeView= whichEye==0 ? leftEyeView : rightEyeView;
+        glProgramVC->beforeDraw(glBufferVC);
+        glProgramVC->draw(glm::value_ptr(leftOrRightEyeView),glm::value_ptr(projection),0,N_COLOR_VERTICES,GL_TRIANGLES);
+        glProgramVC->afterDraw();
+    }
 }
 
 

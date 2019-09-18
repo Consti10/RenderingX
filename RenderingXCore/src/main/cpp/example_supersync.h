@@ -51,13 +51,23 @@ private:
     void drawEye(JNIEnv* env,bool whichEye);
 private:
     VRFrameTimeAccumulator mFrameTimeAcc;
-    std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
+    //std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
+    GLProgramVC* glProgramVC;
     std::unique_ptr<FBRManager> mFBRManager= nullptr;
     int ViewPortW=0,ViewPortH=0;
     int swapColor=0;
-    const float MAX_FOV_USABLE_FOR_VDDC=70;
-    glm::mat4 leftEyeView,rightEyeView;
+    //
+    //Camera/Projection matrix constants
+    static constexpr float CAMERA_DISTANCE=-5.0f;
+    //the projection matrix. Should be re calculated in each onSurfaceChanged with new width and height
     glm::mat4 projection;
+    //the view matrix, with ipd
+    glm::mat4 eyeView;
+    glm::mat4 leftEyeView,rightEyeView;
+    //holds colored geometry vertices
+    GLuint glBufferVC;
+    static constexpr int N_TRIANGLES=5;
+    static constexpr int N_COLOR_VERTICES=3*N_TRIANGLES;
 };
 
 #endif //RENDERINGX_EXAMPLE_SUPERSYNC_H
