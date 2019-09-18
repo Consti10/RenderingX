@@ -50,7 +50,7 @@ public:
 
     // for interleaved vertices: V/N/T
     unsigned int getInterleavedVertexCount() const  { return getVertexCount(); }    // # of vertices
-    unsigned int getInterleavedVertexSize() const   { return (unsigned int)interleavedVertices.size() * sizeof(float); }    // # of bytes
+    unsigned int getInterleavedVertexSize() const   { return interleavedVertices.size() * sizeof(float); }    // # of bytes
     int getInterleavedStride() const                { return interleavedStride; }   // should be 32 bytes
     const float* getInterleavedVertices() const     { return interleavedVertices.data(); }
 
@@ -92,7 +92,7 @@ private:
 
     // interleaved
     std::vector<float> interleavedVertices;
-    int interleavedStride;                  // # of bytes to hop to the next vertex (should be 32 bytes)
+    const int interleavedStride=32;                  // # of bytes to hop to the next vertex (should be 32 bytes)
 
 };
 

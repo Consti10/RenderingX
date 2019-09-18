@@ -22,7 +22,7 @@
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
 GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture):
-    mSphere{1.0, 280, 90}
+    mSphere{1.0,36*1,18*2}// 280, 90
 {
     mTexture[0]=videoTexture;
 
@@ -56,6 +56,10 @@ GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture):
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, mSphere.getIndexSize(), mSphere.getIndices(), GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+    //LOGD("mSphere.getIndexSize():%d",mSphere.getIndexSize());
+    //LOGD("mSphere.getIndexCount():%d",mSphere.getIndexCount());
+    //LOGD("mSphere.getInterleavedVertexSize():%d",mSphere.getInterleavedVertexSize());
+    //LOGD("mSphere.getInterleavedVertexCount():%d",mSphere.getInterleavedVertexCount());
     GLHelper::checkGlError("GLProgramSpherical()");
 }
 
@@ -77,19 +81,14 @@ void GLProgramSpherical::draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM) 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,mGLBufferIndices);
 
     // set the attribute arrays
-    int stride = mSphere.getInterleavedStride();
-    glVertexAttribPointer((GLuint)mPositionHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE, stride, 0);
+    const int stride = mSphere.getInterleavedStride();
+    glVertexAttribPointer((GLuint)mPositionHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE, stride,(GLvoid*) 0);
     //glVertexAttribPointer((GLuint)mNormalHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE,stride,(GLvoid*)(3*sizeof(float)));
     glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,stride,(GLvoid*)(6*sizeof(float)));
-
-    //emuglGLESv2_enc: a vertex attribute index out of boundary is detected. Skipping corresponding vertex attribute. buf=0xea118b10
-    //emuglGLESv2_enc: Out of bounds vertex attribute info: clientArray? 0 attribute 2 vbo 13 allocedBufferSize 172800 bufferDataSpecified? 1 wantedStart 0 wantedEnd 613660
-    //mSphere.printSelf();
 
     glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
     glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
     glDrawElements(GL_TRIANGLES, mSphere.getIndexCount(), GL_UNSIGNED_INT, (void*)nullptr);
-    //glDrawElements(GL_TRIANGLES, 149520, GL_UNSIGNED_INT, (void*) nullptr);
 
     glDisableVertexAttribArray((GLuint)mPositionHandle);
     //glDisableVertexAttribArray((GLuint)mNormalHandle);

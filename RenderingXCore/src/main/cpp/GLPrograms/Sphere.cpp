@@ -24,7 +24,7 @@ const int MIN_STACK_COUNT  = 2;
 ///////////////////////////////////////////////////////////////////////////////
 // ctor
 ///////////////////////////////////////////////////////////////////////////////
-Sphere::Sphere(float radius, int sectors, int stacks, bool smooth) : interleavedStride(32)
+Sphere::Sphere(float radius, int sectors, int stacks, bool smooth)
 {
     set(radius, sectors, stacks, smooth);
 }
