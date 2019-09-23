@@ -13,6 +13,9 @@
 #define GEOMETRY_SPHERE_H
 #include <vector>
 
+#include <glm/vec2.hpp>
+#include <glm/glm.hpp>
+
 class Sphere
 {
 public:
@@ -93,6 +96,27 @@ private:
     // interleaved
     std::vector<float> interleavedVertices;
     const int interleavedStride=32;                  // # of bytes to hop to the next vertex (should be 32 bytes)
+
+    static glm::vec2 map_equirectangular(float x,float y){
+        float pi = 3.14159265359;
+        float pi_2 = 1.57079632679;
+        float xy;
+        if (y < 0.5){
+            xy = 2.0 * y;
+        } else {
+            xy = 2.0 * (1.0 - y);
+        }
+        float sectorAngle = 2.0 * pi * x;
+        float nx = xy * cos(sectorAngle);
+        float ny = xy * sin(sectorAngle);
+        float scale = 0.93;
+        float t = -ny * scale / 2.0 + 0.5;
+        float s = -nx * scale / 4.0 + 0.25;
+        if (y > 0.5) {
+            s = 1.0 - s;
+        }
+        return glm::vec2(s,t);
+    }
 
 };
 

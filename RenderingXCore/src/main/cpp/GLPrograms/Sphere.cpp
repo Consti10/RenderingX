@@ -189,6 +189,10 @@ void Sphere::buildVerticesSmooth()
             // vertex tex coord between [0, 1]
             s = (float)j / sectorCount;
             t = (float)i / stackCount;
+
+            //glm::vec2 st=map_equirectangular(s,t);
+            //s=st.x;
+            //t=st.y;
             addTexCoord(s, t);
         }
     }

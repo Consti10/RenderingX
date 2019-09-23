@@ -47,56 +47,58 @@ public:
     static void uploadToGPU(const Sphere& sphere,GLuint glBuffVertices,GLuint glBuffIndices);
 private:
     static const std::string vs_textureExt_360(const bool eVDDC,const std::array<float, VDDC::N_UNDISTORTION_COEFICIENTS> *optionalCoeficients){
-        std::string s;
-        s.append("uniform mat4 uMVMatrix;\n");
-        s.append("uniform mat4 uPMatrix;\n");
-        s.append("attribute vec4 aPosition;\n");
-        //s.append("attribute vec3 aNormal;\n");
-        s.append("attribute vec2 aTexCoord;\n");
-        s.append("varying vec2 vTexCoord;\n");
-        //s.append("varying vec3 vNormal;\n");
+        std::stringstream ss;
+        ss<<"uniform mat4 uMVMatrix;\n";
+        ss<<"uniform mat4 uPMatrix;\n";
+        ss<<"attribute vec4 aPosition;\n";
+        ss<<"attribute vec2 aTexCoord;\n";
+        ss<<"varying vec2 vTexCoord;\n";
         if(eVDDC){
-            s.append(VDDC::undistortCoeficientsToString(*optionalCoeficients));
+            ss<<VDDC::undistortCoeficientsToString(*optionalCoeficients);
         }
-        s.append("void main() {\n");
-        //s.append("  gl_Position = (uPMatrix * uMVMatrix) * aPosition;\n");
-        s.append(VDDC::writeGLPosition(eVDDC));
-        s.append("  vTexCoord = aTexCoord;\n");
-        //s.append("  vNormal = aNormal;");
-        s.append("}\n");
-        return s;
+        ss<<"void main() {\n";
+        ss<<VDDC::writeGLPosition(eVDDC); //gl_Position = (uPMatrix * uMVMatrix) * aPosition;
+        ss<<"  vTexCoord = aTexCoord;\n";
+        ss<<"}\n";
+        return ss.str();
     }
     static const std::string fs_textureExt_360(){
-        std::string s;
-        s.append("#extension GL_OES_EGL_image_external : require\n");
-        s.append("precision mediump float;\n");
-        s.append("varying vec2 vTexCoord;\n");
-        //s.append("varying vec3 vNormal;\n");
-        s.append("uniform samplerExternalOES sTextureExt;\n");
-        s.append("void main() {\n");
-        s.append("  float pi = 3.14159265359;\n");
-        s.append("  float pi_2 = 1.57079632679;\n");
-        s.append("  float xy;\n");
-        s.append("  if (vTexCoord.y < 0.5) {\n");
-        s.append("    xy = 2.0 * vTexCoord.y;\n");
-        s.append("  } else {\n");
-        s.append("    xy = 2.0 * (1.0 - vTexCoord.y);\n");
-        s.append("  }\n");
-        s.append("  float sectorAngle = 2.0 * pi * vTexCoord.x;\n");
-        s.append("  float nx = xy * cos(sectorAngle);\n");
-        s.append("  float ny = xy * sin(sectorAngle);\n");
-        s.append("  float scale = 0.93;\n");
-        s.append("  float t = -ny * scale / 2.0 + 0.5;\n");
-        s.append("  float s = -nx * scale / 4.0 + 0.25;\n");
-        s.append("  if (vTexCoord.y > 0.5) {\n");
-        s.append("    s = 1.0 - s;\n");
-        s.append("  }\n");
-        //s.append("  vec3 normal = normalize(vNormal);\n");
-        s.append("  gl_FragColor = texture2D(sTextureExt, vec2(s, t));\n");
+        std::stringstream ss;
+        ss<<"#extension GL_OES_EGL_image_external : require\n";
+        ss<<"precision mediump float;\n";
+        ss<<"varying vec2 vTexCoord;\n";
+        ss<<"uniform samplerExternalOES sTextureExt;\n";
+
+        ss<<"vec2 map_equirectangular(in float x,in float y){\n"
+                 "        float pi = 3.14159265359;\n"
+                 "        float pi_2 = 1.57079632679;\n"
+                 "        float xy;\n"
+                 "        if (y < 0.5){\n"
+                 "            xy = 2.0 * y;\n"
+                 "        } else {\n"
+                 "            xy = 2.0 * (1.0 - y);\n"
+                 "        }\n"
+                 "        float sectorAngle = 2.0 * pi * x;\n"
+                 "        float nx = xy * cos(sectorAngle);\n"
+                 "        float ny = xy * sin(sectorAngle);\n"
+                 "        float scale = 0.93;\n"
+                 "        float t = -ny * scale / 2.0 + 0.5;\n"
+                 "        float s = -nx * scale / 4.0 + 0.25;\n"
+                 "        if (y > 0.5) {\n"
+                 "            s = 1.0 - s;\n"
+                 "        }\n"
+                 "        return vec2(s,t);"
+                 "    }";
+
+        ss<<"void main() {\n";
+        ss<<"vec2 newTexCoord=map_equirectangular(vTexCoord.x,vTexCoord.y);";
+        //ss<<"vec2 newTexCoord=vTexCoord;";
+        ss<<"  gl_FragColor = texture2D(sTextureExt, newTexCoord);\n";
         //s.append("gl_FragColor=vec4(1.0,0.0,0.0,1.0);");
-        s.append("}\n");
-        return s;
+        ss<<"}\n";
+        return ss.str();
     }
+
 };
 
 #endif

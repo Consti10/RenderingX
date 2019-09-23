@@ -50,10 +50,10 @@ GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture,float radius,bo
 
 void GLProgramSpherical::uploadToGPU(const Sphere &sphere, GLuint glBuffVertices, GLuint glBuffIndices) {
     glBindBuffer(GL_ARRAY_BUFFER, glBuffVertices);
-    glBufferData(GL_ARRAY_BUFFER, sphere.getInterleavedVertexSize(), sphere.getInterleavedVertices(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)sphere.getInterleavedVertexSize(), sphere.getInterleavedVertices(), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBuffIndices);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphere.getIndexSize(), sphere.getIndices(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)sphere.getIndexSize(), sphere.getIndices(), GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     //LOGD("mSphere.getIndexSize():%d",mSphere.getIndexSize());
     //LOGD("mSphere.getIndexCount():%d",mSphere.getIndexCount());
