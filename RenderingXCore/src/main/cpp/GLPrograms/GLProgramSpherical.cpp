@@ -21,13 +21,13 @@
 
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
-GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture):
-    mSphere{1.0,36*1,18*2}// 280, 90
+GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture,float radius,bool enableDist,const std::array<float,7> *optionalCoeficients):
+    mSphere{radius,36*1,18*2}// 280, 90
 {
     mTexture=videoTexture;
 
     // Create the GLSL program
-    mProgram = GLHelper::createProgram(vs_textureExt_360(), fs_textureExt_360());
+    mProgram = GLHelper::createProgram(vs_textureExt_360(enableDist,optionalCoeficients), fs_textureExt_360());
 
     // Get the location of the uniform variables
     mMVMatrixHandle = (GLuint)glGetUniformLocation(mProgram,"uMVMatrix");

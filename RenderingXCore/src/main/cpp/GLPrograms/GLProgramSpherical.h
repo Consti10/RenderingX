@@ -30,6 +30,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <string>
+#include <DistortionCorrection/VDDC.hpp>
 
 class GLProgramSpherical {
 private:
@@ -42,20 +43,24 @@ private:
     GLuint mTexture;
     const Sphere mSphere;
 public:
-    GLProgramSpherical(const GLuint videoTexture);
+    GLProgramSpherical(const GLuint videoTexture,float radius=1.0f,bool enableDist=false,const std::array<float,7> *optionalCoeficients= nullptr);
     void draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM) const;
 private:
-    static const std::string vs_textureExt_360(){
+    static const std::string vs_textureExt_360(const bool eVDDC,const std::array<float, VDDC::N_UNDISTORTION_COEFICIENTS> *optionalCoeficients){
         std::string s;
         s.append("uniform mat4 uMVMatrix;\n");
         s.append("uniform mat4 uPMatrix;\n");
-        s.append("attribute vec3 aPosition;\n");
+        s.append("attribute vec4 aPosition;\n");
         //s.append("attribute vec3 aNormal;\n");
         s.append("attribute vec2 aTexCoord;\n");
         s.append("varying vec2 vTexCoord;\n");
         //s.append("varying vec3 vNormal;\n");
+        if(eVDDC){
+            s.append(VDDC::undistortCoeficientsToString(*optionalCoeficients));
+        }
         s.append("void main() {\n");
-        s.append("  gl_Position = uPMatrix * uMVMatrix * vec4(aPosition, 1.0);\n");
+        //s.append("  gl_Position = (uPMatrix * uMVMatrix) * aPosition;\n");
+        s.append(VDDC::writeGLPosition(eVDDC));
         s.append("  vTexCoord = aTexCoord;\n");
         //s.append("  vNormal = aNormal;");
         s.append("}\n");
