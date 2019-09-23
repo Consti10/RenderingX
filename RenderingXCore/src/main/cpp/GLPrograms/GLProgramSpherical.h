@@ -38,13 +38,13 @@ private:
     GLint mPositionHandle,mTextureHandle,mSamplerHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
     //GLuint mNormalHandle;
-    GLuint mGLBufferVertices;
-    GLuint mGLBufferIndices;
     GLuint mTexture;
-    const Sphere mSphere;
 public:
     GLProgramSpherical(const GLuint videoTexture,float radius=1.0f,bool enableDist=false,const std::array<float,7> *optionalCoeficients= nullptr);
-    void draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM) const;
+    void beforeDraw(GLuint glBuffVertices,GLuint glBuffIndices);
+    void draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM,int indexCount) const;
+    void afterDraw()const;
+    static void uploadToGPU(const Sphere& sphere,GLuint glBuffVertices,GLuint glBuffIndices);
 private:
     static const std::string vs_textureExt_360(const bool eVDDC,const std::array<float, VDDC::N_UNDISTORTION_COEFICIENTS> *optionalCoeficients){
         std::string s;
