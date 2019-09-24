@@ -78,11 +78,9 @@ void GLProgramSpherical::beforeDraw(GLuint glBuffVertices, GLuint glBuffIndices)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,glBuffIndices);
 
     // set the attribute arrays
-    //const int stride = mSphere.getInterleavedStride();
-    const int interleavedStride=32;
-    glVertexAttribPointer((GLuint)mPositionHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE, interleavedStride,(GLvoid*) 0);
+    glVertexAttribPointer((GLuint)mPositionHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE, sizeof(Sphere::Vertex),nullptr);
     //glVertexAttribPointer((GLuint)mNormalHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE,stride,(GLvoid*)(3*sizeof(float)));
-    glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,interleavedStride,(GLvoid*)(6*sizeof(float)));
+    glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(Sphere::Vertex),(GLvoid*)offsetof(Sphere::Vertex,u) );
 }
 
 void GLProgramSpherical::draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM,int indexCount) const{

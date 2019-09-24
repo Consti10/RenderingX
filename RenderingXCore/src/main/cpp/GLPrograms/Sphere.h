@@ -19,104 +19,35 @@
 class Sphere
 {
 public:
+    struct Vertex{
+        float x,y,z;
+        float u,v;
+    };
+public:
     // ctor/dtor
-    Sphere(float radius=1.0f, int sectorCount=36, int stackCount=18, bool smooth=true);
+    Sphere(float radius=1.0f, int sectorCount=36, int stackCount=18);
     ~Sphere() {}
-
-    // getters/setters
-    float getRadius() const                 { return radius; }
-    int getSectorCount() const              { return sectorCount; }
-    int getStackCount() const               { return stackCount; }
-    void set(float radius, int sectorCount, int stackCount, bool smooth=true);
-    void setRadius(float radius);
-    void setSectorCount(int sectorCount);
-    void setStackCount(int stackCount);
-    void setSmooth(bool smooth);
-
-    // for vertex data
-    unsigned int getVertexCount() const     { return (unsigned int)vertices.size() / 3; }
-    unsigned int getNormalCount() const     { return (unsigned int)normals.size() / 3; }
-    unsigned int getTexCoordCount() const   { return (unsigned int)texCoords.size() / 2; }
+    //indices
     unsigned int getIndexCount() const      { return (unsigned int)indices.size(); }
-    unsigned int getLineIndexCount() const  { return (unsigned int)lineIndices.size(); }
-    unsigned int getTriangleCount() const   { return getIndexCount() / 3; }
-    unsigned int getVertexSize() const      { return (unsigned int)vertices.size() * sizeof(float); }
-    unsigned int getNormalSize() const      { return (unsigned int)normals.size() * sizeof(float); }
-    unsigned int getTexCoordSize() const    { return (unsigned int)texCoords.size() * sizeof(float); }
     unsigned int getIndexSize() const       { return (unsigned int)indices.size() * sizeof(unsigned int); }
-    unsigned int getLineIndexSize() const   { return (unsigned int)lineIndices.size() * sizeof(unsigned int); }
-    const float* getVertices() const        { return vertices.data(); }
-    const float* getNormals() const         { return normals.data(); }
-    const float* getTexCoords() const       { return texCoords.data(); }
     const unsigned int* getIndices() const  { return indices.data(); }
-    const unsigned int* getLineIndices() const  { return lineIndices.data(); }
-
-    // for interleaved vertices: V/N/T
-    unsigned int getInterleavedVertexCount() const  { return getVertexCount(); }    // # of vertices
-    unsigned int getInterleavedVertexSize() const   { return interleavedVertices.size() * sizeof(float); }    // # of bytes
-    int getInterleavedStride() const                { return interleavedStride; }   // should be 32 bytes
-    const float* getInterleavedVertices() const     { return interleavedVertices.data(); }
-
-    // draw in VertexArray mode
-    //void draw() const;                                  // draw surface
-    //void drawLines(const float lineColor[4]) const;     // draw lines only
-    //void drawWithLines(const float lineColor[4]) const; // draw surface and lines
-
+    //vertices
+    unsigned int getInterleavedVertexSize() const   { return interleavedVertices.size() * sizeof(Vertex); }    // # of bytes
+    const Vertex* getInterleavedVertices() const     { return interleavedVertices.data(); }
     // debug
     void printSelf() const;
-
-protected:
-
+public:
+    const float radius;
+    const int sectorCount;                        // longitude, # of slices
+    const int stackCount;                         // latitude, # of stacks
+    const bool smooth=true;
 private:
-    // member functions
-    void updateRadius();
     void buildVerticesSmooth();
-    void buildVerticesFlat();
-    void buildInterleavedVertices();
-    void clearArrays();
-    void addVertex(float x, float y, float z);
-    void addNormal(float x, float y, float z);
-    void addTexCoord(float s, float t);
     void addIndices(unsigned int i1, unsigned int i2, unsigned int i3);
-    std::vector<float> computeFaceNormal(float x1, float y1, float z1,
-                                         float x2, float y2, float z2,
-                                         float x3, float y3, float z3);
 
-    // memeber vars
-    float radius;
-    int sectorCount;                        // longitude, # of slices
-    int stackCount;                         // latitude, # of stacks
-    bool smooth;
-    std::vector<float> vertices;
-    std::vector<float> normals;
-    std::vector<float> texCoords;
-    std::vector<unsigned int> indices;
-    std::vector<unsigned int> lineIndices;
-
-    // interleaved
-    std::vector<float> interleavedVertices;
-    const int interleavedStride=32;                  // # of bytes to hop to the next vertex (should be 32 bytes)
-
-    static glm::vec2 map_equirectangular(float x,float y){
-        float pi = 3.14159265359;
-        float pi_2 = 1.57079632679;
-        float xy;
-        if (y < 0.5){
-            xy = 2.0 * y;
-        } else {
-            xy = 2.0 * (1.0 - y);
-        }
-        float sectorAngle = 2.0 * pi * x;
-        float nx = xy * cos(sectorAngle);
-        float ny = xy * sin(sectorAngle);
-        float scale = 0.93;
-        float t = -ny * scale / 2.0 + 0.5;
-        float s = -nx * scale / 4.0 + 0.25;
-        if (y > 0.5) {
-            s = 1.0 - s;
-        }
-        return glm::vec2(s,t);
-    }
+    std::vector<unsigned int> indices={};
+    std::vector<unsigned int> lineIndices={};
+    std::vector<Vertex> interleavedVertices={};
 
 };
 
