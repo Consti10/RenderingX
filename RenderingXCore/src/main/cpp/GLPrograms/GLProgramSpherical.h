@@ -26,13 +26,14 @@
 #include <glm/mat4x4.hpp>
 #include <jni.h>
 #include "android/log.h"
-#include "Sphere.h"
+#include "../Sphere/Sphere.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <string>
 #include <DistortionCorrection/VDDC.hpp>
 
 class GLProgramSpherical {
+public:
 private:
     GLuint mProgram;
     GLint mPositionHandle,mTextureHandle,mSamplerHandle;
@@ -41,10 +42,9 @@ private:
     GLuint mTexture;
 public:
     GLProgramSpherical(const GLuint videoTexture,float radius=1.0f,bool enableDist=false,const std::array<float,7> *optionalCoeficients= nullptr);
-    void beforeDraw(GLuint glBuffVertices,GLuint glBuffIndices);
-    void draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM,int indexCount) const;
+    void beforeDraw(GLuint glBuffVertices);
+    void draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM,int vertexCount) const;
     void afterDraw()const;
-    static void uploadToGPU(const Sphere& sphere,GLuint glBuffVertices,GLuint glBuffIndices);
 private:
     static const std::string vs_textureExt_360(const bool eVDDC,const std::array<float, VDDC::N_UNDISTORTION_COEFICIENTS> *optionalCoeficients){
         std::stringstream ss;

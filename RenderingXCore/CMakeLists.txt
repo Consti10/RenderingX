@@ -35,7 +35,8 @@ add_library( GLPrograms SHARED
              src/main/cpp/GLPrograms/GLProgramText.cpp
              src/main/cpp/GLPrograms/GLProgramTextureExt.cpp
              src/main/cpp/GLPrograms/GLProgramLine.cpp
-             src/main/cpp/GLPrograms/Sphere.cpp
+             src/main/cpp/Sphere/Sphere.cpp
+            src/main/cpp/Sphere/GvrSphere.cpp
              src/main/cpp/GLPrograms/GLProgramSpherical.cpp
              )
 target_link_libraries( GLPrograms ${log-lib} android GLESv2)
