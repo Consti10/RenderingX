@@ -20,9 +20,9 @@
 #include <Extensions.hpp>
 
 #include "GLProgramLine.h"
-#include "Time/Chronometer.h"
-#include "Time/FPSCalculator.h"
-#include "Time/VRFrameCPUChronometer.h"
+#include "Chronometer.h"
+#include "FPSCalculator.h"
+#include "VRFrameCPUChronometer.h"
 #include "example_supersync.h"
 
 //Super sync (synchronous front buffer rendering) is a technique for reducing latency in VR

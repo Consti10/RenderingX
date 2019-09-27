@@ -82,6 +82,15 @@ private:
                  "        float nx = xy * cos(sectorAngle);\n"
                  "        float ny = xy * sin(sectorAngle);\n"
                  "        float scale = 0.93;\n"
+                 //"float s;"
+                 //"float t;"
+                 //"        if(y < 0.5){"
+                 //"         t = -ny * scale / 2.0 + 0.5;\n"
+                 //"         s = -nx * scale / 4.0 + 0.25;\n"
+                 //"        }else{"
+                 //"         t = ny * scale / 2.0 + 0.5;\n"
+                 //"         s = -nx * scale / 4.0 + 0.25;\n"
+                 //"        }\n"
                  "        float t = -ny * scale / 2.0 + 0.5;\n"
                  "        float s = -nx * scale / 4.0 + 0.25;\n"
                  "        if (y > 0.5) {\n"
@@ -101,4 +110,25 @@ private:
 
 };
 
+
+//ss<<"vec2 map_equirectangular(in float x,in float y){\n"
+//                 "        float pi = 3.14159265359;\n"
+//                 "        float pi_2 = 1.57079632679;\n"
+//                 "        float xy;\n"
+//                 "        if (y < 0.5){\n"
+//                 "            xy = 2.0 * y;\n"
+//                 "        } else {\n"
+//                 "            xy = 2.0 * (1.0 - y);\n"
+//                 "        }\n"
+//                 "        float sectorAngle = 2.0 * pi * x;\n"
+//                 "        float nx = xy * cos(sectorAngle);\n"
+//                 "        float ny = xy * sin(sectorAngle);\n"
+//                 "        float scale = 0.93;\n"
+//                 "        float t = -ny * scale / 2.0 + 0.5;\n"
+//                 "        float s = -nx * scale / 4.0 + 0.25;\n"
+//                 "        if (y > 0.5) {\n"
+//                 "            s = 1.0 - s;\n"
+//                 "        }\n"
+//                 "        return vec2(s,t);"
+//                 "    }";
 #endif
