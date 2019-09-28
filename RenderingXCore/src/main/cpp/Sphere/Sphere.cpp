@@ -39,9 +39,14 @@ static std::vector<Sphere::Vertex> createUvSphereInsta360(float radius,int latit
     for(int i=0;i<vertexDataAsInGvr.size()-GvrSphere::CPV;i+=GvrSphere::CPV){
         Sphere::Vertex vertex;
         //Vertex Data-Sphere
-        vertex.x=vertexDataAsInGvr.at(i);
-        vertex.y=vertexDataAsInGvr.at(i+1);
-        vertex.z=vertexDataAsInGvr.at(i+2);
+        const float x=vertexDataAsInGvr.at(i);
+        const float y=vertexDataAsInGvr.at(i+1);
+        const float z=vertexDataAsInGvr.at(i+2);
+        const float u=vertexDataAsInGvr.at(i+3);
+        const float v=vertexDataAsInGvr.at(i+4);
+        vertex.x=x;
+        vertex.y=y;
+        vertex.z=z;
         //Texture Data - Insta360, it only has data for one eye
         //glm::vec2 tmp=map_equirectangular(vertexDataAsInGvr.at(i+3),vertexDataAsInGvr.at(i+4),false);
         //vertex.u=tmp.x;
@@ -52,12 +57,12 @@ static std::vector<Sphere::Vertex> createUvSphereInsta360(float radius,int latit
         //-vertex.v=(vertexDataAsInGvr.at(i+4)-0.25f)*scale+0.25f;
         //vertex.u=vertexDataAsInGvr.at(i+3)*scale;
         //vertex.v=vertexDataAsInGvr.at(i+4)*scale;
-        //vertex.u=vertexDataAsInGvr.at(i+3);
-        //vertex.v=vertexDataAsInGvr.at(i+4);
+        vertex.u=u;
+        vertex.v=v;
 
-        glm::vec2 tmp=map_equirectangular2(vertexDataAsInGvr.at(i+3),vertexDataAsInGvr.at(i+4));
-        vertex.u=tmp.x;
-        vertex.v=tmp.y;
+        //glm::vec2 tmp=map_equirectangular2(u,v);
+        //vertex.u=tmp.x;
+        //vertex.v=tmp.y;
 
         vertexDataInsta360.push_back(vertex);
     }

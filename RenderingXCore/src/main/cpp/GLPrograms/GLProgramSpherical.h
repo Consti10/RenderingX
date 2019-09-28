@@ -100,8 +100,8 @@ private:
                  "    }";
 
         ss<<"void main() {\n";
-        //ss<<"vec2 newTexCoord=map_equirectangular(vTexCoord.x,vTexCoord.y);";
-        ss<<"vec2 newTexCoord=vTexCoord;";
+        ss<<"vec2 newTexCoord=map_equirectangular(vTexCoord.x,vTexCoord.y);";
+        //ss<<"vec2 newTexCoord=vTexCoord;";
         ss<<"  gl_FragColor = texture2D(sTextureExt, newTexCoord);\n";
         //s.append("gl_FragColor=vec4(1.0,0.0,0.0,1.0);");
         ss<<"}\n";

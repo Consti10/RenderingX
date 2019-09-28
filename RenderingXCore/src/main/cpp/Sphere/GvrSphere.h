@@ -13,7 +13,7 @@
 // https://github.com/googlevr/gvr-android-sdk/blob/master/samples/sdk-video360/src/main/java/com/google/vr/sdk/samples/video360/rendering/Mesh.java
 //As less modifcations have been made as possible
 //Only the functions Math.toRadians and System.arraycopy() did not exist in .cpp
-//Also std::vector<float> instead of new float[]
+//Also std::vector<float> instead of dynamic java float array
 
 
 class GvrSphere{
