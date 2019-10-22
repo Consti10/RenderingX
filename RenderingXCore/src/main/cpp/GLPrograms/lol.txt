@@ -1,0 +1,52 @@
+/*for(int i=0;i<50;i++){
+        LOL[i][0]=1.0f;//1.0f+0.5f-i*0.01f;//glm::vec2(0.0f,0.0f);
+        LOL[i][1]=1.0f;
+    }
+    for(int i=0;i<50;i++){
+        LOL[50+i][0]=1.0f;//LOL[50+i]=1.0f+i*0.01f;//glm::vec2(0.0f,0.0f);
+        LOL[50+i][1]=1.0f;
+    }*/
+    /*for(int i=0;i<VDDC::RESOLUTION_XY;i++){
+        for(int j=0;j<VDDC::RESOLUTION_XY;j++){
+            //const int idx=i*VDDC::RESOLUTION_XY+j;
+            /*const glm::vec2 pos=glm::vec2(i-VDDC::RESOLUTION_XY/2.0f,j-VDDC::RESOLUTION_XY/2.0f);
+            const float r2=abs(glm::dot(pos,pos));
+            LOL[i][j][0]=1.0f+r2*0.01f;
+            LOL[i][j][1]=1.0f+r2*0.01f;*/
+            /*gvr_vec2f p1{i/(float)VDDC::RESOLUTION_XY,j/(float)VDDC::RESOLUTION_XY};
+            gvr_vec2f p2[3];
+            gvr_compute_distorted_point(gvr_context,GVR_LEFT_EYE,p1,p2);
+            /*float dirX=1.0f+abs((p1.x-p2[0].x));
+            float dirY=1.0f+abs((p1.y-p2[0].y));
+            LOL[i][j][0]=dirX;
+            LOL[i][j][1]=dirY;*/
+            /*LOL[i][j][0]=1.0f+abs((p1.x-p2[0].x));
+            LOL[i][j][1]=1.0f+abs((p1.y-p2[0].y));
+            /*float dist=VDDC::calculateBrownConrady(r2,0.34,0.55);
+            LOL[i][j][0]=dist;
+            LOL[i][j][1]=dist;*/
+
+            //const auto tmp=ColoredGeometry::findBestInverseDistortion(gvr_context,p1);
+            /*if(i<5){
+                LOL1[idx]=0.8f;
+            }else{
+                LOL1[idx]=1.2f;
+            }
+            if(j<5){
+                LOL2[idx]=0.8f;
+            }else{
+                LOL2[idx]=1.2f;
+            }*/
+        //}
+    //}
+    /*std::stringstream ss;
+    ss<<"|---------------------------|\n";
+    for(int i=0;i<VDDC::RESOLUTION_XY;i++) {
+        ss<<"| ";
+        for (int j = 0; j < VDDC::RESOLUTION_XY; j++) {
+            ss<<"("<<LOL[i][j][0]<<")"<<",";
+        }
+        ss << " |\n";
+    }
+    ss<<"|---------------------------|";
+    LOGD("%s",ss.str().c_str());*/
