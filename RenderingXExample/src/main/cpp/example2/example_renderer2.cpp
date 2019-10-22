@@ -11,11 +11,6 @@ ExampleRenderer2::ExampleRenderer2(JNIEnv *env, jobject androidContext,gvr_conte
     /*jfloat *arrayP=env->GetFloatArrayElements(undistData, nullptr);
     std::memcpy(VR_DC_UndistortionData.data(),arrayP,VR_DC_UndistortionData.size()*sizeof(float));
     env->ReleaseFloatArrayElements(undistData,arrayP,0);*/
-    //0.4331, -0.0856, 1.4535
-    //VR_DC_UndistortionData.at(0)=10.0f;
-    //VR_DC_UndistortionData.at(1)=0.34f;
-    //VR_DC_UndistortionData.at(2)=0.55f;
-    //VR_DC_UndistortionData.at(2)=1.4535f;
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
 }
 
@@ -51,7 +46,6 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
     GLuint texture;
     glGenTextures(1,&texture);
     glProgramTexture=new GLProgramTextureExt(texture,false,distortionManager);
-
     glProgramTexture->loadTexture(env,context,"black_grid2_1.png");
     //create all the gl Buffer for later use
     glGenBuffers(1,&glBufferVC);
@@ -174,7 +168,7 @@ void ExampleRenderer2::drawEye(bool leftEye) {
     //transform=glm::rotate(transform,glm::radians(20.0f),glm::vec3(1.0f,0.0f,0.0f));
     transform=glm::translate(transform,glm::vec3(0.3f,0.0f,0.0f));
 
-    glProgramTexture->beforeDraw(glBufferTextured);
+    glProgramTexture->beforeDraw(glBufferTextured1);
     glProgramTexture->drawIndexed(eyeView,projection,0,N_TEXTURED_INDICES,glBufferTexturedIndices);
     glProgramTexture->afterDraw();
 

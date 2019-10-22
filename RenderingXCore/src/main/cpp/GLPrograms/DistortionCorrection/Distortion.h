@@ -138,7 +138,6 @@ public:
     const Distortion calculateInverse(const int NEW_RES)const{
         //create array with DistortedPoints, but one dimension to make searching
         /*std::vector<Link> list((RESOLUTION+1)*(RESOLUTION+1));
-
         for(int i=0;i<=RESOLUTION;i++){
             for(int j=0;j<=RESOLUTION;j++){
                 const int idx=i*RESOLUTION+j;
@@ -174,7 +173,6 @@ public:
             }
         }
     }*/
-
     void lol(float (&arr) [20][20][2])const{
         //float ret[RESOLUTION][RESOLUTION][2];
         for(int i=0;i<RESOLUTION;i++){

@@ -36,7 +36,7 @@ void GLProgramTextureExt::beforeDraw(const GLuint buffer) const{
     glEnableVertexAttribArray((GLuint)mTextureHandle);
     glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,u));
     if(distortionManager!= nullptr){
-        glUniform2fv(mLOLHandle,(GLsizei)(VDDC::ARRAY_SIZE),(GLfloat*)distortionManager->lol);
+        distortionManager->doLOL(mLOLHandle);
     }
 }
 
