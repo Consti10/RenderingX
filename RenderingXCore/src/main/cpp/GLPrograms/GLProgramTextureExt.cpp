@@ -7,7 +7,7 @@ constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
 GLProgramTextureExt::GLProgramTextureExt(const GLuint texture,const bool USE_EXTERNAL_TEXTURE,const DistortionManager* distortionManager)
         :USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE),mTexture(texture),distortionManager(distortionManager) {
-    mProgram = GLHelper::createProgram(VS(enableDist, optionalCoeficients),FS(USE_EXTERNAL_TEXTURE));
+    mProgram = GLHelper::createProgram(VS(distortionManager),FS(USE_EXTERNAL_TEXTURE));
     mMVMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
     mPMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uPMatrix");
     mLOLHandle=(GLuint)glGetUniformLocation((GLuint)mProgram,"LOL");
@@ -36,7 +36,7 @@ void GLProgramTextureExt::beforeDraw(const GLuint buffer) const{
     glEnableVertexAttribArray((GLuint)mTextureHandle);
     glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,u));
     if(distortionManager!= nullptr){
-        glUniform2fv(mLOLHandle,(GLsizei)(VDDC::ARRAY_SIZE),(GLfloat*)distortionManager.lol);
+        glUniform2fv(mLOLHandle,(GLsizei)(VDDC::ARRAY_SIZE),(GLfloat*)distortionManager->lol);
     }
 }
 

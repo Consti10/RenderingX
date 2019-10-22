@@ -22,7 +22,7 @@ static float FONTS_WIDTHS_U[CHAR_CNT];
 GLProgramText::GLProgramText(const DistortionManager* distortionManager):
     distortionManager(distortionManager)
     {
-    mProgram = GLHelper::createProgram(VS(enableDist, optionalCoeficients),FS2());
+    mProgram = GLHelper::createProgram(VS(distortionManager),FS2());
     GLHelper::checkGlError("GLProgramText() create");
     mMVMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
     GLHelper::checkGlError("GLProgramText() uniforms0");
@@ -83,7 +83,7 @@ void GLProgramText::beforeDraw(const GLuint buffer) const{
     glVertexAttribPointer((GLuint)mColorHandle,4/*r,g,b,a*/,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,color));
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndicesB);
     if(distortionManager!= nullptr){
-        glUniform2fv(mLOLHandle,(GLsizei)(VDDC::ARRAY_SIZE),(GLfloat*)distortionManager.lol);
+        glUniform2fv(mLOLHandle,(GLsizei)(VDDC::ARRAY_SIZE),(GLfloat*)distortionManager->lol);
     }
 }
 

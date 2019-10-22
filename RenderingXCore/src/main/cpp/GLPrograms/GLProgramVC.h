@@ -28,7 +28,6 @@ private:
     GLuint mProgram;
     GLuint mPositionHandle,mColorHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
-    const bool distortionCorrection;
     GLuint mLOLHandle;
      const DistortionManager* distortionManager;
 public:

@@ -41,7 +41,6 @@ private:
     using INDEX_DATA=GLushort;
     static constexpr int INDEX_BUFFER_SIZE=65535; //max size of GL unsigned short
     GLuint mGLIndicesB;
-    const bool distortionCorrection;
     struct Vertex{
         float x,y,z;
         float u,v;

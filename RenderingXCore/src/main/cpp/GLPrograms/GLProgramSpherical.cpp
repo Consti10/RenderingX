@@ -21,13 +21,13 @@
 
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
-GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture,const DistortionManager* distortionManager):
+GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture,float radius,const DistortionManager* distortionManager):
 distortionManager(distortionManager)
 {
     mTexture=videoTexture;
 
     // Create the GLSL program
-    mProgram = GLHelper::createProgram(vs_textureExt_360(enableDist,optionalCoeficients), fs_textureExt_360());
+    mProgram = GLHelper::createProgram(vs_textureExt_360(distortionManager), fs_textureExt_360());
 
     // Get the location of the uniform variables
     mMVMatrixHandle = (GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
@@ -71,7 +71,7 @@ void GLProgramSpherical::beforeDraw(GLuint glBuffVertices) {
     //glVertexAttribPointer((GLuint)mPositionHandle, POSITION_COORDS_PER_VERTEX, GL_FLOAT, GL_FALSE, VERTEX_STRIDE_BYTES,nullptr);
     //glVertexAttribPointer((GLuint)mTextureHandle,TEXTURE_COORDS_PER_VERTEX,GL_FLOAT,GL_FALSE,VERTEX_STRIDE_BYTES,(GLvoid*)(POSITION_COORDS_PER_VERTEX*sizeof(float)));
     if(distortionManager!= nullptr){
-        glUniform2fv(mLOLHandle,(GLsizei)(VDDC::ARRAY_SIZE),(GLfloat*)distortionManager.lol);
+        //glUniform2fv(mLOLHandle,(GLsizei)(VDDC::ARRAY_SIZE),(GLfloat*)distortionManager->lol);
     }
 }
 

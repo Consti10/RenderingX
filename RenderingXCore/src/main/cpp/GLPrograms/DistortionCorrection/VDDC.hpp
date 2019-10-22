@@ -30,16 +30,18 @@
 /// But since the distortion moves coordinate points 'inwarts' relative to the view space r2,
 /// we have to distort maxRadSq before
 
+constexpr int VDDC_RESOLUTION_XY=20;
+
 class DistortionManager{
 public:
     DistortionManager(gvr_context* gvrContext){
-        const Distortion mDistortion(gvr_api_.get()->GetContext(),800);
-        const Distortion inverse=mDistortion.calculateInverse(VDDC::RESOLUTION_XY);
+        const Distortion mDistortion(gvrContext,800);
+        const Distortion inverse=mDistortion.calculateInverse(VDDC_RESOLUTION_XY);
         inverse.lol(lol);
     }
 public:
     std::array<float,7> VR_DC_UndistortionData;
-    float lol[VDDC::RESOLUTION_XY][VDDC::RESOLUTION_XY][2];
+    float lol[VDDC_RESOLUTION_XY][VDDC_RESOLUTION_XY][2];
 };
 
 
@@ -110,7 +112,7 @@ public:
     }
 
     static const std::string writeLOL(const DistortionManager* distortionManager){
-        if(!vddc)return "uniform highp vec2 LOL[1];"; //dummy so we don't get compilation issues when querying handle
+        if(distortionManager== nullptr)return "uniform highp vec2 LOL[1];"; //dummy so we don't get compilation issues when querying handle
         std::stringstream s;
         s<<"uniform highp vec2 LOL["<<VDDC::ARRAY_SIZE<<"];";
         s<<"int my_clamp(in int x,in int minVal,in int maxVal){";

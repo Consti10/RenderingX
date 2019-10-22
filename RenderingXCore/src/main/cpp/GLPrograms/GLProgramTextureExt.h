@@ -21,7 +21,6 @@ private:
     GLint mPositionHandle,mTextureHandle,mSamplerHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
     const GLuint mTexture;
-    const bool distortionCorrection;
     GLuint mLOLHandle;
     const DistortionManager* distortionManager;
 public:
