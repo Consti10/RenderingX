@@ -21,7 +21,8 @@
 
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
-GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture,float radius,bool enableDist,const std::array<float,7> *optionalCoeficients)
+GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture,const DistortionManager* distortionManager):
+distortionManager(distortionManager)
 {
     mTexture=videoTexture;
 
@@ -69,6 +70,9 @@ void GLProgramSpherical::beforeDraw(GLuint glBuffVertices) {
     glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(Sphere::Vertex),(GLvoid*)offsetof(Sphere::Vertex,u) );
     //glVertexAttribPointer((GLuint)mPositionHandle, POSITION_COORDS_PER_VERTEX, GL_FLOAT, GL_FALSE, VERTEX_STRIDE_BYTES,nullptr);
     //glVertexAttribPointer((GLuint)mTextureHandle,TEXTURE_COORDS_PER_VERTEX,GL_FLOAT,GL_FALSE,VERTEX_STRIDE_BYTES,(GLvoid*)(POSITION_COORDS_PER_VERTEX*sizeof(float)));
+    if(distortionManager!= nullptr){
+        glUniform2fv(mLOLHandle,(GLsizei)(VDDC::ARRAY_SIZE),(GLfloat*)distortionManager.lol);
+    }
 }
 
 void GLProgramSpherical::draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM,int vertexCount) const{

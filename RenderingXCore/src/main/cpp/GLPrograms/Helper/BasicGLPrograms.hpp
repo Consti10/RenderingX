@@ -16,10 +16,10 @@
 
 class BasicGLPrograms{
 public:
-    explicit BasicGLPrograms(const bool enableDistortionCorrection=false,const std::array<float,7>* undistortionCoeficients= nullptr):
-        vc(enableDistortionCorrection,undistortionCoeficients),
-        text(enableDistortionCorrection,undistortionCoeficients),
-        line(enableDistortionCorrection,undistortionCoeficients)
+    explicit BasicGLPrograms(const bool enableDistortionCorrection=false,const std::array<float,7>* undistortionCoeficients= nullptr,GLfloat* lol=nullptr):
+        vc(enableDistortionCorrection,undistortionCoeficients,lol),
+        text(enableDistortionCorrection,undistortionCoeficients,lol),
+        line(enableDistortionCorrection,undistortionCoeficients,lol)
     {}
 public:
     //Once these GLPrograms are created, they don't change - only the content of the buffers they draw changes

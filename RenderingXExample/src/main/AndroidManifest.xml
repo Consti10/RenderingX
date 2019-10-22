@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,7 +17,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,15 +24,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ExampleSuperSyncA"
+        <activity
+            android:name=".supersync.ExampleSuperSyncA"
             android:screenOrientation="landscape"
-            android:theme="@style/MyStyleFullscreen"/>
-        <activity android:name=".ExampleRenderingA"
-            android:theme="@style/MyStyleNoActionBar"/>
-
+            android:theme="@style/MyStyleFullscreen" />
+        <activity
+            android:name=".renderer1.ExampleRenderingA"
+            android:theme="@style/MyStyleNoActionBar" />
         <activity android:name="constantin.renderingX.GLESInfo.AWriteGLESInfo" />
-
-    </application> <!-- DANGEROUS (needs runtime request) -->
-
+        <activity android:name=".renderer2.TestActivity"
+            android:theme="@style/MyStyleFullscreen"
+            android:screenOrientation="landscape">
+        </activity>
+    </application>
 
 </manifest>

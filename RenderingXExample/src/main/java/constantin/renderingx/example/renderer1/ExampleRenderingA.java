@@ -1,4 +1,4 @@
-package constantin.renderingx.example;
+package constantin.renderingx.example.renderer1;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,6 +11,8 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+
+import constantin.renderingx.example.R;
 
 public class ExampleRenderingA extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
     private GLSurfaceView gLView;

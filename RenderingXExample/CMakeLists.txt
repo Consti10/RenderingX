@@ -23,11 +23,11 @@ add_library( SuperSync SHARED
 target_link_libraries( SuperSync ${log-lib} android Time log EGL GLESv2)
 
 #gvr is a shared,imported library
-#set(GVR_DIR libs/google/gvr)
-#include_directories(${GVR_DIR}/headers)
-#add_library( gvr-lib SHARED IMPORTED )
-#set_target_properties(gvr-lib PROPERTIES IMPORTED_LOCATION
-#        ${GVR_DIR}/jni/${ANDROID_ABI}/libgvr.so )
+set(GVR_DIR ${RX_CORE_DIR}/libs/google/gvr)
+include_directories(${GVR_DIR}/headers)
+add_library( gvr-lib SHARED IMPORTED )
+set_target_properties(gvr-lib PROPERTIES IMPORTED_LOCATION
+        ${GVR_DIR}/jni/${ANDROID_ABI}/libgvr.so )
 
 ##########################################################################################################
 #GLPrograms
@@ -42,14 +42,14 @@ add_library( GLPrograms SHARED
         ${RX_CORE_DIR}/src/main/cpp/Sphere/GvrSphere.cpp
         ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramSpherical.cpp
         )
-target_link_libraries( GLPrograms ${log-lib} android GLESv2)
+target_link_libraries( GLPrograms ${log-lib} android GLESv2 gvr-lib)
 
 ##########################################################################################################
 #Example Renderer
 ##########################################################################################################
 add_library( example-renderer
         SHARED
-        src/main/cpp/example_renderer.cpp
+        src/main/cpp/example1/example_renderer1.cpp
         src/main/cpp/example_supersync.cpp
         src/main/cpp/dummy.cpp
         )
@@ -65,3 +65,18 @@ target_link_libraries( example-renderer
         #gvr-lib
         )
 
+add_library( example-renderer2
+        SHARED
+        src/main/cpp/example2/example_renderer2.cpp
+        )
+target_link_libraries( example-renderer2
+        GLPrograms
+        Time
+        ${log-lib}
+        android
+        log
+        EGL
+        GLESv2
+        SuperSync
+        gvr-lib
+        )

@@ -1,9 +1,13 @@
-package constantin.renderingx.example;
+package constantin.renderingx.example.supersync;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
 import android.view.Surface;
+
+import com.google.vr.ndk.base.BufferViewport;
+import com.google.vr.ndk.base.GvrApi;
+import com.google.vr.sdk.base.Eye;
 
 import constantin.renderingX.GLESInfo.GLESInfo;
 import constantin.renderingX.ViewSuperSync;
@@ -24,7 +28,7 @@ public class GLRSuperSyncExample implements ViewSuperSync.IRendererSuperSync {
     // Opaque native pointer to the native GLRStereoSuperSync instance.
     private final long nativeGLRSuperSync;
 
-    public GLRSuperSyncExample(final Context context, long gvrApiNativeContext){
+    public GLRSuperSyncExample(final Context context, GvrApi gvrApi){
         mContext=context;
         final boolean qcomTiledRenderingAvailable= GLESInfo.isExtensionAvailable(context, GLESInfo.GL_QCOM_tiled_rendering);
         final boolean reusableSyncAvailable=GLESInfo.isExtensionAvailable(context,GLESInfo.EGL_KHR_reusable_sync);

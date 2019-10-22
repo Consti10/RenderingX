@@ -29,10 +29,13 @@ public class NDKHelper {
      * 3) optional: unbind the texture -> the image is now in GPU memory
      * @param androidContext a valid Android context
      * @param imageFilename a valid name of an assets file
+     * @param extractAlpha the signed distance fields only use alpha chanel
      */
-    private static void uploadAssetImageToGPU(Context androidContext,String imageFilename){
+    private static void uploadAssetImageToGPU(Context androidContext,String imageFilename,boolean extractAlpha){
         Bitmap bmp=getBitmapFromAssets(androidContext,imageFilename);
-        bmp=bmp.extractAlpha();
+        if(extractAlpha){
+            bmp=bmp.extractAlpha();
+        }
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0,bmp, 0);
         bmp.recycle();
     }

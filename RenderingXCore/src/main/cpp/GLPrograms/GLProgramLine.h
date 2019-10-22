@@ -21,7 +21,8 @@ private:
     GLuint mPositionHandle,mNormalHandle,mLineWidthHandle,mBaseColorHandle,mOutlineColorHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
     GLuint uEdge,uBorderEdge,uOutlineStrength;
-    const bool distortionCorrection;
+    GLuint mLOLHandle;
+    const DistortionManager* distortionManager;
 public:
     struct Vertex{
         float x,y,z;
@@ -31,7 +32,7 @@ public:
         TrueColor outlineColor;
     };
     static constexpr int VERTICES_PER_LINE=6;
-    explicit GLProgramLine(bool enableDist=false,const std::array<float,7> *optionalCoeficients= nullptr);
+    explicit GLProgramLine(const DistortionManager* distortionManager=nullptr);
     void beforeDraw(GLuint buffer) const;
     void setOtherUniforms(float outlineWidth=0.4f,float edge=0.1f,float borderEdge=0.1f)const;
     void draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, int verticesOffset, int numberVertices) const;
@@ -40,8 +41,7 @@ public:
     static void convertLineToRenderingData(const glm::vec3& start,const glm::vec3& end,float lineWidth,
             Vertex array[],int arrayOffset,TrueColor baseColor=Color::BLACK,TrueColor  outlineColor=Color::WHITE);
 private:
-    static const std::string VS(const bool eVDDC,
-                                const std::array<float, VDDC::N_UNDISTORTION_COEFICIENTS> *optionalCoeficients){
+    static const std::string VS(const DistortionManager* distortionManager1){
         std::stringstream s;
         s<<"uniform mat4 uMVMatrix;\n";
         s<<"uniform mat4 uPMatrix;\n";
@@ -53,13 +53,11 @@ private:
         s<<"varying vec3 vNormal;";
         s<<"varying vec4 vBaseColor;";
         s<<"varying vec4 vOutlineColor;";
-        if(eVDDC){
-            s<<VDDC::undistortCoeficientsToString(*optionalCoeficients);
-        }
+        s<<VDDC::writeLOL(distortionManager1);
         s<<"vec4 extruded_pos;";
         s<<"void main(){\n";
         s<<"extruded_pos=aPosition+vec4(aNormal*aLineWidth,0.0);\n";
-        s<<VDDC::writeGLPosition(eVDDC,"extruded_pos");
+        s<<VDDC::writeGLPosition(distortionManager1,"extruded_pos");
         //s<<"gl_Position = (uPMatrix*uMVMatrix)* extruded_pos;\n";
         s<<"vNormal=aNormal;";
         s<<"vBaseColor=aBaseColor;";

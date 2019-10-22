@@ -52,6 +52,7 @@ public class GLESInfo {
 
     //write values when either a) the library was updated or b) the os (android) was updated
     static boolean shouldWriteValues(final Context c){
+        //return true;
         final SharedPreferences pref = c.getSharedPreferences(PREFERENCES_TAG, MODE_PRIVATE);
         return pref.getInt(SAVED_VERSION_CODE, 0) != BuildConfig.VERSION_CODE ||
                 pref.getInt(SAVED_BUILD_VERSION, 0) != android.os.Build.VERSION.SDK_INT;
@@ -72,10 +73,10 @@ public class GLESInfo {
     //call this from a thread with valid GLES20 context
     static void writeResultsWithGLESContextBound(final Context c){
         String eglExtensions = EGL14.eglQueryString(EGL14.eglGetCurrentDisplay(), EGL14.EGL_EXTENSIONS);
-        //System.out.println(eglExtensions);
+        System.out.println(eglExtensions);
         isEGL_KHR_reusable_syncAvailable(eglExtensions);
         String gles20Extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS);
-        //System.out.println(gles20Extensions);
+        System.out.println(gles20Extensions);
         //
         float[] lineWidthRange= {0.0f, 0.0f};
         GLES20.glGetFloatv(GLES20.GL_LINE_WIDTH, lineWidthRange,0);
@@ -83,6 +84,10 @@ public class GLESInfo {
         GLES20.glGetFloatv(GLES20.GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange,0);
         //System.out.println("Aliased: "+lineWidthRange[0]+lineWidthRange[1]);
         final int MAX_LINE_WIDTH=(int)lineWidthRange[1];
+        //
+        int[] GL_MAX_VERTEX_UNIFORM_VECTORS=new int[1];
+        GLES20.glGetIntegerv(GLES20.GL_MAX_VERTEX_UNIFORM_VECTORS,GL_MAX_VERTEX_UNIFORM_VECTORS,0);
+        System.out.println("GL_MAX_VERTEX_UNIFORM_VECTORS"+GL_MAX_VERTEX_UNIFORM_VECTORS[0]);
         //
         SharedPreferences pref = c.getSharedPreferences(PREFERENCES_TAG, MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();

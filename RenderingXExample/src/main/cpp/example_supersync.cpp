@@ -126,7 +126,7 @@ void GLRSuperSyncExample::drawEye(JNIEnv *env, bool whichEye) {
 
 #define JNI_METHOD(return_type, method_name) \
   JNIEXPORT return_type JNICALL              \
-      Java_constantin_renderingx_example_GLRSuperSyncExample_##method_name
+      Java_constantin_renderingx_example_supersync_GLRSuperSyncExample_##method_name
 
 inline jlong jptr(GLRSuperSyncExample *glRendererStereo) {
     return reinterpret_cast<intptr_t>(glRendererStereo);

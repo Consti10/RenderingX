@@ -177,7 +177,7 @@ static void onDrawFrame(int mode){
 
 #define JNI_METHOD(return_type, method_name) \
   JNIEXPORT return_type JNICALL              \
-      Java_constantin_renderingx_example_GLRExample_##method_name
+      Java_constantin_renderingx_example_renderer1_GLRExample_##method_name
 
 
 extern "C" {

@@ -16,6 +16,11 @@
 #include "Color/Color.hpp"
 #include <DistortionCorrection/VDDC.hpp>
 
+#include "vr/gvr/capi/include/gvr.h"
+#include "vr/gvr/capi/include/gvr_types.h"
+
+//#define WIREFRAME
+
 using Mat4x4=const GLfloat*;
 
 class GLProgramVC {
@@ -24,33 +29,33 @@ private:
     GLuint mPositionHandle,mColorHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
     const bool distortionCorrection;
+    GLuint mLOLHandle;
+     const DistortionManager* distortionManager;
 public:
     struct Vertex{
         float x,y,z;
         TrueColor colorRGBA;
     };
-    explicit GLProgramVC(bool enableDist=false,const std::array<float,7> *optionalCoeficients= nullptr);
+    using INDEX_DATA=GLushort;
+    explicit GLProgramVC(const DistortionManager* distortionManager=nullptr);
     void beforeDraw(GLuint buffer) const;
-    void draw(Mat4x4 ViewM, Mat4x4 ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
+    void draw(Mat4x4 ViewM, Mat4x4 ProjM, int indicesOffset,int numberIndices, GLenum mode) const;
+    void drawIndexed(GLuint indexBuffer,Mat4x4 ViewM, Mat4x4 ProjM,int indicesOffset,int numberIndices, GLenum mode) const;
     void afterDraw() const;
 private:
-    static const std::string VS(const bool eVDDC,
-                                const std::array<float, VDDC::N_UNDISTORTION_COEFICIENTS> *optionalCoeficients){
+    static const std::string VS(const DistortionManager* distortionManager1){
         std::stringstream s;
         s<<"uniform mat4 uMVMatrix;\n";
         s<<"uniform mat4 uPMatrix;\n";
         s<<"attribute vec4 aPosition;\n";
         s<<"attribute vec4 aColor;\n";
         s<<"varying vec4 vColor;\n";
-        if(eVDDC){
-            s<<VDDC::undistortCoeficientsToString(*optionalCoeficients);
-        }
+        s<<VDDC::writeLOL(distortionManager1);
         s<<"void main(){\n";
-        s<< VDDC::writeGLPosition(eVDDC);
+        s<< VDDC::writeGLPosition(distortionManager1);
+        //s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition";
         s<<"vColor = aColor;\n";
-#ifdef WIREFRAME
         s<<"gl_PointSize=15.0;";
-#endif
         s<<"}\n";
         return s.str();
     }

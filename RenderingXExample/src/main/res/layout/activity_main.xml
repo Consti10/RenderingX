@@ -22,5 +22,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="SuperSync example" />
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Test" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

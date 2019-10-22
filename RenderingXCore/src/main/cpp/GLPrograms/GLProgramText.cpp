@@ -1,6 +1,7 @@
 #include "GLProgramText.h"
 #include "TextAssetsHelper.hpp"
 #include "Color/Color.hpp"
+#include "Helper/NDKHelper.h"
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #include <vector>
@@ -18,8 +19,8 @@ static float FONTS_WIDTHS_U[CHAR_CNT];
 
 //#define WIREFRAME
 
-GLProgramText::GLProgramText(const bool enableDist,const std::array<float,7> *optionalCoeficients):
-    distortionCorrection(enableDist)
+GLProgramText::GLProgramText(const DistortionManager* distortionManager):
+    distortionManager(distortionManager)
     {
     mProgram = GLHelper::createProgram(VS(enableDist, optionalCoeficients),FS2());
     GLHelper::checkGlError("GLProgramText() create");
@@ -36,6 +37,7 @@ GLProgramText::GLProgramText(const bool enableDist,const std::array<float,7> *op
     mOutlineStrengthHandle=(GLuint)glGetUniformLocation(mProgram,"uOutlineStrength");
     uEdge=(GLuint)glGetUniformLocation(mProgram,"uEdge");
     uBorderEdge=(GLuint)glGetUniformLocation(mProgram,"uBorderEdge");
+    mLOLHandle=(GLuint)glGetUniformLocation((GLuint)mProgram,"LOL");
     GLHelper::checkGlError("GLProgramText() uniforms3");
 #ifdef WIREFRAME
     mOverrideColorHandle=(GLuint)glGetUniformLocation(mProgram,"uOverrideColor");
@@ -59,7 +61,7 @@ GLProgramText::GLProgramText(const bool enableDist,const std::array<float,7> *op
                  indices, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     //
-    glGenTextures(1, mTexture);
+    glGenTextures(1, &mTexture);
     glUseProgram(mProgram);
     updateOutline();
     setOtherUniforms();
@@ -70,7 +72,7 @@ GLProgramText::GLProgramText(const bool enableDist,const std::array<float,7> *op
 void GLProgramText::beforeDraw(const GLuint buffer) const{
     glUseProgram((GLuint)mProgram);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D,mTexture[0]);
+    glBindTexture(GL_TEXTURE_2D,mTexture);
     glUniform1i(mSamplerHandle,0);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glEnableVertexAttribArray((GLuint)mPositionHandle);
@@ -80,6 +82,9 @@ void GLProgramText::beforeDraw(const GLuint buffer) const{
     glEnableVertexAttribArray((GLuint)mColorHandle);
     glVertexAttribPointer((GLuint)mColorHandle,4/*r,g,b,a*/,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,color));
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndicesB);
+    if(distortionManager!= nullptr){
+        glUniform2fv(mLOLHandle,(GLsizei)(VDDC::ARRAY_SIZE),(GLfloat*)distortionManager.lol);
+    }
 }
 
 void GLProgramText::setOtherUniforms(float edge, float borderEdge)const {
@@ -191,28 +196,14 @@ float GLProgramText::getStringLength(const std::wstring s, const float charHeigh
 void  GLProgramText::loadTextRenderingData(JNIEnv *env, jobject androidContext,
                                            const TextAssetsHelper::TEXT_STYLE& textStyle)const {
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D,mTexture[0]);
+    glBindTexture(GL_TEXTURE_2D,mTexture);
     int maxTextureSize;
     glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maxTextureSize);
 
-    std::string className="constantin/renderingX/NDKHelper";
-    jclass NDKHelper_ = env->FindClass(className.c_str());
     //upload the right signed distance field texture atlas into gpu memory
-    jstring filenameDistanceField_=env->NewStringUTF(
-            TextAssetsHelper::getDistanceFieldNameByStyle(textStyle).c_str());
-    jmethodID uploadAssetImageToGPU_=env->GetStaticMethodID(
-            NDKHelper_,"uploadAssetImageToGPU", "(Landroid/content/Context;Ljava/lang/String;)V");
-    env->CallStaticVoidMethod(NDKHelper_, uploadAssetImageToGPU_,androidContext,filenameDistanceField_);
-    //load the text widths into cpu memory
-    jfloatArray aFontWidthsU=env->NewFloatArray(CHAR_CNT);
-    jstring filenameFontWidthsU_=env->NewStringUTF(
-            TextAssetsHelper::getOtherDataNameByStyle(textStyle).c_str());
-    jmethodID getFloatArrayFromAssets_=env->GetStaticMethodID(
-            NDKHelper_,"getFloatArrayFromAssets", "(Landroid/content/Context;Ljava/lang/String;[F)V");
-    env->CallStaticVoidMethod(NDKHelper_,getFloatArrayFromAssets_,androidContext,filenameFontWidthsU_,aFontWidthsU);
-    jfloat *arrayP=env->GetFloatArrayElements(aFontWidthsU,nullptr);
-    memcpy(FONTS_WIDTHS_U,arrayP,(size_t)CHAR_CNT*sizeof(float));
-    env->ReleaseFloatArrayElements(aFontWidthsU,arrayP,0);
+    NDKHelper::uploadAssetImageToGPU(env,androidContext,TextAssetsHelper::getDistanceFieldNameByStyle(textStyle).c_str(),true);
+    //load the text widths into cpu memory, as a float array
+    NDKHelper::getFloatArrayFromAssets(env,androidContext,TextAssetsHelper::getOtherDataNameByStyle(textStyle).c_str(),FONTS_WIDTHS_U,CHAR_CNT);
 
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);

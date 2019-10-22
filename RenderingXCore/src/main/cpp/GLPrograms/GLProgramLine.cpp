@@ -4,8 +4,9 @@
 
 #include "GLProgramLine.h"
 
-GLProgramLine::GLProgramLine(bool enableDist, const std::array<float, 7> *optionalCoeficients):distortionCorrection(enableDist) {
-    mProgram = GLHelper::createProgram(VS(enableDist, optionalCoeficients),FS());
+GLProgramLine::GLProgramLine(const DistortionManager* distortionManager):
+distortionManager(distortionManager) {
+    mProgram = GLHelper::createProgram(VS(distortionManager),FS());
     mMVMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
     mPMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uPMatrix");
     mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
@@ -19,6 +20,7 @@ GLProgramLine::GLProgramLine(bool enableDist, const std::array<float, 7> *option
     glUseProgram(mProgram);
     setOtherUniforms();
     glUseProgram(0);
+    mLOLHandle=(GLuint)glGetUniformLocation((GLuint)mProgram,"LOL");
     GLHelper::checkGlError("glGetAttribLocation GLProgramLine");
 }
 
@@ -35,6 +37,10 @@ void GLProgramLine::beforeDraw(GLuint buffer) const {
     glVertexAttribPointer(mBaseColorHandle,4,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,baseColor));
     glEnableVertexAttribArray(mOutlineColorHandle);
     glVertexAttribPointer(mOutlineColorHandle,4,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,outlineColor));
+
+    if(distortionManager!= nullptr){
+        glUniform2fv(mLOLHandle,(GLsizei)(VDDC::ARRAY_SIZE),(GLfloat*)distortionManager.lol);
+    }
 }
 
 void GLProgramLine::setOtherUniforms(float outlineWidth,float edge, float borderEdge) const {

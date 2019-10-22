@@ -10,6 +10,9 @@ import android.widget.Toast;
 
 import constantin.renderingX.GLESInfo.AWriteGLESInfo;
 import constantin.renderingX.GLESInfo.GLESInfo;
+import constantin.renderingx.example.renderer1.ExampleRenderingA;
+import constantin.renderingx.example.renderer2.TestActivity;
+import constantin.renderingx.example.supersync.ExampleSuperSyncA;
 
 public class MainActivity extends AppCompatActivity {
     Context context;
@@ -36,6 +39,13 @@ public class MainActivity extends AppCompatActivity {
                 }else{
                     Toast.makeText(context,"SuperSync is not supported on this phone",Toast.LENGTH_LONG).show();
                 }
+            }
+        });
+
+        findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent().setClass(context, TestActivity.class));
             }
         });
     }

@@ -40,24 +40,23 @@ private:
     GLuint mMVMatrixHandle,mPMatrixHandle;
     //GLuint mNormalHandle;
     GLuint mTexture;
+     const DistortionManager* distortionManager;
 public:
-    GLProgramSpherical(const GLuint videoTexture,float radius=1.0f,bool enableDist=false,const std::array<float,7> *optionalCoeficients= nullptr);
+    GLProgramSpherical(const GLuint videoTexture,float radius=1.0f,const DistortionManager* distortionManager=nullptr);
     void beforeDraw(GLuint glBuffVertices);
     void draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM,int vertexCount) const;
     void afterDraw()const;
 private:
-    static const std::string vs_textureExt_360(const bool eVDDC,const std::array<float, VDDC::N_UNDISTORTION_COEFICIENTS> *optionalCoeficients){
+    static const std::string vs_textureExt_360(const DistortionManager* distortionManager1){
         std::stringstream ss;
         ss<<"uniform mat4 uMVMatrix;\n";
         ss<<"uniform mat4 uPMatrix;\n";
         ss<<"attribute vec4 aPosition;\n";
         ss<<"attribute vec2 aTexCoord;\n";
         ss<<"varying vec2 vTexCoord;\n";
-        if(eVDDC){
-            ss<<VDDC::undistortCoeficientsToString(*optionalCoeficients);
-        }
+        ss<<VDDC::writeLOL(distortionManager1);
         ss<<"void main() {\n";
-        ss<<VDDC::writeGLPosition(eVDDC); //gl_Position = (uPMatrix * uMVMatrix) * aPosition;
+        ss<<VDDC::writeGLPosition(distortionManager1); //gl_Position = (uPMatrix * uMVMatrix) * aPosition;
         ss<<"  vTexCoord = aTexCoord;\n";
         ss<<"}\n";
         return ss.str();

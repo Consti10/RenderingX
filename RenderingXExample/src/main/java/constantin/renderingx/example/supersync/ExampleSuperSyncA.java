@@ -1,4 +1,4 @@
-package constantin.renderingx.example;
+package constantin.renderingx.example.supersync;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,7 +15,7 @@ public class ExampleSuperSyncA extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewSuperSync=new ViewSuperSync(this);
-        mGLRStereoSuperSync = new GLRSuperSyncExample(this,mViewSuperSync.getGvrApi().getNativeGvrContext());
+        mGLRStereoSuperSync = new GLRSuperSyncExample(this,mViewSuperSync.getGvrApi());
         mViewSuperSync.setRenderer(mGLRStereoSuperSync);
         setContentView(mViewSuperSync);
     }

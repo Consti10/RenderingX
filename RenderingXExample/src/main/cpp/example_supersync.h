@@ -5,18 +5,18 @@
 #ifndef RENDERINGX_EXAMPLE_SUPERSYNC_H
 #define RENDERINGX_EXAMPLE_SUPERSYNC_H
 
-#include "jni.h"
-#include <GLES2/gl2.h>
-#include <vector>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <GLProgramTextureExt.h>
-#include <EGL/egl.h>
-#include <cinttypes>
-#include "Extensions.hpp"
-#include <sys/resource.h>
-#include <FBRManager.h>
-#include <VRFrameCPUChronometer.h>
+#include "../../../../../../../AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/jni.h"
+#include "../../../../../../../AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/GLES2/gl2.h"
+#include "../../../../../../../AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/c++/v1/vector"
+#include "../../../../RenderingXCore/libs/glm/glm/glm.hpp"
+#include "../../../../RenderingXCore/libs/glm/glm/gtc/matrix_transform.hpp"
+#include "../../../../RenderingXCore/src/main/cpp/GLPrograms/GLProgramTextureExt.h"
+#include "../../../../../../../AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/EGL/egl.h"
+#include "../../../../../../../AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/c++/v1/cinttypes"
+#include "../../../../RenderingXCore/src/main/cpp/SuperSync/Extensions.hpp"
+#include "../../../../../../../AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/sys/resource.h"
+#include "../../../../RenderingXCore/src/main/cpp/SuperSync/FBRManager.h"
+#include "../../../../RenderingXCore/src/main/cpp/Time/VRFrameCPUChronometer.h"
 
 //in contrast to example_renderer, here we are using an object-oriented native binding approach - the lifecycle of the cpp object  is tied to the lifecycle of the same named java object
 //See implementation for more details on SuperSnyc

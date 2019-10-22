@@ -37,9 +37,9 @@ private:
     GLuint mOutlineColorHandle,mOutlineStrengthHandle;
     GLuint mOverrideColorHandle;
     GLuint uEdge,uBorderEdge;
-    GLuint mTexture[1];
-    static constexpr int INDEX_BUFFER_SIZE=65535; //max size of GL unsigned short
+    GLuint mTexture;
     using INDEX_DATA=GLushort;
+    static constexpr int INDEX_BUFFER_SIZE=65535; //max size of GL unsigned short
     GLuint mGLIndicesB;
     const bool distortionCorrection;
     struct Vertex{
@@ -47,6 +47,8 @@ private:
         float u,v;
         TrueColor color;
     };
+    GLuint mLOLHandle;
+     const DistortionManager* distortionManager;
 public:
     //Characters are indexed squares
     struct Character{
@@ -58,7 +60,7 @@ public:
     static constexpr const int VERTICES_PER_CHARACTER=4; //2 quads
     static constexpr const int INDICES_PER_CHARACTER=6;
 public:
-    explicit GLProgramText(bool enableDist=false,const std::array<float,7> *optionalCoeficients= nullptr);
+    explicit GLProgramText(const DistortionManager* distortionManager=nullptr);
     void loadTextRenderingData(JNIEnv *env, jobject androidContext,const TextAssetsHelper::TEXT_STYLE& textStyle)const;
     void beforeDraw(GLuint buffer) const;
     //Outline with: 0==no outline, 0.2==default outline size
@@ -81,8 +83,7 @@ public:
     static constexpr const wchar_t ICON_SPACING=(wchar_t)ICONS_OFFSET+6;
     static constexpr const wchar_t ICON_ARTIFICIAL_HORIZON=(wchar_t)ICONS_OFFSET+7;
 private:
-    static const std::string VS(const bool eVDDC,
-                                const std::array<float, VDDC::N_UNDISTORTION_COEFICIENTS> *optionalCoeficients){
+    static const std::string VS(const DistortionManager* distortionManager1){
         std::stringstream s;
         s<<"uniform mat4 uMVMatrix;\n";
         s<<"uniform mat4 uPMatrix;\n";
@@ -91,11 +92,9 @@ private:
         s<<"varying vec2 vTexCoord;\n";
         s<<"attribute vec4 aVertexColor;\n";
         s<<"varying vec4 vVertexColor;\n";
-        if(eVDDC){
-            s<<VDDC::undistortCoeficientsToString(*optionalCoeficients);
-        }
+        s<<VDDC::writeLOL(distortionManager1);
         s<<"void main() {\n";
-        s<< VDDC::writeGLPosition(eVDDC);
+        s<< VDDC::writeGLPosition(distortionManager1);
         s<<"  vTexCoord = aTexCoord;\n";
         s<<"  vVertexColor = aVertexColor;\n";
 #ifdef WIREFRAME

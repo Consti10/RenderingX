@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import constantin.renderingX.GLESInfo.AWriteGLESInfo;
+import constantin.renderingx.example.renderer1.ExampleRenderingA;
 
 //Launch Main Activity
 //Launch the writeGLESInfo Activity manually

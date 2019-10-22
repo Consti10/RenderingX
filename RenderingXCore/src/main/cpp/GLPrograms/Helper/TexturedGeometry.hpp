@@ -62,7 +62,6 @@ public:
         makeTexturedTriangle(array, arrayOffset + 4, p4, p5, p6, uv4, uv5, uv6);
     }
 
-
     static const void makeTesselatedVideoCanvas(GLProgramTextureExt::Vertex *vertices,
                                                 GLushort *indices,const  glm::vec3& point,const float width,
                                                 const float height,const int tesselation, const float uOffset,
