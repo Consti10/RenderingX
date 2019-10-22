@@ -97,7 +97,6 @@ private:
                  "        }\n"
                  "        return vec2(s,t);"
                  "    }";
-
         ss<<"void main() {\n";
         ss<<"vec2 newTexCoord=map_equirectangular(vTexCoord.x,vTexCoord.y);";
         //ss<<"vec2 newTexCoord=vTexCoord;";

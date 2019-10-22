@@ -41,12 +41,10 @@ static std::vector<GLProgramVC::Vertex> distortVertices(const gvr_context *gvr_c
 
 void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
 //Instantiate all our OpenGL rendering 'Programs'
-    glProgramVC=new GLProgramVC();
-
     distortionManager=new DistortionManager(gvr_api_->GetContext());
 
+    glProgramVC=new GLProgramVC();
     glProgramVC2=new GLProgramVC(distortionManager);
-
     glProgramLine=new GLProgramLine();
     glProgramText=new GLProgramText();
     glProgramText->loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
@@ -176,7 +174,7 @@ void ExampleRenderer2::drawEye(bool leftEye) {
     //transform=glm::rotate(transform,glm::radians(20.0f),glm::vec3(1.0f,0.0f,0.0f));
     transform=glm::translate(transform,glm::vec3(0.3f,0.0f,0.0f));
 
-    glProgramTexture->beforeDraw(glBufferTextured1);
+    glProgramTexture->beforeDraw(glBufferTextured);
     glProgramTexture->drawIndexed(eyeView,projection,0,N_TEXTURED_INDICES,glBufferTexturedIndices);
     glProgramTexture->afterDraw();
 

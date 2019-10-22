@@ -47,7 +47,7 @@ private:
         TrueColor color;
     };
     GLuint mLOLHandle;
-     const DistortionManager* distortionManager;
+    const DistortionManager* distortionManager;
 public:
     //Characters are indexed squares
     struct Character{

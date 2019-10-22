@@ -80,7 +80,6 @@ private:
 
         s<<"void main(){\n";
         s<<"float distanceInv=abs(length(vNormal));";
-
         /*s<<"vec4 color;";
         s<<"if(distance<0.5){";
         s<<"color=vec4(1.0,1.0,1.0,1.0);";
@@ -88,7 +87,6 @@ private:
         s<<"color=vec4(0.0,0.0,0.0,1.0);";
         s<<"}";
         s<<"gl_FragColor=color;";*/
-
         s<<"float alpha = 1.0- smoothstep(width,width+uEdge,distanceInv);";
         s<<"float outlineAlpha = 1.0 - smoothstep(width+uOutlineStrength,width+uOutlineStrength+uBorderEdge,distanceInv);";
         s<<"float overallAlpha= alpha + (1.0 - alpha) * outlineAlpha ;";

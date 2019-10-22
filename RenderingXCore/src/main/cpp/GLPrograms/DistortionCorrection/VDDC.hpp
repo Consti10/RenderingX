@@ -72,18 +72,16 @@ public:
     static constexpr int ARRAY_SIZE=RESOLUTION_XY*RESOLUTION_XY;
     static const std::string writeGLPositionWithVDDC(const std::string& positionAttribute){
         std::stringstream s;
-        s<<"vec4  pos=(uPMatrix*uMVMatrix)*"+positionAttribute+";\n";
-        //s<<"  pos=uMVMatrix * "+positionAttribute+";\n";
-        //s<<"  pos=vec4("+positionAttribute+".xy*2.0, 0, 1);";
-        /*s<<"  r2=dot(pos.xy,pos.xy)/(pos.z*pos.z);\n";
-        s<<" r2=clamp(r2,0.0,_MaxRadSq);";
-        s<<"  ret = 0.0;\n";
-        s<<"  ret = r2 * (ret + _Undistortion2.y);\n";
-        s<<"  ret = r2 * (ret + _Undistortion2.x);\n";
-        s<<"  ret = r2 * (ret + _Undistortion.w);\n";
-        s<<"  ret = r2 * (ret + _Undistortion.z);\n";
-        s<<"  ret = r2 * (ret + _Undistortion.y);\n";
-        s<<"  ret = r2 * (ret + _Undistortion.x);\n";*/
+        s<<"vec4 pos=uMVMatrix * "+positionAttribute+";\n";
+        s<<"float  r2=dot(pos.xy,pos.xy)/(pos.z*pos.z);\n";
+        s<<"r2=clamp(r2,0.0,_MaxRadSq);\n";
+        s<<"float ret = 0.0;\n";
+        s<<"ret = r2 * (ret + _Undistortion2.y);\n";
+        s<<"ret = r2 * (ret + _Undistortion2.x);\n";
+        s<<"ret = r2 * (ret + _Undistortion.w);\n";
+        s<<"ret = r2 * (ret + _Undistortion.z);\n";
+        s<<"ret = r2 * (ret + _Undistortion.y);\n";
+        s<<"ret = r2 * (ret + _Undistortion.x);\n";
         //--
         //s<<"if(ret < -1.0){";
         //s<<" ret=-1.0;";
@@ -96,7 +94,11 @@ public:
         //s<<" ret=0.0;\n";
         //s<<" };";
         //--
-        //s<<"  pos.xy*=1.0+ret;\n";
+        s<<"pos.xy*=1.0+ret;\n";
+        s<<"gl_Position=pos;\n";
+
+        //s<<"  pos=vec4("+positionAttribute+".xy*2.0, 0, 1);";
+        /*s<<"vec4  pos=(uPMatrix*uMVMatrix)*"+positionAttribute+";\n";
         s<<"vec2 ndc=pos.xy/pos.w;";///(-pos.z);";
         s<<"int idx1=my_round(ndc.x*10.0)+"<<RESOLUTION_XY/2<<";";
         s<<"int idx2=my_round(ndc.y*10.0)+"<<RESOLUTION_XY/2<<";";
@@ -106,14 +108,14 @@ public:
         s<<"int idx=idx1*"<<RESOLUTION_XY<<"+idx2;";
         s<<"pos.x+=LOL[idx].x;";
         s<<"pos.y+=LOL[idx].y;";
-        s<<"gl_Position=pos;\n";
-        //s<<"  gl_Position=pos;\n";
+        s<<"gl_Position=pos;\n";*/
+
         return s.str();
     }
 
     static const std::string writeLOL(const DistortionManager* distortionManager){
         if(distortionManager== nullptr)return "uniform highp vec2 LOL[1];"; //dummy so we don't get compilation issues when querying handle
-        std::stringstream s;
+        /*std::stringstream s;
         s<<"uniform highp vec2 LOL["<<VDDC::ARRAY_SIZE<<"];";
         s<<"int my_clamp(in int x,in int minVal,in int maxVal){";
         s<<"if(x<minVal){return minVal;}";
@@ -122,7 +124,15 @@ public:
         s<<"int my_round(in float x){";
         s<<"float afterCome=x-float(int(x));";
         s<<"if(afterCome>=0.5){return int(x+0.5);}";
-        s<<"return int(x);}";
+        s<<"return int(x);}";*/
+        const auto coeficients=distortionManager->VR_DC_UndistortionData;
+        std::stringstream s;
+        s<<"uniform highp vec2 LOL[1];";
+        s<<"const float _MaxRadSq="<<coeficients[0];s<<";\n";
+        //There is no vec6 data type. Therefore, we use 1 vec4 and 1 vec2. Vec4 holds k1,k2,k3,k4 and vec6 holds k5,k6
+        s<<"const vec4 _Undistortion=vec4("<<coeficients[1]<<","<<coeficients[2]<<","<<coeficients[3]<<","<<coeficients[4]<<");\n";
+        s<<"const vec2 _Undistortion2=vec2("<<coeficients[5]<<","<<coeficients[6]<<");\n";
+        LOGD("%s",s.str().c_str());
         return s.str();
     }
 
