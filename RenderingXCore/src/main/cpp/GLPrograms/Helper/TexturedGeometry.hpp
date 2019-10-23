@@ -6,11 +6,11 @@
 #define FPV_VR_GLPROGRAMS_HELPER_GEOMETRYHELPER1_H
 
 
-#include "GLProgramTextureExt.h"
+#include "GLProgramTexture.h"
 
 class TexturedGeometry {
 public:
-    static const void makeTexturedTriangle(GLProgramTextureExt::Vertex *array,const int arrayOffset,
+    static const void makeTexturedTriangle(GLProgramTexture::Vertex *array,const int arrayOffset,
                                            const glm::vec3& point1,const glm::vec3& point2,const glm::vec3& point3,
                                            const glm::vec2& uv1,const glm::vec2& uv2,const glm::vec2& uv3) {
         auto* p=&array[arrayOffset];
@@ -34,7 +34,7 @@ public:
     }
 
 
-    static const void makeTexturedRect(GLProgramTextureExt::Vertex array[],const int arrayOffset,const glm::vec3& point,const glm::vec3& width,const glm::vec3& height,
+    static const void makeTexturedRect(GLProgramTexture::Vertex array[],const int arrayOffset,const glm::vec3& point,const glm::vec3& width,const glm::vec3& height,
                                        const float u,const float v,const float uRange,const float vRange){
         //|--------------------------------|h
         //|                                |e
@@ -62,7 +62,7 @@ public:
         makeTexturedTriangle(array, arrayOffset + 4, p4, p5, p6, uv4, uv5, uv6);
     }
 
-    static const void makeTesselatedVideoCanvas(GLProgramTextureExt::Vertex *vertices,
+    static const void makeTesselatedVideoCanvas(GLProgramTexture::Vertex *vertices,
                                                 GLushort *indices,const  glm::vec3& point,const float width,
                                                 const float height,const int tesselation, const float uOffset,
                                                 const float uRange){

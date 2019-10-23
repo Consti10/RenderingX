@@ -16,7 +16,7 @@
 #include <glm/gtx/matrix_decompose.hpp>
 #include <GLProgramVC.h>
 #include <GLProgramText.h>
-#include <GLProgramTextureExt.h>
+#include <GLProgramTexture.h>
 #include <Helper/ColoredGeometry.hpp>
 #include <Helper/TexturedGeometry.hpp>
 #include <TextAssetsHelper.hpp>
@@ -51,7 +51,7 @@ private:
     GLProgramVC* glProgramVC;
     GLProgramVC* glProgramVC2;
     //
-    GLProgramTextureExt* glProgramTexture;
+    GLProgramTexture* glProgramTexture;
 
 //holds colored geometry vertices
     GLuint glBufferVC;
