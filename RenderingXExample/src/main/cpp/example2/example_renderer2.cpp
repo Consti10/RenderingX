@@ -37,15 +37,13 @@ static std::vector<GLProgramVC::Vertex> distortVertices(const gvr_context *gvr_c
 void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
 //Instantiate all our OpenGL rendering 'Programs'
     distortionManager=new DistortionManager(gvr_api_->GetContext());
+    distortionManager->generateTexture();
 
     glProgramVC=new GLProgramVC();
     glProgramVC2=new GLProgramVC(distortionManager);
-    glProgramLine=new GLProgramLine();
-    glProgramText=new GLProgramText();
-    glProgramText->loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
     GLuint texture;
     glGenTextures(1,&texture);
-    glProgramTexture=new GLProgramTextureExt(texture,false,distortionManager);
+    glProgramTexture=new GLProgramTexture(texture,false,distortionManager);
     glProgramTexture->loadTexture(env,context,"black_grid2_1.png");
     //create all the gl Buffer for later use
     glGenBuffers(1,&glBufferVC);
@@ -75,18 +73,18 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
     glGenBuffers(1,&glBufferTextured1);
     glGenBuffers(1,&glBufferTextured2);
     glGenBuffers(1,&glBufferTexturedIndices);
-    GLProgramTextureExt::Vertex texturedVertices[(TEXTURE_TESSELATION_FACTOR+1)*(TEXTURE_TESSELATION_FACTOR+1)];
+    GLProgramTexture::Vertex texturedVertices[(TEXTURE_TESSELATION_FACTOR+1)*(TEXTURE_TESSELATION_FACTOR+1)];
     GLushort texturedIndices[6*TEXTURE_TESSELATION_FACTOR*TEXTURE_TESSELATION_FACTOR];
     TexturedGeometry::makeTesselatedVideoCanvas( texturedVertices,  texturedIndices, glm::vec3(-sizeX/2.0f,-sizeY/2.0f,0),
                                                 sizeX,sizeY, TEXTURE_TESSELATION_FACTOR, 0.0f,1.0f);
     const int RESOULTION_CALCULATE_UNDISTORTION=400;
     //const auto distortedPoints=VDDC::calculateDistortedPoints(gvr_api_->GetContext(),RESOULTION_CALCULATE_UNDISTORTION);
 
-    GLProgramTextureExt::Vertex texturedVertices1[(TEXTURE_TESSELATION_FACTOR+1)*(TEXTURE_TESSELATION_FACTOR+1)];
-    //GLProgramTextureExt::Vertex texturedVertices2[(TEXTURE_TESSELATION_FACTOR+1)*(TEXTURE_TESSELATION_FACTOR+1)];
+    GLProgramTexture::Vertex texturedVertices1[(TEXTURE_TESSELATION_FACTOR+1)*(TEXTURE_TESSELATION_FACTOR+1)];
+    //GLProgramTexture::Vertex texturedVertices2[(TEXTURE_TESSELATION_FACTOR+1)*(TEXTURE_TESSELATION_FACTOR+1)];
 
     for(int i=0;i<(TEXTURE_TESSELATION_FACTOR+1)*(TEXTURE_TESSELATION_FACTOR+1);i++){
-        const GLProgramTextureExt::Vertex& v=texturedVertices[i];
+        const GLProgramTexture::Vertex& v=texturedVertices[i];
         gvr_vec2f out[3];
         gvr_compute_distorted_point(gvr_api_.get()->GetContext(),GVR_LEFT_EYE,{v.u,v.v},out);
         //v.u=out[0].x;

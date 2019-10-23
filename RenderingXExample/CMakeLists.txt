@@ -36,7 +36,7 @@ include_directories(${RX_CORE_DIR}/src/main/cpp/GLPrograms)
 add_library( GLPrograms SHARED
         ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramVC.cpp
         ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramText.cpp
-        ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramTextureExt.cpp
+        ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramTexture.cpp
         ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramLine.cpp
         ${RX_CORE_DIR}/src/main/cpp/Sphere/Sphere.cpp
         ${RX_CORE_DIR}/src/main/cpp/Sphere/GvrSphere.cpp

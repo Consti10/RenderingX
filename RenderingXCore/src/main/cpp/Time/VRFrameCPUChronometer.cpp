@@ -16,8 +16,6 @@
 using namespace std::chrono;
 
 
-
-
 void VREyeDurations::print() {
     std::stringstream ss;
     ss<<"VR Frame Time Stamp"<<"\n";

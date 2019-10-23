@@ -10,7 +10,7 @@
 #include "../../../../../../../AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/c++/v1/vector"
 #include "../../../../RenderingXCore/libs/glm/glm/glm.hpp"
 #include "../../../../RenderingXCore/libs/glm/glm/gtc/matrix_transform.hpp"
-#include "../../../../RenderingXCore/src/main/cpp/GLPrograms/GLProgramTextureExt.h"
+#include "../../../../RenderingXCore/src/main/cpp/GLPrograms/GLProgramTexture.h"
 #include "../../../../../../../AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/EGL/egl.h"
 #include "../../../../../../../AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/c++/v1/cinttypes"
 #include "../../../../RenderingXCore/src/main/cpp/SuperSync/Extensions.hpp"

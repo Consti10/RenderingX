@@ -50,10 +50,6 @@ private:
 //used to render vertex-color geometry
     GLProgramVC* glProgramVC;
     GLProgramVC* glProgramVC2;
-//used to render smooth lines
-    GLProgramLine* glProgramLine;
-//used to render smooth text
-    GLProgramText* glProgramText;
     //
     GLProgramTextureExt* glProgramTexture;
 

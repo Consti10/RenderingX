@@ -38,6 +38,7 @@ GLProgramText::GLProgramText(const DistortionManager* distortionManager):
     uEdge=(GLuint)glGetUniformLocation(mProgram,"uEdge");
     uBorderEdge=(GLuint)glGetUniformLocation(mProgram,"uBorderEdge");
     mLOLHandle=(GLuint)glGetUniformLocation((GLuint)mProgram,"LOL");
+    mSamplerDistCorrectionHandle=(GLuint)glGetUniformLocation (mProgram, "sTextureDistCorrection" );
     GLHelper::checkGlError("GLProgramText() uniforms3");
 #ifdef WIREFRAME
     mOverrideColorHandle=(GLuint)glGetUniformLocation(mProgram,"uOverrideColor");
@@ -71,9 +72,9 @@ GLProgramText::GLProgramText(const DistortionManager* distortionManager):
 
 void GLProgramText::beforeDraw(const GLuint buffer) const{
     glUseProgram((GLuint)mProgram);
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(MY_TEXTURE_UNIT);
     glBindTexture(GL_TEXTURE_2D,mTexture);
-    glUniform1i(mSamplerHandle,0);
+    glUniform1i(mSamplerHandle,MY_SAMPLER_UNIT);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glEnableVertexAttribArray((GLuint)mPositionHandle);
     glVertexAttribPointer((GLuint)mPositionHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE, sizeof(Vertex),nullptr);
@@ -83,7 +84,7 @@ void GLProgramText::beforeDraw(const GLuint buffer) const{
     glVertexAttribPointer((GLuint)mColorHandle,4/*r,g,b,a*/,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,color));
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndicesB);
     if(distortionManager!= nullptr){
-        distortionManager->doLOL(mLOLHandle);
+        distortionManager->beforeDraw(mLOLHandle,mSamplerDistCorrectionHandle);
     }
 }
 
@@ -119,6 +120,9 @@ void GLProgramText::afterDraw() const {
     glDisableVertexAttribArray((GLuint)mTextureHandle);
     glBindTexture(GL_TEXTURE_2D,0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+    if(distortionManager!= nullptr){
+        distortionManager->afterDraw();
+    }
 }
 
 int GLProgramText::convertStringToRenderingData(const float X, const float Y, const float Z, const float charHeight,
@@ -195,7 +199,7 @@ float GLProgramText::getStringLength(const std::wstring s, const float charHeigh
 
 void  GLProgramText::loadTextRenderingData(JNIEnv *env, jobject androidContext,
                                            const TextAssetsHelper::TEXT_STYLE& textStyle)const {
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(MY_TEXTURE_UNIT);
     glBindTexture(GL_TEXTURE_2D,mTexture);
     int maxTextureSize;
     glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maxTextureSize);

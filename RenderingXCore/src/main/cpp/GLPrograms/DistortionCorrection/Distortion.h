@@ -9,6 +9,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <limits>
 
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
@@ -110,7 +111,7 @@ public:
     const glm::vec2 findClosestMatchInverse(const glm::vec2 in)const{
         float bestX=0;
         float bestY=0;
-        float lastBestDiff=10000.0f;
+        double lastBestDiff=std::numeric_limits<double>::max();
         //const float I=100;
         glm::vec2 bestMatchUndistortionPoint=glm::vec2(-100.0f,-100.0f);
         for(int i=0;i<=RESOLUTION;i++){
@@ -118,9 +119,9 @@ public:
                 //const float x=(float)i/(float)RESOLUTION;
                 //const float y=(float)j/(float)RESOLUTION;
                 const auto point=distortedPoints.at(i).at(j);
-                const float diff1=abs(point.distortedP.x-in.x);
-                const float diff2=abs(point.distortedP.y-in.y);
-                const float diff=sqrt(diff1*diff1+diff2*diff2);//(diff1+diff2)/2.0f;
+                const double diff1=abs(point.distortedP.x-in.x);
+                const double diff2=abs(point.distortedP.y-in.y);
+                const double diff=sqrt(diff1*diff1+diff2*diff2);//(diff1+diff2)/2.0f;
                 if(diff<lastBestDiff){
                     bestX=point.p.x;
                     bestY=point.p.y;
@@ -178,8 +179,8 @@ public:
         for(int i=0;i<RESOLUTION;i++){
             for(int j=0;j<RESOLUTION;j++){
                 const auto value=distortedPoints.at(i).at(j);
-                const auto p=value.p*2.0f-glm::vec2(0.5f,0.5f);
-                const auto distortedP=value.distortedP*2.0f-glm::vec2(0.5f,0.5f);
+                const auto p=value.p*2.0f-glm::vec2(1.0f,1.0f);
+                const auto distortedP=value.distortedP*2.0f-glm::vec2(1.0f,1.0f);
                 const auto dir=distortedP-p;
                 arr[i][j][0]=dir.x;//p.distortedP.x;
                 arr[i][j][1]=dir.y;//p.distortedP.y;
@@ -189,6 +190,8 @@ public:
         }
         //return (float*) ret;
     }
+
+
 };
 
 static float calculateBrownConrady(float r2,float k1,float k2){

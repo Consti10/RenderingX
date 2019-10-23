@@ -29,6 +29,7 @@ private:
     GLuint mPositionHandle,mColorHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
     GLuint mLOLHandle;
+    GLuint mSamplerDistCorrectionHandle;
      const DistortionManager* distortionManager;
 public:
     struct Vertex{

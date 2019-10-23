@@ -1,5 +1,5 @@
 /*******************************************************************
- * Abstraction for drawing an android surface as an OpenGL Texture
+ * Abstraction for rendering textured vertices. Optionally samples from 'external texture' aka video texture
  *******************************************************************/
 
 #ifndef GLRENDERTEXTUREEXTERNAL
@@ -14,7 +14,7 @@
 #include <array>
 #include <DistortionCorrection/VDDC.hpp>
 
-class GLProgramTextureExt {
+class GLProgramTexture {
 private:
     const bool USE_EXTERNAL_TEXTURE;
     GLuint mProgram;
@@ -22,14 +22,17 @@ private:
     GLuint mMVMatrixHandle,mPMatrixHandle;
     const GLuint mTexture;
     GLuint mLOLHandle;
+    GLuint mSamplerDistCorrectionHandle;
     const DistortionManager* distortionManager;
+    static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
+    static constexpr auto MY_SAMPLER_UNIT=1;
 public:
     struct Vertex{
         float x,y,z;
         float u,v;
     };
     using INDEX_DATA=GLushort;
-    explicit GLProgramTextureExt(const GLuint texture,const bool USE_EXTERNAL_TEXTURE=true,const DistortionManager* distortionManager=nullptr);
+    explicit GLProgramTexture(const GLuint texture,const bool USE_EXTERNAL_TEXTURE=true,const DistortionManager* distortionManager=nullptr);
     void beforeDraw(GLuint buffer) const;
     void draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices) const;
     void drawIndexed(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLuint indexBuffer) const;

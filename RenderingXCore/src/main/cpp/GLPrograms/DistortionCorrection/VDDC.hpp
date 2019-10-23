@@ -18,6 +18,7 @@
 #include <glm/glm.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <Helper/NDKHelper.h>
 
 #include "android/log.h"
 
@@ -29,6 +30,7 @@
 /// But since the distortion moves coordinate points 'inwarts' relative to the view space r2,
 /// we have to distort maxRadSq before
 
+static constexpr const int MY_VERSION=2;
 
 class DistortionManager{
 public:
@@ -38,6 +40,8 @@ public:
     static constexpr const int RESOLUTION_XY=20;
     static constexpr int ARRAY_SIZE=RESOLUTION_XY*RESOLUTION_XY;
     float lol[RESOLUTION_XY][RESOLUTION_XY][2];
+
+    GLuint mDistortionCorrectionTexture;
 public:
     DistortionManager(gvr_context* gvrContext){
         const Distortion mDistortion(gvrContext,400);
@@ -49,8 +53,57 @@ public:
         VR_DC_UndistortionData.at(2)=0.55f;
         VR_DC_UndistortionData.at(2)=1.4535f;
     }
-    void doLOL(const GLuint lolHandle)const{
-        glUniform2fv(lolHandle,(GLsizei)(ARRAY_SIZE),(GLfloat*)lol);
+
+    void beforeDraw(const GLuint lolHandle,const GLuint samplerDistCorrectionHandle)const{
+        if(MY_VERSION==0){
+            //Nothing
+        }else if(MY_VERSION==1){
+            glUniform2fv(lolHandle,(GLsizei)(ARRAY_SIZE),(GLfloat*)lol);
+        }else{
+            glActiveTexture(DistortionManager::MY_TEXTURE_UNIT);
+            glBindTexture(GL_TEXTURE_2D,mDistortionCorrectionTexture);
+
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+            glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+
+            glUniform1i(samplerDistCorrectionHandle,DistortionManager::MY_SAMPLER_UNIT);
+        }
+    }
+
+    void afterDraw()const{
+        glBindTexture(GL_TEXTURE_2D,0);
+    }
+
+    static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE2;
+    static constexpr auto MY_SAMPLER_UNIT=2;
+    void generateTexture(){
+        glGenTextures(1,&mDistortionCorrectionTexture);
+
+        glActiveTexture(MY_TEXTURE_UNIT);
+        glBindTexture(GL_TEXTURE_2D, mDistortionCorrectionTexture);
+
+        const int SIZE=DistortionManager::RESOLUTION_XY;
+        GLfloat data[SIZE][SIZE][4];
+        for(int i=0;i<SIZE;i++){
+            for(int j=0;j<SIZE;j++){
+                data[i][j][0]=lol[j][i][0];
+                data[i][j][1]=lol[j][i][1];
+                //data[i][j][0]=0.0f;
+                //data[i][j][1]=0.2f;
+            }
+        }
+        //GL_RGBA32F
+        constexpr auto RGBA32F_ARB=0x8814;
+        constexpr auto RGBA16F_ARB=0x881A;
+        glTexImage2D(GL_TEXTURE_2D, 0,RGBA16F_ARB, SIZE,SIZE, 0, GL_RGBA, GL_FLOAT,data);
+
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+
+        //NDKHelper::uploadAssetImageToGPU(env,androidContext,name,false);
+
+        glBindTexture(GL_TEXTURE_2D,0);
+
     }
 };
 
@@ -64,6 +117,8 @@ public:
         return "gl_Position = (uPMatrix*uMVMatrix)* "+positionAttribute+";\n";
         //return "gl_Position = vec4("+positionAttribute+".xy*2.0, 0, 1);";
     }
+
+
     static constexpr int RESOLUTION_XY=20;
     static const std::string writeGLPositionWithVDDC_1(const std::string& positionAttribute){
         std::stringstream s;
@@ -111,16 +166,38 @@ public:
         return s.str();
     }
     static const std::string writeGLPositionWithVDDC(const std::string& positionAttribute){
-        //return writeGLPositionWithVDDC_1(positionAttribute);
-        return writeGLPositionWithVDDC_2(positionAttribute);
+        if(MY_VERSION==0){
+            return writeGLPositionWithVDDC_1(positionAttribute);
+        }else if(MY_VERSION==1){
+            return writeGLPositionWithVDDC_2(positionAttribute);
+        }else{
+            std::stringstream s;
+            s<<"vec4  pos=(uPMatrix*uMVMatrix)*"+positionAttribute+";\n";
+            s<<"vec2 ndc=pos.xy/pos.w;";///(-pos.z);";
+            s<<"vec2 uvFromNDC=(ndc+vec2(1.0,1.0))/2.0;";
+            s<<"vec4 value=texture2D(sTextureDistCorrection, uvFromNDC );";
+            s<<"pos.x+=value.x;";
+            s<<"pos.y+=value.y;";
+            s<<"gl_Position=pos;\n";
+            return s.str();
+        }
     }
 
     static const std::string writeLOL(const DistortionManager* distortionManager){
-        if(distortionManager== nullptr)return "uniform highp vec2 LOL[1];"; //dummy so we don't get compilation issues when querying handle
-        const bool secondVersion=true;
         std::stringstream s;
-        if(secondVersion){
-            s<<"uniform highp vec2 LOL["<<DistortionManager::ARRAY_SIZE<<"];";
+        //Write placeholders even if not needed
+        s<<"uniform highp vec2 LOL["<<((distortionManager==nullptr) ? 1 : DistortionManager::ARRAY_SIZE)<<"];";
+        s<<"uniform sampler2D sTextureDistCorrection;";
+        if(distortionManager==nullptr)return s.str();
+        if(MY_VERSION==0){
+            const auto coeficients=distortionManager->VR_DC_UndistortionData;
+            s<<std::fixed;
+            s<<"uniform highp vec2 LOL[1];";
+            s<<"const float _MaxRadSq="<<coeficients[0];s<<";\n";
+            //There is no vec6 data type. Therefore, we use 1 vec4 and 1 vec2. Vec4 holds k1,k2,k3,k4 and vec6 holds k5,k6
+            s<<"const vec4 _Undistortion=vec4("<<coeficients[1]<<","<<coeficients[2]<<","<<coeficients[3]<<","<<coeficients[4]<<");\n";
+            s<<"const vec2 _Undistortion2=vec2("<<coeficients[5]<<","<<coeficients[6]<<");\n";
+        }else if(MY_VERSION==1){
             s<<"int my_clamp(in int x,in int minVal,in int maxVal){";
             s<<"if(x<minVal){return minVal;}";
             s<<"if(x>maxVal){return maxVal;}";
@@ -130,15 +207,8 @@ public:
             s<<"if(afterCome>=0.5){return int(x+0.5);}";
             s<<"return int(x);}";
         }else{
-            const auto coeficients=distortionManager->VR_DC_UndistortionData;
-            s<<std::fixed;
-            s<<"uniform highp vec2 LOL[1];";
-            s<<"const float _MaxRadSq="<<coeficients[0];s<<";\n";
-            //There is no vec6 data type. Therefore, we use 1 vec4 and 1 vec2. Vec4 holds k1,k2,k3,k4 and vec6 holds k5,k6
-            s<<"const vec4 _Undistortion=vec4("<<coeficients[1]<<","<<coeficients[2]<<","<<coeficients[3]<<","<<coeficients[4]<<");\n";
-            s<<"const vec2 _Undistortion2=vec2("<<coeficients[5]<<","<<coeficients[6]<<");\n";
+            //Nothing
         }
-        //LOGD("%s",s.str().c_str());
         return s.str();
     }
 

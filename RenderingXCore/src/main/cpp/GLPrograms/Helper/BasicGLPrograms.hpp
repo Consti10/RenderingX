@@ -6,7 +6,6 @@
 #define FPV_VR_GLPROGRAMS_HELPER_BASICGLPROGRAMS_H
 
 #include "GLProgramText.h"
-#include "GLProgramTextureExt.h"
 #include "GLProgramVC.h"
 #include "GLProgramLine.h"
 

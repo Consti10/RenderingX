@@ -21,6 +21,7 @@ distortionManager(distortionManager) {
     setOtherUniforms();
     glUseProgram(0);
     mLOLHandle=(GLuint)glGetUniformLocation((GLuint)mProgram,"LOL");
+    mSamplerDistCorrectionHandle=(GLuint)glGetUniformLocation (mProgram, "sTextureDistCorrection" );
     GLHelper::checkGlError("glGetAttribLocation GLProgramLine");
 }
 
@@ -38,7 +39,7 @@ void GLProgramLine::beforeDraw(GLuint buffer) const {
     glEnableVertexAttribArray(mOutlineColorHandle);
     glVertexAttribPointer(mOutlineColorHandle,4,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,outlineColor));
     if(distortionManager!= nullptr){
-        distortionManager->doLOL(mLOLHandle);
+        distortionManager->beforeDraw(mLOLHandle,mSamplerDistCorrectionHandle);
     }
 }
 
@@ -61,6 +62,9 @@ void GLProgramLine::afterDraw() const {
     glDisableVertexAttribArray(mLineWidthHandle);
     glDisableVertexAttribArray(mBaseColorHandle);
     glDisableVertexAttribArray(mOutlineColorHandle);
+    if(distortionManager!= nullptr){
+        distortionManager->afterDraw();
+    }
 }
 
 static void writePos(GLProgramLine::Vertex &v,const glm::vec3 &pos){

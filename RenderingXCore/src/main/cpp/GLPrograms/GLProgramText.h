@@ -39,6 +39,8 @@ private:
     GLuint uEdge,uBorderEdge;
     GLuint mTexture;
     using INDEX_DATA=GLushort;
+    static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE0;
+    static constexpr auto MY_SAMPLER_UNIT=0;
     static constexpr int INDEX_BUFFER_SIZE=65535; //max size of GL unsigned short
     GLuint mGLIndicesB;
     struct Vertex{
@@ -47,6 +49,7 @@ private:
         TrueColor color;
     };
     GLuint mLOLHandle;
+    GLuint mSamplerDistCorrectionHandle;
     const DistortionManager* distortionManager;
 public:
     //Characters are indexed squares

@@ -36,6 +36,7 @@ public:
         env->ReleaseFloatArrayElements(aFontWidthsU,arrayP,0);
         env->DeleteLocalRef(NDKHelper_);
     }
+
 };
 
 

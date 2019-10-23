@@ -11,6 +11,7 @@ GLProgramVC::GLProgramVC(const DistortionManager* distortionManager):
     mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
     mColorHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aColor");
     mLOLHandle=(GLuint)glGetUniformLocation((GLuint)mProgram,"LOL");
+    mSamplerDistCorrectionHandle=(GLuint)glGetUniformLocation (mProgram, "sTextureDistCorrection" );
     GLHelper::checkGlError("glGetAttribLocation OGProgramColor");
 }
 
@@ -24,9 +25,10 @@ void GLProgramVC::beforeDraw(const GLuint buffer) const {
     glEnableVertexAttribArray((GLuint)mColorHandle);
     glVertexAttribPointer((GLuint)mColorHandle, 4/*rgba*/,GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex),(GLvoid*)offsetof(Vertex,colorRGBA));
     if(distortionManager!= nullptr){
-        distortionManager->doLOL(mLOLHandle);
+        distortionManager->beforeDraw(mLOLHandle,mSamplerDistCorrectionHandle);
     }
 }
+
 
 void GLProgramVC::draw(const Mat4x4 ViewM, const Mat4x4 ProjM,
                        const int verticesOffset, const int numberVertices,const GLenum mode) const{
@@ -43,6 +45,10 @@ void GLProgramVC::draw(const Mat4x4 ViewM, const Mat4x4 ProjM,
 void GLProgramVC::afterDraw() const {
     glDisableVertexAttribArray((GLuint)mPositionHandle);
     glDisableVertexAttribArray((GLuint)mColorHandle);
+
+    if(distortionManager!= nullptr){
+        distortionManager->afterDraw();
+    }
 }
 
 void GLProgramVC::drawIndexed(GLuint indexBuffer, Mat4x4 ViewM, Mat4x4 ProjM, int indicesOffset,
