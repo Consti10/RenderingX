@@ -6,6 +6,34 @@
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
 
+// This computes a general frustum given four field-of-view (FOV)
+// angles and the near and far clipping planes. The FOV angle is
+// defined as the angle between the optical axis (i.e. the eye's
+// forward direction) and the line from the eye to the respective
+// edge of the screen.
+glm::mat4 make_frustum(float left_fov,
+                  float right_fov,
+                  float bottom_fov,
+                  float top_fov,
+                  float z_near,
+                  float z_far)
+{
+    glm::mat4 result=glm::mat4(0.0f);
+    float tt = tan(top_fov);
+    float tb = tan(bottom_fov);
+    float tl = tan(left_fov);
+    float tr = tan(right_fov);
+    result[0][0] = 2.0f / (tl + tr);
+    result[1][1] = 2.0f / (tt + tb);
+    result[2][0] = (tl - tr) / (tl + tr);
+    result[2][1] = (tt - tb) / (tt + tb);
+    result[2][2] = (z_near + z_far) / (z_near - z_far);
+    result[3][3] = -1.0f;
+    result[3][2] = 2.0f * z_near * z_far / (z_near - z_far);
+    result=glm::transpose(result);
+    return result;
+}
+
 
 ExampleRenderer2::ExampleRenderer2(JNIEnv *env, jobject androidContext,gvr_context *gvr_context,jfloatArray undistData) {
     /*jfloat *arrayP=env->GetFloatArrayElements(undistData, nullptr);
@@ -16,7 +44,7 @@ ExampleRenderer2::ExampleRenderer2(JNIEnv *env, jobject androidContext,gvr_conte
 
 static std::vector<GLProgramVC::Vertex> distortVertices(const gvr_context *gvr_context,const std::vector<GLProgramVC::Vertex> input){
     const int RES=800;
-    const auto mDistortion=Distortion(gvr_context,RES);
+    const auto mDistortion=Distortion(RES,gvr_context);
     const auto inverse=mDistortion.calculateInverse(8);
 
     std::vector<GLProgramVC::Vertex> ret(input.size());
@@ -54,10 +82,10 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
     float size=1.0f;
     const auto tmp=ColoredGeometry::makeTesselatedColoredRectLines(TESSELATION,{-size/2.0f,-size/2.0f,0},size,size,Color::WHITE);
     GLHelper::allocateGLBufferStatic(glBufferVC,(void*)tmp.data(),tmp.size()*sizeof(GLProgramVC::Vertex));
-    auto tmp1=distortVertices(gvr_api_->GetContext(),tmp);
-    GLHelper::allocateGLBufferStatic(glBufferVCDistorted1,(void*)tmp1.data(),tmp1.size()*sizeof(GLProgramVC::Vertex));
-    auto tmp2=distortVertices(gvr_api_->GetContext(),tmp);
-    GLHelper::allocateGLBufferStatic(glBufferVCDistorted1,(void*)tmp2.data(),tmp2.size()*sizeof(GLProgramVC::Vertex));
+    //auto tmp1=distortVertices(gvr_api_->GetContext(),tmp);
+    //GLHelper::allocateGLBufferStatic(glBufferVCDistorted1,(void*)tmp1.data(),tmp1.size()*sizeof(GLProgramVC::Vertex));
+    //auto tmp2=distortVertices(gvr_api_->GetContext(),tmp);
+    //GLHelper::allocateGLBufferStatic(glBufferVCDistorted1,(void*)tmp2.data(),tmp2.size()*sizeof(GLProgramVC::Vertex));
 
     //make the line going trough (0,0)
     GLProgramVC::Vertex coordinateSystemLineVertices[4];
@@ -83,12 +111,15 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
     GLProgramTexture::Vertex texturedVertices1[(TEXTURE_TESSELATION_FACTOR+1)*(TEXTURE_TESSELATION_FACTOR+1)];
     //GLProgramTexture::Vertex texturedVertices2[(TEXTURE_TESSELATION_FACTOR+1)*(TEXTURE_TESSELATION_FACTOR+1)];
 
+    //Distortion mDistortion(gvr_api_->GetContext(),400);
+    //Distortion inverse=mDistortion.calculateInverse(30);
+
     for(int i=0;i<(TEXTURE_TESSELATION_FACTOR+1)*(TEXTURE_TESSELATION_FACTOR+1);i++){
         const GLProgramTexture::Vertex& v=texturedVertices[i];
+        //const auto p=inverse.distortPoint({v.u,v.v});
+        //texturedVertices1[i]={v.x,v.y,v.z,p.x,p.y};
         gvr_vec2f out[3];
         gvr_compute_distorted_point(gvr_api_.get()->GetContext(),GVR_LEFT_EYE,{v.u,v.v},out);
-        //v.u=out[0].x;
-        //v.v=out[0].y;
         texturedVertices1[i]={v.x,v.y,v.z,out[0].x,out[0].y};
 
         //gvr_compute_distorted_point(gvr_api_.get()->GetContext(),GVR_RIGHT_EYE,{v.u,v.v},out);
@@ -124,7 +155,9 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
 void ExampleRenderer2::onSurfaceChanged(int width, int height) {
     ViewPortW=width/2;
     ViewPortH=height;
-    projection=glm::perspective(glm::radians(90.0F), ((float) ViewPortW) / ((float) ViewPortH), MIN_Z_DISTANCE, MAX_Z_DISTANCE);
+    projection=glm::perspective(glm::radians(90.0F), 1.0f, MIN_Z_DISTANCE, MAX_Z_DISTANCE);
+    //projection=make_frustum(45,45,45,45,MIN_Z_DISTANCE,MAX_Z_DISTANCE);
+
     glm::vec3 cameraPos   = glm::vec3(0,0,CAMERA_POSITION);
     glm::vec3 cameraFront = glm::vec3(0.0F,0.0F,-1.0F);
     eyeView=glm::lookAt(cameraPos,cameraPos+cameraFront,glm::vec3(0,1,0));
@@ -150,9 +183,9 @@ void ExampleRenderer2::onDrawFrame() {
 
 void ExampleRenderer2::drawEye(bool leftEye) {
     if(leftEye){
-        glViewport(0,0,ViewPortW,ViewPortH);
+        glViewport(0,0,ViewPortW,ViewPortW);
     }else{
-        glViewport(ViewPortW,0,ViewPortW,ViewPortH);
+        glViewport(ViewPortW,0,ViewPortW,ViewPortW);
     }
     glm::mat4 tmp=leftEye ? leftEyeView : rightEyeView;
 

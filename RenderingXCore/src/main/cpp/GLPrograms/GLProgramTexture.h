@@ -24,8 +24,8 @@ private:
     GLuint mLOLHandle;
     GLuint mSamplerDistCorrectionHandle;
     const DistortionManager* distortionManager;
-    static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
-    static constexpr auto MY_SAMPLER_UNIT=1;
+    static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE2;
+    static constexpr auto MY_SAMPLER_UNIT=2;
 public:
     struct Vertex{
         float x,y,z;

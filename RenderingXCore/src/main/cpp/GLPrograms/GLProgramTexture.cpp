@@ -2,7 +2,7 @@
 #include <Helper/NDKHelper.h>
 #include "GLProgramTexture.h"
 
-constexpr auto TAG="GLRenderTextureExternal";
+constexpr auto TAG="GLRenderTexture(-External)";
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
 GLProgramTexture::GLProgramTexture(const GLuint texture,const bool USE_EXTERNAL_TEXTURE,const DistortionManager* distortionManager)
@@ -41,7 +41,7 @@ void GLProgramTexture::beforeDraw(const GLuint buffer) const{
     glEnableVertexAttribArray((GLuint)mTextureHandle);
     glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,u));
     if(distortionManager!= nullptr){
-        //distortionManager->beforeDraw(mLOLHandle,mSamplerDistCorrectionHandle);
+        distortionManager->beforeDraw(mLOLHandle,mSamplerDistCorrectionHandle);
     }
 }
 
