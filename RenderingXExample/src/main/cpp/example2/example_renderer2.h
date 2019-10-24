@@ -73,7 +73,7 @@ private:
 
     static constexpr float VR_InterpupilaryDistance=0.2f;
 
-    static constexpr int TESSELATION=6;
+    static constexpr int TESSELATION=8;
     static constexpr int N_COLORED_VERTICES=6*(TESSELATION+1)*(TESSELATION+1);
     static constexpr int N_TEXTURED_VERTICES=6*11*11;
     int ViewPortW=0,ViewPortH=0;

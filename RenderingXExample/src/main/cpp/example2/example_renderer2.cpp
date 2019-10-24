@@ -72,7 +72,7 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
     GLuint texture;
     glGenTextures(1,&texture);
     glProgramTexture=new GLProgramTexture(texture,false,distortionManager);
-    glProgramTexture->loadTexture(env,context,"black_grid2_1.png");
+    glProgramTexture->loadTexture(env,context,"c_grid3.png");
     //create all the gl Buffer for later use
     glGenBuffers(1,&glBufferVC);
     glGenBuffers(1,&glBufferVCDistorted1);
