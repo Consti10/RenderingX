@@ -29,6 +29,13 @@ public:
                      array, GL_DYNAMIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
+
+    /*template<typename T, typename A>
+    static const void allocateGLBufferDynamic(GLuint buff,std::vector<T,A> const& vec){{
+
+    }*/
+
+
     static void checkGlError(const std::string& op) {
         int error;
         while ((error = glGetError()) != GL_NO_ERROR) {

@@ -9,6 +9,7 @@
 #include <vr/gvr/capi/include/gvr.h>
 #include "GLProgramVC.h"
 #include "Color/Color.hpp"
+#include <array>
 
 class ColoredGeometry {
 public:
@@ -122,8 +123,6 @@ public:
         }
         return ret;
     }
-
-
     static const void makeOutlineQuadWithLines(GLProgramVC::Vertex array[],const float mX,const float mY,const float mZ,const float quadWith,const float quadHeight,
                                                const TrueColor color){
         //left and right
@@ -151,6 +150,13 @@ public:
         makeColoredTriangle(array,2*3,p5,p2,p3,color1,color2,color2);
         makeColoredTriangle(array,3*3,p5,p4,p3,color1,color2,color2);
     };
+    static std::array<GLProgramVC::Vertex,4> makeDebugCoordinateSystemLines(){
+        std::array<GLProgramVC::Vertex,4> ret;
+        const float size=100.0f;
+        ColoredGeometry::makeColoredLine(ret.data(),0,glm::vec3(-size,0,0),glm::vec3(size,0,0),Color::YELLOW,Color::YELLOW);
+        ColoredGeometry::makeColoredLine(&ret.at(2),0,glm::vec3(0,-size,0),glm::vec3(0,size,0),Color::YELLOW,Color::YELLOW);
+        return ret;
+    }
 };
 
 

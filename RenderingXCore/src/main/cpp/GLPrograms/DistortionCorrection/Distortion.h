@@ -193,8 +193,6 @@ public:
         }
         //return (float*) ret;
     }
-
-
 };
 
 static float calculateBrownConrady(float r2,float k1,float k2){
