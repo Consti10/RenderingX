@@ -6,7 +6,7 @@
 #define FPV_VR_GLPROGRAMS_HELPER_GEOMETRYHELPER1_H
 
 
-#include "GLProgramTexture.h"
+#include "../GLProgramTexture.h"
 
 class TexturedGeometry {
 public:
@@ -32,8 +32,6 @@ public:
         p[ 2].u = uv3[0];
         p[ 2].v = uv3[1];
     }
-
-
     static const void makeTexturedRect(GLProgramTexture::Vertex array[],const int arrayOffset,const glm::vec3& point,const glm::vec3& width,const glm::vec3& height,
                                        const float u,const float v,const float uRange,const float vRange){
         //|--------------------------------|h

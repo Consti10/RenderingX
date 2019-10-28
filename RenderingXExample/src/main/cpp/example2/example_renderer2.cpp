@@ -88,8 +88,9 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
     //GLHelper::allocateGLBufferStatic(glBufferVCDistorted1,(void*)tmp2.data(),tmp2.size()*sizeof(GLProgramVC::Vertex));
 
     //make the line going trough (0,0)
-    const auto coordinateSystemLines=ColoredGeometry::makeDebugCoordinateSystemLines();
+    const auto coordinateSystemLines=ColoredGeometry::makeDebugCoordinateSystemLines(100);
     GLHelper::allocateGLBufferStatic(glBufferCoordinateSystemLines,(void*)coordinateSystemLines.data(),coordinateSystemLines.size()*sizeof(GLProgramVC::Vertex));
+    nCoordinateSystemLinesVertices=coordinateSystemLines.size();
 
     //Textured stuff
     //const float fov=90.0f;
@@ -213,10 +214,10 @@ void ExampleRenderer2::drawEye(bool leftEye) {
     glProgramVC2->draw(glm::value_ptr(tmp),glm::value_ptr(projection),0,N_COLORED_VERTICES,GL_LINES);
     glProgramVC2->afterDraw();
 
-    glProgramVC->beforeDraw(glBufferCoordinateSystemLines);
-    glProgramVC->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,4,GL_LINES);
-    glProgramVC->afterDraw();
-
+    /*glProgramVC2->beforeDraw(glBufferCoordinateSystemLines);
+    glProgramVC2->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,nCoordinateSystemLinesVertices,GL_LINES);
+    glProgramVC2->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,nCoordinateSystemLinesVertices,GL_POINTS);
+    glProgramVC2->afterDraw();*/
 }
 
 

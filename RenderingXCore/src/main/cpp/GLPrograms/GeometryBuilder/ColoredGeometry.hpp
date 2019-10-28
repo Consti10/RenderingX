@@ -13,7 +13,7 @@
 
 class ColoredGeometry {
 public:
-    static const void makeColoredLine(GLProgramVC::Vertex *array,const int arrayOffset,const glm::vec3& point1,const glm::vec3& point2,
+    static const void makeColoredLine(GLProgramVC::Vertex array[],const int arrayOffset,const glm::vec3& point1,const glm::vec3& point2,
                                       const TrueColor color1,const TrueColor color2){
         auto* p=&array[arrayOffset];
         p[ 0].x=point1[0];
@@ -150,11 +150,23 @@ public:
         makeColoredTriangle(array,2*3,p5,p2,p3,color1,color2,color2);
         makeColoredTriangle(array,3*3,p5,p4,p3,color1,color2,color2);
     };
-    static std::array<GLProgramVC::Vertex,4> makeDebugCoordinateSystemLines(){
-        std::array<GLProgramVC::Vertex,4> ret;
-        const float size=100.0f;
-        ColoredGeometry::makeColoredLine(ret.data(),0,glm::vec3(-size,0,0),glm::vec3(size,0,0),Color::YELLOW,Color::YELLOW);
-        ColoredGeometry::makeColoredLine(&ret.at(2),0,glm::vec3(0,-size,0),glm::vec3(0,size,0),Color::YELLOW,Color::YELLOW);
+    static std::vector<GLProgramVC::Vertex> makeDebugCoordinateSystemLines(const int tesselation=1){
+        std::vector<GLProgramVC::Vertex> ret;
+        ret.reserve(((tesselation+1)*(tesselation+1)));
+        const float size=10.0f;
+        const float stepSize=size/tesselation;
+        const auto color=Color::BLUE;
+        for(int i=0;i<tesselation;i++){
+            const float x=(-size/2.f)+i*stepSize;
+            const float x2=(-size/2.f)+(i+1)*stepSize;
+            GLProgramVC::Vertex line[2];
+            ColoredGeometry::makeColoredLine(line,0,glm::vec3(x,0,0),glm::vec3(x2,0,0),color,color);
+            ret.push_back(line[0]);
+            ret.push_back(line[1]);
+            ColoredGeometry::makeColoredLine(line,0,glm::vec3(0,x,0),glm::vec3(0,x2,0),color,color);
+            ret.push_back(line[0]);
+            ret.push_back(line[1]);
+        }
         return ret;
     }
 };

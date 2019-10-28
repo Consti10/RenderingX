@@ -35,7 +35,6 @@ public:
 
     }*/
 
-
     static void checkGlError(const std::string& op) {
         int error;
         while ((error = glGetError()) != GL_NO_ERROR) {
