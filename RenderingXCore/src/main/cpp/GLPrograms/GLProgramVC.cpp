@@ -10,8 +10,9 @@ GLProgramVC::GLProgramVC(const DistortionManager* distortionManager):
     mPMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uPMatrix");
     mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
     mColorHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aColor");
-    mLOLHandle=(GLuint)glGetUniformLocation((GLuint)mProgram,"LOL");
-    mSamplerDistCorrectionHandle=(GLuint)glGetUniformLocation (mProgram, "sTextureDistCorrection" );
+    if(distortionManager!=nullptr){
+        mUndistortionHandles=distortionManager->getUndistortionUniformHandles(mProgram);
+    }
     GLHelper::checkGlError("glGetAttribLocation OGProgramColor");
 }
 
@@ -25,7 +26,7 @@ void GLProgramVC::beforeDraw(const GLuint buffer) const {
     glEnableVertexAttribArray((GLuint)mColorHandle);
     glVertexAttribPointer((GLuint)mColorHandle, 4/*rgba*/,GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex),(GLvoid*)offsetof(Vertex,colorRGBA));
     if(distortionManager!= nullptr){
-        distortionManager->beforeDraw(mLOLHandle,mSamplerDistCorrectionHandle);
+        distortionManager->beforeDraw(mUndistortionHandles);
     }
 }
 

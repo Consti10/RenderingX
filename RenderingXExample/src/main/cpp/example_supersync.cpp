@@ -16,6 +16,7 @@
 #include <GeometryBuilder/ColoredGeometry.hpp>
 #include <TextAssetsHelper.hpp>
 #include <Helper/BasicGLPrograms.hpp>
+#include "Helper/GLBufferHelper.hpp"
 #include <FBRManager.h>
 #include <Extensions.hpp>
 
@@ -58,7 +59,7 @@ void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext) {
     for(int i=0;i<N_TRIANGLES;i++){
         ColoredGeometry::makeColoredTriangle1(&coloredVertices[i*3],glm::vec3(-triangleWidth/2,0,0),triangleWidth,triangleWidth,Color::RED);
     }
-    GLHelper::allocateGLBufferStatic(glBufferVC,coloredVertices,sizeof(coloredVertices));
+    GLBufferHelper::allocateGLBufferStatic(glBufferVC,coloredVertices,sizeof(coloredVertices));
 }
 
 

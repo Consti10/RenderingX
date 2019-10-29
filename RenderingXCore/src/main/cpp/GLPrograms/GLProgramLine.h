@@ -21,9 +21,8 @@ private:
     GLuint mPositionHandle,mNormalHandle,mLineWidthHandle,mBaseColorHandle,mOutlineColorHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
     GLuint uEdge,uBorderEdge,uOutlineStrength;
-    GLuint mLOLHandle;
-    GLuint mSamplerDistCorrectionHandle;
     const DistortionManager* distortionManager;
+    DistortionManager::UndistortionHandles mUndistortionHandles;
 public:
     struct Vertex{
         float x,y,z;

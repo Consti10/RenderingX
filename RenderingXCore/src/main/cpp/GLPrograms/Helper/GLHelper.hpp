@@ -1,15 +1,8 @@
-/********************************************
- * Holds all OpenGL Shaders and helper functions
- * vs=Vertex Shader fs=Fragment Shader vddc=Vertex Displacement Distortion Correction
- * *******************************************/
-#ifndef GL_HELPER
-#define GL_HELPER
+#ifndef RENDERINGX_CORE_HELPER_GLHelper
+#define RENDERINGX_CORE_HELPER_GLHelper
 
-#include <string>
 #include <GLES2/gl2.h>
-#include "android/log.h"
-#include <glm/glm.hpp>
-#include <glm/mat4x4.hpp>
+#include <string>
 #include <sstream>
 #include "MDebug.hpp"
 
@@ -17,28 +10,13 @@ class GLHelper{
 private:
     inline static const std::string TAG="GLHelper";
 public:
-    static const void allocateGLBufferStatic(GLuint buff,void* array,int arraySize){
-        glBindBuffer(GL_ARRAY_BUFFER,buff);
-        glBufferData(GL_ARRAY_BUFFER, arraySize,
-                     array, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-    }
-    static const void allocateGLBufferDynamic(GLuint buff,void* array,int arraySize){
-        glBindBuffer(GL_ARRAY_BUFFER,buff);
-        glBufferData(GL_ARRAY_BUFFER, arraySize,
-                     array, GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-    }
-
-    /*template<typename T, typename A>
-    static const void allocateGLBufferDynamic(GLuint buff,std::vector<T,A> const& vec){{
-
-    }*/
-
     static void checkGlError(const std::string& op) {
         int error;
         while ((error = glGetError()) != GL_NO_ERROR) {
-            __android_log_print(ANDROID_LOG_DEBUG,TAG.c_str(),"%s GLError:%d",op.c_str(),error);
+            //__android_log_print(ANDROID_LOG_DEBUG,TAG.c_str(),"%s GLError:%d",op.c_str(),error);
+            std::stringstream ss;
+            ss<<"GLError:"<<op.c_str()<<"|"<<error;
+            MDebug::log(ss.str(),TAG);
         }
     }
     static const GLuint loadShader(GLenum type,const std::string& shaderCode){
@@ -79,6 +57,5 @@ public:
         return program;
     }
 };
-
 
 #endif

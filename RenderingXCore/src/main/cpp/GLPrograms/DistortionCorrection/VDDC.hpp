@@ -30,8 +30,6 @@
 /// But since the distortion moves coordinate points 'inwarts' relative to the view space r2,
 /// we have to distort maxRadSq before
 
-static constexpr const int MY_VERSION=2;
-
 class DistortionManager{
 public:
     static constexpr const int N_UNDISTORTION_COEFICIENTS=7;
@@ -42,35 +40,51 @@ public:
     float lol[RESOLUTION_XY][RESOLUTION_XY][2];
 
     GLuint mDistortionCorrectionTexture;
+    struct UndistortionHandles{
+        GLuint lolHandle;
+        GLuint samplerDistCorrectionHandle;
+    };
+    const int MY_VERSION=2;
 public:
     DistortionManager(gvr_context* gvrContext){
-        Distortion mDistortion(400,gvrContext);
-        Distortion inverse=mDistortion.calculateInverse(32);
+        Distortion mDistortion(200,gvrContext);
+        Distortion inverse=mDistortion.calculateInverse(RESOLUTION_XY);
+        //inverse.save("/storage/emulated/0/DCIM/RenderingX/myfile.txt");
+
         //mDistortion.radialDistortionOnly();
         //Distortion inverse=mDistortion.calculateInverse(RESOLUTION_XY);
         //inverse.radialDistortionOnly();
         inverse.lol(lol);
         //coefficients: [0.34, 0.55]
-        VR_DC_UndistortionData.at(0)=10.0f;
-        VR_DC_UndistortionData.at(1)=0.34f;
-        VR_DC_UndistortionData.at(2)=0.55f;
+        VR_DC_UndistortionData[0]=10.0f;
+        VR_DC_UndistortionData[1]=0.34f;
+        VR_DC_UndistortionData[2]=0.55f;
         //VR_DC_UndistortionData.at(2)=1.4535f;
     }
-
-    void beforeDraw(const GLuint lolHandle,const GLuint samplerDistCorrectionHandle)const{
+    DistortionManager(JNIEnv *env,jfloatArray undistData){
+        jfloat *arrayP=env->GetFloatArrayElements(undistData, nullptr);
+        std::memcpy(VR_DC_UndistortionData.data(),arrayP,VR_DC_UndistortionData.size()*sizeof(float));
+        env->ReleaseFloatArrayElements(undistData,arrayP,0);
+    }
+    UndistortionHandles getUndistortionUniformHandles(const GLuint program)const{
+        UndistortionHandles ret{};
+        if(MY_VERSION==1)ret.lolHandle=(GLuint)glGetUniformLocation(program,"LOL");
+        if(MY_VERSION==2)ret.samplerDistCorrectionHandle=(GLuint)glGetUniformLocation (program, "sTextureDistCorrection" );
+        return ret;
+    }
+    void beforeDraw(const UndistortionHandles undistortionHandles)const{
         if(MY_VERSION==0){
             //Nothing
         }else if(MY_VERSION==1){
-            glUniform2fv(lolHandle,(GLsizei)(ARRAY_SIZE),(GLfloat*)lol);
+            glUniform2fv(undistortionHandles.lolHandle,(GLsizei)(ARRAY_SIZE),(GLfloat*)lol);
         }else{
             glActiveTexture(DistortionManager::MY_TEXTURE_UNIT);
             glBindTexture(GL_TEXTURE_2D,mDistortionCorrectionTexture);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
             glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-            glUniform1i(samplerDistCorrectionHandle,DistortionManager::MY_SAMPLER_UNIT);
+            glUniform1i(undistortionHandles.samplerDistCorrectionHandle,DistortionManager::MY_SAMPLER_UNIT);
         }
     }
-
     void afterDraw()const{
         glBindTexture(GL_TEXTURE_2D,0);
     }
@@ -113,14 +127,14 @@ class VDDC {
 public:
 
     static const std::string writeGLPosition(const DistortionManager* distortionManager,const std::string &positionAttribute="aPosition"){
-        if(distortionManager!= nullptr)return writeGLPositionWithVDDC(positionAttribute);
+        if(distortionManager!= nullptr)return writeGLPositionWithVDDC(*distortionManager,positionAttribute);
         //return"vec4 lul=uMVMatrix * "+positionAttribute+";\n"+"";
         return "gl_Position = (uPMatrix*uMVMatrix)* "+positionAttribute+";\n";
         //return "gl_Position = vec4("+positionAttribute+".xy*2.0, 0, 1);";
     }
-    static const std::string writeGLPositionWithVDDC(const std::string& positionAttribute){
+    static const std::string writeGLPositionWithVDDC(const DistortionManager& distortionManager,const std::string& positionAttribute){
         std::stringstream s;
-        if(MY_VERSION==0){
+        if(distortionManager.MY_VERSION==0){
             s<<"vec4 pos=uMVMatrix*"+positionAttribute+";\n";
             s<<"float r2=dot(pos.xy,pos.xy)/(pos.z*pos.z);\n";
             s<<"r2=clamp(r2,0.0,_MaxRadSq);\n";
@@ -133,9 +147,9 @@ public:
             s<<"ret = r2 * (ret + _Undistortion.x);\n";
             s<<"pos.xy*=1.0+ret;\n";
             s<<"gl_Position=pos;\n";
-        }else if(MY_VERSION==1){
+        }else if(distortionManager.MY_VERSION==1){
             s<<std::fixed;
-            //s<<"  pos=vec4("+positionAttribute+".xy*2.0, 0, 1);";
+            //s<<"vec4 pos=vec4("+positionAttribute+".xy*2.0, 0, 1);";
             s<<"vec4  pos=(uPMatrix*uMVMatrix)*"+positionAttribute+";\n";
             s<<"vec2 ndc=pos.xy/pos.w;";///(-pos.z);";
             s<<"int idx1=my_round(ndc.x*"<<(DistortionManager::RESOLUTION_XY/2.0f)<<")+"<<DistortionManager::RESOLUTION_XY/2<<";";
@@ -149,9 +163,10 @@ public:
             s<<"gl_Position=pos;\n";
         }else{
             s<<"vec4  pos=(uPMatrix*uMVMatrix)*"+positionAttribute+";\n";
+            //s<<"vec4 pos=vec4("+positionAttribute+".xy*2.0, 0, 1);";
             s<<"vec2 ndc=pos.xy/pos.w;";///(-pos.z);";
             s<<"vec2 uvFromNDC=(ndc+vec2(1.0,1.0))/2.0;";
-            s<<"vec4 value=texture2D(sTextureDistCorrection, uvFromNDC );";
+            s<<"vec4 value=texture2D(sTextureDistCorrection,uvFromNDC );";
             s<<"pos.x+=value.x*pos.w;";
             s<<"pos.y+=value.y*pos.w;";
             s<<"gl_Position=pos;\n";
@@ -161,18 +176,16 @@ public:
 
     static const std::string writeLOL(const DistortionManager* distortionManager){
         std::stringstream s;
-        //Write placeholders even if not needed
-        s<<"uniform highp vec2 LOL["<<((distortionManager!= nullptr && MY_VERSION==1) ? DistortionManager::ARRAY_SIZE : 1)<<"];";
-        s<<"uniform sampler2D sTextureDistCorrection;";
-        if(distortionManager==nullptr)return s.str();
-        if(MY_VERSION==0){
+        if(distortionManager==nullptr)return "";
+        if(distortionManager->MY_VERSION==0){
             const auto coeficients=distortionManager->VR_DC_UndistortionData;
             s<<std::fixed;
             s<<"const float _MaxRadSq="<<coeficients[0];s<<";\n";
             //There is no vec6 data type. Therefore, we use 1 vec4 and 1 vec2. Vec4 holds k1,k2,k3,k4 and vec6 holds k5,k6
             s<<"const vec4 _Undistortion=vec4("<<coeficients[1]<<","<<coeficients[2]<<","<<coeficients[3]<<","<<coeficients[4]<<");\n";
             s<<"const vec2 _Undistortion2=vec2("<<coeficients[5]<<","<<coeficients[6]<<");\n";
-        }else if(MY_VERSION==1){
+        }else if(distortionManager->MY_VERSION==1){
+            s<<"uniform highp vec2 LOL["<< DistortionManager::ARRAY_SIZE<<"];";
             s<<"int my_clamp(in int x,in int minVal,in int maxVal){";
             s<<"if(x<minVal){return minVal;}";
             s<<"if(x>maxVal){return maxVal;}";
@@ -181,8 +194,8 @@ public:
             s<<"float afterCome=x-float(int(x));";
             s<<"if(afterCome>=0.5){return int(x+0.5);}";
             s<<"return int(x);}";
-        }else{
-            //Nothing
+        }else if(distortionManager->MY_VERSION==2){
+            s<<"uniform sampler2D sTextureDistCorrection;";
         }
         return s.str();
     }

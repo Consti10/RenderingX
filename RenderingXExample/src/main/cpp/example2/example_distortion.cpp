@@ -2,9 +2,10 @@
 // Created by Consti10 on 15/05/2019.
 //
 
-#include "example_renderer2.h"
+#include "example_distortion.h"
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
+#include "Helper/GLBufferHelper.hpp"
 
 // This computes a general frustum given four field-of-view (FOV)
 // angles and the near and far clipping planes. The FOV angle is
@@ -34,15 +35,12 @@ glm::mat4 make_frustum(float left_fov,
     return result;
 }
 
-
 ExampleRenderer2::ExampleRenderer2(JNIEnv *env, jobject androidContext,gvr_context *gvr_context,jfloatArray undistData) {
-    /*jfloat *arrayP=env->GetFloatArrayElements(undistData, nullptr);
-    std::memcpy(VR_DC_UndistortionData.data(),arrayP,VR_DC_UndistortionData.size()*sizeof(float));
-    env->ReleaseFloatArrayElements(undistData,arrayP,0);*/
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
+    //distortionManager=new DistortionManager(env,undistData);
 }
 
-static std::vector<GLProgramVC::Vertex> distortVertices(const gvr_context *gvr_context,const std::vector<GLProgramVC::Vertex> input){
+static std::vector<GLProgramVC::Vertex> distortVertices(const gvr_context *gvr_context,const std::vector<GLProgramVC::Vertex>& input){
     const int RES=800;
     const auto mDistortion=Distortion(RES,gvr_context);
     const auto inverse=mDistortion.calculateInverse(8);
@@ -72,7 +70,7 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
     GLuint texture;
     glGenTextures(1,&texture);
     glProgramTexture=new GLProgramTexture(texture,false,distortionManager);
-    glProgramTexture->loadTexture(env,context,"c_grid3.png");
+    glProgramTexture->loadTexture(env,context,"c_grid4.png");
     //create all the gl Buffer for later use
     glGenBuffers(1,&glBufferVC);
     glGenBuffers(1,&glBufferVCDistorted1);
@@ -80,18 +78,13 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
     glGenBuffers(1,&glBufferCoordinateSystemLines);
     //create the geometry for our simple test scene
     float size=1.0f;
-    const auto tmp=ColoredGeometry::makeTesselatedColoredRectLines(TESSELATION,{-size/2.0f,-size/2.0f,0},size,size,Color::WHITE);
-    GLHelper::allocateGLBufferStatic(glBufferVC,(void*)tmp.data(),tmp.size()*sizeof(GLProgramVC::Vertex));
-    //auto tmp1=distortVertices(gvr_api_->GetContext(),tmp);
-    //GLHelper::allocateGLBufferStatic(glBufferVCDistorted1,(void*)tmp1.data(),tmp1.size()*sizeof(GLProgramVC::Vertex));
-    //auto tmp2=distortVertices(gvr_api_->GetContext(),tmp);
-    //GLHelper::allocateGLBufferStatic(glBufferVCDistorted1,(void*)tmp2.data(),tmp2.size()*sizeof(GLProgramVC::Vertex));
-
+    const auto tmp=ColoredGeometry::makeTesselatedColoredRectLines(LINE_MESH_TESSELATION_FACTOR,{-size/2.0f,-size/2.0f,0},size,size,Color::WHITE);
+    nColoredVertices=tmp.size();
+    GLBufferHelper::allocateGLBufferStatic(glBufferVC,tmp);
     //make the line going trough (0,0)
     const auto coordinateSystemLines=ColoredGeometry::makeDebugCoordinateSystemLines(100);
-    GLHelper::allocateGLBufferStatic(glBufferCoordinateSystemLines,(void*)coordinateSystemLines.data(),coordinateSystemLines.size()*sizeof(GLProgramVC::Vertex));
+    GLBufferHelper::allocateGLBufferStatic(glBufferCoordinateSystemLines,coordinateSystemLines);
     nCoordinateSystemLinesVertices=coordinateSystemLines.size();
-
     //Textured stuff
     //const float fov=90.0f;
     const float sizeX=1.0f;
@@ -99,33 +92,28 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
     glGenBuffers(1,&glBufferTextured);
     glGenBuffers(1,&glBufferTextured1);
     glGenBuffers(1,&glBufferTextured2);
-    glGenBuffers(1,&glBufferTexturedIndices);
-    GLProgramTexture::Vertex texturedVertices[(TEXTURE_TESSELATION_FACTOR+1)*(TEXTURE_TESSELATION_FACTOR+1)];
-    GLushort texturedIndices[6*TEXTURE_TESSELATION_FACTOR*TEXTURE_TESSELATION_FACTOR];
-    TexturedGeometry::makeTesselatedVideoCanvas( texturedVertices,  texturedIndices, glm::vec3(-sizeX/2.0f,-sizeY/2.0f,0),
-                                                sizeX,sizeY, TEXTURE_TESSELATION_FACTOR, 0.0f,1.0f);
-    const int RESOULTION_CALCULATE_UNDISTORTION=400;
-    //const auto distortedPoints=VDDC::calculateDistortedPoints(gvr_api_->GetContext(),RESOULTION_CALCULATE_UNDISTORTION);
+    const auto tesselatedVideoCanvas=TexturedGeometry::makeTesselatedVideoCanvas2(glm::vec3(-sizeX/2.0f,-sizeY/2.0f,0),
+            sizeX,sizeY, TEXTURE_TESSELATION_FACTOR, 0.0f,1.0f);
+    nTexturedVertices=tesselatedVideoCanvas.size();
 
-    GLProgramTexture::Vertex texturedVertices1[(TEXTURE_TESSELATION_FACTOR+1)*(TEXTURE_TESSELATION_FACTOR+1)];
-    //GLProgramTexture::Vertex texturedVertices2[(TEXTURE_TESSELATION_FACTOR+1)*(TEXTURE_TESSELATION_FACTOR+1)];
+    const int RESOULTION_CALCULATE_UNDISTORTION=400;
+
+    std::vector<GLProgramTexture::Vertex> texturedVertices1(tesselatedVideoCanvas.size());
 
     //Distortion mDistortion(gvr_api_->GetContext(),400);
     //Distortion inverse=mDistortion.calculateInverse(30);
 
-    for(int i=0;i<(TEXTURE_TESSELATION_FACTOR+1)*(TEXTURE_TESSELATION_FACTOR+1);i++){
-        const GLProgramTexture::Vertex& v=texturedVertices[i];
+    for(int i=0;i<tesselatedVideoCanvas.size();i++){
+        const GLProgramTexture::Vertex& v=tesselatedVideoCanvas.at(i);
         //const auto p=inverse.distortPoint({v.u,v.v});
         //texturedVertices1[i]={v.x,v.y,v.z,p.x,p.y};
         gvr_vec2f out[3];
         gvr_compute_distorted_point(gvr_api_.get()->GetContext(),GVR_LEFT_EYE,{v.u,v.v},out);
-        texturedVertices1[i]={v.x,v.y,v.z,out[0].x,out[0].y};
-
+        texturedVertices1.at(i)={v.x,v.y,v.z,out[0].x,out[0].y};
         //gvr_compute_distorted_point(gvr_api_.get()->GetContext(),GVR_RIGHT_EYE,{v.u,v.v},out);
         //v.u=out[0].x;
         //v.v=out[0].y;
         //texturedVertices2[i]={v.x,v.y,v.z,out[0].x,out[0].y};
-
         //
         /*gvr_compute_distorted_point(gvr_api_.get()->GetContext(),GVR_LEFT_EYE,{v.x+0.5f,v.y+0.5f},out);
         v.x=(out[0].x-0.5f); //v.x*2-
@@ -143,10 +131,8 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
         v.x*=dist;
         v.y*=dist;*/
     }
-    GLHelper::allocateGLBufferStatic(glBufferTextured,texturedVertices,sizeof(texturedVertices));
-    GLHelper::allocateGLBufferStatic(glBufferTextured1,texturedVertices1,sizeof(texturedVertices));
-    //GLHelper::allocateGLBufferStatic(glBufferTextured2,texturedVertices2,sizeof(texturedVertices));
-    GLHelper::allocateGLBufferStatic(glBufferTexturedIndices,texturedIndices,sizeof(texturedIndices));
+    GLBufferHelper::allocateGLBufferStatic(glBufferTextured,tesselatedVideoCanvas);
+    GLBufferHelper::allocateGLBufferStatic(glBufferTextured1,texturedVertices1);
 
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
@@ -154,7 +140,7 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
 void ExampleRenderer2::onSurfaceChanged(int width, int height) {
     ViewPortW=width/2;
     ViewPortH=height;
-    projection=glm::perspective(glm::radians(90.0F), 1.0f, MIN_Z_DISTANCE, MAX_Z_DISTANCE);
+    projection=glm::perspective(glm::radians(60.0F), 1.0f, MIN_Z_DISTANCE, MAX_Z_DISTANCE);
     //projection=make_frustum(45,45,45,45,MIN_Z_DISTANCE,MAX_Z_DISTANCE);
 
     glm::vec3 cameraPos   = glm::vec3(0,0,CAMERA_POSITION);
@@ -194,12 +180,8 @@ void ExampleRenderer2::drawEye(bool leftEye) {
     glProgramVC->draw(glm::value_ptr(tmp),glm::value_ptr(projection),0,N_COLORED_VERTICES,GL_TRIANGLES);
     glProgramVC->afterDraw();*/
 
-    glm::mat4 transform=glm::mat4();
-    //transform=glm::rotate(transform,glm::radians(20.0f),glm::vec3(1.0f,0.0f,0.0f));
-    transform=glm::translate(transform,glm::vec3(0.3f,0.0f,0.0f));
-
     glProgramTexture->beforeDraw(glBufferTextured1);
-    glProgramTexture->drawIndexed(eyeView,projection,0,N_TEXTURED_INDICES,glBufferTexturedIndices);
+    glProgramTexture->draw(eyeView,projection,0,nTexturedVertices);
     glProgramTexture->afterDraw();
 
     /*glProgramVC->beforeDraw(glBufferVCDistorted1);
@@ -211,7 +193,7 @@ void ExampleRenderer2::drawEye(bool leftEye) {
     glProgramVC->afterDraw();*/
 
     glProgramVC2->beforeDraw(glBufferVC);
-    glProgramVC2->draw(glm::value_ptr(tmp),glm::value_ptr(projection),0,N_COLORED_VERTICES,GL_LINES);
+    glProgramVC2->draw(glm::value_ptr(tmp),glm::value_ptr(projection),0,nColoredVertices,GL_LINES);
     glProgramVC2->afterDraw();
 
     /*glProgramVC2->beforeDraw(glBufferCoordinateSystemLines);

@@ -17,11 +17,12 @@ distortionManager(distortionManager) {
     uEdge=(GLuint)glGetUniformLocation(mProgram,"uEdge");
     uBorderEdge=(GLuint)glGetUniformLocation(mProgram,"uBorderEdge");
     uOutlineStrength=(GLuint)glGetUniformLocation(mProgram,"uOutlineStrength");
+    if(distortionManager!=nullptr){
+        mUndistortionHandles=distortionManager->getUndistortionUniformHandles(mProgram);
+    }
     glUseProgram(mProgram);
     setOtherUniforms();
     glUseProgram(0);
-    mLOLHandle=(GLuint)glGetUniformLocation((GLuint)mProgram,"LOL");
-    mSamplerDistCorrectionHandle=(GLuint)glGetUniformLocation (mProgram, "sTextureDistCorrection" );
     GLHelper::checkGlError("glGetAttribLocation GLProgramLine");
 }
 
@@ -39,7 +40,7 @@ void GLProgramLine::beforeDraw(GLuint buffer) const {
     glEnableVertexAttribArray(mOutlineColorHandle);
     glVertexAttribPointer(mOutlineColorHandle,4,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,outlineColor));
     if(distortionManager!= nullptr){
-        distortionManager->beforeDraw(mLOLHandle,mSamplerDistCorrectionHandle);
+        distortionManager->beforeDraw(mUndistortionHandles);
     }
 }
 

@@ -12,7 +12,7 @@ include_directories(${RX_CORE_DIR}/libs/glm)
 #Time & SuperSync
 ##########################################################################################################
 include_directories(${RX_CORE_DIR}/src/main/cpp/Time)
-add_library( Time SHARED
+add_library(Time SHARED
         ${RX_CORE_DIR}/src/main/cpp/Time/Chronometer.cpp
         ${RX_CORE_DIR}/src/main/cpp/Time/VRFrameCPUChronometer.cpp
         ${RX_CORE_DIR}/src/main/cpp/Time/FPSCalculator.cpp)
@@ -67,7 +67,7 @@ target_link_libraries( example-renderer
 
 add_library( example-renderer2
         SHARED
-        src/main/cpp/example2/example_renderer2.cpp
+        src/main/cpp/example2/example_distortion.cpp
         )
 target_link_libraries( example-renderer2
         GLPrograms

@@ -10,13 +10,12 @@ GLProgramTexture::GLProgramTexture(const GLuint texture,const bool USE_EXTERNAL_
     mProgram = GLHelper::createProgram(VS(distortionManager),FS(USE_EXTERNAL_TEXTURE));
     mMVMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
     mPMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uPMatrix");
-    mLOLHandle=(GLuint)glGetUniformLocation((GLuint)mProgram,"LOL");
-    mSamplerDistCorrectionHandle=(GLuint)glGetUniformLocation (mProgram, "sTextureDistCorrection" );
     mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
     mTextureHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aTexCoord");
     mSamplerHandle = glGetUniformLocation (mProgram, "sTexture" );
-    //glGenTextures(1, mTexture);
-
+    if(distortionManager!=nullptr){
+        mUndistortionHandles=distortionManager->getUndistortionUniformHandles(mProgram);
+    }
     glActiveTexture(MY_TEXTURE_UNIT);
     glBindTexture((GLenum)(USE_EXTERNAL_TEXTURE ? GL_TEXTURE_EXTERNAL_OES : GL_TEXTURE_2D),mTexture);
 
@@ -41,7 +40,7 @@ void GLProgramTexture::beforeDraw(const GLuint buffer) const{
     glEnableVertexAttribArray((GLuint)mTextureHandle);
     glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,u));
     if(distortionManager!= nullptr){
-        distortionManager->beforeDraw(mLOLHandle,mSamplerDistCorrectionHandle);
+        distortionManager->beforeDraw(mUndistortionHandles);
     }
 }
 

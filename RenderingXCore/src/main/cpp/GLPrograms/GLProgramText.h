@@ -51,6 +51,7 @@ private:
     GLuint mLOLHandle;
     GLuint mSamplerDistCorrectionHandle;
     const DistortionManager* distortionManager;
+    DistortionManager::UndistortionHandles mUndistortionHandles;
 public:
     //Characters are indexed squares
     struct Character{

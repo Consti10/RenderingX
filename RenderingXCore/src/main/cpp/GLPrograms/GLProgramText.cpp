@@ -37,8 +37,9 @@ GLProgramText::GLProgramText(const DistortionManager* distortionManager):
     mOutlineStrengthHandle=(GLuint)glGetUniformLocation(mProgram,"uOutlineStrength");
     uEdge=(GLuint)glGetUniformLocation(mProgram,"uEdge");
     uBorderEdge=(GLuint)glGetUniformLocation(mProgram,"uBorderEdge");
-    mLOLHandle=(GLuint)glGetUniformLocation((GLuint)mProgram,"LOL");
-    mSamplerDistCorrectionHandle=(GLuint)glGetUniformLocation (mProgram, "sTextureDistCorrection" );
+    if(distortionManager!=nullptr){
+        mUndistortionHandles=distortionManager->getUndistortionUniformHandles(mProgram);
+    }
     GLHelper::checkGlError("GLProgramText() uniforms3");
 #ifdef WIREFRAME
     mOverrideColorHandle=(GLuint)glGetUniformLocation(mProgram,"uOverrideColor");
@@ -84,7 +85,7 @@ void GLProgramText::beforeDraw(const GLuint buffer) const{
     glVertexAttribPointer((GLuint)mColorHandle,4/*r,g,b,a*/,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,color));
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndicesB);
     if(distortionManager!= nullptr){
-        distortionManager->beforeDraw(mLOLHandle,mSamplerDistCorrectionHandle);
+        distortionManager->beforeDraw(mUndistortionHandles);
     }
 }
 

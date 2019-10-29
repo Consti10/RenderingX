@@ -2,8 +2,8 @@
 // Created by Consti10 on 08/10/2019.
 //
 
-#ifndef RENDERINGX_EXAMPLE_RENDERER2_H
-#define RENDERINGX_EXAMPLE_RENDERER2_H
+#ifndef RENDERINGX_EXAMPLE_DISTORTION_H
+#define RENDERINGX_EXAMPLE_DISTORTION_H
 
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
@@ -55,14 +55,14 @@ private:
 
 //holds colored geometry vertices
     GLuint glBufferVC;
-
+    int nColoredVertices;
     GLuint glBufferVCDistorted1;
     GLuint glBufferVCDistorted2;
 
     GLuint glBufferTextured;
+    int nTexturedVertices;
     GLuint glBufferTextured1;
     GLuint glBufferTextured2;
-    GLuint glBufferTexturedIndices;
 
     GLuint glBufferCoordinateSystemLines;
     int nCoordinateSystemLinesVertices;
@@ -74,13 +74,10 @@ private:
 
     static constexpr float VR_InterpupilaryDistance=0.2f;
 
-    static constexpr int TESSELATION=8;
-    static constexpr int N_COLORED_VERTICES=6*(TESSELATION+1)*(TESSELATION+1);
-    static constexpr int N_TEXTURED_VERTICES=6*11*11;
     int ViewPortW=0,ViewPortH=0;
 
+    static constexpr int LINE_MESH_TESSELATION_FACTOR=8;
     static constexpr int TEXTURE_TESSELATION_FACTOR=30;
-    static constexpr int N_TEXTURED_INDICES=6*TEXTURE_TESSELATION_FACTOR*TEXTURE_TESSELATION_FACTOR;
 };
 
-#endif //RENDERINGX_EXAMPLE_RENDERER2_H
+#endif //RENDERINGX_EXAMPLE_DISTORTION_H

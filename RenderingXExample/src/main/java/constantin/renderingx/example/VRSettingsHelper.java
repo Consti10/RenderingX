@@ -2,6 +2,7 @@ package constantin.renderingx.example;
 
 import android.content.Context;
 
+import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.sdk.base.Distortion;
 import com.google.vr.sdk.base.GvrView;
 import com.google.vr.sdk.base.GvrViewerParams;
@@ -30,7 +31,6 @@ public class VRSettingsHelper {
         System.out.println(params.getModel()+"  "+"FOV Y"+fovY_full+"FOV X"+fovX_full+params.getDistortion().toString());
         System.out.println("FOV:"+params.getLeftEyeMaxFov().toString());
         Distortion distortion=params.getDistortion();
-
 
         fovY_full=80.0f;
 

@@ -10,6 +10,10 @@
 
 class TexturedGeometry {
 public:
+    struct IndicesVertices{
+        std::vector<GLProgramTexture::Vertex> vertices{};
+        std::vector<GLProgramTexture::INDEX_DATA> indices{};
+    };
     static const void makeTexturedTriangle(GLProgramTexture::Vertex *array,const int arrayOffset,
                                            const glm::vec3& point1,const glm::vec3& point2,const glm::vec3& point3,
                                            const glm::vec2& uv1,const glm::vec2& uv2,const glm::vec2& uv3) {
@@ -32,7 +36,7 @@ public:
         p[ 2].u = uv3[0];
         p[ 2].v = uv3[1];
     }
-    static const void makeTexturedRect(GLProgramTexture::Vertex array[],const int arrayOffset,const glm::vec3& point,const glm::vec3& width,const glm::vec3& height,
+    /*static const void makeTexturedRect(GLProgramTexture::Vertex array[],const int arrayOffset,const glm::vec3& point,const glm::vec3& width,const glm::vec3& height,
                                        const float u,const float v,const float uRange,const float vRange){
         //|--------------------------------|h
         //|                                |e
@@ -58,12 +62,15 @@ public:
 
         makeTexturedTriangle(array, arrayOffset + 0, p1, p2, p3, uv1, uv2, uv3);
         makeTexturedTriangle(array, arrayOffset + 4, p4, p5, p6, uv4, uv5, uv6);
-    }
+    }*/
 
-    static const void makeTesselatedVideoCanvas(GLProgramTexture::Vertex *vertices,
-                                                GLushort *indices,const  glm::vec3& point,const float width,
+    static const IndicesVertices makeTesselatedVideoCanvas(const  glm::vec3& point,const float width,
                                                 const float height,const int tesselation, const float uOffset,
                                                 const float uRange){
+        IndicesVertices ret;
+        ret.vertices.resize((tesselation+1)*(tesselation+1));
+        ret.indices.resize(6*tesselation*tesselation);
+
         const float vRange=1.0f;
         const int tesselationX=tesselation;
         const int tesselationY=tesselation;
@@ -75,11 +82,12 @@ public:
         int count=0;
         for(int i=0;i<tesselationX+1;i++){
             for(int j=0;j<tesselationY+1;j++){
-                vertices[count].x=point.x+subW*j;
-                vertices[count].y=point.y+subH*i;
-                vertices[count].z=point.z;
-                vertices[count].u=uOffset+subURange*j;//uRange-
-                vertices[count].v=vRange-subVRange*i;
+                GLProgramTexture::Vertex& v=ret.vertices.at(count);
+                v.x=point.x+subW*j;
+                v.y=point.y+subH*i;
+                v.z=point.z;
+                v.u=uOffset+subURange*j;//uRange-
+                v.v=vRange-subVRange*i;
                 count++;
             }
         }
@@ -90,13 +98,13 @@ public:
         count=0;
         for(int i=0;i<indicesX;i++){
             for(int j=0;j<indicesY;j++){
-                indices[count++]=(GLushort)(i*rowSize+j);
-                indices[count++]=(GLushort)((i+1)*rowSize+j);
-                indices[count++]=(GLushort)(i*rowSize+j+1);
+                ret.indices.at(count++)=(GLushort)(i*rowSize+j);
+                ret.indices.at(count++)=(GLushort)((i+1)*rowSize+j);
+                ret.indices.at(count++)=(GLushort)(i*rowSize+j+1);
                 //
-                indices[count++]=(GLushort)(i*rowSize+j+1);
-                indices[count++]=(GLushort)((i+1)*rowSize+j);
-                indices[count++]=(GLushort)((i+1)*rowSize+j+1);
+                ret.indices.at(count++)=(GLushort)(i*rowSize+j+1);
+                ret.indices.at(count++)=(GLushort)((i+1)*rowSize+j);
+                ret.indices.at(count++)=(GLushort)((i+1)*rowSize+j+1);
             }
         }
         //__android_log_print(ANDROID_LOG_DEBUG, "count I:","%d",count);
@@ -105,8 +113,22 @@ public:
             ss<<indices[i]<<" ";
         }
         __android_log_print(ANDROID_LOG_DEBUG, "X","%s",ss.str().c_str());*/
+        return ret;
     }
 
+    //Sometimes we want no indices for simplicity over performance
+    static const std::vector<GLProgramTexture::Vertex> makeTesselatedVideoCanvas2(const  glm::vec3& point,const float width,
+                                                                                  const float height,const int tesselation, const float uOffset,const float uRange){
+        const auto tmp=makeTesselatedVideoCanvas(point,width,height,tesselation,uOffset,uRange);
+        //we do not want indices
+        std::vector<GLProgramTexture::Vertex> ret;
+        ret.reserve(tmp.indices.size());
+        for(int i=0;i<tmp.indices.size();i++){
+            const auto index=tmp.indices.at(i);
+            ret.push_back(tmp.vertices.at(index));
+        }
+        return ret;
+    }
 
 };
 

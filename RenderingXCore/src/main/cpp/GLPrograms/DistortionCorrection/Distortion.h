@@ -10,6 +10,7 @@
 #include <sstream>
 #include <vector>
 #include <limits>
+#include <fstream>
 
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
@@ -82,7 +83,6 @@ public:
         }
         __android_log_print(ANDROID_LOG_DEBUG,"VDDC","%s",seperator);
     }
-
     const glm::vec2 distortPoint(const glm::vec2 in)const{
         const float indexX_=in.x*RESOLUTION;
         const float indexY_=in.y*RESOLUTION;
@@ -166,7 +166,6 @@ public:
             }
         }
     }
-
     /*std::vector<std::vector<glm::vec2>> calculateVectorField(){
         std::vector<std::vector<glm::vec2>> ret((RESOLUTION+1)*(RESOLUTION+1));
         for(int i=0;i<=RESOLUTION;i++){
@@ -192,6 +191,24 @@ public:
             }
         }
         //return (float*) ret;
+    }
+
+    const void save( const std::string filename){
+        std::stringstream ss;
+        for(int i=0;i<=RESOLUTION;i++){
+            const auto rowArray=distortedPoints.at(i);
+            for(int j=0;j<=RESOLUTION;j++){
+                const auto point=rowArray.at(j);
+                ss<<"("<<point.p.x<<","<<point.p.y<<"),";
+            }
+            ss<<"\n";
+        }
+        //write to file
+        std::ofstream distortionFile;
+        distortionFile.open (filename.c_str());
+        distortionFile.write(ss.str().c_str(),ss.str().length());
+        distortionFile.flush();
+        distortionFile.close();
     }
 };
 

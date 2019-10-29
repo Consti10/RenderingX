@@ -85,42 +85,45 @@ public:
         const float subW=width/(float)tesselationX;
         const float subH=height/(float)tesselationY;
 
-       GLProgramVC::Vertex tmpArray[(tesselationX+1)*(tesselationY+1)];
-
+       std::vector<GLProgramVC::Vertex> allVertexPoints((tesselationX+1)*(tesselationY+1));
        int idx=0;
         for(int x=0;x<=tesselationX;x++){
             float xPos=point.x+(x*subW);
             for(int y=0;y<=tesselationY;y++){
                 float yPos=point.y+(y*subH);
-
-                tmpArray[idx].x=xPos;
-                tmpArray[idx].y=yPos;
-
-                tmpArray[idx].z=point.z;
-                tmpArray[idx].colorRGBA=color;
+                allVertexPoints[idx].x=xPos;
+                allVertexPoints[idx].y=yPos;
+                allVertexPoints[idx].z=point.z;
+                allVertexPoints[idx].colorRGBA=color;
                 idx++;
             }
         }
         //vertical lines
-        std::vector<GLProgramVC::Vertex> ret((unsigned int)(6*(tesselation+1)*(tesselation+1)));
+        std::vector<GLProgramVC::Vertex> horizontalLines(2*(tesselation+1)*(tesselation));
         int arrayOffset=0;
-        for(int x=0;x<tesselationX+1;x++){
+        for(int x=0;x<=tesselationX;x++){
             for(int y=0;y<tesselationY;y++){
-                ret[arrayOffset]=tmpArray[x*(tesselationX+1)+y];
+                horizontalLines.at(arrayOffset)=allVertexPoints[x*(tesselationX+1)+y];
                 arrayOffset++;
-                ret[arrayOffset]=tmpArray[x*(tesselationX+1)+y+1];
+                horizontalLines.at(arrayOffset)=allVertexPoints[x*(tesselationX+1)+y+1];
                 arrayOffset++;
             }
         }
         //horizontal lines
+        std::vector<GLProgramVC::Vertex> verticalLines(2*(tesselation+1)*(tesselation));
+        arrayOffset=0;
         for(int x=0;x<tesselationX;x++){
-            for(int y=0;y<tesselationY+1;y++){
-                ret[arrayOffset]=tmpArray[x*(tesselationX+1)+y];
+            for(int y=0;y<=tesselationY;y++){
+                verticalLines.at(arrayOffset)=allVertexPoints[x*(tesselationX+1)+y];
                 arrayOffset++;
-                ret[arrayOffset]=tmpArray[(x+1)*(tesselationX+1)+y];
+                verticalLines.at(arrayOffset)=allVertexPoints[(x+1)*(tesselationX+1)+y];
                 arrayOffset++;
             }
         }
+        std::vector<GLProgramVC::Vertex> ret;
+        ret.reserve(horizontalLines.size()+verticalLines.size());
+        ret.insert(ret.end(),horizontalLines.begin(),horizontalLines.end());
+        ret.insert(ret.end(),verticalLines.begin(),verticalLines.end());
         return ret;
     }
     static const void makeOutlineQuadWithLines(GLProgramVC::Vertex array[],const float mX,const float mY,const float mZ,const float quadWith,const float quadHeight,
