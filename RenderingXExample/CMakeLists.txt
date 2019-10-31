@@ -7,6 +7,9 @@ set(RX_CORE_DIR ${CMAKE_SOURCE_DIR}/../RenderingXCore)
 
 #glm
 include_directories(${RX_CORE_DIR}/libs/glm)
+include_directories(${RX_CORE_DIR}/src/main/cpp/Color/)
+include_directories(${RX_CORE_DIR}/src/main/cpp/GeometryBuilder/)
+include_directories(${RX_CORE_DIR}/src/main/cpp/Helper/)
 
 ##########################################################################################################
 #Time & SuperSync
@@ -41,7 +44,7 @@ add_library( GLPrograms SHARED
         ${RX_CORE_DIR}/src/main/cpp/Sphere/Sphere.cpp
         ${RX_CORE_DIR}/src/main/cpp/Sphere/GvrSphere.cpp
         ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramSpherical.cpp
-        )
+        ${RX_CORE_DIR}/src/main/cpp/GLPrograms/DistortionCorrection/DistortionManager.cpp)
 target_link_libraries( GLPrograms ${log-lib} android GLESv2 gvr-lib)
 
 ##########################################################################################################

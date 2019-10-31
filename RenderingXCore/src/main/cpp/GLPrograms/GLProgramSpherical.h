@@ -30,7 +30,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <string>
-#include <DistortionCorrection/VDDC.hpp>
+#include <DistortionCorrection/DistortionManager.h>
 
 class GLProgramSpherical {
 public:
@@ -54,9 +54,9 @@ private:
         ss<<"attribute vec4 aPosition;\n";
         ss<<"attribute vec2 aTexCoord;\n";
         ss<<"varying vec2 vTexCoord;\n";
-        ss<<VDDC::writeLOL(distortionManager1);
+        ss<<DistortionManager::writeLOL(distortionManager1);
         ss<<"void main() {\n";
-        ss<<VDDC::writeGLPosition(distortionManager1); //gl_Position = (uPMatrix * uMVMatrix) * aPosition;
+        ss<<DistortionManager::writeGLPosition(distortionManager1); //gl_Position = (uPMatrix * uMVMatrix) * aPosition;
         ss<<"  vTexCoord = aTexCoord;\n";
         ss<<"}\n";
         return ss.str();

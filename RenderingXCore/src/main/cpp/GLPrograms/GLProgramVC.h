@@ -14,7 +14,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <array>
 #include "Color/Color.hpp"
-#include <DistortionCorrection/VDDC.hpp>
+#include <DistortionCorrection/DistortionManager.h>
 
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
@@ -49,9 +49,9 @@ private:
         s<<"attribute vec4 aPosition;\n";
         s<<"attribute vec4 aColor;\n";
         s<<"varying vec4 vColor;\n";
-        s<<VDDC::writeLOL(distortionManager1);
+        s<<DistortionManager::writeLOL(distortionManager1);
         s<<"void main(){\n";
-        s<< VDDC::writeGLPosition(distortionManager1);
+        s<<DistortionManager::writeGLPosition(distortionManager1);
         //s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition";
         s<<"vColor = aColor;\n";
         s<<"gl_PointSize=15.0;";

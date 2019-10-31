@@ -12,7 +12,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <array>
-#include <DistortionCorrection/VDDC.hpp>
+#include <DistortionCorrection/DistortionManager.h>
 
 class GLProgramTexture {
 private:
@@ -45,10 +45,9 @@ private:
         s<<"attribute vec4 aPosition;\n";
         s<<"attribute vec2 aTexCoord;\n";
         s<<"varying vec2 vTexCoord;\n";
-        s<<VDDC::writeLOL(distortionManager1);
-
+        s<<DistortionManager::writeLOL(distortionManager1);
         s<<"void main() {\n";
-        //s<< VDDC::writeGLPosition(distortionManager1);
+        //s<<DistortionManager::writeGLPosition(distortionManager1);
         s<<"gl_Position = vec4(aPosition.xy*2.0,0,1);";
         s<<"vTexCoord = aTexCoord;\n";
         /*s<<"vec4 lul = (uMVMatrix * vec4(aTexCoord, 0.0,1.0));";

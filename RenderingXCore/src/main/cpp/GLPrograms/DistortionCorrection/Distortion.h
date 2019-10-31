@@ -11,6 +11,7 @@
 #include <vector>
 #include <limits>
 #include <fstream>
+#include <filesystem>
 
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
@@ -25,17 +26,12 @@ static const float calculateRadSquared(const glm::vec2 p);
 class Distortion{
 private:
     struct DistortedPoint{
-        glm::vec2 p;
+        glm::vec2 originalPoint;
         glm::vec2 distortedP;
-    };
-    struct Link{
-        float searchValue;
-        DistortedPoint* p;
     };
 public:
     const int RESOLUTION;
     std::vector<std::vector<DistortedPoint>> distortedPoints;
-    std::vector<Link> list;
     Distortion(const int RESOLUTION,const gvr_context* gvrContext):
             RESOLUTION(RESOLUTION),distortedPoints((RESOLUTION+1),std::vector<DistortedPoint>((RESOLUTION+1))){
         if(gvrContext== nullptr)return;
@@ -52,22 +48,7 @@ public:
                 distortedPoints.at(i).at(j)={glm::vec2(x,y),glm::vec2(out[0].x,out[0].y)};
             }
         }
-        //
-        /*for(int i=0;i<=RESOLUTION;i++){
-            for(int j=0;j<=RESOLUTION;j++){
-                const int idx=i*(RESOLUTION+1)+j;
-                auto& p=distortedPoints.at(i).at(j);
-                const float searchValue=p.p.x*(RESOLUTION+1)+p.p.y;
-                list.at(idx)={searchValue,&p};
-                //__android_log_print(ANDROID_LOG_DEBUG,"VDDC","DPSV %f",searchValue);
-            }
-        }
-        std::sort(list.begin(),list.end(),[](Link a,Link b)->bool{return a.searchValue > b.searchValue; });*/
-        /*for(Link& link:list){
-            __android_log_print(ANDROID_LOG_DEBUG,"VDDC","Link %f -> (%f,%f)",link.searchValue,link.p->p.x,link.p->p.y);
-        }*/
     }
-
     const void print()const{
         const auto seperator="--------------------------------------------------------------------";
         __android_log_print(ANDROID_LOG_DEBUG,"VDDC","%s",seperator);
@@ -76,7 +57,7 @@ public:
             std::stringstream ss;
             ss<<"|";
             for(int j=0;j<=RESOLUTION;j++){
-                ss<<"("<<rowArray.at(j).p.x<<","<<rowArray.at(j).p.y<<"),";
+                ss<<"("<<rowArray.at(j).originalPoint.x<<","<<rowArray.at(j).originalPoint.y<<"),";
             }
             ss<<"|";
             __android_log_print(ANDROID_LOG_DEBUG,"VDDC","%s",ss.str().c_str());
@@ -89,15 +70,11 @@ public:
         const int indexX=(int)std::round(indexX_);
         const int indexY=(int)std::round(indexY_);
         const DistortedPoint& distortedPoint=distortedPoints.at(indexX).at(indexY);
-        if(distortedPoint.p!=glm::vec2(in.x,in.y)){
+        if(distortedPoint.originalPoint!=glm::vec2(in.x,in.y)){
             __android_log_print(ANDROID_LOG_DEBUG,"VDDC","Wrong resolution. Want (%f,%f) Found (%f,%f)",in.x,in.y,
-                                distortedPoint.p.x,distortedPoint.p.y);
+                                distortedPoint.originalPoint.x,distortedPoint.originalPoint.y);
         }
         return distortedPoint.distortedP;
-        /*const float searchValue=(in.x*(RESOLUTION+1))+in.y;
-        auto const it = std::lower_bound(list.begin(), list.end(), searchValue,[](Link a,float b)->bool{return a.searchValue > b; });
-        __android_log_print(ANDROID_LOG_DEBUG,"VDDC","Looking for (%f,%f) -> Got (%f,%f)",in.x,in.y,it->p->p.x,it->p->p.y);
-        return  it->p->distortedP;*/
     }
 
     const glm::vec2 findClosestMatchInverse(const glm::vec2 in)const{
@@ -111,7 +88,7 @@ public:
                 const double diff=sqrt(diff1*diff1+diff2*diff2);//(diff1+diff2)/2.0f;
                 if(diff<lastBestDiff){
                     lastBestDiff=diff;
-                    bestMatchUndistortionPoint=point.p;
+                    bestMatchUndistortionPoint=point.originalPoint;
                 }
             }
         }
@@ -122,18 +99,6 @@ public:
     }
 
     const Distortion calculateInverse(const int NEW_RES)const{
-        //create array with DistortedPoints, but one dimension to make searching
-        /*std::vector<Link> list((RESOLUTION+1)*(RESOLUTION+1));
-        for(int i=0;i<=RESOLUTION;i++){
-            for(int j=0;j<=RESOLUTION;j++){
-                const int idx=i*RESOLUTION+j;
-                auto& p=distortedPoints.at(i).at(j);
-                const float distortedPointSearchValue=p.distortedP.x*RESOLUTION+p.distortedP.y;
-                list.at(idx)={distortedPointSearchValue,&p};
-                //__android_log_print(ANDROID_LOG_DEBUG,"VDDC","DPSV %f",distortedPointSearchValue);
-            }
-        }
-        std::sort(list.begin(),list.end(),[](Link a,Link b)->bool{return a.distortedPointSearchValue > b.distortedPointSearchValue; });*/
         Distortion distortion(NEW_RES,nullptr);
         for(int i=0;i<=NEW_RES;i++){
             for(int j=0;j<=NEW_RES;j++){
@@ -141,47 +106,16 @@ public:
                 const float y=(float)j/(float)NEW_RES;
                 const auto p=findClosestMatchInverse({x,y});
                 distortion.distortedPoints.at(i).at(j)={{x,y},p};
-                //const float searchValue=x*RESOLUTION+y;
-                //auto const it = std::lower_bound(list.begin(), list.end(), searchValue,[](Link a,float b)->bool{return a.distortedPointSearchValue > b; });
-                //distortion.distortedPoints.at(i).at(j)={{x,y},it.base()->distortedP};
             }
         }
         return distortion;
     }
-
-    void radialDistortionOnly(){
-        //find the point where the inverse is closest to (0.5/0.5)
-        const auto middle=findClosestMatchInverse({0.5f,0.5f});
-        LOGD("Middle is at (%f,%f)",middle.x,middle.y);
-        for(int i=0;i<=RESOLUTION;i++){
-            for(int j=0;j<=RESOLUTION;j++) {
-                //use +/- 0.5f for coordinate system with (0,0) in the middle
-                const glm::vec2 p1 = distortedPoints.at(i).at(j).p-glm::vec2(0.5f,0.5f);
-                const glm::vec2 p2 = distortedPoints.at(i).at(j).distortedP-glm::vec2(0.5f,0.5f);
-                const float p1_r2 = calculateRadSquared(p1);
-                const float p2_r2 = calculateRadSquared(p2);
-                const float radialDistortionFactor = 1.0f + p2_r2 - p1_r2;
-                const glm::vec2 radialDistortedPoint = p1 * radialDistortionFactor;
-                distortedPoints.at(i).at(j).distortedP=radialDistortedPoint+glm::vec2(0.5f,0.5f);
-            }
-        }
-    }
-    /*std::vector<std::vector<glm::vec2>> calculateVectorField(){
-        std::vector<std::vector<glm::vec2>> ret((RESOLUTION+1)*(RESOLUTION+1));
-        for(int i=0;i<=RESOLUTION;i++){
-            for(int j=0;j<=RESOLUTION;j++){
-                const auto p=distortedPoints.at(i).at(j);
-                auto dir=p.distortedP-p.p;
-                //dir=glm::ab
-            }
-        }
-    }*/
     void lol(float (&arr) [32][32][2])const{
         //float ret[RESOLUTION][RESOLUTION][2];
         for(int i=0;i<RESOLUTION;i++){
             for(int j=0;j<RESOLUTION;j++){
                 const auto value=distortedPoints.at(i).at(j);
-                const auto p=value.p*2.0f-glm::vec2(1.0f,1.0f);
+                const auto p=value.originalPoint*2.0f-glm::vec2(1.0f,1.0f);
                 const auto distortedP=value.distortedP*2.0f-glm::vec2(1.0f,1.0f);
                 const auto dir=distortedP-p;
                 arr[i][j][0]=dir.x;//p.distortedP.x;
@@ -192,23 +126,95 @@ public:
         }
         //return (float*) ret;
     }
-
-    const void save( const std::string filename){
-        std::stringstream ss;
+    void radialDistortionOnly(){
+        //find the point where the inverse is closest to (0.5/0.5)
+        const auto middle=findClosestMatchInverse({0.5f,0.5f});
+        LOGD("Middle is at (%f,%f)",middle.x,middle.y);
         for(int i=0;i<=RESOLUTION;i++){
-            const auto rowArray=distortedPoints.at(i);
+            for(int j=0;j<=RESOLUTION;j++) {
+                //use +/- 0.5f for coordinate system with (0,0) in the middle
+                const glm::vec2 p1 = distortedPoints.at(i).at(j).originalPoint-glm::vec2(0.5f,0.5f);
+                const glm::vec2 p2 = distortedPoints.at(i).at(j).distortedP-glm::vec2(0.5f,0.5f);
+                const float p1_r2 = calculateRadSquared(p1);
+                const float p2_r2 = calculateRadSquared(p2);
+                const float radialDistortionFactor = 1.0f + p2_r2 - p1_r2;
+                const glm::vec2 radialDistortedPoint = p1 * radialDistortionFactor;
+                distortedPoints.at(i).at(j).distortedP=radialDistortedPoint+glm::vec2(0.5f,0.5f);
+            }
+        }
+    }
+    bool fileExists(const std::string filename)const{
+        std::ifstream infile(filename.c_str());
+        return infile.good();
+    }
+    const void saveAsText(const std::string directory,const std::string filename){
+       std::stringstream ss;
+        for(int i=0;i<=RESOLUTION;i++){
+            const auto& rowArray=distortedPoints.at(i);
             for(int j=0;j<=RESOLUTION;j++){
-                const auto point=rowArray.at(j);
-                ss<<"("<<point.p.x<<","<<point.p.y<<"),";
+                const auto& point=rowArray.at(j);
+                ss<<"("<<point.originalPoint.x<<","<<point.originalPoint.y<<"),";
             }
             ss<<"\n";
         }
         //write to file
+        //bool exist = std::filesystem::exists("Hi");
+        //std::filesystem::create_directory(directory.c_str());
+        //__android_log_print(ANDROID_LOG_DEBUG,"Distortion","File exists%d",fileExists(directory+filename));
         std::ofstream distortionFile;
-        distortionFile.open (filename.c_str());
+        distortionFile.open((directory+filename).c_str());
         distortionFile.write(ss.str().c_str(),ss.str().length());
         distortionFile.flush();
         distortionFile.close();
+    }
+
+     const void saveAsBinary(const std::string directory,const std::string filename){
+         std::ofstream distortionFile;
+         distortionFile.open((directory+filename).c_str(),std::ofstream::binary);
+        //In the first line, we write the size as int32_t value
+        //Then we just write the bytes of the distortion points array
+        int32_t size=RESOLUTION+1;
+        distortionFile.write((char*)&size,sizeof(int32_t));
+        for(int i=0;i<=RESOLUTION;i++){
+            const auto& rowArray=distortedPoints.at(i);
+            for(int j=0;j<=RESOLUTION;j++){
+                const auto& point=rowArray.at(j);
+                float x=point.distortedP.x;
+                float y=point.distortedP.y;
+                distortionFile.write((char*)&x,sizeof(float));
+                distortionFile.write((char*)&y,sizeof(float));
+            }
+        }
+         distortionFile.flush();
+         distortionFile.close();
+    }
+    static Distortion createFromBinaryFile(const std::string& filename){
+        std::ifstream file (filename.c_str(),std::ifstream::binary);
+        file.seekg(0, file.end);
+        const int fileSize = (int)file.tellg();
+        file.seekg(0, file.beg);
+        uint8_t data[fileSize];
+        file.read ((char*)data,fileSize);
+        file.close();
+        //first 4 bytes are the size of one row
+        int32_t size;
+        memcpy(&size,data,sizeof(int32_t));
+        Distortion distortion(size-1, nullptr);
+        int offset=4;
+        for(int i=0;i<=distortion.RESOLUTION;i++){
+            for(int j=0;j<=distortion.RESOLUTION;j++){
+                const float x=(float)i/(float)distortion.RESOLUTION;
+                const float y=(float)j/(float)distortion.RESOLUTION;
+                float x2,y2;
+                memcpy(&x2,&data[offset], sizeof(float));
+                offset+=4;
+                memcpy(&y2,&data[offset], sizeof(float));
+                offset+=4;
+                distortion.distortedPoints.at(i).at(j).originalPoint={x,y};
+                distortion.distortedPoints.at(i).at(j).distortedP={x2,y2};
+            }
+        }
+        return distortion;
     }
 };
 

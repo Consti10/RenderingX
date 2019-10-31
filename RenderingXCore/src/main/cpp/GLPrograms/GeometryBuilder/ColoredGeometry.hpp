@@ -16,14 +16,14 @@ public:
     static const void makeColoredLine(GLProgramVC::Vertex array[],const int arrayOffset,const glm::vec3& point1,const glm::vec3& point2,
                                       const TrueColor color1,const TrueColor color2){
         auto* p=&array[arrayOffset];
-        p[ 0].x=point1[0];
-        p[ 0].y=point1[1];
-        p[ 0].z=point1[2];
-        p[ 0].colorRGBA=color1;
-        p[ 1].x=point2[0];
-        p[ 1].y=point2[1];
-        p[ 1].z=point2[2];
-        p[ 1].colorRGBA=color2;
+        p[0].x=point1[0];
+        p[0].y=point1[1];
+        p[0].z=point1[2];
+        p[0].colorRGBA=color1;
+        p[1].x=point2[0];
+        p[1].y=point2[1];
+        p[1].z=point2[2];
+        p[1].colorRGBA=color2;
     };
     static const void makeColoredTriangle(GLProgramVC::Vertex array[],const int arrayOffset,
                                               const glm::vec3& point1,const glm::vec3& point2,const glm::vec3& point3,
@@ -33,12 +33,10 @@ public:
         p[0].y = point1[1];
         p[0].z = point1[2];
         p[0].colorRGBA = color1;
-
         p[1].x = point2[0];
         p[1].y = point2[1];
         p[1].z = point2[2];
         p[1].colorRGBA = color2;
-
         p[2].x = point3[0];
         p[2].y = point3[1];
         p[2].z = point3[2];
@@ -103,10 +101,8 @@ public:
         int arrayOffset=0;
         for(int x=0;x<=tesselationX;x++){
             for(int y=0;y<tesselationY;y++){
-                horizontalLines.at(arrayOffset)=allVertexPoints[x*(tesselationX+1)+y];
-                arrayOffset++;
-                horizontalLines.at(arrayOffset)=allVertexPoints[x*(tesselationX+1)+y+1];
-                arrayOffset++;
+                horizontalLines.at(arrayOffset++)=allVertexPoints[x*(tesselationX+1)+y];
+                horizontalLines.at(arrayOffset++)=allVertexPoints[x*(tesselationX+1)+y+1];
             }
         }
         //horizontal lines
@@ -114,10 +110,8 @@ public:
         arrayOffset=0;
         for(int x=0;x<tesselationX;x++){
             for(int y=0;y<=tesselationY;y++){
-                verticalLines.at(arrayOffset)=allVertexPoints[x*(tesselationX+1)+y];
-                arrayOffset++;
-                verticalLines.at(arrayOffset)=allVertexPoints[(x+1)*(tesselationX+1)+y];
-                arrayOffset++;
+                verticalLines.at(arrayOffset++)=allVertexPoints[x*(tesselationX+1)+y];
+                verticalLines.at(arrayOffset++)=allVertexPoints[(x+1)*(tesselationX+1)+y];
             }
         }
         std::vector<GLProgramVC::Vertex> ret;
@@ -129,15 +123,11 @@ public:
     static const void makeOutlineQuadWithLines(GLProgramVC::Vertex array[],const float mX,const float mY,const float mZ,const float quadWith,const float quadHeight,
                                                const TrueColor color){
         //left and right
-        makeColoredLine(array, 0 * 2, glm::vec3(mX, mY, mZ), glm::vec3(mX, mY + quadHeight, mZ),
-                        color, color);
-        makeColoredLine(array, 1 * 2, glm::vec3(mX + quadWith, mY, mZ),
-                        glm::vec3(mX + quadWith, mY + quadHeight, mZ), color, color);
+        makeColoredLine(array, 0 * 2, glm::vec3(mX, mY, mZ), glm::vec3(mX, mY + quadHeight, mZ),color, color);
+        makeColoredLine(array, 1 * 2, glm::vec3(mX + quadWith, mY, mZ),glm::vec3(mX + quadWith, mY + quadHeight, mZ), color, color);
         //top and bottom
-        makeColoredLine(array, 2 * 2, glm::vec3(mX, mY + quadHeight, mZ),
-                        glm::vec3(mX + quadWith, mY + quadHeight, mZ), color, color);
-        makeColoredLine(array, 3 * 2, glm::vec3(mX, mY, mZ), glm::vec3(mX + quadWith, mY, mZ),
-                        color, color);
+        makeColoredLine(array, 2 * 2, glm::vec3(mX, mY + quadHeight, mZ),glm::vec3(mX + quadWith, mY + quadHeight, mZ), color, color);
+        makeColoredLine(array, 3 * 2, glm::vec3(mX, mY, mZ), glm::vec3(mX + quadWith, mY, mZ),color, color);
     }
     static const void makeBackgroundRect(GLProgramVC::Vertex array[],const glm::vec3& point,const float width,const float height,const TrueColor color1,const TrueColor color2){
         //p4    p1

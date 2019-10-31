@@ -13,7 +13,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Color/Color.hpp"
-#include <DistortionCorrection/VDDC.hpp>
+#include <DistortionCorrection/DistortionManager.h>
 
 class GLProgramLine {
 private:
@@ -53,11 +53,11 @@ private:
         s<<"varying vec3 vNormal;";
         s<<"varying vec4 vBaseColor;";
         s<<"varying vec4 vOutlineColor;";
-        s<<VDDC::writeLOL(distortionManager1);
+        s<<DistortionManager::writeLOL(distortionManager1);
         s<<"vec4 extruded_pos;";
         s<<"void main(){\n";
         s<<"extruded_pos=aPosition+vec4(aNormal*aLineWidth,0.0);\n";
-        s<<VDDC::writeGLPosition(distortionManager1,"extruded_pos");
+        s<<DistortionManager::writeGLPosition(distortionManager1,"extruded_pos");
         //s<<"gl_Position = (uPMatrix*uMVMatrix)* extruded_pos;\n";
         s<<"vNormal=aNormal;";
         s<<"vBaseColor=aBaseColor;";

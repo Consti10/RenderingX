@@ -1,9 +1,9 @@
 //
-// Created by Constantin on 2/17/2019.
+// Created by Consti10 on 31/10/2019.
 //
 
-#ifndef FPV_VR_VDDC_H
-#define FPV_VR_VDDC_H
+#ifndef RENDERINGX_DISTORTIONMANAGER_H
+#define RENDERINGX_DISTORTIONMANAGER_H
 
 #include <array>
 #include <string>
@@ -19,21 +19,13 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <Helper/NDKHelper.h>
-
 #include "android/log.h"
-
 #include "DistortionCorrection/Distortion.h"
 
-/// VDDC Vertex displacement distortion correction
-/// The distortion happens in view space
-/// This space ranges from -1 ... 1, and maxRadSq would be therefore 1 without any distortion.
-/// But since the distortion moves coordinate points 'inwarts' relative to the view space r2,
-/// we have to distort maxRadSq before
-
-class DistortionManager{
+class DistortionManager {
 public:
-    static constexpr const int N_UNDISTORTION_COEFICIENTS=7;
-    std::array<float,N_UNDISTORTION_COEFICIENTS> VR_DC_UndistortionData;
+    static constexpr const int N_RADIAL_UNDISTORTION_COEFICIENTS=7;
+    std::array<float,N_RADIAL_UNDISTORTION_COEFICIENTS> RadialUndistortionData;
 
     static constexpr const int RESOLUTION_XY=32;
     static constexpr int ARRAY_SIZE=RESOLUTION_XY*RESOLUTION_XY;
@@ -46,85 +38,15 @@ public:
     };
     const int MY_VERSION=2;
 public:
-    DistortionManager(gvr_context* gvrContext){
-        Distortion mDistortion(200,gvrContext);
-        Distortion inverse=mDistortion.calculateInverse(RESOLUTION_XY);
-        //inverse.save("/storage/emulated/0/DCIM/RenderingX/myfile.txt");
-
-        //mDistortion.radialDistortionOnly();
-        //Distortion inverse=mDistortion.calculateInverse(RESOLUTION_XY);
-        //inverse.radialDistortionOnly();
-        inverse.lol(lol);
-        //coefficients: [0.34, 0.55]
-        VR_DC_UndistortionData[0]=10.0f;
-        VR_DC_UndistortionData[1]=0.34f;
-        VR_DC_UndistortionData[2]=0.55f;
-        //VR_DC_UndistortionData.at(2)=1.4535f;
-    }
-    DistortionManager(JNIEnv *env,jfloatArray undistData){
-        jfloat *arrayP=env->GetFloatArrayElements(undistData, nullptr);
-        std::memcpy(VR_DC_UndistortionData.data(),arrayP,VR_DC_UndistortionData.size()*sizeof(float));
-        env->ReleaseFloatArrayElements(undistData,arrayP,0);
-    }
-    UndistortionHandles getUndistortionUniformHandles(const GLuint program)const{
-        UndistortionHandles ret{};
-        if(MY_VERSION==1)ret.lolHandle=(GLuint)glGetUniformLocation(program,"LOL");
-        if(MY_VERSION==2)ret.samplerDistCorrectionHandle=(GLuint)glGetUniformLocation (program, "sTextureDistCorrection" );
-        return ret;
-    }
-    void beforeDraw(const UndistortionHandles undistortionHandles)const{
-        if(MY_VERSION==0){
-            //Nothing
-        }else if(MY_VERSION==1){
-            glUniform2fv(undistortionHandles.lolHandle,(GLsizei)(ARRAY_SIZE),(GLfloat*)lol);
-        }else{
-            glActiveTexture(DistortionManager::MY_TEXTURE_UNIT);
-            glBindTexture(GL_TEXTURE_2D,mDistortionCorrectionTexture);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-            glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-            glUniform1i(undistortionHandles.samplerDistCorrectionHandle,DistortionManager::MY_SAMPLER_UNIT);
-        }
-    }
-    void afterDraw()const{
-        glBindTexture(GL_TEXTURE_2D,0);
-    }
+    DistortionManager(gvr_context* gvrContext);
+    DistortionManager(JNIEnv *env,jfloatArray undistData);
+    UndistortionHandles getUndistortionUniformHandles(const GLuint program)const;
+    void beforeDraw(const UndistortionHandles undistortionHandles)const;
+    void afterDraw()const;
 
     static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
     static constexpr auto MY_SAMPLER_UNIT=1;
-    void generateTexture(){
-        glGenTextures(1,&mDistortionCorrectionTexture);
-
-        glActiveTexture(MY_TEXTURE_UNIT);
-        glBindTexture(GL_TEXTURE_2D, mDistortionCorrectionTexture);
-
-        const int SIZE=DistortionManager::RESOLUTION_XY;
-        GLfloat data[SIZE][SIZE][4];
-        for(int i=0;i<SIZE;i++){
-            for(int j=0;j<SIZE;j++){
-                data[i][j][0]=lol[j][i][0];
-                data[i][j][1]=lol[j][i][1];
-                //data[i][j][0]=0.0f;
-                //data[i][j][1]=0.2f;
-            }
-        }
-        //GL_RGBA32F
-        constexpr auto RGBA32F_ARB=0x8814;
-        constexpr auto RGBA16F_ARB=0x881A;
-        glTexImage2D(GL_TEXTURE_2D, 0,RGBA16F_ARB, SIZE,SIZE, 0, GL_RGBA, GL_FLOAT,data);
-
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-
-        //NDKHelper::uploadAssetImageToGPU(env,androidContext,name,false);
-
-        glBindTexture(GL_TEXTURE_2D,0);
-
-    }
-};
-
-
-class VDDC {
-public:
+    void generateTexture();
 
     static const std::string writeGLPosition(const DistortionManager* distortionManager,const std::string &positionAttribute="aPosition"){
         if(distortionManager!= nullptr)return writeGLPositionWithVDDC(*distortionManager,positionAttribute);
@@ -178,7 +100,7 @@ public:
         std::stringstream s;
         if(distortionManager==nullptr)return "";
         if(distortionManager->MY_VERSION==0){
-            const auto coeficients=distortionManager->VR_DC_UndistortionData;
+            const auto coeficients=distortionManager->RadialUndistortionData;
             s<<std::fixed;
             s<<"const float _MaxRadSq="<<coeficients[0];s<<";\n";
             //There is no vec6 data type. Therefore, we use 1 vec4 and 1 vec2. Vec4 holds k1,k2,k3,k4 and vec6 holds k5,k6
@@ -199,10 +121,7 @@ public:
         }
         return s.str();
     }
-
 };
 
 
-
-
-#endif //FPV_VR_VDDC_H
+#endif //RENDERINGX_DISTORTIONMANAGER_H

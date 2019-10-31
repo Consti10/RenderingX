@@ -27,7 +27,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Color/Color.hpp"
-#include <DistortionCorrection/VDDC.hpp>
+#include <DistortionCorrection/DistortionManager.h>
 
 class GLProgramText {
 private:
@@ -95,9 +95,9 @@ private:
         s<<"varying vec2 vTexCoord;\n";
         s<<"attribute vec4 aVertexColor;\n";
         s<<"varying vec4 vVertexColor;\n";
-        s<<VDDC::writeLOL(distortionManager1);
+        s<<DistortionManager::writeLOL(distortionManager1);
         s<<"void main() {\n";
-        s<< VDDC::writeGLPosition(distortionManager1);
+        s<<DistortionManager::writeGLPosition(distortionManager1);
         s<<"  vTexCoord = aTexCoord;\n";
         s<<"  vVertexColor = aVertexColor;\n";
 #ifdef WIREFRAME

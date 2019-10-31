@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.os.Environment;
 
 import com.google.vr.ndk.base.GvrLayout;
 
@@ -27,6 +28,8 @@ public class TestActivity extends AppCompatActivity {
         gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         gvrLayout.setPresentationView(gLView);
         setContentView(gvrLayout);
+
+        System.out.println("Path is:"+ Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS));
     }
 
     @Override
