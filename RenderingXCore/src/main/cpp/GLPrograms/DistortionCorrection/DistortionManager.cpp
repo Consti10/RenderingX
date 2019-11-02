@@ -5,11 +5,10 @@
 #include "DistortionManager.h"
 
 DistortionManager::DistortionManager(gvr_context *gvrContext) {
-    Distortion mDistortionLeftEye(200,gvrContext,GVR_LEFT_EYE);
-    Distortion mDistortionRightEye(200,gvrContext,GVR_RIGHT_EYE);
-    Distortion inverseLeftEye=mDistortionLeftEye.calculateInverse(RESOLUTION_XY-1);
-    Distortion inverseRightEye=mDistortionRightEye.calculateInverse(RESOLUTION_XY-1);
-
+    const Distortion mDistortionLeftEye(200,gvrContext,GVR_LEFT_EYE);
+    const Distortion mDistortionRightEye(200,gvrContext,GVR_RIGHT_EYE);
+    const Distortion inverseLeftEye=mDistortionLeftEye.calculateInverse(RESOLUTION_XY-1);
+    const Distortion inverseRightEye=mDistortionRightEye.calculateInverse(RESOLUTION_XY-1);
 
     inverseLeftEye.extractData(leftEyeUndistortionData);
     inverseRightEye.extractData(rightEyeUndistortionData);

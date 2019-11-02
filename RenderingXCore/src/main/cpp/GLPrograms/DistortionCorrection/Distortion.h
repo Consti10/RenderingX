@@ -144,11 +144,7 @@ public:
             }
         }
     }
-    bool fileExists(const std::string filename)const{
-        std::ifstream infile(filename.c_str());
-        return infile.good();
-    }
-    const void saveAsText(const std::string directory,const std::string filename){
+    void saveAsText(const std::string directory,const std::string filename)const{
        std::stringstream ss;
         for(int i=0;i<=RESOLUTION;i++){
             const auto& rowArray=distortedPoints.at(i);
@@ -189,7 +185,7 @@ public:
          distortionFile.flush();
          distortionFile.close();
     }
-    
+
     static Distortion createFromBinaryFile(const std::string& filename){
         std::ifstream file (filename.c_str(),std::ifstream::binary);
         file.seekg(0, file.end);
@@ -208,10 +204,10 @@ public:
                 const float x=(float)i/(float)distortion.RESOLUTION;
                 const float y=(float)j/(float)distortion.RESOLUTION;
                 float x2,y2;
-                memcpy(&x2,&data[offset], sizeof(float));
-                offset+=4;
-                memcpy(&y2,&data[offset], sizeof(float));
-                offset+=4;
+                memcpy(&x2,&data[offset+=4], sizeof(float));
+                //offset+=4;
+                memcpy(&y2,&data[offset+=4], sizeof(float));
+                //offset+=4;
                 distortion.distortedPoints.at(i).at(j).originalPoint={x,y};
                 distortion.distortedPoints.at(i).at(j).distortedP={x2,y2};
             }

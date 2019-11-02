@@ -22,7 +22,6 @@ ExampleRenderer2::ExampleRenderer2(JNIEnv *env, jobject androidContext,gvr_conte
     const std::string model=std::string(gvr_get_viewer_model(gvr_context));
     //const std::string vendor=std::string(gvr_get_viewer_vendor(gvrContext));
     const auto distortionDirectoryForModel=DistortionManager::createDistortionFilesIfNotYetExisting(distortionDirectory,model,gvr_context);
-
     distortionManager=new DistortionManager(distortionDirectoryForModel+std::string("dist_left.bin"),distortionDirectoryForModel+std::string("dist_right.bin"));
 
     MDebug::log("Curr selected device is,Model:"+std::string(gvr_api_->GetViewerModel())+" Vendor:"+std::string(gvr_api_->GetViewerVendor()),TAG);
