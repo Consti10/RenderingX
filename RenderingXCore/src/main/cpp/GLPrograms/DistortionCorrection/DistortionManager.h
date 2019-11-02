@@ -10,6 +10,7 @@
 #include <sstream>
 #include <Helper/MDebug.hpp>
 #include <vector>
+#include <sys/stat.h>
 #include "Helper/GLHelper.hpp"
 
 #include "vr/gvr/capi/include/gvr.h"
@@ -29,24 +30,34 @@ public:
 
     static constexpr const int RESOLUTION_XY=32;
     static constexpr int ARRAY_SIZE=RESOLUTION_XY*RESOLUTION_XY;
-    float lol[RESOLUTION_XY][RESOLUTION_XY][2];
 
-    GLuint mDistortionCorrectionTexture;
+    float leftEyeUndistortionData[RESOLUTION_XY][RESOLUTION_XY][2];
+    float rightEyeUndistortionData[RESOLUTION_XY][RESOLUTION_XY][2];
+
     struct UndistortionHandles{
         GLuint lolHandle;
         GLuint samplerDistCorrectionHandle;
     };
     const int MY_VERSION=2;
+
+    bool leftEye=true;
+    static constexpr auto MY_TEXTURE_UNIT_LEFT_EYE=GL_TEXTURE2;
+    static constexpr auto MY_SAMPLER_UNIT_LEFT_EYE=2;
+    static constexpr auto MY_TEXTURE_UNIT_RIGHT_EYE=GL_TEXTURE3;
+    static constexpr auto MY_SAMPLER_UNIT_RIGHT_EYE=3;
+
+    GLuint mDistortionCorrectionTextureLeftEye;
+    GLuint mDistortionCorrectionTextureRightEye;
 public:
     DistortionManager(gvr_context* gvrContext);
     DistortionManager(JNIEnv *env,jfloatArray undistData);
+    DistortionManager(const std::string& filenameLeftEye,const std::string& filenameRightEye);
     UndistortionHandles getUndistortionUniformHandles(const GLuint program)const;
     void beforeDraw(const UndistortionHandles undistortionHandles)const;
     void afterDraw()const;
 
-    static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
-    static constexpr auto MY_SAMPLER_UNIT=1;
-    void generateTexture();
+    void generateTextures();
+    void generateTexture(bool leftEye);
 
     static const std::string writeGLPosition(const DistortionManager* distortionManager,const std::string &positionAttribute="aPosition"){
         if(distortionManager!= nullptr)return writeGLPositionWithVDDC(*distortionManager,positionAttribute);
@@ -120,6 +131,22 @@ public:
             s<<"uniform sampler2D sTextureDistCorrection;";
         }
         return s.str();
+    }
+
+    static std::string createDistortionFilesIfNotYetExisting(const std::string& distortionFilesDirectory,const std::string& viewerModel,gvr_context* gvrContext){
+        const std::string directory=distortionFilesDirectory+viewerModel+"/";
+
+        int result=mkdir(directory.c_str(), 0777);
+        if(result==0){
+            Distortion mDistortionLeftEye(200,gvrContext,GVR_LEFT_EYE);
+            Distortion mDistortionRightEye(200,gvrContext,GVR_RIGHT_EYE);
+            Distortion inverseLeftEye=mDistortionLeftEye.calculateInverse(RESOLUTION_XY-1);
+            Distortion inverseRightEye=mDistortionRightEye.calculateInverse(RESOLUTION_XY-1);
+
+            inverseLeftEye.saveAsBinary(directory,"dist_left.bin");
+            inverseRightEye.saveAsBinary(directory,"dist_right.bin");
+        }
+        return directory;
     }
 };
 

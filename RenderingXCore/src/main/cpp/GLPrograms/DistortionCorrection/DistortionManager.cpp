@@ -5,15 +5,15 @@
 #include "DistortionManager.h"
 
 DistortionManager::DistortionManager(gvr_context *gvrContext) {
-    Distortion mDistortion(200,gvrContext);
-    //Distortion inverse=mDistortion.calculateInverse(RESOLUTION_XY);
-    //inverse.saveAsBinary("/storage/emulated/0/Documents/RenderingX/","myfile3.bin");
-    Distortion inverse=Distortion::createFromBinaryFile("/storage/emulated/0/Documents/RenderingX/myfile3.bin");
+    Distortion mDistortionLeftEye(200,gvrContext,GVR_LEFT_EYE);
+    Distortion mDistortionRightEye(200,gvrContext,GVR_RIGHT_EYE);
+    Distortion inverseLeftEye=mDistortionLeftEye.calculateInverse(RESOLUTION_XY-1);
+    Distortion inverseRightEye=mDistortionRightEye.calculateInverse(RESOLUTION_XY-1);
 
-    //mDistortion.radialDistortionOnly();
-    //Distortion inverse=mDistortion.calculateInverse(RESOLUTION_XY);
-    //inverse.radialDistortionOnly();
-    inverse.lol(lol);
+
+    inverseLeftEye.extractData(leftEyeUndistortionData);
+    inverseRightEye.extractData(rightEyeUndistortionData);
+
     //coefficients: [0.34, 0.55]
     RadialUndistortionData[0]=10.0f;
     RadialUndistortionData[1]=0.34f;
@@ -25,6 +25,14 @@ DistortionManager::DistortionManager(JNIEnv *env, jfloatArray undistData) {
     std::memcpy(RadialUndistortionData.data(),arrayP,RadialUndistortionData.size()*sizeof(float));
     env->ReleaseFloatArrayElements(undistData,arrayP,0);
 }
+
+DistortionManager::DistortionManager(const std::string &filenameLeftEye,const std::string &filenameRightEye) {
+    Distortion inverseLeftEye=Distortion::createFromBinaryFile(filenameLeftEye);
+    Distortion inverseRightEye=Distortion::createFromBinaryFile(filenameRightEye);
+    inverseLeftEye.extractData(leftEyeUndistortionData);
+    inverseRightEye.extractData(rightEyeUndistortionData);
+}
+
 
 DistortionManager::UndistortionHandles
 DistortionManager::getUndistortionUniformHandles(const GLuint program) const {
@@ -39,13 +47,16 @@ void DistortionManager::beforeDraw(
     if(MY_VERSION==0){
         //Nothing
     }else if(MY_VERSION==1){
-        glUniform2fv(undistortionHandles.lolHandle,(GLsizei)(ARRAY_SIZE),(GLfloat*)lol);
+        glUniform2fv(undistortionHandles.lolHandle,(GLsizei)(ARRAY_SIZE),(GLfloat*)(leftEye ? leftEyeUndistortionData : rightEyeUndistortionData));
     }else{
-        glActiveTexture(DistortionManager::MY_TEXTURE_UNIT);
-        glBindTexture(GL_TEXTURE_2D,mDistortionCorrectionTexture);
+        auto texture=leftEye ? mDistortionCorrectionTextureLeftEye : mDistortionCorrectionTextureRightEye;
+        GLenum sampler=leftEye ? MY_SAMPLER_UNIT_LEFT_EYE : MY_SAMPLER_UNIT_RIGHT_EYE;
+        GLenum texUnit=leftEye ? MY_TEXTURE_UNIT_LEFT_EYE : MY_TEXTURE_UNIT_RIGHT_EYE;
+        glActiveTexture(texUnit);
+        glBindTexture(GL_TEXTURE_2D,texture);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-        glUniform1i(undistortionHandles.samplerDistCorrectionHandle,DistortionManager::MY_SAMPLER_UNIT);
+        glUniform1i(undistortionHandles.samplerDistCorrectionHandle,sampler);
     }
 }
 
@@ -53,12 +64,11 @@ void DistortionManager::afterDraw() const {
     glBindTexture(GL_TEXTURE_2D,0);
 }
 
-void DistortionManager::generateTexture() {
-    glGenTextures(1,&mDistortionCorrectionTexture);
+void DistortionManager::generateTexture(bool leftEye) {
+    glGenTextures(1,&(leftEye ? mDistortionCorrectionTextureLeftEye : mDistortionCorrectionTextureRightEye));
+    glBindTexture(GL_TEXTURE_2D,(leftEye ? mDistortionCorrectionTextureLeftEye : mDistortionCorrectionTextureRightEye));
 
-    glActiveTexture(MY_TEXTURE_UNIT);
-    glBindTexture(GL_TEXTURE_2D, mDistortionCorrectionTexture);
-
+    const auto& lol=leftEye ? leftEyeUndistortionData : rightEyeUndistortionData;
     const int SIZE=DistortionManager::RESOLUTION_XY;
     GLfloat data[SIZE][SIZE][4];
     for(int i=0;i<SIZE;i++){
@@ -74,10 +84,11 @@ void DistortionManager::generateTexture() {
     constexpr auto RGBA16F_ARB=0x881A;
     glTexImage2D(GL_TEXTURE_2D, 0,RGBA16F_ARB, SIZE,SIZE, 0, GL_RGBA, GL_FLOAT,data);
 
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-
-    //NDKHelper::uploadAssetImageToGPU(env,androidContext,name,false);
-
     glBindTexture(GL_TEXTURE_2D,0);
 }
+
+void DistortionManager::generateTextures() {
+    generateTexture(true);
+    generateTexture(false);
+}
+

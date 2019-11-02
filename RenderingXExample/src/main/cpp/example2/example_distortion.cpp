@@ -2,15 +2,30 @@
 // Created by Consti10 on 15/05/2019.
 //
 
+#include <DistortionCorrection/FileHelper.h>
 #include "example_distortion.h"
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
 #include "Helper/GLBufferHelper.hpp"
 
+constexpr auto TAG="DistortionExample";
 
 ExampleRenderer2::ExampleRenderer2(JNIEnv *env, jobject androidContext,gvr_context *gvr_context,jfloatArray undistData) {
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
+    //gvr_api_->InitializeGl();
     //distortionManager=new DistortionManager(env,undistData);
+
+    const std::string externalStorageDirectory("/storage/emulated/0/");
+    FileHelper::createRenderingXCoreDistortionDirectoryIfNotAlreadyExisting(externalStorageDirectory);
+    const std::string distortionDirectory=FileHelper::renderingXCoreDistortionDirectory(externalStorageDirectory);
+
+    const std::string model=std::string(gvr_get_viewer_model(gvr_context));
+    //const std::string vendor=std::string(gvr_get_viewer_vendor(gvrContext));
+    const auto distortionDirectoryForModel=DistortionManager::createDistortionFilesIfNotYetExisting(distortionDirectory,model,gvr_context);
+
+    distortionManager=new DistortionManager(distortionDirectoryForModel+std::string("dist_left.bin"),distortionDirectoryForModel+std::string("dist_right.bin"));
+
+    MDebug::log("Curr selected device is,Model:"+std::string(gvr_api_->GetViewerModel())+" Vendor:"+std::string(gvr_api_->GetViewerVendor()),TAG);
 }
 
 static std::vector<GLProgramVC::Vertex> distortVertices(const gvr_context *gvr_context,const std::vector<GLProgramVC::Vertex>& input){
@@ -34,14 +49,15 @@ static std::vector<GLProgramVC::Vertex> distortVertices(const gvr_context *gvr_c
 
 void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
 //Instantiate all our OpenGL rendering 'Programs'
-    distortionManager=new DistortionManager(gvr_api_->GetContext());
-    distortionManager->generateTexture();
+    //distortionManager=new DistortionManager(gvr_api_->GetContext());
+    //distortionManager=new DistortionManager("","");
+    distortionManager->generateTextures();
 
     glProgramVC=new GLProgramVC();
     glProgramVC2=new GLProgramVC(distortionManager);
     GLuint texture;
     glGenTextures(1,&texture);
-    glProgramTexture=new GLProgramTexture(texture,false,distortionManager);
+    glProgramTexture=new GLProgramTexture(texture,false,nullptr,true);
     glProgramTexture->loadTexture(env,context,"c_grid4.png");
     //create all the gl Buffer for later use
     glGenBuffers(1,&glBufferVC);
@@ -69,6 +85,7 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
     nTexturedVertices=tesselatedVideoCanvas.size();
 
     std::vector<GLProgramTexture::Vertex> texturedVertices1(tesselatedVideoCanvas.size());
+    std::vector<GLProgramTexture::Vertex> texturedVertices2(tesselatedVideoCanvas.size());
 
     //Distortion mDistortion(400,gvr_api_->GetContext());
     //Distortion inverse=mDistortion.calculateInverse(20);
@@ -79,9 +96,12 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
         gvr_vec2f out[3];
         gvr_compute_distorted_point(gvr_api_.get()->GetContext(),GVR_LEFT_EYE,{v.u,v.v},out);
         texturedVertices1.at(i)={v.x,v.y,v.z,out[0].x,out[0].y};
+        gvr_compute_distorted_point(gvr_api_.get()->GetContext(),GVR_RIGHT_EYE,{v.u,v.v},out);
+        texturedVertices2.at(i)={v.x,v.y,v.z,out[0].x,out[0].y};
     }
     GLBufferHelper::allocateGLBufferStatic(glBufferTextured,tesselatedVideoCanvas);
     GLBufferHelper::allocateGLBufferStatic(glBufferTextured1,texturedVertices1);
+    GLBufferHelper::allocateGLBufferStatic(glBufferTextured2,texturedVertices2);
 
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
@@ -100,7 +120,6 @@ void ExampleRenderer2::onSurfaceChanged(int width, int height) {
     rightEyeView=glm::translate(eyeView,glm::vec3(0,0,0)); //VR_InterpupilaryDistance/2.0f
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    glViewport(0,0,width,height);
 }
 
 void ExampleRenderer2::onDrawFrame() {
@@ -118,8 +137,10 @@ void ExampleRenderer2::onDrawFrame() {
 void ExampleRenderer2::drawEye(bool leftEye) {
     if(leftEye){
         glViewport(0,0,ViewPortW,ViewPortW);
+        distortionManager->leftEye=true;
     }else{
         glViewport(ViewPortW,0,ViewPortW,ViewPortW);
+        distortionManager->leftEye=false;
     }
     glm::mat4 tmp=leftEye ? leftEyeView : rightEyeView;
 
@@ -129,7 +150,7 @@ void ExampleRenderer2::drawEye(bool leftEye) {
     glProgramVC->draw(glm::value_ptr(tmp),glm::value_ptr(projection),0,N_COLORED_VERTICES,GL_TRIANGLES);
     glProgramVC->afterDraw();*/
 
-    glProgramTexture->beforeDraw(glBufferTextured1);
+    glProgramTexture->beforeDraw(leftEye ? glBufferTextured1 : glBufferTextured2);
     glProgramTexture->draw(eyeView,projection,0,nTexturedVertices);
     glProgramTexture->afterDraw();
 

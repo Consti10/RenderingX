@@ -32,9 +32,9 @@ private:
 public:
     const int RESOLUTION;
     std::vector<std::vector<DistortedPoint>> distortedPoints;
-    Distortion(const int RESOLUTION,const gvr_context* gvrContext):
-            RESOLUTION(RESOLUTION),distortedPoints((RESOLUTION+1),std::vector<DistortedPoint>((RESOLUTION+1))){
-        if(gvrContext== nullptr)return;
+    Distortion(const int RESOLUTION):RESOLUTION(RESOLUTION),distortedPoints((unsigned int)(RESOLUTION+1),std::vector<DistortedPoint>((unsigned int)(RESOLUTION+1))){};
+    Distortion(const int RESOLUTION,const gvr_context* gvrContext,const gvr_eye eye=GVR_LEFT_EYE):
+            RESOLUTION(RESOLUTION),distortedPoints((unsigned int)(RESOLUTION+1),std::vector<DistortedPoint>((unsigned int)(RESOLUTION+1))){
         //Creates a 2d array of size (RESOULTION+1)
         //array at position [x][y] contains distorted values for (x,y)==(i/RESOLUTION,j/RESOLUTION) and x bty in range [0..1] inclusive
         //RESOLUTION should be multiple of 2
@@ -44,8 +44,11 @@ public:
                 const float y=(float)j/(float)RESOLUTION;
                 gvr_vec2f in{x,y};
                 gvr_vec2f out[3];
-                gvr_compute_distorted_point(gvrContext,GVR_LEFT_EYE,in,out);
-                distortedPoints.at(i).at(j)={glm::vec2(x,y),glm::vec2(out[0].x,out[0].y)};
+                gvr_compute_distorted_point(gvrContext,eye,in,out);
+                //We do not correct for chromatic aberation, so take the average
+                float avgX=(out[0].x+out[1].x+out[2].x)/3.0f;
+                float avgY=(out[0].y+out[1].y+out[2].y)/3.0f;
+                distortedPoints.at(i).at(j)={glm::vec2(x,y),glm::vec2(avgX,avgY)};//out[0].x,out[0].y
             }
         }
     }
@@ -99,7 +102,7 @@ public:
     }
 
     const Distortion calculateInverse(const int NEW_RES)const{
-        Distortion distortion(NEW_RES,nullptr);
+        Distortion distortion(NEW_RES);
         for(int i=0;i<=NEW_RES;i++){
             for(int j=0;j<=NEW_RES;j++){
                 const float x=(float)i/(float)NEW_RES;
@@ -110,21 +113,19 @@ public:
         }
         return distortion;
     }
-    void lol(float (&arr) [32][32][2])const{
-        //float ret[RESOLUTION][RESOLUTION][2];
-        for(int i=0;i<RESOLUTION;i++){
-            for(int j=0;j<RESOLUTION;j++){
+    template <size_t rowColSize>
+    void extractData(float (&arr)[rowColSize][rowColSize][2])const{
+        assert(rowColSize==(RESOLUTION+1));
+        for(int i=0;i<=RESOLUTION;i++){
+            for(int j=0;j<=RESOLUTION;j++){
                 const auto value=distortedPoints.at(i).at(j);
                 const auto p=value.originalPoint*2.0f-glm::vec2(1.0f,1.0f);
                 const auto distortedP=value.distortedP*2.0f-glm::vec2(1.0f,1.0f);
                 const auto dir=distortedP-p;
                 arr[i][j][0]=dir.x;//p.distortedP.x;
                 arr[i][j][1]=dir.y;//p.distortedP.y;
-                //arr[i][j][0]=dir.x;
-                //arr[i][j][1]=dir.y;
             }
         }
-        //return (float*) ret;
     }
     void radialDistortionOnly(){
         //find the point where the inverse is closest to (0.5/0.5)
@@ -188,6 +189,7 @@ public:
          distortionFile.flush();
          distortionFile.close();
     }
+    
     static Distortion createFromBinaryFile(const std::string& filename){
         std::ifstream file (filename.c_str(),std::ifstream::binary);
         file.seekg(0, file.end);
@@ -199,7 +201,7 @@ public:
         //first 4 bytes are the size of one row
         int32_t size;
         memcpy(&size,data,sizeof(int32_t));
-        Distortion distortion(size-1, nullptr);
+        Distortion distortion(size-1);
         int offset=4;
         for(int i=0;i<=distortion.RESOLUTION;i++){
             for(int j=0;j<=distortion.RESOLUTION;j++){
