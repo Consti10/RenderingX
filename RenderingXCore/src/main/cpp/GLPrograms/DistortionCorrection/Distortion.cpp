@@ -170,10 +170,10 @@ Distortion Distortion::createFromBinaryFile(const std::string &filename) {
             const float x=(float)i/(float)distortion.RESOLUTION;
             const float y=(float)j/(float)distortion.RESOLUTION;
             float x2,y2;
-            std::memcpy(&x2,&data[offset+=4], sizeof(float));
-            //offset+=4;
-            std::memcpy(&y2,&data[offset+=4], sizeof(float));
-            //offset+=4;
+            std::memcpy(&x2,&data[offset], sizeof(float));
+            offset+=4;
+            std::memcpy(&y2,&data[offset], sizeof(float));
+            offset+=4;
             distortion.distortedPoints.at(i).at(j).originalPoint={x,y};
             distortion.distortedPoints.at(i).at(j).distortedP={x2,y2};
         }

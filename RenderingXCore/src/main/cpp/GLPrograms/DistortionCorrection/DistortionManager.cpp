@@ -14,14 +14,15 @@ DistortionManager::DistortionManager(gvr_context *gvrContext) {
     inverseRightEye.extractData(rightEyeUndistortionData);
 
     //coefficients: [0.34, 0.55]
-    RadialUndistortionData[0]=10.0f;
-    RadialUndistortionData[1]=0.34f;
-    RadialUndistortionData[2]=0.55f;
+    radialDistortionCoefficients.maxRadSquared=10.0f;
+    radialDistortionCoefficients.kN[0]=0.34f;
+    radialDistortionCoefficients.kN[1]=0.55f;
 }
 
 DistortionManager::DistortionManager(JNIEnv *env, jfloatArray undistData) {
     jfloat *arrayP=env->GetFloatArrayElements(undistData, nullptr);
-    std::memcpy(RadialUndistortionData.data(),arrayP,RadialUndistortionData.size()*sizeof(float));
+    radialDistortionCoefficients.maxRadSquared=arrayP[0];
+    std::memcpy(radialDistortionCoefficients.kN.data(),&arrayP[1],radialDistortionCoefficients.kN.size()*sizeof(float));
     env->ReleaseFloatArrayElements(undistData,arrayP,0);
 }
 
@@ -92,29 +93,6 @@ void DistortionManager::generateTextures() {
     generateTexture(false);
 }
 
-std::string DistortionManager::createDistortionFilesIfNotYetExisting(
-        const std::string &distortionFilesDirectory, const std::string &viewerModel,
-        gvr_context *gvrContext) {
-    const std::string directory=distortionFilesDirectory+viewerModel+"/";
-
-    int result=mkdir(directory.c_str(), 0777);
-
-    if(!(FileHelper::fileExists(directory+std::string("dist_left.bin"))||
-            FileHelper::fileExists(directory+std::string("dist_right.bin")))){
-        //TODO
-    }
-    if(result==0){
-        const Distortion mDistortionLeftEye(200,gvrContext,GVR_LEFT_EYE);
-        const Distortion mDistortionRightEye(200,gvrContext,GVR_RIGHT_EYE);
-        const Distortion inverseLeftEye=mDistortionLeftEye.calculateInverse(RESOLUTION_XY-1);
-        const Distortion inverseRightEye=mDistortionRightEye.calculateInverse(RESOLUTION_XY-1);
-
-        inverseLeftEye.saveAsBinary(directory,"dist_left.bin");
-        inverseRightEye.saveAsBinary(directory,"dist_right.bin");
-    }
-    return directory;
-}
-
 std::string DistortionManager::writeGLPositionWithDistortion(const DistortionManager &distortionManager,
                                                  const std::string &positionAttribute) {
     std::stringstream s;
@@ -163,12 +141,12 @@ std::string DistortionManager::writeDistortionParams(
     std::stringstream s;
     if(distortionManager==nullptr)return "";
     if(distortionManager->MY_VERSION==0){
-        const auto coeficients=distortionManager->RadialUndistortionData;
+        const auto coeficients=distortionManager->radialDistortionCoefficients.kN;
         s<<std::fixed;
-        s<<"const float _MaxRadSq="<<coeficients[0];s<<";\n";
+        s<<"const float _MaxRadSq="<<distortionManager->radialDistortionCoefficients.maxRadSquared<<";\n";
         //There is no vec6 data type. Therefore, we use 1 vec4 and 1 vec2. Vec4 holds k1,k2,k3,k4 and vec6 holds k5,k6
-        s<<"const vec4 _Undistortion=vec4("<<coeficients[1]<<","<<coeficients[2]<<","<<coeficients[3]<<","<<coeficients[4]<<");\n";
-        s<<"const vec2 _Undistortion2=vec2("<<coeficients[5]<<","<<coeficients[6]<<");\n";
+        s<<"const vec4 _Undistortion=vec4("<<coeficients[0]<<","<<coeficients[1]<<","<<coeficients[2]<<","<<coeficients[3]<<");\n";
+        s<<"const vec2 _Undistortion2=vec2("<<coeficients[4]<<","<<coeficients[5]<<");\n";
     }else if(distortionManager->MY_VERSION==1){
         s<<"uniform highp vec2 LOL["<< DistortionManager::ARRAY_SIZE<<"];";
         s<<"int my_clamp(in int x,in int minVal,in int maxVal){";
@@ -193,3 +171,38 @@ std::string DistortionManager::writeGLPosition(const DistortionManager *distorti
     //return "gl_Position = vec4("+positionAttribute+".xy*2.0, 0, 1);";
 }
 
+std::string DistortionManager::createDistortionFilesIfNotYetExisting(
+        const std::string &distortionFilesDirectory, const std::string &viewerModel,
+        gvr_context *gvrContext) {
+    const std::string directory=distortionFilesDirectory+viewerModel+"/";
+
+    int result=mkdir(directory.c_str(), 0777);
+
+    if(!(FileHelper::fileExists(directory+std::string("dist_left.bin"))||
+         FileHelper::fileExists(directory+std::string("dist_right.bin")))){
+        //TODO
+    }
+    if(result==0){
+        const Distortion distortionLeftEye(200,gvrContext,GVR_LEFT_EYE);
+        const Distortion inverseLeftEye=distortionLeftEye.calculateInverse(RESOLUTION_XY-1);
+        const Distortion distortionRightEye(200,gvrContext,GVR_RIGHT_EYE);
+        const Distortion inverseRightEye=distortionRightEye.calculateInverse(RESOLUTION_XY-1);
+
+        inverseLeftEye.saveAsBinary(directory,"dist_left.bin");
+        inverseRightEye.saveAsBinary(directory,"dist_right.bin");
+    }
+    return directory;
+}
+
+DistortionManager *
+DistortionManager::createFromFileIfAlreadyExisting(const std::string &externalStorageDirectory,
+                                                   gvr_context *gvrContext) {
+    //MDebug::log("Curr selected device is,Model:"+std::string(gvr_api_->GetViewerModel())+" Vendor:"+std::string(gvr_api_->GetViewerVendor()),TAG);
+    FileHelper::createRenderingXCoreDistortionDirectoryIfNotAlreadyExisting(externalStorageDirectory);
+    const std::string distortionDirectory=FileHelper::renderingXCoreDistortionDirectory(externalStorageDirectory);
+
+    const std::string model=std::string(gvr_get_viewer_model(gvrContext));
+    //const std::string vendor=std::string(gvr_get_viewer_vendor(gvrContext));
+    const std::string distortionDirectoryForModel=DistortionManager::createDistortionFilesIfNotYetExisting(distortionDirectory,model,gvrContext);
+    return new DistortionManager(distortionDirectoryForModel+std::string("dist_left.bin"),distortionDirectoryForModel+std::string("dist_right.bin"));
+}

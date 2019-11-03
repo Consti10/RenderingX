@@ -14,8 +14,8 @@ ExampleRenderer2::ExampleRenderer2(JNIEnv *env, jobject androidContext,gvr_conte
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
     //gvr_api_->InitializeGl();
     //distortionManager=new DistortionManager(env,undistData);
-    distortionManager=new DistortionManager(gvr_api_->GetContext());
-    //distortionManager=DistortionManager::createFromFileIfAlreadyExisting("/storage/emulated/0/",gvr_api_->GetContext());
+    //distortionManager=new DistortionManager(gvr_api_->GetContext());
+    distortionManager=DistortionManager::createFromFileIfAlreadyExisting("/storage/emulated/0/",gvr_api_->GetContext());
 }
 
 static std::vector<GLProgramVC::Vertex> distortVertices(const gvr_context *gvr_context,const std::vector<GLProgramVC::Vertex>& input){

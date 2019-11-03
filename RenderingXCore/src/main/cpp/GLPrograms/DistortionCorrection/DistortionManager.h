@@ -27,7 +27,11 @@
 class DistortionManager {
 public:
     static constexpr const int N_RADIAL_UNDISTORTION_COEFICIENTS=7;
-    std::array<float,N_RADIAL_UNDISTORTION_COEFICIENTS> RadialUndistortionData;
+    struct RadialDistortionCoefficients{
+        float maxRadSquared;
+        std::array<float,N_RADIAL_UNDISTORTION_COEFICIENTS-1> kN;
+    };
+    RadialDistortionCoefficients radialDistortionCoefficients;
 
     static constexpr const int RESOLUTION_XY=32;
     static constexpr int ARRAY_SIZE=RESOLUTION_XY*RESOLUTION_XY;
@@ -67,16 +71,7 @@ public:
 
     static std::string createDistortionFilesIfNotYetExisting(const std::string& distortionFilesDirectory,const std::string& viewerModel,gvr_context* gvrContext);
 
-    static DistortionManager* createFromFileIfAlreadyExisting(const std::string& externalStorageDirectory,gvr_context* gvrContext){
-        //MDebug::log("Curr selected device is,Model:"+std::string(gvr_api_->GetViewerModel())+" Vendor:"+std::string(gvr_api_->GetViewerVendor()),TAG);
-        FileHelper::createRenderingXCoreDistortionDirectoryIfNotAlreadyExisting(externalStorageDirectory);
-        const std::string distortionDirectory=FileHelper::renderingXCoreDistortionDirectory(externalStorageDirectory);
-
-        const std::string model=std::string(gvr_get_viewer_model(gvrContext));
-        //const std::string vendor=std::string(gvr_get_viewer_vendor(gvrContext));
-        const auto distortionDirectoryForModel=DistortionManager::createDistortionFilesIfNotYetExisting(distortionDirectory,model,gvrContext);
-        return new DistortionManager(distortionDirectoryForModel+std::string("dist_left.bin"),distortionDirectoryForModel+std::string("dist_right.bin"));
-    }
+    static DistortionManager* createFromFileIfAlreadyExisting(const std::string& externalStorageDirectory,gvr_context* gvrContext);
 };
 
 
