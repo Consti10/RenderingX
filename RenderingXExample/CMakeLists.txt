@@ -44,7 +44,8 @@ add_library( GLPrograms SHARED
         ${RX_CORE_DIR}/src/main/cpp/Sphere/Sphere.cpp
         ${RX_CORE_DIR}/src/main/cpp/Sphere/GvrSphere.cpp
         ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramSpherical.cpp
-        ${RX_CORE_DIR}/src/main/cpp/GLPrograms/DistortionCorrection/DistortionManager.cpp)
+        ${RX_CORE_DIR}/src/main/cpp/GLPrograms/DistortionCorrection/DistortionManager.cpp
+        ${RX_CORE_DIR}/src/main/cpp/GLPrograms/DistortionCorrection/Distortion.cpp)
 target_link_libraries( GLPrograms ${log-lib} android GLESv2 gvr-lib)
 
 ##########################################################################################################

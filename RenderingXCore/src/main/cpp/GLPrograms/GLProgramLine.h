@@ -53,7 +53,7 @@ private:
         s<<"varying vec3 vNormal;";
         s<<"varying vec4 vBaseColor;";
         s<<"varying vec4 vOutlineColor;";
-        s<<DistortionManager::writeLOL(distortionManager1);
+        s<<DistortionManager::writeDistortionParams(distortionManager1);
         s<<"vec4 extruded_pos;";
         s<<"void main(){\n";
         s<<"extruded_pos=aPosition+vec4(aNormal*aLineWidth,0.0);\n";

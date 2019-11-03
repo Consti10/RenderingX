@@ -54,7 +54,7 @@ private:
         ss<<"attribute vec4 aPosition;\n";
         ss<<"attribute vec2 aTexCoord;\n";
         ss<<"varying vec2 vTexCoord;\n";
-        ss<<DistortionManager::writeLOL(distortionManager1);
+        ss<<DistortionManager::writeDistortionParams(distortionManager1);
         ss<<"void main() {\n";
         ss<<DistortionManager::writeGLPosition(distortionManager1); //gl_Position = (uPMatrix * uMVMatrix) * aPosition;
         ss<<"  vTexCoord = aTexCoord;\n";

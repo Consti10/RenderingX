@@ -45,7 +45,7 @@ private:
         s<<"attribute vec4 aPosition;\n";
         s<<"attribute vec2 aTexCoord;\n";
         s<<"varying vec2 vTexCoord;\n";
-        s<<DistortionManager::writeLOL(distortionManager1);
+        s<< DistortionManager::writeDistortionParams(distortionManager1);
         s<<"void main() {\n";
         if(use2dCoordinates){
             s<<"gl_Position = vec4(aPosition.xy*2.0,0,1);";

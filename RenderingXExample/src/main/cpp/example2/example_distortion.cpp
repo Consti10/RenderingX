@@ -14,17 +14,8 @@ ExampleRenderer2::ExampleRenderer2(JNIEnv *env, jobject androidContext,gvr_conte
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
     //gvr_api_->InitializeGl();
     //distortionManager=new DistortionManager(env,undistData);
-
-    const std::string externalStorageDirectory("/storage/emulated/0/");
-    FileHelper::createRenderingXCoreDistortionDirectoryIfNotAlreadyExisting(externalStorageDirectory);
-    const std::string distortionDirectory=FileHelper::renderingXCoreDistortionDirectory(externalStorageDirectory);
-
-    const std::string model=std::string(gvr_get_viewer_model(gvr_context));
-    //const std::string vendor=std::string(gvr_get_viewer_vendor(gvrContext));
-    const auto distortionDirectoryForModel=DistortionManager::createDistortionFilesIfNotYetExisting(distortionDirectory,model,gvr_context);
-    distortionManager=new DistortionManager(distortionDirectoryForModel+std::string("dist_left.bin"),distortionDirectoryForModel+std::string("dist_right.bin"));
-
-    MDebug::log("Curr selected device is,Model:"+std::string(gvr_api_->GetViewerModel())+" Vendor:"+std::string(gvr_api_->GetViewerVendor()),TAG);
+    distortionManager=new DistortionManager(gvr_api_->GetContext());
+    //distortionManager=DistortionManager::createFromFileIfAlreadyExisting("/storage/emulated/0/",gvr_api_->GetContext());
 }
 
 static std::vector<GLProgramVC::Vertex> distortVertices(const gvr_context *gvr_context,const std::vector<GLProgramVC::Vertex>& input){

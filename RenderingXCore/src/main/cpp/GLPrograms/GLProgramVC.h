@@ -49,7 +49,7 @@ private:
         s<<"attribute vec4 aPosition;\n";
         s<<"attribute vec4 aColor;\n";
         s<<"varying vec4 vColor;\n";
-        s<<DistortionManager::writeLOL(distortionManager1);
+        s<< DistortionManager::writeDistortionParams(distortionManager1);
         s<<"void main(){\n";
         s<<DistortionManager::writeGLPosition(distortionManager1);
         //s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition";
