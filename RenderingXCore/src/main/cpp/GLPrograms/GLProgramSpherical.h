@@ -40,7 +40,10 @@ private:
     GLuint mMVMatrixHandle,mPMatrixHandle;
     //GLuint mNormalHandle;
     GLuint mTexture;
-     const DistortionManager* distortionManager;
+    const DistortionManager* distortionManager;
+    DistortionManager::UndistortionHandles mUndistortionHandles;
+    static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
+    static constexpr auto MY_SAMPLER_UNIT=1;
 public:
     GLProgramSpherical(const GLuint videoTexture,float radius=1.0f,const DistortionManager* distortionManager=nullptr);
     void beforeDraw(GLuint glBuffVertices);

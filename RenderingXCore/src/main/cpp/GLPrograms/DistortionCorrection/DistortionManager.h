@@ -57,8 +57,9 @@ public:
     DistortionManager(gvr_context* gvrContext);
     DistortionManager(JNIEnv *env,jfloatArray undistData);
     DistortionManager(const std::string& filenameLeftEye,const std::string& filenameRightEye);
+
     UndistortionHandles getUndistortionUniformHandles(const GLuint program)const;
-    void beforeDraw(const UndistortionHandles undistortionHandles)const;
+    void beforeDraw(const UndistortionHandles& undistortionHandles)const;
     void afterDraw()const;
 
     void generateTextures();

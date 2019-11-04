@@ -108,7 +108,7 @@ static glm::vec2 distortPointBrownConrady(const glm::vec2 p,const float k1,const
 
             __android_log_print(ANDROID_LOG_DEBUG,"VDDC","(%f) -> (%f) ->(%f)",p1_r2, radialDistortionFactor,calculateBrownConrady(p1_r2,0.34,0.55));
 
-            /*const float r2=sqrt(p1.x*p1.x+p2.y*p2.y);
+            const float r2=sqrt(p1.x*p1.x+p2.y*p2.y);
             const float radialDistortion=calculateBrownConrady(r2,0.34,0.55);
             const glm::vec2 radialDistortedPoint=p1*radialDistortion;
 
@@ -116,8 +116,8 @@ static glm::vec2 distortPointBrownConrady(const glm::vec2 p,const float k1,const
 
             __android_log_print(ANDROID_LOG_DEBUG,"VDDC","(%f) -> (%f,%f)",p1.x,tangentialDistortion.x,tangentialDistortion.y);
 
-            distortedPoints.at(i).at(j)={radialDistortedPoint.x+0.5f,radialDistortedPoint.y+0.5f};*/
-            /*float a;
+            distortedPoints.at(i).at(j)={radialDistortedPoint.x+0.5f,radialDistortedPoint.y+0.5f};
+            float a;
             if(p1.x==0.0f) {
                 a = p2.x;
             }else if(m==1.0f){
@@ -129,8 +129,8 @@ static glm::vec2 distortPointBrownConrady(const glm::vec2 p,const float k1,const
             }
             const  glm::vec2 radialDistortedPoint={a,p2.y};
             distortedPoints.at(i).at(j).x=radialDistortedPoint.x+0.5f;
-            distortedPoints.at(i).at(j).y=radialDistortedPoint.y+0.5f;*/
-/* }
+            distortedPoints.at(i).at(j).y=radialDistortedPoint.y+0.5f;
+ }
     }
 }*/
 

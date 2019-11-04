@@ -43,7 +43,7 @@ DistortionManager::getUndistortionUniformHandles(const GLuint program) const {
 }
 
 void DistortionManager::beforeDraw(
-        const DistortionManager::UndistortionHandles undistortionHandles) const {
+        const DistortionManager::UndistortionHandles& undistortionHandles) const {
     if(MY_VERSION==0){
         //Nothing
     }else if(MY_VERSION==1){

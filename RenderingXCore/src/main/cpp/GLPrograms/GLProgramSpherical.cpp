@@ -33,14 +33,15 @@ distortionManager(distortionManager)
     mMVMatrixHandle = (GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
     mPMatrixHandle = (GLuint)glGetUniformLocation(mProgram,"uPMatrix");
     mSamplerHandle = glGetUniformLocation(mProgram, "sTextureExt" );
-
     // Get the location of the attributes
     mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
     //mNormalHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aNormal");
     mTextureHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aTexCoord");
-
+    if(distortionManager!=nullptr){
+        mUndistortionHandles=distortionManager->getUndistortionUniformHandles(mProgram);
+    }
     // Configure the texture
-    glActiveTexture(GL_TEXTURE1);
+    glActiveTexture(MY_SAMPLER_UNIT);
     glBindTexture(GL_TEXTURE_EXTERNAL_OES,mTexture);
     glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_EXTERNAL_OES,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
@@ -52,9 +53,9 @@ distortionManager(distortionManager)
 void GLProgramSpherical::beforeDraw(GLuint glBuffVertices) {
     // bind the GLSL texture
     glUseProgram((GLuint)mProgram);
-    glActiveTexture(GL_TEXTURE1);
+    glActiveTexture(MY_TEXTURE_UNIT);
     glBindTexture(GL_TEXTURE_EXTERNAL_OES,mTexture);
-    glUniform1i(mSamplerHandle,1);
+    glUniform1i(mSamplerHandle,MY_SAMPLER_UNIT);
 
     // enable the attributes
     glEnableVertexAttribArray((GLuint)mPositionHandle);
@@ -71,7 +72,7 @@ void GLProgramSpherical::beforeDraw(GLuint glBuffVertices) {
     //glVertexAttribPointer((GLuint)mPositionHandle, POSITION_COORDS_PER_VERTEX, GL_FLOAT, GL_FALSE, VERTEX_STRIDE_BYTES,nullptr);
     //glVertexAttribPointer((GLuint)mTextureHandle,TEXTURE_COORDS_PER_VERTEX,GL_FLOAT,GL_FALSE,VERTEX_STRIDE_BYTES,(GLvoid*)(POSITION_COORDS_PER_VERTEX*sizeof(float)));
     if(distortionManager!= nullptr){
-        //glUniform2fv(mLOLHandle,(GLsizei)(VDDC::ARRAY_SIZE),(GLfloat*)distortionManager->lol);
+        distortionManager->beforeDraw(mUndistortionHandles);
     }
 }
 
@@ -93,5 +94,8 @@ void GLProgramSpherical::afterDraw() const {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glUseProgram(0);
+    if(distortionManager!= nullptr){
+        distortionManager->afterDraw();
+    }
 }
 
