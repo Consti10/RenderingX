@@ -41,7 +41,7 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
 //Instantiate all our OpenGL rendering 'Programs'
     //distortionManager=new DistortionManager(gvr_api_->GetContext());
     //distortionManager=new DistortionManager("","");
-    distortionManager->generateTextures();
+    distortionManager->generateTexturesIfNeeded();
 
     glProgramVC=new GLProgramVC();
     glProgramVC2=new GLProgramVC(distortionManager);
@@ -99,15 +99,15 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
 void ExampleRenderer2::onSurfaceChanged(int width, int height) {
     ViewPortW=width/2;
     ViewPortH=height;
-    projection=glm::perspective(glm::radians(80.0F), 1.0f, MIN_Z_DISTANCE, MAX_Z_DISTANCE);
+    projection=glm::perspective(glm::radians(80.0F),((float) ViewPortW)/((float)ViewPortH), MIN_Z_DISTANCE, MAX_Z_DISTANCE);
     //projection=make_frustum(45,45,45,45,MIN_Z_DISTANCE,MAX_Z_DISTANCE);
 
     glm::vec3 cameraPos   = glm::vec3(0,0,CAMERA_POSITION);
     glm::vec3 cameraFront = glm::vec3(0.0F,0.0F,-1.0F);
     eyeView=glm::lookAt(cameraPos,cameraPos+cameraFront,glm::vec3(0,1,0));
     //eyeView=glm::mat4();
-    leftEyeView=glm::translate(eyeView,glm::vec3(0,0,0)); //-VR_InterpupilaryDistance/2.0f
-    rightEyeView=glm::translate(eyeView,glm::vec3(0,0,0)); //VR_InterpupilaryDistance/2.0f
+    leftEyeView=glm::translate(eyeView,glm::vec3(-VR_InterpupilaryDistance/2.0f,0,0));
+    rightEyeView=glm::translate(eyeView,glm::vec3(VR_InterpupilaryDistance/2.0f,0,0));
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -126,10 +126,10 @@ void ExampleRenderer2::onDrawFrame() {
 
 void ExampleRenderer2::drawEye(bool leftEye) {
     if(leftEye){
-        glViewport(0,0,ViewPortW,ViewPortW);
+        glViewport(0,0,ViewPortW,ViewPortH);
         distortionManager->leftEye=true;
     }else{
-        glViewport(ViewPortW,0,ViewPortW,ViewPortW);
+        glViewport(ViewPortW,0,ViewPortW,ViewPortH);
         distortionManager->leftEye=false;
     }
     glm::mat4 tmp=leftEye ? leftEyeView : rightEyeView;
@@ -140,9 +140,9 @@ void ExampleRenderer2::drawEye(bool leftEye) {
     glProgramVC->draw(glm::value_ptr(tmp),glm::value_ptr(projection),0,N_COLORED_VERTICES,GL_TRIANGLES);
     glProgramVC->afterDraw();*/
 
-    glProgramTexture->beforeDraw(leftEye ? glBufferTextured1 : glBufferTextured2);
+    /*glProgramTexture->beforeDraw(leftEye ? glBufferTextured1 : glBufferTextured2);
     glProgramTexture->draw(eyeView,projection,0,nTexturedVertices);
-    glProgramTexture->afterDraw();
+    glProgramTexture->afterDraw();*/
 
     /*glProgramVC->beforeDraw(glBufferVCDistorted1);
     glProgramVC->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,N_COLORED_VERTICES,GL_LINES);

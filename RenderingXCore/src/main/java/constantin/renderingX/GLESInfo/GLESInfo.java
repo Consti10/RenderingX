@@ -14,6 +14,7 @@ import constantin.renderingx.core.BuildConfig;
 import static android.content.Context.MODE_PRIVATE;
 
 //Holds information about the EGL and GLES20 capabilities of the phone
+//We can write them once (after obtaining an OpenGL ES context) then read them without a context at hand
 
 @SuppressLint("ApplySharedPref")
 public class GLESInfo {
@@ -31,6 +32,9 @@ public class GLESInfo {
     private static final String SingleBufferedSurfaceCreatable="SingleBufferedSurfaceCreatable";
     private static final String AllMSAALevels="AllMSAALevels";
     private static final String MAX_GL_LINE_WIDTH="MAX_GL_LINE_WIDTH";
+    //
+    public static final String GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS="GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS";
+    public static final String GL_MAX_VERTEX_UNIFORM_VECTORS="GL_MAX_VERTEX_UNIFORM_VECTORS";
 
 
     public static boolean isExtensionAvailable(final Context c,final String extension){
@@ -74,7 +78,6 @@ public class GLESInfo {
     static void writeResultsWithGLESContextBound(final Context c){
         String eglExtensions = EGL14.eglQueryString(EGL14.eglGetCurrentDisplay(), EGL14.EGL_EXTENSIONS);
         System.out.println(eglExtensions);
-        isEGL_KHR_reusable_syncAvailable(eglExtensions);
         String gles20Extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS);
         System.out.println(gles20Extensions);
         //
@@ -85,19 +88,34 @@ public class GLESInfo {
         //System.out.println("Aliased: "+lineWidthRange[0]+lineWidthRange[1]);
         final int MAX_LINE_WIDTH=(int)lineWidthRange[1];
         //
-        int[] GL_MAX_VERTEX_UNIFORM_VECTORS=new int[1];
-        GLES20.glGetIntegerv(GLES20.GL_MAX_VERTEX_UNIFORM_VECTORS,GL_MAX_VERTEX_UNIFORM_VECTORS,0);
-        System.out.println("GL_MAX_VERTEX_UNIFORM_VECTORS"+GL_MAX_VERTEX_UNIFORM_VECTORS[0]);
-        //
         SharedPreferences pref = c.getSharedPreferences(PREFERENCES_TAG, MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putBoolean(GL_QCOM_tiled_rendering, isGL_QCOM_tiled_renderingAvailable(gles20Extensions));
-        editor.putBoolean(EGL_KHR_reusable_sync, isEGL_KHR_reusable_syncAvailable(eglExtensions));
-        editor.putBoolean(EGL_KHR_mutable_render_buffer,isEGL_KHR_mutable_render_bufferAvailable(eglExtensions));
-        editor.putBoolean(EGL_ANDROID_front_buffer_auto_refresh, isEGL_ANDROID_front_buffer_auto_refreshAvailable(eglExtensions));
+
         editor.putBoolean(SingleBufferedSurfaceCreatable, isCurrSurfaceSingleBuffered());
         editor.putInt(MAX_GL_LINE_WIDTH,MAX_LINE_WIDTH);
+
+        writeValueGLES20Integer(editor,GLES20.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS,GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS);
+        writeValueGLES20Integer(editor,GLES20.GL_MAX_VERTEX_UNIFORM_VECTORS,GL_MAX_VERTEX_UNIFORM_VECTORS);
+
+        writeValueGLES20ExtensionsBoolean(editor,gles20Extensions,GL_QCOM_tiled_rendering);
+        writeValueGLES20ExtensionsBoolean(editor,eglExtensions,EGL_KHR_reusable_sync);
+        writeValueGLES20ExtensionsBoolean(editor,eglExtensions,EGL_ANDROID_front_buffer_auto_refresh);
+        writeValueGLES20ExtensionsBoolean(editor,eglExtensions,EGL_KHR_mutable_render_buffer);
+
         editor.commit();
+    }
+
+    private static void writeValueGLES20Integer(final SharedPreferences.Editor editor,final int glKey,final String preferencesKey){
+        int[] value=new int[1];
+        GLES20.glGetIntegerv(glKey,value,0);
+        editor.putInt(preferencesKey,value[0]);
+        System.out.println("Value for "+preferencesKey+" is:"+value[0]);
+    }
+
+    private static void writeValueGLES20ExtensionsBoolean(final SharedPreferences.Editor editor,final String extensions,final String extensionName){
+        final boolean available=extensions.contains(extensionName);
+        editor.putBoolean(extensionName,available);
+        System.out.println("Extension "+extensionName+(available ? " is available.": " is not available."));
     }
 
 
@@ -116,36 +134,6 @@ public class GLESInfo {
                 EGL14.eglGetCurrentSurface(EGL14.EGL_DRAW), attribute, values, 0);
         return values[0] == value;
     }
-    private static boolean isGL_QCOM_tiled_renderingAvailable(String extensions){
-        if(extensions.contains("GL_QCOM_tiled_rendering")){
-            Log.d(TAG,"GL_QCOM_tiled_rendering is available");
-            return true;
-        }
-        Log.d(TAG,"GL_QCOM_tiled_rendering is not available");
-        return false;
-    }
-    private static boolean isEGL_KHR_reusable_syncAvailable(String extensions){
-        if(extensions.contains("EGL_KHR_reusable_sync")){
-            Log.d(TAG,"EGL_KHR_reusable_sync is available");
-            return true;
-        }
-        Log.d(TAG,"EGL_KHR_reusable_sync is not available");
-        return false;
-    }
-    private static boolean isEGL_KHR_mutable_render_bufferAvailable(String extensions){
-        if(extensions.contains("EGL_KHR_mutable_render_buffer")){
-            Log.d(TAG,"EGL_KHR_mutable_render_buffer is available");
-            return true;
-        }
-        Log.d(TAG,"EGL_KHR_mutable_render_buffer is not available");
-        return false;
-    }
-    private static boolean isEGL_ANDROID_front_buffer_auto_refreshAvailable(String eglExtensions){
-        if(eglExtensions.contains("EGL_ANDROID_front_buffer_auto_refresh")){
-            Log.d(TAG,"EGL_ANDROID_front_buffer_auto_refresh is available");
-            return true;
-        }
-        Log.d(TAG,"EGL_ANDROID_front_buffer_auto_refresh is not available");
-        return false;
-    }
+
+
 }

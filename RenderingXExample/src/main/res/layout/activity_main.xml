@@ -28,5 +28,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Test Distortion" />
+
+        <!--<TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="60dp"
+            android:shadowColor="#000000"
+            android:shadowDx="1.5"
+            android:shadowDy="1.5"
+            android:shadowRadius="1.6"
+            android:textColor="#FF5722"
+            android:text="Test shadows"
+            />-->
     </LinearLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

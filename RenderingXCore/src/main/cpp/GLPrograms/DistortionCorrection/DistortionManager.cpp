@@ -4,7 +4,8 @@
 
 #include "DistortionManager.h"
 
-DistortionManager::DistortionManager(gvr_context *gvrContext) {
+DistortionManager::DistortionManager(gvr_context *gvrContext):
+distortionMode(DISTORTION_MODE::RADIAL_TANGENTIAL_TEXTURE) {
     const Distortion mDistortionLeftEye(200,gvrContext,GVR_LEFT_EYE);
     const Distortion mDistortionRightEye(200,gvrContext,GVR_RIGHT_EYE);
     const Distortion inverseLeftEye=mDistortionLeftEye.calculateInverse(RESOLUTION_XY-1);
@@ -12,21 +13,21 @@ DistortionManager::DistortionManager(gvr_context *gvrContext) {
 
     inverseLeftEye.extractData(leftEyeUndistortionData);
     inverseRightEye.extractData(rightEyeUndistortionData);
-
-    //coefficients: [0.34, 0.55]
-    radialDistortionCoefficients.maxRadSquared=10.0f;
-    radialDistortionCoefficients.kN[0]=0.34f;
-    radialDistortionCoefficients.kN[1]=0.55f;
 }
 
-DistortionManager::DistortionManager(JNIEnv *env, jfloatArray undistData) {
+DistortionManager::DistortionManager(JNIEnv *env, jfloatArray undistData):distortionMode(DISTORTION_MODE::RADIAL) {
     jfloat *arrayP=env->GetFloatArrayElements(undistData, nullptr);
     radialDistortionCoefficients.maxRadSquared=arrayP[0];
     std::memcpy(radialDistortionCoefficients.kN.data(),&arrayP[1],radialDistortionCoefficients.kN.size()*sizeof(float));
     env->ReleaseFloatArrayElements(undistData,arrayP,0);
+    //coefficients: [0.34, 0.55]
+    //radialDistortionCoefficients.maxRadSquared=10.0f;
+    //radialDistortionCoefficients.kN[0]=0.34f;
+    //radialDistortionCoefficients.kN[1]=0.55f;
 }
 
-DistortionManager::DistortionManager(const std::string &filenameLeftEye,const std::string &filenameRightEye) {
+DistortionManager::DistortionManager(const std::string &filenameLeftEye,const std::string &filenameRightEye):
+distortionMode(DISTORTION_MODE::RADIAL_TANGENTIAL_TEXTURE) {
     Distortion inverseLeftEye=Distortion::createFromBinaryFile(filenameLeftEye);
     Distortion inverseRightEye=Distortion::createFromBinaryFile(filenameRightEye);
     inverseLeftEye.extractData(leftEyeUndistortionData);
@@ -37,16 +38,16 @@ DistortionManager::DistortionManager(const std::string &filenameLeftEye,const st
 DistortionManager::UndistortionHandles
 DistortionManager::getUndistortionUniformHandles(const GLuint program) const {
     UndistortionHandles ret{};
-    if(MY_VERSION==1)ret.lolHandle=(GLuint)glGetUniformLocation(program,"LOL");
-    if(MY_VERSION==2)ret.samplerDistCorrectionHandle=(GLuint)glGetUniformLocation (program, "sTextureDistCorrection");
+    if(distortionMode==DISTORTION_MODE::RADIAL_TANGENTIAL_UNIFORM_BUFFER)ret.lolHandle=(GLuint)glGetUniformLocation(program,"LOL");
+    if(distortionMode==DISTORTION_MODE::RADIAL_TANGENTIAL_TEXTURE)ret.samplerDistCorrectionHandle=(GLuint)glGetUniformLocation (program, "sTextureDistCorrection");
     return ret;
 }
 
 void DistortionManager::beforeDraw(
         const DistortionManager::UndistortionHandles& undistortionHandles) const {
-    if(MY_VERSION==0){
+    if(distortionMode==RADIAL){
         //Nothing
-    }else if(MY_VERSION==1){
+    }else if(distortionMode==RADIAL_TANGENTIAL_UNIFORM_BUFFER){
         glUniform2fv(undistortionHandles.lolHandle,(GLsizei)(ARRAY_SIZE),(GLfloat*)(leftEye ? leftEyeUndistortionData : rightEyeUndistortionData));
     }else{
         auto texture=leftEye ? mDistortionCorrectionTextureLeftEye : mDistortionCorrectionTextureRightEye;
@@ -88,7 +89,9 @@ void DistortionManager::generateTexture(bool leftEye) {
     glBindTexture(GL_TEXTURE_2D,0);
 }
 
-void DistortionManager::generateTextures() {
+void DistortionManager::generateTexturesIfNeeded() {
+    if(distortionMode!=DISTORTION_MODE::RADIAL_TANGENTIAL_TEXTURE)
+        return;
     generateTexture(true);
     generateTexture(false);
 }
@@ -96,7 +99,7 @@ void DistortionManager::generateTextures() {
 std::string DistortionManager::writeGLPositionWithDistortion(const DistortionManager &distortionManager,
                                                  const std::string &positionAttribute) {
     std::stringstream s;
-    if(distortionManager.MY_VERSION==0){
+    if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL){
         s<<"vec4 pos=uMVMatrix*"+positionAttribute+";\n";
         s<<"float r2=dot(pos.xy,pos.xy)/(pos.z*pos.z);\n";
         s<<"r2=clamp(r2,0.0,_MaxRadSq);\n";
@@ -109,7 +112,7 @@ std::string DistortionManager::writeGLPositionWithDistortion(const DistortionMan
         s<<"ret = r2 * (ret + _Undistortion.x);\n";
         s<<"pos.xy*=1.0+ret;\n";
         s<<"gl_Position=pos;\n";
-    }else if(distortionManager.MY_VERSION==1){
+    }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_TANGENTIAL_UNIFORM_BUFFER){
         s<<std::fixed;
         //s<<"vec4 pos=vec4("+positionAttribute+".xy*2.0, 0, 1);";
         s<<"vec4  pos=(uPMatrix*uMVMatrix)*"+positionAttribute+";\n";
@@ -140,14 +143,14 @@ std::string DistortionManager::writeDistortionParams(
         const DistortionManager *distortionManager) {
     std::stringstream s;
     if(distortionManager==nullptr)return "";
-    if(distortionManager->MY_VERSION==0){
+    if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL){
         const auto coeficients=distortionManager->radialDistortionCoefficients.kN;
         s<<std::fixed;
         s<<"const float _MaxRadSq="<<distortionManager->radialDistortionCoefficients.maxRadSquared<<";\n";
         //There is no vec6 data type. Therefore, we use 1 vec4 and 1 vec2. Vec4 holds k1,k2,k3,k4 and vec6 holds k5,k6
         s<<"const vec4 _Undistortion=vec4("<<coeficients[0]<<","<<coeficients[1]<<","<<coeficients[2]<<","<<coeficients[3]<<");\n";
         s<<"const vec2 _Undistortion2=vec2("<<coeficients[4]<<","<<coeficients[5]<<");\n";
-    }else if(distortionManager->MY_VERSION==1){
+    }else if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL_TANGENTIAL_UNIFORM_BUFFER){
         s<<"uniform highp vec2 LOL["<< DistortionManager::ARRAY_SIZE<<"];";
         s<<"int my_clamp(in int x,in int minVal,in int maxVal){";
         s<<"if(x<minVal){return minVal;}";
@@ -157,7 +160,7 @@ std::string DistortionManager::writeDistortionParams(
         s<<"float afterCome=x-float(int(x));";
         s<<"if(afterCome>=0.5){return int(x+0.5);}";
         s<<"return int(x);}";
-    }else if(distortionManager->MY_VERSION==2){
+    }else if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL_TANGENTIAL_TEXTURE){
         s<<"uniform sampler2D sTextureDistCorrection;";
     }
     return s.str();

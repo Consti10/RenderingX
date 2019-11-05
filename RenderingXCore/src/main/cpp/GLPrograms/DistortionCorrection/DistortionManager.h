@@ -43,7 +43,8 @@ public:
         GLuint lolHandle;
         GLuint samplerDistCorrectionHandle;
     };
-    const int MY_VERSION=2;
+    enum DISTORTION_MODE{RADIAL,RADIAL_TANGENTIAL_UNIFORM_BUFFER,RADIAL_TANGENTIAL_TEXTURE};
+    const DISTORTION_MODE distortionMode;
 
     bool leftEye=true;
     static constexpr auto MY_TEXTURE_UNIT_LEFT_EYE=GL_TEXTURE2;
@@ -62,7 +63,7 @@ public:
     void beforeDraw(const UndistortionHandles& undistortionHandles)const;
     void afterDraw()const;
 
-    void generateTextures();
+    void generateTexturesIfNeeded();
     void generateTexture(bool leftEye);
 
     static std::string writeGLPosition(const DistortionManager* distortionManager,const std::string &positionAttribute="aPosition");
