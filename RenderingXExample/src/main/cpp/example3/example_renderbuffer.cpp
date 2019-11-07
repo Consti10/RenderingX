@@ -149,9 +149,9 @@ void ExampleRenderer2::drawEye(bool leftEye) {
     glProgramVC->draw(glm::value_ptr(tmp),glm::value_ptr(projection),0,N_COLORED_VERTICES,GL_TRIANGLES);
     glProgramVC->afterDraw();*/
 
-    /*glProgramTexture->beforeDraw(leftEye ? glBufferTexturedLeftEye : glBufferTexturedRightEye,mTexture);
+    glProgramTexture->beforeDraw(leftEye ? glBufferTexturedLeftEye : glBufferTexturedRightEye,mTexture);
     glProgramTexture->draw(eyeView,projection,0,nTexturedVertices);
-    glProgramTexture->afterDraw();*/
+    glProgramTexture->afterDraw();
 
     glProgramTexture->beforeDraw(leftEye ? glBufferTexturedLeftEye : glBufferTexturedRightEye,mOffscreenRenderTexture);
     glProgramTexture->draw(eyeView,projection,0,nTexturedVertices);
