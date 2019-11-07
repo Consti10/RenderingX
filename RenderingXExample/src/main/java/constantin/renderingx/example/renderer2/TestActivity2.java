@@ -12,7 +12,7 @@ import constantin.renderingX.PerformanceHelper;
 import constantin.renderingx.example.R;
 import constantin.renderingx.example.renderer1.GLRExample;
 
-public class TestActivity extends AppCompatActivity {
+public class TestActivity2 extends AppCompatActivity {
     private GvrLayout gvrLayout;
     private GLSurfaceView gLView;
     private GLRTest renderer;

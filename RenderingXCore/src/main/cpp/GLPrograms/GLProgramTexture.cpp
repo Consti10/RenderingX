@@ -10,6 +10,7 @@ GLProgramTexture::GLProgramTexture(const GLuint texture,const bool USE_EXTERNAL_
     mProgram = GLHelper::createProgram(VS(distortionManager,use2dCoordinates),FS(USE_EXTERNAL_TEXTURE));
     mMVMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
     mPMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uPMatrix");
+    uColorChannel=(GLuint)glGetUniformLocation(mProgram,"uColorChannel");
     mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
     mTextureHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aTexCoord");
     mSamplerHandle = glGetUniformLocation (mProgram, "sTexture" );
@@ -21,8 +22,8 @@ GLProgramTexture::GLProgramTexture(const GLuint texture,const bool USE_EXTERNAL_
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glBindTexture((GLenum)(USE_EXTERNAL_TEXTURE ? GL_TEXTURE_EXTERNAL_OES : GL_TEXTURE_2D),0);
     GLHelper::checkGlError(TAG);
@@ -101,4 +102,8 @@ void GLProgramTexture::loadTexture(JNIEnv *env, jobject androidContext, const ch
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                     GL_CLAMP_TO_EDGE);*/
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void GLProgramTexture::setUColorChannel(int value){
+    glUniform1i(uColorChannel,value);
 }

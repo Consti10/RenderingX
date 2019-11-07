@@ -14,12 +14,15 @@
 #include <array>
 #include <DistortionCorrection/DistortionManager.h>
 
+//#define WIREFRAME
+
 class GLProgramTexture {
 private:
     const bool USE_EXTERNAL_TEXTURE;
     GLuint mProgram;
     GLint mPositionHandle,mTextureHandle,mSamplerHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
+    GLuint uColorChannel;
     const GLuint mTexture;
     const DistortionManager* distortionManager;
     DistortionManager::UndistortionHandles mUndistortionHandles;
@@ -37,6 +40,8 @@ public:
     void drawIndexed(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLuint indexBuffer) const;
     void afterDraw() const;
     void loadTexture(JNIEnv *env, jobject androidContext,const char* name);
+public:
+    void setUColorChannel(int value);
 private:
     static const std::string VS(const DistortionManager* distortionManager1,const bool use2dCoordinates){
         std::stringstream s;
@@ -45,6 +50,7 @@ private:
         s<<"attribute vec4 aPosition;\n";
         s<<"attribute vec2 aTexCoord;\n";
         s<<"varying vec2 vTexCoord;\n";
+        //s<<"varying float overwrite;";
         s<< DistortionManager::writeDistortionParams(distortionManager1);
         s<<"void main() {\n";
         if(use2dCoordinates){
@@ -70,13 +76,24 @@ private:
         }
         s<<"precision mediump float;\n";
         s<<"varying vec2 vTexCoord;\n";
+        s<<"uniform int uColorChannel;"; //render all color channels when ==0 , else 1==r .. 3==b
         if(externalTexture){
             s<<"uniform samplerExternalOES sTexture;\n";
         }else{
             s<<"uniform sampler2D sTexture;\n";
         }
         s<<"void main() {\n";
-        s<<"gl_FragColor = texture2D( sTexture, vTexCoord );\n";
+        s<<"if(uColorChannel==0){";
+        s<<"gl_FragColor = texture2D(sTexture,vTexCoord);\n";
+        s<<"";
+        s<<"}else if(uColorChannel==1){";
+        s<<"gl_FragColor.r = texture2D(sTexture,vTexCoord).r;\n";
+        s<<"}else if(uColorChannel==2){";
+        s<<"gl_FragColor.g = texture2D(sTexture,vTexCoord).g;\n";
+        s<<"}else{";
+        s<<"gl_FragColor.b = texture2D(sTexture,vTexCoord).b;\n";
+        s<<"}";
+        //s<<"gl_FragColor = texture2D( sTexture, vTexCoord );\n";
         //s.append("gl_FragColor.rgb = vec3(1.0,1.0,1.0);\n");
 #ifdef WIREFRAME
         s<<"gl_FragColor.rgb=vec3(1.0,1.0,1.0);\n";

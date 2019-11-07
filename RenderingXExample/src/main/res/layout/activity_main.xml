@@ -29,6 +29,12 @@
             android:layout_height="wrap_content"
             android:text="Test Distortion" />
 
+        <Button
+            android:id="@+id/button4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Test 3" />
+
         <!--<TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -84,3 +84,20 @@ target_link_libraries( example-renderer2
         SuperSync
         gvr-lib
         )
+
+
+add_library( example-renderer3
+        SHARED
+        src/main/cpp/example3/example_renderbuffer.cpp
+        )
+target_link_libraries( example-renderer3
+        GLPrograms
+        Time
+        ${log-lib}
+        android
+        log
+        EGL
+        GLESv2
+        SuperSync
+        gvr-lib
+        )

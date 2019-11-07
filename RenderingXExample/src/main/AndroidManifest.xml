@@ -32,7 +32,11 @@
             android:name=".renderer1.ExampleRenderingA"
             android:theme="@style/MyStyleNoActionBar" />
         <activity android:name="constantin.renderingX.GLESInfo.AWriteGLESInfo" />
-        <activity android:name=".renderer2.TestActivity"
+        <activity android:name=".renderer2.TestActivity2"
+            android:theme="@style/MyStyleFullscreen"
+            android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".renderer3.TestActivity3"
             android:theme="@style/MyStyleFullscreen"
             android:screenOrientation="landscape">
         </activity>

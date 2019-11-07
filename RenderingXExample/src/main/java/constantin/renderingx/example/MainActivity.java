@@ -22,7 +22,8 @@ import java.util.List;
 import constantin.renderingX.GLESInfo.AWriteGLESInfo;
 import constantin.renderingX.GLESInfo.GLESInfo;
 import constantin.renderingx.example.renderer1.ExampleRenderingA;
-import constantin.renderingx.example.renderer2.TestActivity;
+import constantin.renderingx.example.renderer2.TestActivity2;
+import constantin.renderingx.example.renderer3.TestActivity3;
 import constantin.renderingx.example.supersync.ExampleSuperSyncA;
 
 public class MainActivity extends AppCompatActivity {
@@ -60,11 +61,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
         findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent().setClass(context, TestActivity.class));
+                startActivity(new Intent().setClass(context, TestActivity2.class));
+            }
+        });
+        findViewById(R.id.button4).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent().setClass(context, TestActivity3.class));
             }
         });
         checkAndRequestPermissions();

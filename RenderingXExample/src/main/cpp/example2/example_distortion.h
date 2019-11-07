@@ -61,8 +61,12 @@ private:
 
     GLuint glBufferTextured;
     int nTexturedVertices;
-    GLuint glBufferTextured1;
-    GLuint glBufferTextured2;
+
+    GLuint glBufferTexturedLeftEye;
+    GLuint glBufferTexturedRightEye;
+    GLuint glBufferTexturedLeftEye_rgb[3];
+    GLuint glBufferTexturedRightEye_rgb[3];
+
 
     GLuint glBufferCoordinateSystemLines;
     int nCoordinateSystemLinesVertices;
