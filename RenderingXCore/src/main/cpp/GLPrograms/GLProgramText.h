@@ -37,8 +37,9 @@ private:
     GLuint mOutlineColorHandle,mOutlineStrengthHandle;
     GLuint mOverrideColorHandle;
     GLuint uEdge,uBorderEdge;
-    GLuint mTexture;
     using INDEX_DATA=GLushort;
+    //We only need 1 text texture
+    GLuint mTexture;
     static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE0;
     static constexpr auto MY_SAMPLER_UNIT=0;
     static constexpr int INDEX_BUFFER_SIZE=65535; //max size of GL unsigned short

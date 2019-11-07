@@ -5,36 +5,27 @@
 constexpr auto TAG="GLRenderTexture(-External)";
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
-GLProgramTexture::GLProgramTexture(const GLuint texture,const bool USE_EXTERNAL_TEXTURE,const DistortionManager* distortionManager,const bool use2dCoordinates)
-        :USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE),mTexture(texture),distortionManager(distortionManager) {
+GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const DistortionManager* distortionManager,const bool use2dCoordinates)
+        :USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE),distortionManager(distortionManager) {
     mProgram = GLHelper::createProgram(VS(distortionManager,use2dCoordinates),FS(USE_EXTERNAL_TEXTURE));
     mMVMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
     mPMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uPMatrix");
-    uColorChannel=(GLuint)glGetUniformLocation(mProgram,"uColorChannel");
     mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
     mTextureHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aTexCoord");
     mSamplerHandle = glGetUniformLocation (mProgram, "sTexture" );
     if(distortionManager!=nullptr){
         mUndistortionHandles=distortionManager->getUndistortionUniformHandles(mProgram);
     }
-    glActiveTexture(MY_TEXTURE_UNIT);
-    glBindTexture((GLenum)(USE_EXTERNAL_TEXTURE ? GL_TEXTURE_EXTERNAL_OES : GL_TEXTURE_2D),mTexture);
-
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    glBindTexture((GLenum)(USE_EXTERNAL_TEXTURE ? GL_TEXTURE_EXTERNAL_OES : GL_TEXTURE_2D),0);
     GLHelper::checkGlError(TAG);
 }
 
-void GLProgramTexture::beforeDraw(const GLuint buffer) const{
+void GLProgramTexture::beforeDraw(const GLuint buffer,GLuint texture) const{
     glUseProgram((GLuint)mProgram);
+
     glActiveTexture(MY_TEXTURE_UNIT);
-    glBindTexture(USE_EXTERNAL_TEXTURE ? GL_TEXTURE_EXTERNAL_OES : GL_TEXTURE_2D,mTexture);
+    glBindTexture(USE_EXTERNAL_TEXTURE ? GL_TEXTURE_EXTERNAL_OES : GL_TEXTURE_2D,texture);
     glUniform1i(mSamplerHandle,MY_SAMPLER_UNIT);
-    //glBindTexture(USE_EXTERNAL_TEXTURE ? GL_TEXTURE_EXTERNAL_OES : GL_TEXTURE_2D,0);
+
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glEnableVertexAttribArray((GLuint)mPositionHandle);
     glVertexAttribPointer((GLuint)mPositionHandle, 3/*xyz*/, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
@@ -81,29 +72,19 @@ void GLProgramTexture::afterDraw() const{
     }
 }
 
-void GLProgramTexture::loadTexture(JNIEnv *env, jobject androidContext, const char *name) {
-    if(USE_EXTERNAL_TEXTURE){
+void GLProgramTexture::loadTexture(GLuint texture,JNIEnv *env, jobject androidContext, const char *name) {
+    /*if(USE_EXTERNAL_TEXTURE){
         LOGD("ERROR: Should use an external surface texture");
         return;
-    }
-    glActiveTexture(MY_TEXTURE_UNIT);
-    glBindTexture(GL_TEXTURE_2D,mTexture);
-
+    }*/
+    //Load texture, generate mipmaps, set sampling parameters
+    glBindTexture(GL_TEXTURE_2D,texture);
     NDKHelper::uploadAssetImageToGPU(env,androidContext,name,false);
-
     glHint(GL_GENERATE_MIPMAP_HINT,GL_NICEST);
     glGenerateMipmap(GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-    //glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-    //glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-    /*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                    GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                    GL_CLAMP_TO_EDGE);*/
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void GLProgramTexture::setUColorChannel(int value){
-    glUniform1i(uColorChannel,value);
 }

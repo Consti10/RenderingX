@@ -28,10 +28,11 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
 
     glProgramVC=new GLProgramVC();
     glProgramVC2=new GLProgramVC(distortionManager);
-    GLuint texture;
-    glGenTextures(1,&texture);
-    glProgramTexture=new GLProgramTexture(texture,false,nullptr,true);
-    glProgramTexture->loadTexture(env,context,"c_gimp1.png");
+    glGenTextures(1,&mTexture);
+    glProgramTexture=new GLProgramTexture(false,nullptr,true);
+    GLProgramTexture::loadTexture(mTexture,env,context,"c_gimp1.png");
+
+
     //create all the gl Buffer for later use
     glGenBuffers(1,&glBufferVC);
     glGenBuffers(1,&glBufferVCDistorted1);
@@ -61,7 +62,7 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
     HelperX::generateDistortionMeshBuffersTEST(tesselatedVideoCanvas,gvr_api_->GetContext(),
                                                glBufferTexturedLeftEye,glBufferTexturedRightEye,glBufferTexturedLeftEye_rgb,glBufferTexturedRightEye_rgb);
 
-    HelperX::debugColorChannelDifferences(gvr_api_->GetContext());
+    //HelperX::debugColorChannelDifferences(gvr_api_->GetContext());
 
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
@@ -115,18 +116,21 @@ void ExampleRenderer2::drawEye(bool leftEye) {
     glProgramTexture->draw(eyeView,projection,0,nTexturedVertices);
     glProgramTexture->afterDraw();*/
 
-    const auto* glBufferTextured_rgb=leftEye ? glBufferTexturedLeftEye_rgb : glBufferTexturedRightEye_rgb;
-    for(int rgb=0;rgb<3;rgb++){
-        glProgramTexture->beforeDraw(glBufferTextured_rgb[rgb]);
-        glProgramTexture->setUColorChannel(rgb+1);
-        glProgramTexture->draw(eyeView,projection,0,nTexturedVertices);
-        glProgramTexture->afterDraw();
-    }
+    //glActiveTexture(GL_TEXTURE1);
+    //glBindTexture(GL_TEXTURE_2D,mTexture);
+    //glBindTexture(GL_TEXTURE_2D,0);
 
-    /*distortionManager->leftEye=leftEye;
+    glProgramTexture->beforeDraw(leftEye ? glBufferTexturedLeftEye : glBufferTexturedRightEye,mTexture);
+    glProgramTexture->draw(eyeView,projection,0,nTexturedVertices);
+    glProgramTexture->afterDraw();
+
+    glBindTexture(GL_TEXTURE_2D,0);
+
+
+    distortionManager->leftEye=leftEye;
     glProgramVC2->beforeDraw(glBufferVC);
     glProgramVC2->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,nColoredVertices,GL_LINES);
-    glProgramVC2->afterDraw();*/
+    glProgramVC2->afterDraw();
 
     /*glProgramVC->beforeDraw(glBufferVCDistorted1);
     glProgramVC->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,N_COLORED_VERTICES,GL_LINES);

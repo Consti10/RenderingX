@@ -72,6 +72,8 @@ private:
     int nCoordinateSystemLinesVertices;
     DistortionManager* distortionManager;
 
+    GLuint mTexture;
+
 //simplifies debugging/benchmarking
     Chronometer cpuFrameTime{"CPU frame time"};
     FPSCalculator fpsCalculator{"OpenGL FPS",2000}; //print every 2 seconds
