@@ -21,11 +21,9 @@
 
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
-GLProgramSpherical::GLProgramSpherical(const GLuint videoTexture,float radius,const DistortionManager* distortionManager):
+GLProgramSpherical::GLProgramSpherical(float radius,const DistortionManager* distortionManager):
 distortionManager(distortionManager)
 {
-    mTexture=videoTexture;
-
     // Create the GLSL program
     mProgram = GLHelper::createProgram(vs_textureExt_360(distortionManager), fs_textureExt_360());
 
@@ -40,21 +38,14 @@ distortionManager(distortionManager)
     if(distortionManager!=nullptr){
         mUndistortionHandles=distortionManager->getUndistortionUniformHandles(mProgram);
     }
-    // Configure the texture
-    glActiveTexture(MY_SAMPLER_UNIT);
-    glBindTexture(GL_TEXTURE_EXTERNAL_OES,mTexture);
-    glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_EXTERNAL_OES,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-    glBindTexture(GL_TEXTURE_EXTERNAL_OES,0);
-
     GLHelper::checkGlError("GLProgramSpherical()");
 }
 
-void GLProgramSpherical::beforeDraw(GLuint glBuffVertices) {
+void GLProgramSpherical::beforeDraw(GLuint glBuffVertices,GLuint texture) {
     // bind the GLSL texture
     glUseProgram((GLuint)mProgram);
     glActiveTexture(MY_TEXTURE_UNIT);
-    glBindTexture(GL_TEXTURE_EXTERNAL_OES,mTexture);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES,texture);
     glUniform1i(mSamplerHandle,MY_SAMPLER_UNIT);
 
     // enable the attributes

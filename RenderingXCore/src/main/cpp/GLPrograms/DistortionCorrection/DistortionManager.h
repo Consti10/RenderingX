@@ -26,10 +26,10 @@
 
 class DistortionManager {
 public:
-    static constexpr const int N_RADIAL_UNDISTORTION_COEFICIENTS=7;
+    static constexpr const int N_RADIAL_UNDISTORTION_COEFICIENTS=6;
     struct RadialDistortionCoefficients{
         float maxRadSquared;
-        std::array<float,N_RADIAL_UNDISTORTION_COEFICIENTS-1> kN;
+        std::array<float,N_RADIAL_UNDISTORTION_COEFICIENTS> kN;
     };
     RadialDistortionCoefficients radialDistortionCoefficients;
 
@@ -42,8 +42,10 @@ public:
     struct UndistortionHandles{
         GLuint lolHandle;
         GLuint samplerDistCorrectionHandle;
+        GLuint uMaxRadSq;
+        GLuint uKN;
     };
-    enum DISTORTION_MODE{RADIAL,RADIAL_TANGENTIAL_UNIFORM_BUFFER,RADIAL_TANGENTIAL_TEXTURE};
+    enum DISTORTION_MODE{RADIAL,RADIAL_2,RADIAL_TANGENTIAL_UNIFORM_BUFFER,RADIAL_TANGENTIAL_TEXTURE};
     const DISTORTION_MODE distortionMode;
 
     bool leftEye=true;

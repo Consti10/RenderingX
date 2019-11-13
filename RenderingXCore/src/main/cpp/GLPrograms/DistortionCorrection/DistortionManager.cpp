@@ -15,15 +15,20 @@ distortionMode(DISTORTION_MODE::RADIAL_TANGENTIAL_TEXTURE) {
     inverseRightEye.extractData(rightEyeUndistortionData);
 }
 
-DistortionManager::DistortionManager(JNIEnv *env, jfloatArray undistData):distortionMode(DISTORTION_MODE::RADIAL) {
+DistortionManager::DistortionManager(JNIEnv *env, jfloatArray undistData):distortionMode(DISTORTION_MODE::RADIAL_2) {
     jfloat *arrayP=env->GetFloatArrayElements(undistData, nullptr);
     radialDistortionCoefficients.maxRadSquared=arrayP[0];
-    std::memcpy(radialDistortionCoefficients.kN.data(),&arrayP[1],radialDistortionCoefficients.kN.size()*sizeof(float));
+    std::memcpy(radialDistortionCoefficients.kN.data(),&arrayP[1],N_RADIAL_UNDISTORTION_COEFICIENTS*sizeof(float));
     env->ReleaseFloatArrayElements(undistData,arrayP,0);
+    LOGD("1Dist params, maxRadSq %f k1..k6 %f %f %f %f %f %f",radialDistortionCoefficients.maxRadSquared,radialDistortionCoefficients.kN[0],radialDistortionCoefficients.kN[1],
+            radialDistortionCoefficients.kN[2],radialDistortionCoefficients.kN[3],radialDistortionCoefficients.kN[4],radialDistortionCoefficients.kN[5]);
     //coefficients: [0.34, 0.55]
-    //radialDistortionCoefficients.maxRadSquared=10.0f;
-    //radialDistortionCoefficients.kN[0]=0.34f;
-    //radialDistortionCoefficients.kN[1]=0.55f;
+    /*radialDistortionCoefficients.maxRadSquared=10.0f;
+    radialDistortionCoefficients.kN[0]=0.34f;
+    radialDistortionCoefficients.kN[1]=0.55f;
+    for(int i=2;i<6;i++){
+        radialDistortionCoefficients.kN[i]=0.0f;
+    }*/
 }
 
 DistortionManager::DistortionManager(const std::string &filenameLeftEye,const std::string &filenameRightEye):
@@ -38,6 +43,10 @@ distortionMode(DISTORTION_MODE::RADIAL_TANGENTIAL_TEXTURE) {
 DistortionManager::UndistortionHandles
 DistortionManager::getUndistortionUniformHandles(const GLuint program) const {
     UndistortionHandles ret{};
+    if(distortionMode==DISTORTION_MODE::RADIAL_2){
+        ret.uMaxRadSq=(GLuint)glGetUniformLocation(program,"uMaxRadSq");
+        ret.uKN=(GLuint)glGetUniformLocation(program,"uKN");
+    }
     if(distortionMode==DISTORTION_MODE::RADIAL_TANGENTIAL_UNIFORM_BUFFER)ret.lolHandle=(GLuint)glGetUniformLocation(program,"LOL");
     if(distortionMode==DISTORTION_MODE::RADIAL_TANGENTIAL_TEXTURE)ret.samplerDistCorrectionHandle=(GLuint)glGetUniformLocation (program, "sTextureDistCorrection");
     return ret;
@@ -47,6 +56,9 @@ void DistortionManager::beforeDraw(
         const DistortionManager::UndistortionHandles& undistortionHandles) const {
     if(distortionMode==RADIAL){
         //Nothing
+    }else if(distortionMode==DISTORTION_MODE::RADIAL_2){
+        glUniform1f(undistortionHandles.uMaxRadSq,radialDistortionCoefficients.maxRadSquared);
+        glUniform1fv(undistortionHandles.uKN,N_RADIAL_UNDISTORTION_COEFICIENTS,radialDistortionCoefficients.kN.data());
     }else if(distortionMode==RADIAL_TANGENTIAL_UNIFORM_BUFFER){
         glUniform2fv(undistortionHandles.lolHandle,(GLsizei)(ARRAY_SIZE),(GLfloat*)(leftEye ? leftEyeUndistortionData : rightEyeUndistortionData));
     }else{
@@ -112,6 +124,19 @@ std::string DistortionManager::writeGLPositionWithDistortion(const DistortionMan
         s<<"ret = r2 * (ret + _Undistortion.x);\n";
         s<<"pos.xy*=1.0+ret;\n";
         s<<"gl_Position=pos;\n";
+    }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_2){
+        s<<"vec4 pos=uMVMatrix*"+positionAttribute+";\n";
+        s<<"float r2=dot(pos.xy,pos.xy)/(pos.z*pos.z);\n";
+        s<<"r2=clamp(r2,0.0,uMaxRadSq);\n";
+        s<<"float ret = 0.0;\n";
+        s<<"ret = r2 * (ret + uKN[5]);\n";
+        s<<"ret = r2 * (ret + uKN[4]);\n";
+        s<<"ret = r2 * (ret + uKN[3]);\n";
+        s<<"ret = r2 * (ret + uKN[2]);\n";
+        s<<"ret = r2 * (ret + uKN[1]);\n";
+        s<<"ret = r2 * (ret + uKN[0]);\n";
+        s<<"pos.xy*=1.0+ret;\n";
+        s<<"gl_Position=pos;\n";
     }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_TANGENTIAL_UNIFORM_BUFFER){
         s<<std::fixed;
         //s<<"vec4 pos=vec4("+positionAttribute+".xy*2.0, 0, 1);";
@@ -150,6 +175,9 @@ std::string DistortionManager::writeDistortionParams(
         //There is no vec6 data type. Therefore, we use 1 vec4 and 1 vec2. Vec4 holds k1,k2,k3,k4 and vec6 holds k5,k6
         s<<"const vec4 _Undistortion=vec4("<<coeficients[0]<<","<<coeficients[1]<<","<<coeficients[2]<<","<<coeficients[3]<<");\n";
         s<<"const vec2 _Undistortion2=vec2("<<coeficients[4]<<","<<coeficients[5]<<");\n";
+    }else if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL_2){
+        s<<"uniform float uMaxRadSq;";
+        s<<"uniform float uKN["<<DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS<<"];";
     }else if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL_TANGENTIAL_UNIFORM_BUFFER){
         s<<"uniform highp vec2 LOL["<< DistortionManager::ARRAY_SIZE<<"];";
         s<<"int my_clamp(in int x,in int minVal,in int maxVal){";

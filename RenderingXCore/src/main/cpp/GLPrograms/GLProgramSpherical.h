@@ -39,14 +39,13 @@ private:
     GLint mPositionHandle,mTextureHandle,mSamplerHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
     //GLuint mNormalHandle;
-    GLuint mTexture;
     const DistortionManager* distortionManager;
     DistortionManager::UndistortionHandles mUndistortionHandles;
     static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
     static constexpr auto MY_SAMPLER_UNIT=1;
 public:
-    GLProgramSpherical(const GLuint videoTexture,float radius=1.0f,const DistortionManager* distortionManager=nullptr);
-    void beforeDraw(GLuint glBuffVertices);
+    GLProgramSpherical(float radius=1.0f,const DistortionManager* distortionManager=nullptr);
+    void beforeDraw(GLuint glBuffVertices,GLuint texture);
     void draw(const glm::mat4x4 ViewM, const glm::mat4x4 ProjM,int vertexCount) const;
     void afterDraw()const;
 private:
