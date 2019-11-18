@@ -22,6 +22,11 @@
 
 static const float calculateRadSquared(const glm::vec2 p);
 
+
+//This wraps an 2d array that maps to each point in viewport space (e.g. 0...1)
+//a distorted point in view space
+//NOTE Messy, most likely deprecated with new open source cardboard
+
 class Distortion{
 private:
     struct DistortedPoint{

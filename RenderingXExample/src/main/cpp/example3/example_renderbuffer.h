@@ -35,6 +35,7 @@ public:
     void onSurfaceChanged(int width, int height);
     void onDrawFrame();
     void drawEye(bool whichEye);
+    void createOffscreenFramebuffer(bool leftEye);
 private:
     std::unique_ptr<gvr::GvrApi> gvr_api_;
     //Camera/Projection matrix constants

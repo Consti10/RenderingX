@@ -3,6 +3,7 @@ package constantin.renderingx.example;
 import android.content.Context;
 
 import com.google.vr.ndk.base.GvrApi;
+import com.google.vr.ndk.base.GvrLayout;
 import com.google.vr.sdk.base.Distortion;
 import com.google.vr.sdk.base.GvrView;
 import com.google.vr.sdk.base.GvrViewerParams;
@@ -26,19 +27,35 @@ public class VRSettingsHelper {
     private static float[] getUndistortionCoeficients(final GvrViewerParams params){
         //Because of vertex displacement distortion correction
         //float mFOV=45.0f;
+        //Distortion distortion=params.getDistortion();
+        Distortion distortion=Distortion.cardboardV1Distortion();
+        Distortion2 distortion2=Distortion2.cardboardV1Distortion();
+
+        Distortion inverse1=distortion.getApproximateInverseDistortion(2,6);
+        Distortion2 inverse2=distortion2.getApproximateInverseDistortion(2,6);
+        System.out.println(inverse1.toString());
+        System.out.println(inverse2.toString());
+
+
+        /*StringBuilder ss=new StringBuilder();
+        for(float f=0;f<2;f+=0.1f){
+            ss.append(distortion.distort(f)).append(",");
+        }
+        System.out.println("2Factors:"+ss.toString());*/
+
+
         float fovY_full=params.getLeftEyeMaxFov().getBottom()+params.getLeftEyeMaxFov().getTop();
         float fovX_full=params.getLeftEyeMaxFov().getLeft()+params.getLeftEyeMaxFov().getRight();
-        System.out.println(params.getModel()+"  "+"FOV Y"+fovY_full+"FOV X"+fovX_full+params.getDistortion().toString());
+        System.out.println(params.getModel()+"  "+"FOV Y"+fovY_full+"FOV X"+fovX_full+distortion.toString());
         System.out.println("FOV:"+params.getLeftEyeMaxFov().toString());
-        Distortion distortion=params.getDistortion();
 
-        fovY_full=80.0f;
+        fovY_full=180.0f;
 
-        return calculateUndistortionCoeficients(distortion, fovY_full/2.0f );
+        return calculateUndistortionCoeficients(distortion2, fovY_full/2.0f );
     }
 
 
-    private static float[] calculateUndistortionCoeficients(Distortion distortion, final float FOV_HALF) {
+    private static float[] calculateUndistortionCoeficients(Distortion2 distortion, final float FOV_HALF) {
        // distortion=Distortion.parseFromProtobuf(new float[]{0.5f,0});
 
         float[] results = new float[6+1];
@@ -48,8 +65,11 @@ public class VRSettingsHelper {
         if(FOV_HALF<60.0f){
             maxRadiusLens = maxRadiusLens*1.5f;
         }
+        maxRadiusLens=2.0f;
 
-        Distortion inverse = distortion.getApproximateInverseDistortion(maxRadiusLens,6);
+        Distortion2 inverse = distortion.getApproximateInverseDistortion(maxRadiusLens,6);
+
+
         if(FOV_HALF<60.0f){
             results[0] = maxRadiusLens*1.2f;
         }else{
@@ -62,10 +82,18 @@ public class VRSettingsHelper {
         results[5] = inverse.getCoefficients()[4];
         results[6] = inverse.getCoefficients()[5];
 
-        System.out.println("Distort "+inverse.distort(1));
-        System.out.println("As in shader:"+ distort(results[0],results[1],results[2],results[3],results[4],results[5],results[6]));
-        checkUndistortion(distortion,inverse);
+        //System.out.println("Distort "+inverse.distort(1));
+        //System.out.println("As in shader:"+distort(results[0],results[1],results[2],results[3],results[4],results[5],results[6]));
+        //checkUndistortion(distortion,inverse);
 
+        /*StringBuilder ss=new StringBuilder();
+        ss.append("Dist params, maxRadSq ");
+        ss.append(results[0]);
+        ss.append(" k1..k6");
+        for(int i=1;i<7;i++){
+            ss.append(" ").append(results[i]);
+        }
+        System.out.println(ss.toString());*/
         /*float max= distort(maxRadiusLens,results[1],results[2],results[3],results[4],results[5],results[6]);
         for(float i=0;i<1;i+=0.01){
             float val=distort(maxRadiusLens+i,results[1],results[2],results[3],results[4],results[5],results[6]);
@@ -118,27 +146,11 @@ public class VRSettingsHelper {
     }
 
     private static void checkUndistortion(Distortion distortion,Distortion undistortion){
-        /*final int size=10;
-        float[][] test=new float[size][size];
-        for(int i=0;i<size;i++){
-            for(int j=0;j<size;j++){
-                final float x=i/size;
-                final float y=i/size;
-                final float r2=(float)Math.sqrt(x*x+y*y);
-                test[i][j]=undistortion.distort(r2);
-            }
-        }*/
-
-        /*for(int i=0;i<size;i++) {
-            for (int j = 0; j < size; j++) {
-
-            }
-        }*/
-
-
-        /*for(float r2=0;r2<2.0f;r2+=0.01f){
-            System.out.println("Distortion for:"+r2+"is a)"+undistortion.distortionFactor(r2)+" b)"+calculateUndistortionFactor(r2,distortion));
-        }*/
+        for(float i=0;i<2;i+=0.01f){
+            float distFactor=distortion.distortInverse(i);
+            float distFactor2=undistortion.distort(i);
+            System.out.println("Val"+distFactor+" inverse:"+distFactor2+" Difference:"+Math.abs(distFactor2-distFactor));
+        }
     }
 
 

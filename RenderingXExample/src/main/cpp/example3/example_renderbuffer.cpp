@@ -21,6 +21,29 @@ ExampleRenderer2::ExampleRenderer2(JNIEnv *env, jobject androidContext,gvr_conte
 }
 
 
+void ExampleRenderer2::createOffscreenFramebuffer(bool leftEye) {
+    glGenTextures(1,&mOffscreenRenderTexture);
+    //Framebuffer
+    glGenFramebuffers(1, &mOffscreenFramebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, mOffscreenFramebuffer);
+    //glGenTextures(1, &mOffscreenRenderTexture);
+    glBindTexture(GL_TEXTURE_2D, mOffscreenRenderTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA4, RENDERBUFFER_W,RENDERBUFFER_H, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, mOffscreenRenderTexture, 0);
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if(status != GL_FRAMEBUFFER_COMPLETE){
+        LOGD("Framebuffer status bad");
+    }else{
+        LOGD("Framebuffer status okay");
+    }
+}
+
 void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
 //Instantiate all our OpenGL rendering 'Programs'
     //distortionManager=new DistortionManager(gvr_api_->GetContext());
@@ -31,12 +54,9 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
     glProgramVC2=new GLProgramVC(distortionManager);
     glProgramTexture=new GLProgramTexture(false,nullptr,true);
 
-
-    glGenTextures(1,&mOffscreenRenderTexture);
     glGenTextures(1,&mTexture);
     GLProgramTexture::loadTexture(mTexture,env,context,"c_grid4.png");
-
-
+    
     //create all the gl Buffer for later use
     glGenBuffers(1,&glBufferVC);
     glGenBuffers(1,&glBufferVCDistorted1);
@@ -67,27 +87,8 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
     HelperX::generateDistortionMeshBuffersTEST(tesselatedVideoCanvas,gvr_api_->GetContext(),
             glBufferTexturedLeftEye,glBufferTexturedRightEye,glBufferTexturedLeftEye_rgb,glBufferTexturedRightEye_rgb);
 
-//-----------------------------------------------
-    //Framebuffer
-    glGenFramebuffers(1, &mOffscreenFramebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, mOffscreenFramebuffer);
-    //glGenTextures(1, &mOffscreenRenderTexture);
-    glBindTexture(GL_TEXTURE_2D, mOffscreenRenderTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA4, RENDERBUFFER_W,RENDERBUFFER_H, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    createOffscreenFramebuffer(true);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, mOffscreenRenderTexture, 0);
-    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if(status != GL_FRAMEBUFFER_COMPLETE){
-        LOGD("Framebuffer status bad");
-    }else{
-        LOGD("Framebuffer status okay");
-    }
-//-----------------------------------------------------
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
@@ -107,6 +108,7 @@ void ExampleRenderer2::onSurfaceChanged(int width, int height) {
 }
 
 void ExampleRenderer2::onDrawFrame() {
+
     glBindFramebuffer(GL_FRAMEBUFFER,mOffscreenFramebuffer);
     glClearColor(0,0,0.0,0);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -117,12 +119,10 @@ void ExampleRenderer2::onDrawFrame() {
     glProgramVC->afterDraw();
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-
     glClearColor(0,0,0.0,0);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
 
     cpuFrameTime.start();
     drawEye(false);
@@ -132,6 +132,7 @@ void ExampleRenderer2::onDrawFrame() {
     cpuFrameTime.printAvg(5000);
     fpsCalculator.tick();
 }
+
 
 void ExampleRenderer2::drawEye(bool leftEye) {
     if(leftEye){
@@ -156,7 +157,6 @@ void ExampleRenderer2::drawEye(bool leftEye) {
     glProgramTexture->beforeDraw(leftEye ? glBufferTexturedLeftEye : glBufferTexturedRightEye,mOffscreenRenderTexture);
     glProgramTexture->draw(eyeView,projection,0,nTexturedVertices);
     glProgramTexture->afterDraw();
-
 
     /*glProgramVC->beforeDraw(glBufferVCDistorted1);
     glProgramVC->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,N_COLORED_VERTICES,GL_LINES);

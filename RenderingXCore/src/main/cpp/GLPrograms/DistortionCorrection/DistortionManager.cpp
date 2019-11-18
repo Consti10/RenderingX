@@ -14,6 +14,14 @@ distortionMode(DISTORTION_MODE::RADIAL_TANGENTIAL_TEXTURE) {
     inverseRightEye.extractData(rightEyeUndistortionData);
 }
 
+DistortionManager::DistortionManager(const cardboard::PolynomialRadialDistortion &distortion,float maxRadSq):
+distortionMode(DISTORTION_MODE::RADIAL){
+    for(int i=0;i<distortion.getCoeficients().size();i++){
+        radialDistortionCoefficients.kN[i]=distortion.getCoeficients()[i];
+    }
+    radialDistortionCoefficients.maxRadSquared=maxRadSq;
+}
+
 DistortionManager::DistortionManager(JNIEnv *env, jfloatArray undistData):distortionMode(DISTORTION_MODE::RADIAL) {
     jfloat *arrayP=env->GetFloatArrayElements(undistData, nullptr);
     radialDistortionCoefficients.maxRadSquared=arrayP[0];
@@ -126,7 +134,7 @@ std::string DistortionManager::writeGLPositionWithDistortion(const DistortionMan
         s<<"ret = r2 * (ret + uKN[2]);\n";
         s<<"ret = r2 * (ret + uKN[1]);\n";
         s<<"ret = r2 * (ret + uKN[0]);\n";
-        s<<"pos.xy+=vec2(0.1,0.1);";
+        //s<<"pos.xy+=vec2(0.1,0.1);";
         s<<"pos.xy*=1.0+ret;\n";
         s<<"gl_Position=pos;\n";
     }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_2){
@@ -233,3 +241,4 @@ DistortionManager::createFromFileIfAlreadyExisting(const std::string &externalSt
     const std::string distortionDirectoryForModel=DistortionManager::createDistortionFilesIfNotYetExisting(distortionDirectory,model,gvrContext);
     return new DistortionManager(distortionDirectoryForModel+std::string("dist_left.bin"),distortionDirectoryForModel+std::string("dist_right.bin"));
 }
+

@@ -48,7 +48,6 @@ public:
             GLBufferHelper::allocateGLBufferStatic(glBuffersRighEye_rgb[rgb],textV);
         }
     }
-
     static void debugColorChannelDifferences(gvr_context* gvrContext){
         for(float x=0;x<1.0f;x+=0.01f){
             for(float y=0;y<1.0f;y+=0.01f){

@@ -23,6 +23,7 @@
 #include "android/log.h"
 #include "DistortionCorrection/Distortion.h"
 #include "FileHelper.h"
+#include "polynomial_radial_distortion.h"
 
 class DistortionManager {
 public:
@@ -61,6 +62,7 @@ public:
     GLuint mDistortionCorrectionTextureRightEye;
 public:
     DistortionManager(gvr_context* gvrContext);
+    DistortionManager(const cardboard::PolynomialRadialDistortion& distortion,float maxRadSq);
     DistortionManager(JNIEnv *env,jfloatArray undistData);
     DistortionManager(const std::string& filenameLeftEye,const std::string& filenameRightEye);
 

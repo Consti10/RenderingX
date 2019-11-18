@@ -15,8 +15,19 @@ ExampleRenderer2::ExampleRenderer2(JNIEnv *env, jobject androidContext,gvr_conte
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
     //gvr_api_->InitializeGl();
     //distortionManager=new DistortionManager(env,undistData);
+    cardboard::PolynomialRadialDistortion distortion({0.441f,0.156f});
+    cardboard::PolynomialRadialDistortion inverse=distortion.getApproximateInverseDistortion(2.0f,6);
+    LOGD("%s | %s",distortion.toString().c_str(),inverse.toString().c_str());
+    distortionManager=new DistortionManager(inverse,2.0f);
+
+    /*std::stringstream ss;
+    for(float f=0;f<2;f+=0.1f){
+        ss<<distortion.DistortRadius(f)<<",";
+    }
+    LOGD("1Factors:%s",ss.str().c_str());*/
+
     //distortionManager=new DistortionManager(gvr_api_->GetContext());
-    distortionManager=DistortionManager::createFromFileIfAlreadyExisting("/storage/emulated/0/",gvr_api_->GetContext());
+    //distortionManager=DistortionManager::createFromFileIfAlreadyExisting("/storage/emulated/0/",gvr_api_->GetContext());
 }
 
 
@@ -30,8 +41,7 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
     glProgramVC2=new GLProgramVC(distortionManager);
     glGenTextures(1,&mTexture);
     glProgramTexture=new GLProgramTexture(false,nullptr,true);
-    GLProgramTexture::loadTexture(mTexture,env,context,"c_gimp1.png");
-
+    GLProgramTexture::loadTexture(mTexture,env,context,"c_gimp2.png");
 
     //create all the gl Buffer for later use
     glGenBuffers(1,&glBufferVC);
@@ -140,10 +150,10 @@ void ExampleRenderer2::drawEye(bool leftEye) {
     glProgramVC->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,N_COLORED_VERTICES,GL_LINES);
     glProgramVC->afterDraw();*/
 
-    /*glProgramVC2->beforeDraw(glBufferCoordinateSystemLines);
-    glProgramVC2->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,nCoordinateSystemLinesVertices,GL_LINES);
-    glProgramVC2->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,nCoordinateSystemLinesVertices,GL_POINTS);
-    glProgramVC2->afterDraw();*/
+    glProgramVC->beforeDraw(glBufferCoordinateSystemLines);
+    glProgramVC->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,nCoordinateSystemLinesVertices,GL_LINES);
+    glProgramVC->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,nCoordinateSystemLinesVertices,GL_POINTS);
+    glProgramVC->afterDraw();
 }
 
 
