@@ -10,12 +10,11 @@ distortionMode(DISTORTION_MODE::RADIAL_TANGENTIAL_TEXTURE) {
     const Distortion mDistortionRightEye(200,gvrContext,GVR_RIGHT_EYE);
     const Distortion inverseLeftEye=mDistortionLeftEye.calculateInverse(RESOLUTION_XY-1);
     const Distortion inverseRightEye=mDistortionRightEye.calculateInverse(RESOLUTION_XY-1);
-
     inverseLeftEye.extractData(leftEyeUndistortionData);
     inverseRightEye.extractData(rightEyeUndistortionData);
 }
 
-DistortionManager::DistortionManager(JNIEnv *env, jfloatArray undistData):distortionMode(DISTORTION_MODE::RADIAL_2) {
+DistortionManager::DistortionManager(JNIEnv *env, jfloatArray undistData):distortionMode(DISTORTION_MODE::RADIAL) {
     jfloat *arrayP=env->GetFloatArrayElements(undistData, nullptr);
     radialDistortionCoefficients.maxRadSquared=arrayP[0];
     std::memcpy(radialDistortionCoefficients.kN.data(),&arrayP[1],N_RADIAL_UNDISTORTION_COEFICIENTS*sizeof(float));
@@ -43,22 +42,27 @@ distortionMode(DISTORTION_MODE::RADIAL_TANGENTIAL_TEXTURE) {
 DistortionManager::UndistortionHandles
 DistortionManager::getUndistortionUniformHandles(const GLuint program) const {
     UndistortionHandles ret{};
-    if(distortionMode==DISTORTION_MODE::RADIAL_2){
+    if(distortionMode==DISTORTION_MODE::RADIAL){
         ret.uMaxRadSq=(GLuint)glGetUniformLocation(program,"uMaxRadSq");
         ret.uKN=(GLuint)glGetUniformLocation(program,"uKN");
+    }else if(distortionMode==DISTORTION_MODE::RADIAL_2){
+        ret.uMaxRadSq=(GLuint)glGetUniformLocation(program,"uMaxRadSq");
+        ret.sTextureDistCorrection=(GLuint)glGetUniformLocation (program, "sTextureDistCorrection");
+    }else if(distortionMode==DISTORTION_MODE::RADIAL_TANGENTIAL_UNIFORM_BUFFER){
+        ret.lolHandle=(GLuint)glGetUniformLocation(program,"LOL");
+    }else if(distortionMode==DISTORTION_MODE::RADIAL_TANGENTIAL_TEXTURE){
+        ret.sTextureDistCorrection=(GLuint)glGetUniformLocation (program, "sTextureDistCorrection");
     }
-    if(distortionMode==DISTORTION_MODE::RADIAL_TANGENTIAL_UNIFORM_BUFFER)ret.lolHandle=(GLuint)glGetUniformLocation(program,"LOL");
-    if(distortionMode==DISTORTION_MODE::RADIAL_TANGENTIAL_TEXTURE)ret.samplerDistCorrectionHandle=(GLuint)glGetUniformLocation (program, "sTextureDistCorrection");
     return ret;
 }
 
 void DistortionManager::beforeDraw(
         const DistortionManager::UndistortionHandles& undistortionHandles) const {
-    if(distortionMode==RADIAL){
-        //Nothing
-    }else if(distortionMode==DISTORTION_MODE::RADIAL_2){
+    if(distortionMode==DISTORTION_MODE::RADIAL){
         glUniform1f(undistortionHandles.uMaxRadSq,radialDistortionCoefficients.maxRadSquared);
         glUniform1fv(undistortionHandles.uKN,N_RADIAL_UNDISTORTION_COEFICIENTS,radialDistortionCoefficients.kN.data());
+    }else if(distortionMode==DISTORTION_MODE::RADIAL_2) {
+        glUniform1f(undistortionHandles.uMaxRadSq,radialDistortionCoefficients.maxRadSquared);
     }else if(distortionMode==RADIAL_TANGENTIAL_UNIFORM_BUFFER){
         glUniform2fv(undistortionHandles.lolHandle,(GLsizei)(ARRAY_SIZE),(GLfloat*)(leftEye ? leftEyeUndistortionData : rightEyeUndistortionData));
     }else{
@@ -69,7 +73,7 @@ void DistortionManager::beforeDraw(
         glBindTexture(GL_TEXTURE_2D,texture);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-        glUniform1i(undistortionHandles.samplerDistCorrectionHandle,sampler);
+        glUniform1i(undistortionHandles.sTextureDistCorrection,sampler);
     }
 }
 
@@ -114,19 +118,6 @@ std::string DistortionManager::writeGLPositionWithDistortion(const DistortionMan
     if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL){
         s<<"vec4 pos=uMVMatrix*"+positionAttribute+";\n";
         s<<"float r2=dot(pos.xy,pos.xy)/(pos.z*pos.z);\n";
-        s<<"r2=clamp(r2,0.0,_MaxRadSq);\n";
-        s<<"float ret = 0.0;\n";
-        s<<"ret = r2 * (ret + _Undistortion2.y);\n";
-        s<<"ret = r2 * (ret + _Undistortion2.x);\n";
-        s<<"ret = r2 * (ret + _Undistortion.w);\n";
-        s<<"ret = r2 * (ret + _Undistortion.z);\n";
-        s<<"ret = r2 * (ret + _Undistortion.y);\n";
-        s<<"ret = r2 * (ret + _Undistortion.x);\n";
-        s<<"pos.xy*=1.0+ret;\n";
-        s<<"gl_Position=pos;\n";
-    }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_2){
-        s<<"vec4 pos=uMVMatrix*"+positionAttribute+";\n";
-        s<<"float r2=dot(pos.xy,pos.xy)/(pos.z*pos.z);\n";
         s<<"r2=clamp(r2,0.0,uMaxRadSq);\n";
         s<<"float ret = 0.0;\n";
         s<<"ret = r2 * (ret + uKN[5]);\n";
@@ -135,6 +126,15 @@ std::string DistortionManager::writeGLPositionWithDistortion(const DistortionMan
         s<<"ret = r2 * (ret + uKN[2]);\n";
         s<<"ret = r2 * (ret + uKN[1]);\n";
         s<<"ret = r2 * (ret + uKN[0]);\n";
+        s<<"pos.xy+=vec2(0.1,0.1);";
+        s<<"pos.xy*=1.0+ret;\n";
+        s<<"gl_Position=pos;\n";
+    }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_2){
+        s<<"vec4 pos=uMVMatrix*"+positionAttribute+";\n";
+        s<<"float r2=dot(pos.xy,pos.xy)/(pos.z*pos.z);\n";
+        s<<"r2=clamp(r2,0.0,uMaxRadSq);\n";
+        //s<<"float ret=texture2D(sTextureRadial,r2,0).r;";
+        s<<"float ret=0.0;";
         s<<"pos.xy*=1.0+ret;\n";
         s<<"gl_Position=pos;\n";
     }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_TANGENTIAL_UNIFORM_BUFFER){
@@ -169,15 +169,11 @@ std::string DistortionManager::writeDistortionParams(
     std::stringstream s;
     if(distortionManager==nullptr)return "";
     if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL){
-        const auto coeficients=distortionManager->radialDistortionCoefficients.kN;
-        s<<std::fixed;
-        s<<"const float _MaxRadSq="<<distortionManager->radialDistortionCoefficients.maxRadSquared<<";\n";
-        //There is no vec6 data type. Therefore, we use 1 vec4 and 1 vec2. Vec4 holds k1,k2,k3,k4 and vec6 holds k5,k6
-        s<<"const vec4 _Undistortion=vec4("<<coeficients[0]<<","<<coeficients[1]<<","<<coeficients[2]<<","<<coeficients[3]<<");\n";
-        s<<"const vec2 _Undistortion2=vec2("<<coeficients[4]<<","<<coeficients[5]<<");\n";
-    }else if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL_2){
         s<<"uniform float uMaxRadSq;";
         s<<"uniform float uKN["<<DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS<<"];";
+    }else if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL_2){
+        s<<"uniform float uMaxRadSq;";
+        s<<"uniform sampler2D sTextureDistCorrection;";
     }else if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL_TANGENTIAL_UNIFORM_BUFFER){
         s<<"uniform highp vec2 LOL["<< DistortionManager::ARRAY_SIZE<<"];";
         s<<"int my_clamp(in int x,in int minVal,in int maxVal){";

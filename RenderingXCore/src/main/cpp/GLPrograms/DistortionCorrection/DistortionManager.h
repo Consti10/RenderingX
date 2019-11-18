@@ -26,6 +26,9 @@
 
 class DistortionManager {
 public:
+    //This is the inverse function to the kN distortion parameters from the headset
+    //Even tough the distortion parameters are only up to 2 radial values,
+    //We need more for the inverse for a good fit
     static constexpr const int N_RADIAL_UNDISTORTION_COEFICIENTS=6;
     struct RadialDistortionCoefficients{
         float maxRadSquared;
@@ -41,7 +44,7 @@ public:
 
     struct UndistortionHandles{
         GLuint lolHandle;
-        GLuint samplerDistCorrectionHandle;
+        GLuint sTextureDistCorrection;
         GLuint uMaxRadSq;
         GLuint uKN;
     };
