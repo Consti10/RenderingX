@@ -17,8 +17,8 @@
 #include <GLProgramVC.h>
 #include <GLProgramText.h>
 #include <GLProgramTexture.h>
-#include <GeometryBuilder/ColoredGeometry.hpp>
-#include <GeometryBuilder/TexturedGeometry.hpp>
+#include <ColoredGeometry.hpp>
+#include <TexturedGeometry.hpp>
 #include <TextAssetsHelper.hpp>
 
 #include <GLProgramLine.h>
@@ -70,7 +70,7 @@ private:
 
     GLuint glBufferCoordinateSystemLines;
     int nCoordinateSystemLinesVertices;
-    DistortionManager* distortionManager;
+    DistortionManager distortionManager;
 
     GLuint mTexture;
 

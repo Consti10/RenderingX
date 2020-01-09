@@ -41,6 +41,7 @@ GLProgramText::GLProgramText(const DistortionManager* distortionManager):
         mUndistortionHandles=distortionManager->getUndistortionUniformHandles(mProgram);
     }
     GLHelper::checkGlError("GLProgramText() uniforms3");
+
 #ifdef WIREFRAME
     mOverrideColorHandle=(GLuint)glGetUniformLocation(mProgram,"uOverrideColor");
 #endif

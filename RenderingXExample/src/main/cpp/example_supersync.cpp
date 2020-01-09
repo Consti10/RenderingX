@@ -13,7 +13,7 @@
 #include <glm/gtx/matrix_decompose.hpp>
 #include <GLProgramVC.h>
 #include <GLProgramText.h>
-#include <GeometryBuilder/ColoredGeometry.hpp>
+#include <ColoredGeometry.hpp>
 #include <TextAssetsHelper.hpp>
 #include <Helper/BasicGLPrograms.hpp>
 #include "Helper/GLBufferHelper.hpp"

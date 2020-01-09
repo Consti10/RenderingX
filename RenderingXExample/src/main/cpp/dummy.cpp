@@ -5,7 +5,7 @@
 //Not only hose used by the example
 #include <GLProgramTexture.h>
 #include <GLProgramSpherical.h>
-#include "../../../../RenderingXCore/src/main/cpp/Sphere/Sphere.h"
+#include "Sphere.h"
 
 
 static void dummy(){

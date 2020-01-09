@@ -2,12 +2,12 @@
 // Created by Consti10 on 15/05/2019.
 //
 
-#include <DistortionCorrection/FileHelper.h>
 #include "example_renderbuffer.h"
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
 #include "Helper/GLBufferHelper.hpp"
 #include "../HelperX.h"
+#include <ColoredGeometry.hpp>
 
 constexpr auto TAG="DistortionExample";
 
@@ -17,7 +17,6 @@ ExampleRenderer2::ExampleRenderer2(JNIEnv *env, jobject androidContext,gvr_conte
     //gvr_api_->InitializeGl();
     //distortionManager=new DistortionManager(env,undistData);
     //distortionManager=new DistortionManager(gvr_api_->GetContext());
-    distortionManager=DistortionManager::createFromFileIfAlreadyExisting("/storage/emulated/0/",gvr_api_->GetContext());
 }
 
 
@@ -48,10 +47,9 @@ void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
 //Instantiate all our OpenGL rendering 'Programs'
     //distortionManager=new DistortionManager(gvr_api_->GetContext());
     //distortionManager=new DistortionManager("","");
-    distortionManager->generateTexturesIfNeeded();
 
     glProgramVC=new GLProgramVC();
-    glProgramVC2=new GLProgramVC(distortionManager);
+    glProgramVC2=new GLProgramVC(&distortionManager);
     glProgramTexture=new GLProgramTexture(false,nullptr,true);
 
     glGenTextures(1,&mTexture);
@@ -137,10 +135,10 @@ void ExampleRenderer2::onDrawFrame() {
 void ExampleRenderer2::drawEye(bool leftEye) {
     if(leftEye){
         glViewport(0,0,ViewPortW,ViewPortH);
-        distortionManager->leftEye=true;
+        distortionManager.leftEye=true;
     }else{
         glViewport(ViewPortW,0,ViewPortW,ViewPortH);
-        distortionManager->leftEye=false;
+        distortionManager.leftEye=false;
     }
     glm::mat4 tmp=leftEye ? leftEyeView : rightEyeView;
 

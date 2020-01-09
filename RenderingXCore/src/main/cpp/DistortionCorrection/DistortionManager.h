@@ -13,17 +13,13 @@
 #include <sys/stat.h>
 #include "Helper/GLHelper.hpp"
 
-#include "vr/gvr/capi/include/gvr.h"
-#include "vr/gvr/capi/include/gvr_types.h"
-
 #include <glm/glm.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <Helper/NDKHelper.h>
 #include "android/log.h"
-#include "DistortionCorrection/Distortion.h"
-#include "FileHelper.h"
-#include "polynomial_radial_distortion.h"
+#include "MLensDistortion.h"
+//#include "polynomial_radial_distortion.h"
 
 class DistortionManager {
 public:
@@ -37,50 +33,47 @@ public:
     };
     RadialDistortionCoefficients radialDistortionCoefficients;
 
-    static constexpr const int RESOLUTION_XY=32;
-    static constexpr int ARRAY_SIZE=RESOLUTION_XY*RESOLUTION_XY;
-
-    float leftEyeUndistortionData[RESOLUTION_XY][RESOLUTION_XY][2];
-    float rightEyeUndistortionData[RESOLUTION_XY][RESOLUTION_XY][2];
-
     struct UndistortionHandles{
-        GLuint lolHandle;
-        GLuint sTextureDistCorrection;
         GLuint uMaxRadSq;
         GLuint uKN;
+        //Only active if mode==2
+        GLuint uScreenParams_w;
+        GLuint uScreenParams_h;
+        GLuint uScreenParams_x_off;
+        GLuint uScreenParams_y_off;
+        //
+        GLuint uTextureParams_w;
+        GLuint uTextureParams_h;
+        GLuint uTextureParams_x_off;
+        GLuint uTextureParams_y_off;
     };
-    enum DISTORTION_MODE{RADIAL,RADIAL_2,RADIAL_TANGENTIAL_UNIFORM_BUFFER,RADIAL_TANGENTIAL_TEXTURE};
+    //Left and right eye each
+    std::array<MLensDistortion::ViewportParams,2> screen_params;
+    std::array<MLensDistortion::ViewportParams,2> texture_params;
+
+    enum DISTORTION_MODE{RADIAL,RADIAL_2};
     const DISTORTION_MODE distortionMode;
 
     bool leftEye=true;
-    static constexpr auto MY_TEXTURE_UNIT_LEFT_EYE=GL_TEXTURE2;
-    static constexpr auto MY_SAMPLER_UNIT_LEFT_EYE=2;
-    static constexpr auto MY_TEXTURE_UNIT_RIGHT_EYE=GL_TEXTURE3;
-    static constexpr auto MY_SAMPLER_UNIT_RIGHT_EYE=3;
 
-    GLuint mDistortionCorrectionTextureLeftEye;
-    GLuint mDistortionCorrectionTextureRightEye;
 public:
-    DistortionManager(gvr_context* gvrContext);
-    DistortionManager(const cardboard::PolynomialRadialDistortion& distortion,float maxRadSq);
-    DistortionManager(JNIEnv *env,jfloatArray undistData);
-    DistortionManager(const std::string& filenameLeftEye,const std::string& filenameRightEye);
+    DistortionManager():distortionMode(DISTORTION_MODE::RADIAL){updateDistortionWithIdentity();};
+    DistortionManager(const DISTORTION_MODE& distortionMode1):distortionMode(distortionMode1){updateDistortionWithIdentity();}
 
     UndistortionHandles getUndistortionUniformHandles(const GLuint program)const;
     void beforeDraw(const UndistortionHandles& undistortionHandles)const;
     void afterDraw()const;
 
-    void generateTexturesIfNeeded();
-    void generateTexture(bool leftEye);
-
     static std::string writeGLPosition(const DistortionManager* distortionManager,const std::string &positionAttribute="aPosition");
     static std::string writeGLPositionWithDistortion(const DistortionManager &distortionManager, const std::string &positionAttribute);
-
     static std::string writeDistortionParams(const DistortionManager *distortionManager);
 
-    static std::string createDistortionFilesIfNotYetExisting(const std::string& distortionFilesDirectory,const std::string& viewerModel,gvr_context* gvrContext);
-
-    static DistortionManager* createFromFileIfAlreadyExisting(const std::string& externalStorageDirectory,gvr_context* gvrContext);
+    void updateDistortion(const MPolynomialRadialDistortion& distortion,float maxRadSq);
+    void updateDistortion(const MPolynomialRadialDistortion& inverseDistortion,float maxRadSq,
+                          const std::array<MLensDistortion::ViewportParams,2> screen_params,const std::array<MLensDistortion::ViewportParams,2> texture_params);
+    void updateDistortion(JNIEnv *env,jfloatArray undistData);
+    //Identity leaves x,y values untouched (as if no vddc was enabled in the shader)
+    void updateDistortionWithIdentity();
 };
 
 

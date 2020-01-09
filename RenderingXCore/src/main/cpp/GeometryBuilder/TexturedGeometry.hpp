@@ -6,7 +6,7 @@
 #define FPV_VR_GLPROGRAMS_HELPER_GEOMETRYHELPER1_H
 
 
-#include "../GLProgramTexture.h"
+#include "GLProgramTexture.h"
 
 class TexturedGeometry {
 public:

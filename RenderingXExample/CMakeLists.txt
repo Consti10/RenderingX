@@ -5,11 +5,6 @@ find_library( log-lib
 
 set(RX_CORE_DIR ${CMAKE_SOURCE_DIR}/../RenderingXCore)
 
-#glm
-include_directories(${RX_CORE_DIR}/libs/glm)
-include_directories(${RX_CORE_DIR}/src/main/cpp/Color/)
-include_directories(${RX_CORE_DIR}/src/main/cpp/GeometryBuilder/)
-include_directories(${RX_CORE_DIR}/src/main/cpp/Helper/)
 
 ##########################################################################################################
 #Time & SuperSync
@@ -35,18 +30,22 @@ set_target_properties(gvr-lib PROPERTIES IMPORTED_LOCATION
 ##########################################################################################################
 #GLPrograms
 ##########################################################################################################
+include_directories(${RX_CORE_DIR}/libs/glm)
+include_directories(${RX_CORE_DIR}/src/main/cpp)
+include_directories(${RX_CORE_DIR}/src/main/cpp/Color)
 include_directories(${RX_CORE_DIR}/src/main/cpp/GLPrograms)
+include_directories(${RX_CORE_DIR}/src/main/cpp/GeometryBuilder)
+include_directories(${RX_CORE_DIR}/src/main/cpp/Helper)
 add_library( GLPrograms SHARED
+        ${RX_CORE_DIR}/src/main/cpp/DistortionCorrection/DistortionManager.cpp
+        ${RX_CORE_DIR}/src/main/cpp/DistortionCorrection/MPolynomialRadialDistortion.cpp
         ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramVC.cpp
         ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramText.cpp
         ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramTexture.cpp
         ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramLine.cpp
-        ${RX_CORE_DIR}/src/main/cpp/Sphere/Sphere.cpp
-        ${RX_CORE_DIR}/src/main/cpp/Sphere/GvrSphere.cpp
-        ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramSpherical.cpp
-        ${RX_CORE_DIR}/src/main/cpp/GLPrograms/DistortionCorrection/DistortionManager.cpp
-        ${RX_CORE_DIR}/src/main/cpp/GLPrograms/DistortionCorrection/Distortion.cpp
-        ${RX_CORE_DIR}/src/main/cpp/GLPrograms/DistortionCorrection/polynomial_radial_distortion.cc)
+        ${RX_CORE_DIR}/src/main/cpp/GeometryBuilder/Sphere.cpp
+        ${RX_CORE_DIR}/src/main/cpp/GeometryBuilder/GvrSphere.cpp
+        ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramSpherical.cpp )
 target_link_libraries( GLPrograms ${log-lib} android GLESv2 gvr-lib)
 
 ##########################################################################################################

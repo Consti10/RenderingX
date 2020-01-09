@@ -1,11 +1,10 @@
 
-#include <GeometryBuilder/ColoredGeometry.hpp>
 #include "GLProgramVC.h"
 
 
-GLProgramVC::GLProgramVC(const DistortionManager* distortionManager):
-    distortionManager(distortionManager) {
-    mProgram = GLHelper::createProgram(VS(distortionManager),FS());
+GLProgramVC::GLProgramVC(const DistortionManager* distortionManager,bool coordinates2D):
+    distortionManager(distortionManager){
+    mProgram = GLHelper::createProgram(VS(distortionManager,coordinates2D),FS());
     mMVMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
     mPMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uPMatrix");
     mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
@@ -18,7 +17,6 @@ GLProgramVC::GLProgramVC(const DistortionManager* distortionManager):
 
 
 void GLProgramVC::beforeDraw(const GLuint buffer) const {
-    glLineWidth(4.0f);
     glUseProgram(mProgram);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glEnableVertexAttribArray((GLuint)mPositionHandle);
@@ -46,7 +44,7 @@ void GLProgramVC::draw(const Mat4x4 ViewM, const Mat4x4 ProjM,
 void GLProgramVC::afterDraw() const {
     glDisableVertexAttribArray((GLuint)mPositionHandle);
     glDisableVertexAttribArray((GLuint)mColorHandle);
-
+    glBindBuffer(GL_ARRAY_BUFFER,0);
     if(distortionManager!= nullptr){
         distortionManager->afterDraw();
     }

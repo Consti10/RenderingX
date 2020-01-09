@@ -5,18 +5,28 @@
 #ifndef RENDERINGX_EXAMPLE_SUPERSYNC_H
 #define RENDERINGX_EXAMPLE_SUPERSYNC_H
 
-#include "../../../../../../../AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/jni.h"
-#include "../../../../../../../AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/GLES2/gl2.h"
-#include "../../../../../../../AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/c++/v1/vector"
-#include "../../../../RenderingXCore/libs/glm/glm/glm.hpp"
-#include "../../../../RenderingXCore/libs/glm/glm/gtc/matrix_transform.hpp"
-#include "../../../../RenderingXCore/src/main/cpp/GLPrograms/GLProgramTexture.h"
-#include "../../../../../../../AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/EGL/egl.h"
-#include "../../../../../../../AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/c++/v1/cinttypes"
-#include "../../../../RenderingXCore/src/main/cpp/SuperSync/Extensions.hpp"
-#include "../../../../../../../AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/sys/resource.h"
-#include "../../../../RenderingXCore/src/main/cpp/SuperSync/FBRManager.h"
-#include "../../../../RenderingXCore/src/main/cpp/Time/VRFrameCPUChronometer.h"
+#include <EGL/egl.h>
+#include <GLES2/gl2.h>
+#include <jni.h>
+#include <glm/glm.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/ext.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <GLProgramVC.h>
+#include <GLProgramText.h>
+#include <GLProgramTexture.h>
+#include <ColoredGeometry.hpp>
+#include <TexturedGeometry.hpp>
+#include <TextAssetsHelper.hpp>
+
+#include <GLProgramLine.h>
+#include <Chronometer.h>
+#include <FPSCalculator.h>
+
+#include "vr/gvr/capi/include/gvr.h"
+#include "vr/gvr/capi/include/gvr_types.h"
 
 //in contrast to example_renderer, here we are using an object-oriented native binding approach - the lifecycle of the cpp object  is tied to the lifecycle of the same named java object
 //See implementation for more details on SuperSnyc

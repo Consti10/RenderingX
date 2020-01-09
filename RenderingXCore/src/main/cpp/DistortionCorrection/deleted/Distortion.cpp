@@ -3,7 +3,7 @@
 //
 
 #include "Distortion.h"
-#include "../Helper/MDebug.hpp"
+#include "Helper/MDebug.hpp"
 
 Distortion::Distortion(const int RESOLUTION)
         :RESOLUTION(RESOLUTION),distortedPoints((unsigned int)(RESOLUTION+1),std::vector<DistortedPoint>((unsigned int)(RESOLUTION+1))){}

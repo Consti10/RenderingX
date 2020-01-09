@@ -13,11 +13,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <array>
-#include "Color/Color.hpp"
+#include <Color/Color.hpp>
 #include <DistortionCorrection/DistortionManager.h>
 
-#include "vr/gvr/capi/include/gvr.h"
-#include "vr/gvr/capi/include/gvr_types.h"
 
 //#define WIREFRAME
 
@@ -36,13 +34,13 @@ public:
         TrueColor colorRGBA;
     };
     using INDEX_DATA=GLushort;
-    explicit GLProgramVC(const DistortionManager* distortionManager=nullptr);
+    explicit GLProgramVC(const DistortionManager* distortionManager=nullptr,bool coordinates2D=false);
     void beforeDraw(GLuint buffer) const;
     void draw(Mat4x4 ViewM, Mat4x4 ProjM, int indicesOffset,int numberIndices, GLenum mode) const;
     void drawIndexed(GLuint indexBuffer,Mat4x4 ViewM, Mat4x4 ProjM,int indicesOffset,int numberIndices, GLenum mode) const;
     void afterDraw() const;
 private:
-    static const std::string VS(const DistortionManager* distortionManager1){
+    static const std::string VS(const DistortionManager* distortionManager1,bool coordinates2D){
         std::stringstream s;
         s<<"uniform mat4 uMVMatrix;\n";
         s<<"uniform mat4 uPMatrix;\n";
@@ -51,7 +49,11 @@ private:
         s<<"varying vec4 vColor;\n";
         s<< DistortionManager::writeDistortionParams(distortionManager1);
         s<<"void main(){\n";
-        s<<DistortionManager::writeGLPosition(distortionManager1);
+        if(coordinates2D){
+            s<<"gl_Position = vec4(aPosition.xy,0,1);";
+        }else{
+            s<<DistortionManager::writeGLPosition(distortionManager1);
+        }
         //s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition";
         s<<"vColor = aColor;\n";
         s<<"gl_PointSize=15.0;";

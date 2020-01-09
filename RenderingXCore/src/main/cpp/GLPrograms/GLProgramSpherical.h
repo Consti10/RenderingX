@@ -26,7 +26,7 @@
 #include <glm/mat4x4.hpp>
 #include <jni.h>
 #include "android/log.h"
-#include "../Sphere/Sphere.h"
+#include "GeometryBuilder/Sphere.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <string>

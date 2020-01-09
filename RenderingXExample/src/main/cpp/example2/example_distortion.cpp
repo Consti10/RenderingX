@@ -1,8 +1,6 @@
 //
 // Created by Consti10 on 15/05/2019.
 //
-
-#include <DistortionCorrection/FileHelper.h>
 #include "example_distortion.h"
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
@@ -14,31 +12,20 @@ constexpr auto TAG="DistortionExample";
 ExampleRenderer2::ExampleRenderer2(JNIEnv *env, jobject androidContext,gvr_context *gvr_context,jfloatArray undistData) {
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
     //gvr_api_->InitializeGl();
-    //distortionManager=new DistortionManager(env,undistData);
-    cardboard::PolynomialRadialDistortion distortion({0.441f,0.156f});
-    cardboard::PolynomialRadialDistortion inverse=distortion.getApproximateInverseDistortion(2.0f,6);
-    LOGD("%s | %s",distortion.toString().c_str(),inverse.toString().c_str());
-    distortionManager=new DistortionManager(inverse,2.0f);
-
     /*std::stringstream ss;
     for(float f=0;f<2;f+=0.1f){
         ss<<distortion.DistortRadius(f)<<",";
     }
     LOGD("1Factors:%s",ss.str().c_str());*/
-
-    //distortionManager=new DistortionManager(gvr_api_->GetContext());
-    //distortionManager=DistortionManager::createFromFileIfAlreadyExisting("/storage/emulated/0/",gvr_api_->GetContext());
+    distortionManager.updateDistortionWithIdentity();
 }
 
 
 void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
 //Instantiate all our OpenGL rendering 'Programs'
-    //distortionManager=new DistortionManager(gvr_api_->GetContext());
-    //distortionManager=new DistortionManager("","");
-    distortionManager->generateTexturesIfNeeded();
 
     glProgramVC=new GLProgramVC();
-    glProgramVC2=new GLProgramVC(distortionManager);
+    glProgramVC2=new GLProgramVC(&distortionManager);
     glGenTextures(1,&mTexture);
     glProgramTexture=new GLProgramTexture(false,nullptr,true);
     GLProgramTexture::loadTexture(mTexture,env,context,"c_gimp2.png");
@@ -109,10 +96,10 @@ void ExampleRenderer2::onDrawFrame() {
 void ExampleRenderer2::drawEye(bool leftEye) {
     if(leftEye){
         glViewport(0,0,ViewPortW,ViewPortH);
-        distortionManager->leftEye=true;
+        distortionManager.leftEye=true;
     }else{
         glViewport(ViewPortW,0,ViewPortW,ViewPortH);
-        distortionManager->leftEye=false;
+        distortionManager.leftEye=false;
     }
     glm::mat4 tmp=leftEye ? leftEyeView : rightEyeView;
 
@@ -136,8 +123,7 @@ void ExampleRenderer2::drawEye(bool leftEye) {
 
     glBindTexture(GL_TEXTURE_2D,0);
 
-
-    distortionManager->leftEye=leftEye;
+    distortionManager.leftEye=leftEye;
     glProgramVC2->beforeDraw(glBufferVC);
     glProgramVC2->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,nColoredVertices,GL_LINES);
     glProgramVC2->afterDraw();

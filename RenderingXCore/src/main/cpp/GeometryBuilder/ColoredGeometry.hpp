@@ -5,8 +5,7 @@
 #ifndef FPV_VR_GLPROGRAMS_HELPER_GEOMETRYHELPER2_H
 #define FPV_VR_GLPROGRAMS_HELPER_GEOMETRYHELPER2_H
 
-#include <vr/gvr/capi/include/gvr_types.h>
-#include <vr/gvr/capi/include/gvr.h>
+
 #include "GLProgramVC.h"
 #include "Color/Color.hpp"
 #include <array>
@@ -120,6 +119,13 @@ public:
         ret.insert(ret.end(),verticalLines.begin(),verticalLines.end());
         return ret;
     }
+
+    //Create a tesselated wireframe mesh that spawns exactly the viewport
+    static const std::vector<GLProgramVC::Vertex> makeTesselatedColoredRectLines0_1(const int tesselation,const TrueColor color){
+        return makeTesselatedColoredRectLines(tesselation,{-1.0f,-1.0f,0},2.0f,2.0f,color);
+    }
+
+
     static const void makeOutlineQuadWithLines(GLProgramVC::Vertex array[],const float mX,const float mY,const float mZ,const float quadWith,const float quadHeight,
                                                const TrueColor color){
         //left and right

@@ -5,10 +5,10 @@
 #ifndef RENDERINGX_FILEHELPER_H
 #define RENDERINGX_FILEHELPER_H
 
-#include <string>
-#include <sys/stat.h>
-#include <fstream>
-#include <Helper/MDebug.hpp>
+#include "../../../../../../../../../AppData/Local/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/c++/v1/string"
+#include "../../../../../../../../../AppData/Local/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/sys/stat.h"
+#include "../../../../../../../../../AppData/Local/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/c++/v1/fstream"
+#include "../../GLPrograms/Helper/MDebug.hpp"
 
 class FileHelper{
 public:
