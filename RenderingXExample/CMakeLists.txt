@@ -36,9 +36,12 @@ include_directories(${RX_CORE_DIR}/src/main/cpp/Color)
 include_directories(${RX_CORE_DIR}/src/main/cpp/GLPrograms)
 include_directories(${RX_CORE_DIR}/src/main/cpp/GeometryBuilder)
 include_directories(${RX_CORE_DIR}/src/main/cpp/Helper)
+include_directories(${RX_CORE_DIR}/src/main/cpp/Other)
 add_library( GLPrograms SHARED
         ${RX_CORE_DIR}/src/main/cpp/DistortionCorrection/DistortionManager.cpp
         ${RX_CORE_DIR}/src/main/cpp/DistortionCorrection/MPolynomialRadialDistortion.cpp
+        ${RX_CORE_DIR}/src/main/cpp/DistortionCorrection/VRHeadsetParams.cpp
+        ${RX_CORE_DIR}/src/main/cpp/DistortionCorrection/MLensDistortion.cpp
         ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramVC.cpp
         ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramText.cpp
         ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramTexture.cpp
@@ -72,6 +75,7 @@ target_link_libraries( example-renderer
 add_library( example-renderer2
         SHARED
         src/main/cpp/example2/example_distortion.cpp
+        ${RX_CORE_DIR}/src/main/cpp/Other/gvr_util/util.cc
         )
 target_link_libraries( example-renderer2
         GLPrograms

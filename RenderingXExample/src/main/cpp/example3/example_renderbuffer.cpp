@@ -7,6 +7,8 @@
 #include "vr/gvr/capi/include/gvr_types.h"
 #include "Helper/GLBufferHelper.hpp"
 #include "../HelperX.h"
+
+
 #include <ColoredGeometry.hpp>
 
 constexpr auto TAG="DistortionExample";
@@ -105,6 +107,7 @@ void ExampleRenderer2::onSurfaceChanged(int width, int height) {
     rightEyeView=glm::translate(eyeView,glm::vec3(VR_InterpupilaryDistance/2.0f,0,0));
 }
 
+
 void ExampleRenderer2::onDrawFrame() {
 
     glBindFramebuffer(GL_FRAMEBUFFER,mOffscreenFramebuffer);
@@ -173,6 +176,8 @@ void ExampleRenderer2::drawEye(bool leftEye) {
     glProgramVC2->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,nCoordinateSystemLinesVertices,GL_POINTS);
     glProgramVC2->afterDraw();*/
 }
+
+
 
 
 #define JNI_METHOD(return_type, method_name) \

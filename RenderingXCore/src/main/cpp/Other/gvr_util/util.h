@@ -31,15 +31,6 @@
 
 #include "vr/gvr/capi/include/gvr.h"
 
-#define LOG_TAG "HelloVrApp"
-#define LOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define HELLOVR_CHECK(condition)                                           \
-  if (!(condition)) {                                                      \
-    LOGE("*** CHECK FAILED at %s:%d: %s", __FILE__, __LINE__, #condition); \
-    abort();                                                               \
-  }
 
 namespace ndk_hello_vr {
 // Converts a GVR matrix to an array of floats suitable for passing to OpenGL.

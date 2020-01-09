@@ -21,6 +21,7 @@ public class TestActivity2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         gvrLayout=new GvrLayout(this);
+
         gLView = new GLSurfaceView(this);
         gLView.setEGLContextClientVersion(2);
         renderer=new GLRTest(this,gvrLayout.getGvrApi());

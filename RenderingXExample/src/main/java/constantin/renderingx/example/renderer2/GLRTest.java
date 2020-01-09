@@ -5,6 +5,8 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
 import com.google.vr.ndk.base.GvrApi;
+import com.google.vr.sdk.base.GvrView;
+import com.google.vr.sdk.base.GvrViewerParams;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -16,18 +18,43 @@ public class GLRTest implements GLSurfaceView.Renderer{
     static {
         System.loadLibrary("example-renderer2");
     }
-    private native long nativeConstruct(Context context,float[] undistortionData,long nativeGvrContext);
+    private native long nativeConstruct(Context context,long nativeGvrContext,int w,int h);
     private native void nativeDelete(long p);
     private native void nativeOnSurfaceCreated(long p,final Context context);
     private native void nativeOnSurfaceChanged(long p,int width,int height);
     private native void nativeOnDrawFrame(long p);
+    private native void nativeUpdateHeadsetParams(long nativePointer,float screen_width_meters,
+                                                  float screen_height_meters,
+                                                  float screen_to_lens_distance,
+                                                  float inter_lens_distance,
+                                                  int vertical_alignment,
+                                                  float tray_to_lens_distance,
+                                                  float[] device_fov_left,
+                                                  float[] radial_distortion_params);
 
     private final Context mContext;
     private final long nativeRenderer;
 
     public GLRTest(final Context context, final GvrApi gvrApi){
         mContext=context;
-        nativeRenderer=nativeConstruct(context, VRSettingsHelper.getUndistortionCoeficients(context),gvrApi.getNativeGvrContext());
+        GvrView view=new GvrView(context);
+        final GvrViewerParams params=view.getGvrViewerParams();
+
+        nativeRenderer=nativeConstruct(context,
+                gvrApi.getNativeGvrContext(),view.getScreenParams().getWidth(),view.getScreenParams().getHeight());
+
+        float[] fov=new float[4];
+        fov[0]=params.getLeftEyeMaxFov().getLeft();
+        fov[1]=params.getLeftEyeMaxFov().getRight();
+        fov[2]=params.getLeftEyeMaxFov().getBottom();
+        fov[3]=params.getLeftEyeMaxFov().getTop();
+
+        float[] kN=params.getDistortion().getCoefficients();
+
+        nativeUpdateHeadsetParams(nativeRenderer,view.getScreenParams().getWidthMeters(),view.getScreenParams().getHeightMeters(),
+                params.getScreenToLensDistance(),params.getInterLensDistance(),params.getVerticalAlignment().ordinal(),params.getVerticalDistanceToLensCenter(),
+                fov,kN);
+
     }
 
     @Override

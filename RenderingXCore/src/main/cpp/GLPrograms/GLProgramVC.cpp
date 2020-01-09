@@ -63,3 +63,8 @@ void GLProgramVC::drawIndexed(GLuint indexBuffer, Mat4x4 ViewM, Mat4x4 ProjM, in
     glDrawArrays(mode,indicesOffset, numberIndices);
 #endif
 }
+
+void GLProgramVC::draw(glm::mat4 ViewM, glm::mat4 ProjM, int indicesOffset, int numberIndices,
+                       GLenum mode) const {
+    draw(glm::value_ptr(ViewM),glm::value_ptr(ProjM),indicesOffset,numberIndices,mode);
+}

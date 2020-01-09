@@ -6,140 +6,132 @@
 #include "vr/gvr/capi/include/gvr_types.h"
 #include "Helper/GLBufferHelper.hpp"
 #include "../HelperX.h"
+#include <MatrixHelper.h>
+#include <array>
 
 constexpr auto TAG="DistortionExample";
 
-ExampleRenderer2::ExampleRenderer2(JNIEnv *env, jobject androidContext,gvr_context *gvr_context,jfloatArray undistData) {
+ExampleRenderer::ExampleRenderer(JNIEnv *env, jobject androidContext,gvr_context *gvr_context,int screenWidthP,int screenHeightP):
+screenWidthP(screenWidthP),screenHeightP(screenHeightP),distortionManager(DistortionManager::RADIAL_2),mFPSCalculator("OpenGL FPS",2000){
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
-    //gvr_api_->InitializeGl();
-    /*std::stringstream ss;
-    for(float f=0;f<2;f+=0.1f){
-        ss<<distortion.DistortRadius(f)<<",";
-    }
-    LOGD("1Factors:%s",ss.str().c_str());*/
-    distortionManager.updateDistortionWithIdentity();
+    vrHeadsetParams.setGvrApi(gvr_api_.get());
+    buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();
+    recommended_buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();
+    scratch_viewport = gvr_api_->CreateBufferViewport();
 }
 
 
-void ExampleRenderer2::onSurfaceCreated(JNIEnv *env, jobject context) {
+void ExampleRenderer::onSurfaceCreated(JNIEnv *env, jobject context) {
 //Instantiate all our OpenGL rendering 'Programs'
+    gvr_api_->InitializeGl();
+    std::vector<gvr::BufferSpec> specs;
+    specs.push_back(gvr_api_->CreateBufferSpec());
+    framebuffer_size = gvr_api_->GetMaximumEffectiveRenderTargetSize();
+    specs[0].SetSize(framebuffer_size);
+    specs[0].SetColorFormat(GVR_COLOR_FORMAT_RGBA_8888);
+    specs[0].SetDepthStencilFormat(GVR_DEPTH_STENCIL_FORMAT_DEPTH_16);
+    swap_chain = std::make_unique<gvr::SwapChain>(gvr_api_->CreateSwapChain(specs));
 
-    glProgramVC=new GLProgramVC();
-    glProgramVC2=new GLProgramVC(&distortionManager);
-    glGenTextures(1,&mTexture);
-    glProgramTexture=new GLProgramTexture(false,nullptr,true);
-    GLProgramTexture::loadTexture(mTexture,env,context,"c_gimp2.png");
+    mBasicGLPrograms=std::make_unique<BasicGLPrograms>(&distortionManager);
+    mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
 
-    //create all the gl Buffer for later use
-    glGenBuffers(1,&glBufferVC);
-    glGenBuffers(1,&glBufferVCDistorted1);
-    glGenBuffers(1,&glBufferVCDistorted2);
-    glGenBuffers(1,&glBufferCoordinateSystemLines);
-    //create the geometry for our simple test scene
-    float size=1.0f;
-    const auto tmp=ColoredGeometry::makeTesselatedColoredRectLines(LINE_MESH_TESSELATION_FACTOR,{-size/2.0f,-size/2.0f,0},size,size,Color::WHITE);
-    nColoredVertices=tmp.size();
-    GLBufferHelper::allocateGLBufferStatic(glBufferVC,tmp);
-    //make the line going trough (0,0)
-    const auto coordinateSystemLines=ColoredGeometry::makeDebugCoordinateSystemLines(100);
-    GLBufferHelper::allocateGLBufferStatic(glBufferCoordinateSystemLines,coordinateSystemLines);
-    nCoordinateSystemLinesVertices=coordinateSystemLines.size();
-    //Textured stuff
-    //const float fov=90.0f;
-    const float sizeX=1.0f;
-    const float sizeY=1.0f;
-    glGenBuffers(1,&glBufferTextured);
-    glGenBuffers(1,&glBufferTexturedLeftEye);
-    glGenBuffers(1,&glBufferTexturedRightEye);
-    const auto tesselatedVideoCanvas=TexturedGeometry::makeTesselatedVideoCanvas2(glm::vec3(-sizeX/2.0f,-sizeY/2.0f,0),
-            sizeX,sizeY, TEXTURE_TESSELATION_FACTOR, 0.0f,1.0f);
-    nTexturedVertices=tesselatedVideoCanvas.size();
-    GLBufferHelper::allocateGLBufferStatic(glBufferTextured,tesselatedVideoCanvas);
-
-    HelperX::generateDistortionMeshBuffersTEST(tesselatedVideoCanvas,gvr_api_->GetContext(),
-                                               glBufferTexturedLeftEye,glBufferTexturedRightEye,glBufferTexturedLeftEye_rgb,glBufferTexturedRightEye_rgb);
-
-    //HelperX::debugColorChannelDifferences(gvr_api_->GetContext());
-
+    //
+    float tesselatedRectSize=2.5; //6.2f
+    const float offsetY=0.0f;
+    auto tmp=ColoredGeometry::makeTesselatedColoredRectLines(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,Color::BLUE);
+    nColoredVertices=GLBufferHelper::createAllocateGLBufferStatic(glBufferVC,tmp);
+    tmp=ColoredGeometry::makeTesselatedColoredRectLines(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,Color::GREEN);
+    GLBufferHelper::createAllocateGLBufferStatic(glBufferVCGreen,tmp);
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
-void ExampleRenderer2::onSurfaceChanged(int width, int height) {
-    ViewPortW=width/2;
-    ViewPortH=height;
-    projection=glm::perspective(glm::radians(80.0F),((float) ViewPortW)/((float)ViewPortH), MIN_Z_DISTANCE, MAX_Z_DISTANCE);
-    //projection=make_frustum(45,45,45,45,MIN_Z_DISTANCE,MAX_Z_DISTANCE);
-
-    glm::vec3 cameraPos   = glm::vec3(0,0,CAMERA_POSITION);
-    glm::vec3 cameraFront = glm::vec3(0.0F,0.0F,-1.0F);
-    eyeView=glm::lookAt(cameraPos,cameraPos+cameraFront,glm::vec3(0,1,0));
-    //eyeView=glm::mat4();
-    leftEyeView=glm::translate(eyeView,glm::vec3(-VR_InterpupilaryDistance/2.0f,0,0));
-    rightEyeView=glm::translate(eyeView,glm::vec3(VR_InterpupilaryDistance/2.0f,0,0));
+void ExampleRenderer::onSurfaceChanged(int width, int height) {
+    //Nothing
 }
 
-void ExampleRenderer2::onDrawFrame() {
-    glClearColor(0,0,0.0,0);
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+void ExampleRenderer::updateBufferViewports() {
+    recommended_buffer_viewports.SetToRecommendedBufferViewports();
+    for(size_t eye=0;eye<2;eye++){
+        recommended_buffer_viewports.GetBufferViewport(eye, &scratch_viewport);
+        scratch_viewport.SetReprojection(GVR_REPROJECTION_NONE);
+        buffer_viewports.SetBufferViewport(eye,scratch_viewport);
+    }
+}
+
+void ExampleRenderer::onDrawFrame() {
+    mFPSCalculator.tick();
+    //LOGD("FPS: %f",mFPSCalculator.getCurrentFPS());
+    vrHeadsetParams.updateHeadView();
+
+    updateBufferViewports();
+
+    gvr::Frame frame = swap_chain->AcquireFrame();
+    frame.BindBuffer(0); //0 is the 0 from createSwapChain()
+
+    glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
-    cpuFrameTime.start();
-    drawEye(false);
-    drawEye(true);
-    GLHelper::checkGlError("example_renderer::onDrawFrame");
-    cpuFrameTime.stop();
-    cpuFrameTime.printAvg(5000);
-    fpsCalculator.tick();
+    glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+    glClearColor(0.0f, 0.3f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    distortionManager.updateDistortionWithIdentity();
+    for(uint32_t eye=0;eye<2;eye++){
+        drawEye(static_cast<gvr::Eye>(eye));
+    }
+    frame.Unbind();
+    frame.Submit(buffer_viewports, vrHeadsetParams.GetLatestHeadSpaceFromStartSpaceRotation_());
+    //
+    //glClearColor(0.3f, 0.0f, 0.0f, 0.0f);
+    //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+    vrHeadsetParams.updateDistortionManager(distortionManager);
+    //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+    for(int eye=0;eye<2;eye++){
+        drawEyeVDDC(static_cast<gvr::Eye>(eye));
+    }
+    GLHelper::checkGlError("ExampleRenderer2::drawFrame");
 }
 
-void ExampleRenderer2::drawEye(bool leftEye) {
-    if(leftEye){
+void ExampleRenderer::drawEye(gvr::Eye eye) {
+    buffer_viewports.GetBufferViewport(eye, &scratch_viewport);
+
+    const gvr::Rectf& rect = scratch_viewport.GetSourceUv();
+    int left = static_cast<int>(rect.left * framebuffer_size.width);
+    int bottom = static_cast<int>(rect.bottom * framebuffer_size.width);
+    int width = static_cast<int>((rect.right - rect.left) * framebuffer_size.width);
+    int height = static_cast<int>((rect.top - rect.bottom) * framebuffer_size.height);
+    glViewport(left, bottom, width, height);
+
+    const gvr_rectf fov = scratch_viewport.GetSourceFov();
+    const gvr::Mat4f perspective =ndk_hello_vr::PerspectiveMatrixFromView(fov, vrHeadsetParams.MIN_Z_DISTANCE,vrHeadsetParams.MAX_Z_DISTANCE);
+    const auto eyeM=gvr_api_->GetEyeFromHeadMatrix(eye==0 ? GVR_LEFT_EYE : GVR_RIGHT_EYE);
+    const auto rotM=gvr_api_->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
+    const auto viewM=toGLM(ndk_hello_vr::MatrixMul(eyeM,rotM));
+    //const auto viewM=toGLM(eyeM);
+    const auto projectionM=toGLM(perspective);
+    glLineWidth(6.0f);
+    mBasicGLPrograms->vc.beforeDraw(glBufferVC);
+    mBasicGLPrograms->vc.draw(viewM,projectionM,0,nColoredVertices,GL_LINES);
+    mBasicGLPrograms->vc.afterDraw();
+}
+
+void ExampleRenderer::drawEyeVDDC(gvr::Eye eye) {
+    const int ViewPortW=(int)(screenWidthP/2.0f);
+    const int ViewPortH=(int)(screenHeightP);
+    if(eye==0){
         glViewport(0,0,ViewPortW,ViewPortH);
-        distortionManager.leftEye=true;
     }else{
         glViewport(ViewPortW,0,ViewPortW,ViewPortH);
-        distortionManager.leftEye=false;
     }
-    glm::mat4 tmp=leftEye ? leftEyeView : rightEyeView;
-
-    //GLuint buff=whichEye ? glBufferVCDistorted1 : glBufferVCDistorted2;
-    /*GLuint buff=glBufferVC;
-    glProgramVC->beforeDraw(buff);
-    glProgramVC->draw(glm::value_ptr(tmp),glm::value_ptr(projection),0,N_COLORED_VERTICES,GL_TRIANGLES);
-    glProgramVC->afterDraw();*/
-
-    /*glProgramTexture->beforeDraw(leftEye ? glBufferTexturedLeftEye : glBufferTexturedRightEye);
-    glProgramTexture->draw(eyeView,projection,0,nTexturedVertices);
-    glProgramTexture->afterDraw();*/
-
-    //glActiveTexture(GL_TEXTURE1);
-    //glBindTexture(GL_TEXTURE_2D,mTexture);
-    //glBindTexture(GL_TEXTURE_2D,0);
-
-    glProgramTexture->beforeDraw(leftEye ? glBufferTexturedLeftEye : glBufferTexturedRightEye,mTexture);
-    glProgramTexture->draw(eyeView,projection,0,nTexturedVertices);
-    glProgramTexture->afterDraw();
-
-    glBindTexture(GL_TEXTURE_2D,0);
-
-    distortionManager.leftEye=leftEye;
-    glProgramVC2->beforeDraw(glBufferVC);
-    glProgramVC2->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,nColoredVertices,GL_LINES);
-    glProgramVC2->afterDraw();
-
-    /*glProgramVC->beforeDraw(glBufferVCDistorted1);
-    glProgramVC->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,N_COLORED_VERTICES,GL_LINES);
-    glProgramVC->afterDraw();*/
-
-    /*glProgramVC->beforeDraw(glBufferVC);
-    glProgramVC->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,N_COLORED_VERTICES,GL_LINES);
-    glProgramVC->afterDraw();*/
-
-    glProgramVC->beforeDraw(glBufferCoordinateSystemLines);
-    glProgramVC->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,nCoordinateSystemLinesVertices,GL_LINES);
-    glProgramVC->draw(glm::value_ptr(eyeView),glm::value_ptr(projection),0,nCoordinateSystemLinesVertices,GL_POINTS);
-    glProgramVC->afterDraw();
+    distortionManager.leftEye=eye==0;
+    const auto rotM=toGLM(gvr_api_->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow()));
+    auto viewM=vrHeadsetParams.GetEyeFromHeadMatrix(eye)*rotM;
+    auto projM=vrHeadsetParams.mProjectionM[eye];
+    glLineWidth(3.0f);
+    mBasicGLPrograms->vc.beforeDraw(glBufferVCGreen);
+    mBasicGLPrograms->vc.draw(viewM,projM,0,nColoredVertices,GL_LINES);
+    mBasicGLPrograms->vc.afterDraw();
 }
 
 
@@ -147,18 +139,18 @@ void ExampleRenderer2::drawEye(bool leftEye) {
   JNIEXPORT return_type JNICALL              \
       Java_constantin_renderingx_example_renderer2_GLRTest_##method_name
 
-inline jlong jptr(ExampleRenderer2 *p) {
+inline jlong jptr(ExampleRenderer *p) {
     return reinterpret_cast<intptr_t>(p);
 }
-inline ExampleRenderer2 *native(jlong ptr) {
-    return reinterpret_cast<ExampleRenderer2*>(ptr);
+inline ExampleRenderer *native(jlong ptr) {
+    return reinterpret_cast<ExampleRenderer*>(ptr);
 }
 
 extern "C" {
 
 JNI_METHOD(jlong, nativeConstruct)
-(JNIEnv *env, jobject obj,jobject androidContext,jfloatArray undistortionData,jlong native_gvr_api) {
-    return jptr(new ExampleRenderer2(env,androidContext,reinterpret_cast<gvr_context *>(native_gvr_api),undistortionData));
+(JNIEnv *env, jobject obj,jobject androidContext,jlong native_gvr_api,jint w,jint h) {
+    return jptr(new ExampleRenderer(env,androidContext,reinterpret_cast<gvr_context *>(native_gvr_api),w,h));
 }
 JNI_METHOD(void, nativeDelete)
 (JNIEnv *env, jobject obj, jlong p) {
@@ -178,6 +170,32 @@ JNI_METHOD(void, nativeOnSurfaceChanged)
 JNI_METHOD(void, nativeOnDrawFrame)
 (JNIEnv *env, jobject obj,jlong p) {
     native(p)->onDrawFrame();
+}
+
+JNI_METHOD(void, nativeUpdateHeadsetParams)
+(JNIEnv *env, jobject obj, jlong glRendererStereo,
+ jfloat screen_width_meters,
+ jfloat screen_height_meters,
+ jfloat screen_to_lens_distance,
+ jfloat inter_lens_distance,
+ jint vertical_alignment,
+ jfloat tray_to_lens_distance,
+ jfloatArray device_fov_left,
+ jfloatArray radial_distortion_params
+) {
+    std::array<float,4> device_fov_left1{};
+    std::vector<float> radial_distortion_params1(2);
+
+    jfloat *arrayP=env->GetFloatArrayElements(device_fov_left, nullptr);
+    std::memcpy(device_fov_left1.data(),&arrayP[0],4*sizeof(float));
+    env->ReleaseFloatArrayElements(device_fov_left,arrayP,0);
+    arrayP=env->GetFloatArrayElements(radial_distortion_params, nullptr);
+    std::memcpy(radial_distortion_params1.data(),&arrayP[0],2*sizeof(float));
+    env->ReleaseFloatArrayElements(radial_distortion_params,arrayP,0);
+
+    const MDeviceParams deviceParams{screen_width_meters,screen_height_meters,screen_to_lens_distance,inter_lens_distance,vertical_alignment,tray_to_lens_distance,
+                                     device_fov_left1,radial_distortion_params1};
+    native(glRendererStereo)->vrHeadsetParams.updateHeadsetParams(deviceParams);
 }
 
 }
