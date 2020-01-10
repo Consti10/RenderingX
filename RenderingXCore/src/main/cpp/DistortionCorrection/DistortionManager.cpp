@@ -191,13 +191,6 @@ void DistortionManager::updateDistortion(const MPolynomialRadialDistortion &inve
         radialDistortionCoefficients.kN[i]=inverseDistortion.getCoeficients()[i];
     }
     radialDistortionCoefficients.maxRadSquared=maxRadSq;
-    std::stringstream ss;
-    ss<<"Dist params, maxRadSq:";
-    for(int i=0;i<N_RADIAL_UNDISTORTION_COEFICIENTS;i++){
-        ss<<radialDistortionCoefficients.kN[i]<<",";
-    }
-    ss<<"|"<<radialDistortionCoefficients.maxRadSquared;
-    LOGD("%s",ss.str().c_str());
 }
 
 void DistortionManager::updateDistortion(const MPolynomialRadialDistortion &inverseDistortion,
@@ -207,17 +200,6 @@ void DistortionManager::updateDistortion(const MPolynomialRadialDistortion &inve
     this->screen_params=screen_params;
     this->texture_params=texture_params;
     updateDistortion(inverseDistortion,maxRadSq);
-}
-
-void DistortionManager::updateDistortion(JNIEnv *env, jfloatArray undistData) {
-    std::vector<float> coefficients;
-    float maxRadSq;
-    coefficients.reserve(N_RADIAL_UNDISTORTION_COEFICIENTS);
-    jfloat *arrayP=env->GetFloatArrayElements(undistData, nullptr);
-    maxRadSq=arrayP[0];
-    std::memcpy(coefficients.data(),&arrayP[1],N_RADIAL_UNDISTORTION_COEFICIENTS*sizeof(float));
-    env->ReleaseFloatArrayElements(undistData,arrayP,0);
-    updateDistortion(MPolynomialRadialDistortion{coefficients},maxRadSq);
 }
 
 void DistortionManager::updateDistortionWithIdentity() {

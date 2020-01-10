@@ -43,8 +43,6 @@ private:
     gvr::BufferViewport scratch_viewport;
     std::unique_ptr<gvr::SwapChain> swap_chain;
     gvr::Sizei framebuffer_size;
-    const int screenWidthP;
-    const int screenHeightP;
     void updateBufferViewports();
     FPSCalculator mFPSCalculator;
     std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;

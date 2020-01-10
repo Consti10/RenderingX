@@ -1,4 +1,5 @@
 /* *********************************************************************************************************************************************
+ * Front Buffer rendering
  * 1 Callback Function to register:
  * //called when the VSYNC rasterizer is at Position <0.5 or Position >0.5
  * //@param whichEye: leftEye if VSYNC is at Position 0.5, rightEye if at Position 0

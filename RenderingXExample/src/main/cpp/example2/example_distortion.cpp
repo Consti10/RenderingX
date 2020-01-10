@@ -12,7 +12,7 @@
 constexpr auto TAG="DistortionExample";
 
 ExampleRenderer::ExampleRenderer(JNIEnv *env, jobject androidContext,gvr_context *gvr_context,int screenWidthP,int screenHeightP):
-screenWidthP(screenWidthP),screenHeightP(screenHeightP),distortionManager(DistortionManager::RADIAL_2),mFPSCalculator("OpenGL FPS",2000){
+vrHeadsetParams(screenWidthP,screenHeightP),distortionManager(DistortionManager::RADIAL_2),mFPSCalculator("OpenGL FPS",2000){
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
     vrHeadsetParams.setGvrApi(gvr_api_.get());
     buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();
@@ -34,7 +34,6 @@ void ExampleRenderer::onSurfaceCreated(JNIEnv *env, jobject context) {
 
     mBasicGLPrograms=std::make_unique<BasicGLPrograms>(&distortionManager);
     mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
-
     //
     float tesselatedRectSize=2.5; //6.2f
     const float offsetY=0.0f;
@@ -61,13 +60,14 @@ void ExampleRenderer::updateBufferViewports() {
 void ExampleRenderer::onDrawFrame() {
     mFPSCalculator.tick();
     //LOGD("FPS: %f",mFPSCalculator.getCurrentFPS());
+
+    //Update the head position (rotation) then leave it untouched during the frame
     vrHeadsetParams.updateHeadView();
 
     updateBufferViewports();
 
     gvr::Frame frame = swap_chain->AcquireFrame();
     frame.BindBuffer(0); //0 is the 0 from createSwapChain()
-
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
@@ -106,28 +106,23 @@ void ExampleRenderer::drawEye(gvr::Eye eye) {
     const gvr_rectf fov = scratch_viewport.GetSourceFov();
     const gvr::Mat4f perspective =ndk_hello_vr::PerspectiveMatrixFromView(fov, vrHeadsetParams.MIN_Z_DISTANCE,vrHeadsetParams.MAX_Z_DISTANCE);
     const auto eyeM=gvr_api_->GetEyeFromHeadMatrix(eye==0 ? GVR_LEFT_EYE : GVR_RIGHT_EYE);
-    const auto rotM=gvr_api_->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
+    //const auto rotM=gvr_api_->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
+    const auto rotM=vrHeadsetParams.GetLatestHeadSpaceFromStartSpaceRotation_();
     const auto viewM=toGLM(ndk_hello_vr::MatrixMul(eyeM,rotM));
-    //const auto viewM=toGLM(eyeM);
     const auto projectionM=toGLM(perspective);
     glLineWidth(6.0f);
+
     mBasicGLPrograms->vc.beforeDraw(glBufferVC);
     mBasicGLPrograms->vc.draw(viewM,projectionM,0,nColoredVertices,GL_LINES);
     mBasicGLPrograms->vc.afterDraw();
 }
 
 void ExampleRenderer::drawEyeVDDC(gvr::Eye eye) {
-    const int ViewPortW=(int)(screenWidthP/2.0f);
-    const int ViewPortH=(int)(screenHeightP);
-    if(eye==0){
-        glViewport(0,0,ViewPortW,ViewPortH);
-    }else{
-        glViewport(ViewPortW,0,ViewPortW,ViewPortH);
-    }
+    vrHeadsetParams.setOpenGLViewport(eye);
     distortionManager.leftEye=eye==0;
-    const auto rotM=toGLM(gvr_api_->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow()));
+    const auto rotM=vrHeadsetParams.GetLatestHeadSpaceFromStartSpaceRotation();
     auto viewM=vrHeadsetParams.GetEyeFromHeadMatrix(eye)*rotM;
-    auto projM=vrHeadsetParams.mProjectionM[eye];
+    auto projM=vrHeadsetParams.GetProjectionMatrix(eye);
     glLineWidth(3.0f);
     mBasicGLPrograms->vc.beforeDraw(glBufferVCGreen);
     mBasicGLPrograms->vc.draw(viewM,projM,0,nColoredVertices,GL_LINES);
@@ -173,7 +168,7 @@ JNI_METHOD(void, nativeOnDrawFrame)
 }
 
 JNI_METHOD(void, nativeUpdateHeadsetParams)
-(JNIEnv *env, jobject obj, jlong glRendererStereo,
+(JNIEnv *env, jobject obj, jlong instancePointer,
  jfloat screen_width_meters,
  jfloat screen_height_meters,
  jfloat screen_to_lens_distance,
@@ -195,7 +190,7 @@ JNI_METHOD(void, nativeUpdateHeadsetParams)
 
     const MDeviceParams deviceParams{screen_width_meters,screen_height_meters,screen_to_lens_distance,inter_lens_distance,vertical_alignment,tray_to_lens_distance,
                                      device_fov_left1,radial_distortion_params1};
-    native(glRendererStereo)->vrHeadsetParams.updateHeadsetParams(deviceParams);
+    native(instancePointer)->vrHeadsetParams.updateHeadsetParams(deviceParams);
 }
 
 }

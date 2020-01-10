@@ -71,7 +71,6 @@ public:
     void updateDistortion(const MPolynomialRadialDistortion& distortion,float maxRadSq);
     void updateDistortion(const MPolynomialRadialDistortion& inverseDistortion,float maxRadSq,
                           const std::array<MLensDistortion::ViewportParams,2> screen_params,const std::array<MLensDistortion::ViewportParams,2> texture_params);
-    void updateDistortion(JNIEnv *env,jfloatArray undistData);
     //Identity leaves x,y values untouched (as if no vddc was enabled in the shader)
     void updateDistortionWithIdentity();
 };

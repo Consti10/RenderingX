@@ -12,11 +12,14 @@
 class VRHeadsetParams {
 public:
     void setGvrApi(gvr::GvrApi* gvrApi);
+    const int screenWidthP;
+    const int screenHeightP;
+    VRHeadsetParams(int screenWidthP,int screenHeightP):screenWidthP(screenWidthP),screenHeightP(screenHeightP){};
 private:
     gvr::GvrApi *gvr_api;
     glm::mat4 eyeFromHead[2];
-public:
     glm::mat4 mProjectionM[2];
+public:
     static constexpr float MIN_Z_DISTANCE=0.1f;
     static constexpr float MAX_Z_DISTANCE=100.0f;
 public:
@@ -39,10 +42,12 @@ private:
     gvr::Mat4f latestHeadSpaceFromStartSpaceRotation_;
 public:
     glm::mat4 GetEyeFromHeadMatrix(gvr::Eye eye);
-    gvr::Mat4f GetEyeFromHeadMatrix_(gvr::Eye eye);
 
+    glm::mat4 GetProjectionMatrix(gvr::Eye eye);
 
-    glm::mat4 GetViewMatrix(int eye);
+    //Set the viewport to exactly half framebuffer size
+    //where framebuffer size==screen size
+    void setOpenGLViewport(gvr::Eye eye);
 };
 
 

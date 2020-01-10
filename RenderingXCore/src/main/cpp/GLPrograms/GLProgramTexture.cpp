@@ -48,14 +48,15 @@ void GLProgramTexture::draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, 
 #endif
 }
 
-void GLProgramTexture::drawIndexed(const glm::mat4x4 &ViewM, const glm::mat4x4 &ProjM,
-                                      const int verticesOffset, const int numberVertices,const GLuint indexBuffer) const {
+void GLProgramTexture::drawIndexed(GLuint indexBuffer, const glm::mat4x4 &ViewM,
+                                   const glm::mat4x4 &ProjM, int indicesOffset, int numberIndices,
+                                   GLenum mode) const {
     glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
     glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
     //
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 #ifndef WIREFRAME
-    glDrawElements(GL_TRIANGLES,numberVertices,GL_UNSIGNED_SHORT, (void*)(verticesOffset*sizeof(INDEX_DATA)));
+    glDrawElements(mode,numberIndices,GL_UNSIGNED_SHORT, (void*)(indicesOffset*sizeof(INDEX_DATA)));
 #else
     glLineWidth(4.0f);
     glDrawElements(GL_LINES,numberVertices,GL_UNSIGNED_SHORT, (void*)(verticesOffset*sizeof(GLushort)));
@@ -88,3 +89,4 @@ void GLProgramTexture::loadTexture(GLuint texture,JNIEnv *env, jobject androidCo
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
+

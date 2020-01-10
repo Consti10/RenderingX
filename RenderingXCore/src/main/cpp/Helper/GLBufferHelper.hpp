@@ -50,6 +50,29 @@ public:
         allocateGLBufferDynamic(buff,(void*)data.data(),sizeBytes);
         return (int)size;
     }
+public:
+    struct VertexIndexBuffer{
+        GLuint vertexB;
+        GLuint indexB;
+        int nIndices;
+    };
+    template <typename T,typename T2>
+    static void createAllocateVertexIndexBuffer(const std::vector<T> &vertices,
+                                                const std::vector<T2> &indices,
+                                                VertexIndexBuffer &vertexIndexBuffer){
+        createAllocateGLBufferStatic(vertexIndexBuffer.vertexB,vertices);
+        vertexIndexBuffer.nIndices=createAllocateGLBufferStatic(vertexIndexBuffer.indexB,indices);
+    }
+public:
+    struct VertexBuffer{
+            GLuint vertexB;
+            int nVertices;
+    };
+    template <typename T>
+    static void createAllocateVertexBuffer(const std::vector<T> &vertices,
+                                                VertexBuffer &vertexBuffer){
+        vertexBuffer.nVertices=createAllocateGLBufferStatic(vertexBuffer.vertexB,vertices);
+    }
 };
 
 #endif //RENDERINGX_CORE_HELPER_GLBufferHelper
