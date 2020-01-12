@@ -8,11 +8,12 @@
 #include "../HelperX.h"
 #include <MatrixHelper.h>
 #include <array>
+#include <GeometryBuilder/EquirectangularSphere.hpp>
 
 constexpr auto TAG="DistortionExample";
 
-ExampleRenderer::ExampleRenderer(JNIEnv *env, jobject androidContext,gvr_context *gvr_context,int screenWidthP,int screenHeightP):
-vrHeadsetParams(screenWidthP,screenHeightP),distortionManager(DistortionManager::RADIAL_2),mFPSCalculator("OpenGL FPS",2000){
+ExampleRenderer::ExampleRenderer(JNIEnv *env, jobject androidContext,gvr_context *gvr_context):
+distortionManager(DistortionManager::RADIAL_2),mFPSCalculator("OpenGL FPS",2000){
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
     vrHeadsetParams.setGvrApi(gvr_api_.get());
     buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();
@@ -34,6 +35,10 @@ void ExampleRenderer::onSurfaceCreated(JNIEnv *env, jobject context) {
 
     mBasicGLPrograms=std::make_unique<BasicGLPrograms>(&distortionManager);
     mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
+    mGLProgramTexture=std::make_unique<GLProgramTexture>(false,&distortionManager);
+    glGenTextures(1,&mTextureEquirectangularImage);
+    mGLProgramTexture->loadTexture(mTextureEquirectangularImage,env,context,"c_grid.png");
+    EquirectangularSphere::create_sphere(mEquirecangularSphereB,2560,1280);
     //
     float tesselatedRectSize=2.5; //6.2f
     const float offsetY=0.0f;
@@ -62,7 +67,7 @@ void ExampleRenderer::onDrawFrame() {
     //LOGD("FPS: %f",mFPSCalculator.getCurrentFPS());
 
     //Update the head position (rotation) then leave it untouched during the frame
-    vrHeadsetParams.updateHeadView();
+    vrHeadsetParams.updateLatestHeadSpaceFromStartSpaceRotation();
 
     updateBufferViewports();
 
@@ -75,7 +80,7 @@ void ExampleRenderer::onDrawFrame() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     distortionManager.updateDistortionWithIdentity();
     for(uint32_t eye=0;eye<2;eye++){
-        drawEye(static_cast<gvr::Eye>(eye));
+        drawEyeGvr(static_cast<gvr::Eye>(eye));
     }
     frame.Unbind();
     frame.Submit(buffer_viewports, vrHeadsetParams.GetLatestHeadSpaceFromStartSpaceRotation_());
@@ -93,7 +98,7 @@ void ExampleRenderer::onDrawFrame() {
     GLHelper::checkGlError("ExampleRenderer2::drawFrame");
 }
 
-void ExampleRenderer::drawEye(gvr::Eye eye) {
+void ExampleRenderer::drawEyeGvr(gvr::Eye eye) {
     buffer_viewports.GetBufferViewport(eye, &scratch_viewport);
 
     const gvr::Rectf& rect = scratch_viewport.GetSourceUv();
@@ -115,6 +120,10 @@ void ExampleRenderer::drawEye(gvr::Eye eye) {
     mBasicGLPrograms->vc.beforeDraw(glBufferVC);
     mBasicGLPrograms->vc.draw(viewM,projectionM,0,nColoredVertices,GL_LINES);
     mBasicGLPrograms->vc.afterDraw();
+
+    /*mGLProgramTexture->beforeDraw(mEquirecangularSphereB.vertexB,mTextureEquirectangularImage);
+    mGLProgramTexture->drawIndexed(mEquirecangularSphereB.indexB,viewM,projectionM,0,mEquirecangularSphereB.nIndices,GL_TRIANGLE_STRIP);
+    mGLProgramTexture->afterDraw();*/
 }
 
 void ExampleRenderer::drawEyeVDDC(gvr::Eye eye) {
@@ -127,6 +136,10 @@ void ExampleRenderer::drawEyeVDDC(gvr::Eye eye) {
     mBasicGLPrograms->vc.beforeDraw(glBufferVCGreen);
     mBasicGLPrograms->vc.draw(viewM,projM,0,nColoredVertices,GL_LINES);
     mBasicGLPrograms->vc.afterDraw();
+
+    /*mGLProgramTexture->beforeDraw(mEquirecangularSphereB.vertexB,mTextureEquirectangularImage);
+    mGLProgramTexture->drawIndexed(mEquirecangularSphereB.indexB,viewM,projM,0,mEquirecangularSphereB.nIndices,GL_TRIANGLE_STRIP);
+    mGLProgramTexture->afterDraw();*/
 }
 
 
@@ -144,8 +157,8 @@ inline ExampleRenderer *native(jlong ptr) {
 extern "C" {
 
 JNI_METHOD(jlong, nativeConstruct)
-(JNIEnv *env, jobject obj,jobject androidContext,jlong native_gvr_api,jint w,jint h) {
-    return jptr(new ExampleRenderer(env,androidContext,reinterpret_cast<gvr_context *>(native_gvr_api),w,h));
+(JNIEnv *env, jobject obj,jobject androidContext,jlong native_gvr_api) {
+    return jptr(new ExampleRenderer(env,androidContext,reinterpret_cast<gvr_context *>(native_gvr_api)));
 }
 JNI_METHOD(void, nativeDelete)
 (JNIEnv *env, jobject obj, jlong p) {
@@ -176,7 +189,8 @@ JNI_METHOD(void, nativeUpdateHeadsetParams)
  jint vertical_alignment,
  jfloat tray_to_lens_distance,
  jfloatArray device_fov_left,
- jfloatArray radial_distortion_params
+ jfloatArray radial_distortion_params,
+ jint screenWidthP,jint screenHeightP
 ) {
     std::array<float,4> device_fov_left1{};
     std::vector<float> radial_distortion_params1(2);
@@ -190,7 +204,7 @@ JNI_METHOD(void, nativeUpdateHeadsetParams)
 
     const MDeviceParams deviceParams{screen_width_meters,screen_height_meters,screen_to_lens_distance,inter_lens_distance,vertical_alignment,tray_to_lens_distance,
                                      device_fov_left1,radial_distortion_params1};
-    native(instancePointer)->vrHeadsetParams.updateHeadsetParams(deviceParams);
+    native(instancePointer)->vrHeadsetParams.updateHeadsetParams(deviceParams,screenWidthP,screenHeightP);
 }
 
 }

@@ -12,12 +12,15 @@ private:
 public:
     static void checkGlError(const std::string& op) {
         int error;
+        std::stringstream ss;
+        ss<<"GLError:"<<op.c_str();
+        bool anyError=false;
         while ((error = glGetError()) != GL_NO_ERROR) {
             //__android_log_print(ANDROID_LOG_DEBUG,TAG.c_str(),"%s GLError:%d",op.c_str(),error);
-            std::stringstream ss;
-            ss<<"GLError:"<<op.c_str()<<"|"<<error;
-            MDebug::log(ss.str(),TAG);
+            ss<<" |"<<error;
+            anyError=true;
         }
+        if(anyError)MDebug::log(ss.str(),TAG);
     }
     static const GLuint loadShader(GLenum type,const std::string& shaderCode){
         GLuint shader = glCreateShader(type);

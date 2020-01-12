@@ -29,10 +29,11 @@
 #include <Helper/BasicGLPrograms.hpp>
 #include <DistortionCorrection/VRHeadsetParams.h>
 #include <gvr_util/util.h>
+#include <Helper/GLBufferHelper.hpp>
 
 class ExampleRenderer{
 public:
-   ExampleRenderer(JNIEnv* env,jobject androidContext,gvr_context *gvr_context,int screenWidthP,int screenHeightP);
+   ExampleRenderer(JNIEnv* env,jobject androidContext,gvr_context *gvr_context);
     void onSurfaceCreated(JNIEnv* env,jobject context);
     void onSurfaceChanged(int width, int height);
     void onDrawFrame();
@@ -46,7 +47,10 @@ private:
     void updateBufferViewports();
     FPSCalculator mFPSCalculator;
     std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
-    void drawEye(gvr::Eye eye);
+    std::unique_ptr<GLProgramTexture> mGLProgramTexture=nullptr;
+    GLuint mTextureEquirectangularImage;
+    GLBufferHelper::VertexIndexBuffer mEquirecangularSphereB;
+    void drawEyeGvr(gvr::Eye eye);
     void drawEyeVDDC(gvr::Eye eye);
 private:
     static constexpr int LINE_MESH_TESSELATION_FACTOR=10;

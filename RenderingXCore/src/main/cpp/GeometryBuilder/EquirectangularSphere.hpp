@@ -10,7 +10,7 @@
 #include <vector>
 #include <GLES2/gl2.h>
 #include "cmath"
-
+#include <GLBufferHelper.hpp>
 #include <GLProgramTexture.h>
 
 class EquirectangularSphere {
@@ -26,24 +26,31 @@ public:
                     triangle_size);
     }
     //GLushort instead of GLuint should be sufficient for index data
+    //Also, convert to GLProgramTexture::Vertex
     static void create_sphere(std::vector<GLProgramTexture::Vertex>& vertexData,std::vector<GLProgramTexture::INDEX_DATA >& indexData,int surf_w,int surf_h){
         std::vector<GLfloat> tmpVertices;
         std::vector<GLuint> tmpIndices;
         create_sphere(tmpVertices,tmpIndices,surf_w,surf_h);
-        int i=0;
-        while (i<tmpVertices.size()-5){
+        for(int i=0;i<=tmpVertices.size()-5;i+=5){
             GLProgramTexture::Vertex v;
-            v.x=tmpVertices[i++];
-            v.y=tmpVertices[i++];
-            v.z=tmpVertices[i++];
-            v.u=tmpVertices[i++];
-            v.v=tmpVertices[i++];
+            v.x=tmpVertices[i+0];
+            v.y=tmpVertices[i+1];
+            v.z=tmpVertices[i+2];
+            v.u=tmpVertices[i+3];
+            v.v=tmpVertices[i+4];
             vertexData.push_back(v);
         }
-        for(unsigned int j=0;j<tmpIndices.size();j++){
-            indexData.push_back((GLProgramTexture::INDEX_DATA) tmpIndices.at(j));
+        for(unsigned int i=0;i<tmpIndices.size();i++){
+            indexData.push_back((GLProgramTexture::INDEX_DATA) tmpIndices.at(i));
         }
     }
+    static void create_sphere(GLBufferHelper::VertexIndexBuffer& data,int surf_w,int surf_h){
+        std::vector<GLProgramTexture::Vertex> vertices;
+        std::vector<GLProgramTexture::INDEX_DATA > indices;
+        EquirectangularSphere::create_sphere(vertices,indices,surf_w,surf_h);
+        GLBufferHelper::createAllocateVertexIndexBuffer(vertices, indices,data);
+    }
+
     static void create_rect(std::vector<GLfloat> &verts, std::vector<GLuint> &indexes,
                      uint32_t width, uint32_t height, uint32_t radius, // In pixels
                      uint32_t c1x, uint32_t c1y, uint32_t c2x, uint32_t c2y, // In pixels

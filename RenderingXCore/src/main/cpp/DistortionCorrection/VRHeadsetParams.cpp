@@ -13,7 +13,9 @@ void VRHeadsetParams::setGvrApi(gvr::GvrApi *gvrApi) {
 }
 
 
-void VRHeadsetParams::updateHeadsetParams(const MDeviceParams &mDP) {
+void VRHeadsetParams::updateHeadsetParams(const MDeviceParams &mDP,int screenWidthP,int screenHeightP) {
+    this->screenWidthP=screenWidthP;
+    this->screenHeightP=screenHeightP;
     LOGD("%s",MLensDistortion::MDeviceParamsAsString(mDP).c_str());
     auto polynomialRadialDistortion=MPolynomialRadialDistortion(mDP.radial_distortion_params);
     //auto polynomialRadialDistortion=MPolynomialRadialDistortion({0.441, 0.156});
@@ -75,7 +77,7 @@ void VRHeadsetParams::updateDistortionManager(DistortionManager &distortionManag
     distortionManager.updateDistortion(mInverse,MAX_RAD_SQ,screen_params,texture_params);
 }
 
-void VRHeadsetParams::updateHeadView() {
+void VRHeadsetParams::updateLatestHeadSpaceFromStartSpaceRotation() {
     latestHeadSpaceFromStartSpaceRotation_=gvr_api->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
     latestHeadSpaceFromStartSpaceRotation=toGLM(latestHeadSpaceFromStartSpaceRotation_);
 }
