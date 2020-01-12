@@ -129,9 +129,8 @@ void MLensDistortion::CalculateViewportParameters_NDC(
     texture_params->width = static_cast<float>(tan(fov[0] * M_PI / 180) + tan(fov[1] * M_PI / 180))*0.5f;
     texture_params->height = static_cast<float>(tan(fov[2] * M_PI / 180) + tan(fov[3] * M_PI / 180))*0.5f;
 
-    texture_params->x_eye_offset = static_cast<float>(tan(fov[0] * M_PI / 180))-texture_params->width;
-    texture_params->y_eye_offset = static_cast<float>(tan(fov[2] * M_PI / 180))-texture_params->height;
-
+    texture_params->x_eye_offset = static_cast<float>((tan(fov[0] * M_PI / 180)-tan(fov[1] * M_PI / 180))*0.5);
+    texture_params->y_eye_offset =  static_cast<float>((tan(fov[2] * M_PI / 180)-tan(fov[3] * M_PI / 180))*0.5);
 
     std::stringstream ss;ss<<"\n";
     ss<<"Screen_params width:"<<screen_params->width<<" height:"<<screen_params->height<<"\n";
