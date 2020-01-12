@@ -59,39 +59,11 @@ std::string DistortionManager::writeGLPositionWithDistortion(const DistortionMan
         //s<<"r2=clamp(r2,0.0,uMaxRadSq);\n";
         s<<"float dist_factor=PolynomialDistortionFactor(r2,uKN);";
         s<<"pos.xy*=dist_factor;\n";
-        //s<<"pos.x*=1.2;";
-        //s<<"pos.x+=0.1;";
-        //s<<"pos.x*=1.2;";
-        //s<<"pos.y*=1.1;";
         //s<<"gl_Position=pos;\n";
         s<<"gl_Position=uPMatrix*pos;\n";
+        //s<<"gl_Position.x=gl_Position.x*uScreenParams.width+uScreenParams.x_eye_offset;";
+        //s<<"gl_Position.y=gl_Position.y*uScreenParams.height+uScreenParams.y_eye_offset;";
     }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_2){
-        //s<<"vec4 pos=vec4("<<positionAttribute<<".xy,0,1);";
-        //s<<"vec4 pos=(uPMatrix*uMVMatrix)*"+positionAttribute+";\n";
-        //s<<"vec4 pos=uMVMatrix*"+positionAttribute+";\n";
-        //s<<"pos.x*=uTextureParams.width;";
-        //s<<"pos.y*=uTextureParams.height;";
-        //s<<"pos.x-=uTextureParams.x_eye_offset;";
-        //s<<"pos.y-=uTextureParams.y_eye_offset;";
-        //s<<"float r2=dot(pos.xy,pos.xy)/(pos.z*pos.z);\n";
-        //s<<"float dist_factor=PolynomialDistortionFactor(r2,uKN);";
-        //s<<"";
-        //s<<"pos.xy*=dist_factor;\n";
-        //s<<"pos.x*=1.08;";
-        //s<<"pos.y*=1.12;";
-        //s<<"pos.x+=uScreenParams.x_eye_offset;";
-        //s<<"pos.y+=uScreenParams.y_eye_offset;";
-
-        //s<<"pos.y+=uOffsetX;";
-        //s<<"pos.x+=uOffsetY;";
-        //s<<"pos.x+=uScreenParams.x_eye_offset;";
-        //s<<"pos.y-=uScreenParams.y_eye_offset;";
-        //s<<"pos.x+=u";
-        //s<<"vec2 ndc=pos.xy/pos.w;";
-        //s<<"pos.xy=UndistortedNDCForDistortedNDC(uKN,uScreenParams,uTextureParams,ndc);";
-        //s<<"gl_Position=vec4(pos.xy,0,1);\n";
-        //s<<"gl_Position=uPMatrix*pos;\n";
-
         s<<"vec4 pos_view=uMVMatrix*"+positionAttribute+";\n";
         s<<"vec4 pos_clip=uPMatrix*pos_view;\n";
         s<<"vec3 ndc=pos_clip.xyz/pos_clip.w;";

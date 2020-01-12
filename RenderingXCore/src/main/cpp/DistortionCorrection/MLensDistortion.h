@@ -65,8 +65,8 @@ public:
                                             const std::array<float, 4> &fov,
                                             float screen_width_meters,
                                             float screen_height_meters,
-                                            ViewportParams *screen_params,
-                                            ViewportParams *texture_params);
+                                            ViewportParams& screen_params,
+                                            ViewportParams& texture_params);
 
 
     static std::array<float, 2> UndistortedUvForDistortedUv(

@@ -41,7 +41,7 @@ void ExampleRenderer::onSurfaceCreated(JNIEnv *env, jobject context) {
     mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
     mGLProgramTexture=std::make_unique<GLProgramTexture>(false,&distortionManager);
     glGenTextures(1,&mTextureEquirectangularImage);
-    mGLProgramTexture->loadTexture(mTextureEquirectangularImage,env,context,"c_grid.png");
+    mGLProgramTexture->loadTexture(mTextureEquirectangularImage,env,context,"EquirectangularSphere/out.png");
     EquirectangularSphere::create_sphere(mEquirecangularSphereB,2560,1280);
     //
     float tesselatedRectSize=2.5; //6.2f

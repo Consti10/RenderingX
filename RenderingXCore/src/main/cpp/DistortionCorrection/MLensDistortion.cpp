@@ -111,32 +111,31 @@ void MLensDistortion::CalculateViewportParameters_NDC(
         const float screen_to_lens_distance,
         const float inter_lens_distance,
         const std::array<float, 4> &fov, float screen_width_meters,
-        float screen_height_meters, ViewportParams *screen_params,
-        ViewportParams *texture_params) {
-    screen_params->width =
+        float screen_height_meters, ViewportParams& screen_params,
+        ViewportParams& texture_params) {
+    screen_params.width =
             4 / (screen_width_meters / screen_to_lens_distance);
-    screen_params->height =
+    screen_params.height =
             2 / (screen_height_meters / screen_to_lens_distance);
 
-    //Use NDC instead
     if(eye==0){
-        screen_params->x_eye_offset=((screen_width_meters-inter_lens_distance)*2 / screen_width_meters)-1;
+        screen_params.x_eye_offset=((screen_width_meters-inter_lens_distance)*2 / screen_width_meters)-1;
     }else{
-        screen_params->x_eye_offset=((screen_width_meters+inter_lens_distance)*2 / screen_width_meters)-3;
+        screen_params.x_eye_offset=((screen_width_meters+inter_lens_distance)*2 / screen_width_meters)-3;
     }
-    screen_params->y_eye_offset=(GetYEyeOffsetMeters*2/screen_height_meters)-1;
+    screen_params.y_eye_offset=(GetYEyeOffsetMeters*2/screen_height_meters)-1;
 
-    texture_params->width = static_cast<float>(tan(fov[0] * M_PI / 180) + tan(fov[1] * M_PI / 180))*0.5f;
-    texture_params->height = static_cast<float>(tan(fov[2] * M_PI / 180) + tan(fov[3] * M_PI / 180))*0.5f;
+    texture_params.width = static_cast<float>(tan(fov[0] * M_PI / 180) + tan(fov[1] * M_PI / 180))*0.5f;
+    texture_params.height = static_cast<float>(tan(fov[2] * M_PI / 180) + tan(fov[3] * M_PI / 180))*0.5f;
 
-    texture_params->x_eye_offset = static_cast<float>((tan(fov[0] * M_PI / 180)-tan(fov[1] * M_PI / 180))*0.5);
-    texture_params->y_eye_offset =  static_cast<float>((tan(fov[2] * M_PI / 180)-tan(fov[3] * M_PI / 180))*0.5);
+    texture_params.x_eye_offset = static_cast<float>((tan(fov[0] * M_PI / 180)-tan(fov[1] * M_PI / 180))*0.5);
+    texture_params.y_eye_offset =  static_cast<float>((tan(fov[2] * M_PI / 180)-tan(fov[3] * M_PI / 180))*0.5);
 
     std::stringstream ss;ss<<"\n";
-    ss<<"Screen_params width:"<<screen_params->width<<" height:"<<screen_params->height<<"\n";
-    ss<<"Screen_params offset X:"<<screen_params->x_eye_offset<<" Y:"<<screen_params->y_eye_offset<<"\n";
-    ss<<"Texture_params width:"<<texture_params->width<<" height:"<<texture_params->height<<"\n";
-    ss<<"Texture_params offset X:"<<texture_params->x_eye_offset<<" Y:"<<texture_params->y_eye_offset<<"\n";
+    ss<<"Screen_params width:"<<screen_params.width<<" height:"<<screen_params.height<<"\n";
+    ss<<"Screen_params offset X:"<<screen_params.x_eye_offset<<" Y:"<<screen_params.y_eye_offset<<"\n";
+    ss<<"Texture_params width:"<<texture_params.width<<" height:"<<texture_params.height<<"\n";
+    ss<<"Texture_params offset X:"<<texture_params.x_eye_offset<<" Y:"<<texture_params.y_eye_offset<<"\n";
     LOGD("%s",ss.str().c_str());
 }
 
