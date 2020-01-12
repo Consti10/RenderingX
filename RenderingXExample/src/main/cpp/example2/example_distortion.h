@@ -33,7 +33,8 @@
 
 class ExampleRenderer{
 public:
-   ExampleRenderer(JNIEnv* env,jobject androidContext,gvr_context *gvr_context);
+    enum MODE{MESH_2D,EQUIRECTANGULAR_SPHERE};
+    ExampleRenderer(JNIEnv* env,jobject androidContext,gvr_context *gvr_context);
     void onSurfaceCreated(JNIEnv* env,jobject context);
     void onSurfaceChanged(int width, int height);
     void onDrawFrame();
