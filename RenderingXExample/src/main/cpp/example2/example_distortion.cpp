@@ -5,7 +5,6 @@
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
 #include "Helper/GLBufferHelper.hpp"
-#include "../HelperX.h"
 #include <MatrixHelper.h>
 #include <array>
 #include <GeometryBuilder/EquirectangularSphere.hpp>

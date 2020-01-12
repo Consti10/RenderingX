@@ -1,7 +1,6 @@
 package constantin.renderingx.example.renderer2;
 
 import android.content.Context;
-import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
 import com.google.vr.ndk.base.GvrApi;
@@ -10,8 +9,6 @@ import com.google.vr.sdk.base.GvrViewerParams;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
-import constantin.renderingx.example.VRSettingsHelper;
 
 
 public class GLRTest implements GLSurfaceView.Renderer{
