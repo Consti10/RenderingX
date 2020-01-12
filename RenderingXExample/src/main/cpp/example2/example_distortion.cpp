@@ -11,8 +11,13 @@
 
 constexpr auto TAG="DistortionExample";
 
-ExampleRenderer::ExampleRenderer(JNIEnv *env, jobject androidContext,gvr_context *gvr_context):
-distortionManager(DistortionManager::RADIAL_2),mFPSCalculator("OpenGL FPS",2000){
+ExampleRenderer::ExampleRenderer(JNIEnv *env, jobject androidContext,gvr_context *gvr_context,bool RENDER_SCENE_USING_GVR_RENDERBUFFER,
+        bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT,bool MESH,bool SPHERE):
+        RENDER_SCENE_USING_GVR_RENDERBUFFER(RENDER_SCENE_USING_GVR_RENDERBUFFER),
+        RENDER_SCENE_USING_VERTEX_DISPLACEMENT(RENDER_SCENE_USING_VERTEX_DISPLACEMENT),
+        ENABLE_SCENE_MESH_2D(MESH),
+        ENABLE_SCENE_360_SPHERE(SPHERE),
+        distortionManager(DistortionManager::RADIAL_2),mFPSCalculator("OpenGL FPS",2000){
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
     vrHeadsetParams.setGvrApi(gvr_api_.get());
     buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();
@@ -42,9 +47,9 @@ void ExampleRenderer::onSurfaceCreated(JNIEnv *env, jobject context) {
     float tesselatedRectSize=2.5; //6.2f
     const float offsetY=0.0f;
     auto tmp=ColoredGeometry::makeTesselatedColoredRectLines(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,Color::BLUE);
-    nColoredVertices=GLBufferHelper::createAllocateGLBufferStatic(glBufferVC,tmp);
+    GLBufferHelper::createAllocateVertexBuffer(tmp,blueMeshB);
     tmp=ColoredGeometry::makeTesselatedColoredRectLines(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,Color::GREEN);
-    GLBufferHelper::createAllocateGLBufferStatic(glBufferVCGreen,tmp);
+    GLBufferHelper::createAllocateVertexBuffer(tmp,greenMeshB);
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
@@ -68,33 +73,35 @@ void ExampleRenderer::onDrawFrame() {
     //Update the head position (rotation) then leave it untouched during the frame
     vrHeadsetParams.updateLatestHeadSpaceFromStartSpaceRotation();
 
-    updateBufferViewports();
-
-    gvr::Frame frame = swap_chain->AcquireFrame();
-    frame.BindBuffer(0); //0 is the 0 from createSwapChain()
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
-    glClearColor(0.0f, 0.3f, 0.0f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    distortionManager.updateDistortionWithIdentity();
-    for(uint32_t eye=0;eye<2;eye++){
-        drawEyeGvr(static_cast<gvr::Eye>(eye));
+
+    if(RENDER_SCENE_USING_GVR_RENDERBUFFER){
+        updateBufferViewports();
+        gvr::Frame frame = swap_chain->AcquireFrame();
+        frame.BindBuffer(0); //0 is the 0 from createSwapChain()
+        glClearColor(0.25f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+        distortionManager.updateDistortionWithIdentity();
+        for(uint32_t eye=0;eye<2;eye++){
+            drawEyeGvr(static_cast<gvr::Eye>(eye));
+        }
+        frame.Unbind();
+        frame.Submit(buffer_viewports, vrHeadsetParams.GetLatestHeadSpaceFromStartSpaceRotation_());
     }
-    frame.Unbind();
-    frame.Submit(buffer_viewports, vrHeadsetParams.GetLatestHeadSpaceFromStartSpaceRotation_());
-    //
-    //glClearColor(0.3f, 0.0f, 0.0f, 0.0f);
-    //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
-    vrHeadsetParams.updateDistortionManager(distortionManager);
-    //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
-    for(int eye=0;eye<2;eye++){
-        drawEyeVDDC(static_cast<gvr::Eye>(eye));
+    if(RENDER_SCENE_USING_VERTEX_DISPLACEMENT){
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+        vrHeadsetParams.updateDistortionManager(distortionManager);
+        for(int eye=0;eye<2;eye++){
+            drawEyeVDDC(static_cast<gvr::Eye>(eye));
+        }
     }
-    GLHelper::checkGlError("ExampleRenderer2::drawFrame");
+    GLHelper::checkGlError("ExampleRenderer2::onDrawFrame");
 }
 
 void ExampleRenderer::drawEyeGvr(gvr::Eye eye) {
@@ -116,13 +123,17 @@ void ExampleRenderer::drawEyeGvr(gvr::Eye eye) {
     const auto projectionM=toGLM(perspective);
     glLineWidth(6.0f);
 
-    mBasicGLPrograms->vc.beforeDraw(glBufferVC);
-    mBasicGLPrograms->vc.draw(viewM,projectionM,0,nColoredVertices,GL_LINES);
-    mBasicGLPrograms->vc.afterDraw();
-
-    /*mGLProgramTexture->beforeDraw(mEquirecangularSphereB.vertexB,mTextureEquirectangularImage);
-    mGLProgramTexture->drawIndexed(mEquirecangularSphereB.indexB,viewM,projectionM,0,mEquirecangularSphereB.nIndices,GL_TRIANGLE_STRIP);
-    mGLProgramTexture->afterDraw();*/
+    if(ENABLE_SCENE_360_SPHERE){
+        mGLProgramTexture->beforeDraw(mEquirecangularSphereB.vertexB,mTextureEquirectangularImage);
+        mGLProgramTexture->drawIndexed(mEquirecangularSphereB.indexB,viewM,projectionM,0,mEquirecangularSphereB.nIndices,GL_TRIANGLE_STRIP);
+        mGLProgramTexture->afterDraw();
+    }
+    if(ENABLE_SCENE_MESH_2D){
+        mBasicGLPrograms->vc.beforeDraw(blueMeshB.vertexB);
+        mBasicGLPrograms->vc.draw(viewM,projectionM,0,blueMeshB.nVertices,GL_LINES);
+        mBasicGLPrograms->vc.afterDraw();
+    }
+    GLHelper::checkGlError("ExampleRenderer2::drawEyeGvr");
 }
 
 void ExampleRenderer::drawEyeVDDC(gvr::Eye eye) {
@@ -132,13 +143,17 @@ void ExampleRenderer::drawEyeVDDC(gvr::Eye eye) {
     auto viewM=vrHeadsetParams.GetEyeFromHeadMatrix(eye)*rotM;
     auto projM=vrHeadsetParams.GetProjectionMatrix(eye);
     glLineWidth(3.0f);
-    mBasicGLPrograms->vc.beforeDraw(glBufferVCGreen);
-    mBasicGLPrograms->vc.draw(viewM,projM,0,nColoredVertices,GL_LINES);
-    mBasicGLPrograms->vc.afterDraw();
-
-    /*mGLProgramTexture->beforeDraw(mEquirecangularSphereB.vertexB,mTextureEquirectangularImage);
-    mGLProgramTexture->drawIndexed(mEquirecangularSphereB.indexB,viewM,projM,0,mEquirecangularSphereB.nIndices,GL_TRIANGLE_STRIP);
-    mGLProgramTexture->afterDraw();*/
+    if(ENABLE_SCENE_MESH_2D){
+        mBasicGLPrograms->vc.beforeDraw(greenMeshB.vertexB);
+        mBasicGLPrograms->vc.draw(viewM,projM,0,greenMeshB.nVertices,GL_LINES);
+        mBasicGLPrograms->vc.afterDraw();
+    }
+    if(ENABLE_SCENE_360_SPHERE){
+        mGLProgramTexture->beforeDraw(mEquirecangularSphereB.vertexB,mTextureEquirectangularImage);
+        mGLProgramTexture->drawIndexed(mEquirecangularSphereB.indexB,viewM,projM,0,mEquirecangularSphereB.nIndices,GL_TRIANGLE_STRIP);
+        mGLProgramTexture->afterDraw();
+    }
+    GLHelper::checkGlError("ExampleRenderer2::drawEyeVDDC");
 }
 
 
@@ -156,8 +171,10 @@ inline ExampleRenderer *native(jlong ptr) {
 extern "C" {
 
 JNI_METHOD(jlong, nativeConstruct)
-(JNIEnv *env, jobject obj,jobject androidContext,jlong native_gvr_api) {
-    return jptr(new ExampleRenderer(env,androidContext,reinterpret_cast<gvr_context *>(native_gvr_api)));
+(JNIEnv *env, jobject obj,jobject androidContext,jlong native_gvr_api,jboolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
+ jboolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,jboolean MESH,jboolean SPHERE) {
+    return jptr(new ExampleRenderer(env,androidContext,reinterpret_cast<gvr_context *>(native_gvr_api),RENDER_SCENE_USING_GVR_RENDERBUFFER,
+            RENDER_SCENE_USING_VERTEX_DISPLACEMENT,MESH,SPHERE));
 }
 JNI_METHOD(void, nativeDelete)
 (JNIEnv *env, jobject obj, jlong p) {

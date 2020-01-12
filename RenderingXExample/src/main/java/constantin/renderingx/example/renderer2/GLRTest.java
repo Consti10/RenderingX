@@ -15,7 +15,8 @@ public class GLRTest implements GLSurfaceView.Renderer{
     static {
         System.loadLibrary("example-renderer2");
     }
-    private native long nativeConstruct(Context context,long nativeGvrContext);
+    private native long nativeConstruct(Context context,long nativeGvrContext,boolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
+                                        boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,boolean MESH,boolean SPHERE);
     private native void nativeDelete(long p);
     private native void nativeOnSurfaceCreated(long p,final Context context);
     private native void nativeOnSurfaceChanged(long p,int width,int height);
@@ -33,22 +34,21 @@ public class GLRTest implements GLSurfaceView.Renderer{
     private final Context mContext;
     private final long nativeRenderer;
 
-    public GLRTest(final Context context, final GvrApi gvrApi){
+    public GLRTest(final Context context, final GvrApi gvrApi,boolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
+                   boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,boolean MESH,boolean SPHERE){
         mContext=context;
         GvrView view=new GvrView(context);
         final GvrViewerParams params=view.getGvrViewerParams();
 
         nativeRenderer=nativeConstruct(context,
-                gvrApi.getNativeGvrContext());
+                gvrApi.getNativeGvrContext(),RENDER_SCENE_USING_GVR_RENDERBUFFER,RENDER_SCENE_USING_VERTEX_DISPLACEMENT,MESH,SPHERE);
 
         float[] fov=new float[4];
         fov[0]=params.getLeftEyeMaxFov().getLeft();
         fov[1]=params.getLeftEyeMaxFov().getRight();
         fov[2]=params.getLeftEyeMaxFov().getBottom();
         fov[3]=params.getLeftEyeMaxFov().getTop();
-
         float[] kN=params.getDistortion().getCoefficients();
-
         nativeUpdateHeadsetParams(nativeRenderer,view.getScreenParams().getWidthMeters(),view.getScreenParams().getHeightMeters(),
                 params.getScreenToLensDistance(),params.getInterLensDistance(),params.getVerticalAlignment().ordinal(),params.getVerticalDistanceToLensCenter(),
                 fov,kN,view.getScreenParams().getWidth(),view.getScreenParams().getHeight());

@@ -27,13 +27,13 @@
             android:id="@+id/button3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Test Distortion" />
+            android:text="Vertex Displacement Distortion Correction" />
 
         <Button
             android:id="@+id/button4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Test 3" />
+            android:text="360 Image using VDDC" />
 
         <!--<TextView
             android:layout_width="match_parent"

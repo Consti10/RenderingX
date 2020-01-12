@@ -17,14 +17,24 @@ public class TestActivity2 extends AppCompatActivity {
     private GLSurfaceView gLView;
     private GLRTest renderer;
 
+    public static final String KEY_MODE="KEY_MODE";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         gvrLayout=new GvrLayout(this);
 
+        final Bundle bundle=getIntent().getExtras();
+        final int MODE=bundle.getInt(KEY_MODE,0);
+
         gLView = new GLSurfaceView(this);
         gLView.setEGLContextClientVersion(2);
-        renderer=new GLRTest(this,gvrLayout.getGvrApi());
+        if(MODE==0){
+            renderer=new GLRTest(this,gvrLayout.getGvrApi(),true,
+                    true,true,false);
+        }else{
+            renderer=new GLRTest(this,gvrLayout.getGvrApi(),false,
+                    true,false,true);
+        }
         gLView.setRenderer(renderer);
         gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         gvrLayout.setPresentationView(gLView);

@@ -33,8 +33,17 @@
 
 class ExampleRenderer{
 public:
-    enum MODE{MESH_2D,EQUIRECTANGULAR_SPHERE};
-    ExampleRenderer(JNIEnv* env,jobject androidContext,gvr_context *gvr_context);
+    //Since blending is enabled, when selecting both rendering modes simultaneously the visual difference between them
+    //can be observed when only rendering the 2D Mesh (the mesh is rendered with a smaller line width the second time)
+    //When rendering the equirectangular sphere you should only use one of the two rendering methods since the first one will be overwritten
+    const bool RENDER_SCENE_USING_GVR_RENDERBUFFER;
+    const bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT;
+    const bool ENABLE_SCENE_MESH_2D;
+    const bool ENABLE_SCENE_360_SPHERE;
+public:
+    ExampleRenderer(JNIEnv* env,jobject androidContext,gvr_context *gvr_context,
+            bool RENDER_SCENE_USING_GVR_RENDERBUFFER=true,bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT=true,
+            bool ENABLE_SCENE_MESH_2D=true,bool ENABLE_SCENE_360_SPHERE=false);
     void onSurfaceCreated(JNIEnv* env,jobject context);
     void onSurfaceChanged(int width, int height);
     void onDrawFrame();
@@ -55,9 +64,8 @@ private:
     void drawEyeVDDC(gvr::Eye eye);
 private:
     static constexpr int LINE_MESH_TESSELATION_FACTOR=10;
-    GLuint glBufferVC;
-    GLuint glBufferVCGreen;
-    int nColoredVertices;
+    GLBufferHelper::VertexBuffer blueMeshB;
+    GLBufferHelper::VertexBuffer greenMeshB;
 private:
     DistortionManager distortionManager;
 public:

@@ -26,7 +26,7 @@ public:
     //This is the inverse function to the kN distortion parameters from the headset
     //Even tough the distortion parameters are only up to 2 radial values,
     //We need more for the inverse for a good fit
-    static constexpr const int N_RADIAL_UNDISTORTION_COEFICIENTS=6;
+    static constexpr const int N_RADIAL_UNDISTORTION_COEFICIENTS=8;
     struct RadialDistortionCoefficients{
         float maxRadSquared;
         std::array<float,N_RADIAL_UNDISTORTION_COEFICIENTS> kN;
