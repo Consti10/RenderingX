@@ -51,7 +51,7 @@ private:
     };
     GLuint mLOLHandle;
     GLuint mSamplerDistCorrectionHandle;
-    const DistortionManager* distortionManager;
+    const DistortionManager& distortionManager;
     DistortionManager::UndistortionHandles mUndistortionHandles;
 public:
     //Characters are indexed squares
@@ -64,7 +64,7 @@ public:
     static constexpr const int VERTICES_PER_CHARACTER=4; //2 quads
     static constexpr const int INDICES_PER_CHARACTER=6;
 public:
-    explicit GLProgramText(const DistortionManager* distortionManager=nullptr);
+    explicit GLProgramText(const DistortionManager& distortionManager=DistortionManager());
     void loadTextRenderingData(JNIEnv *env, jobject androidContext,const TextAssetsHelper::TEXT_STYLE& textStyle)const;
     void beforeDraw(GLuint buffer) const;
     //Outline with: 0==no outline, 0.2==default outline size
@@ -87,7 +87,7 @@ public:
     static constexpr const wchar_t ICON_SPACING=(wchar_t)ICONS_OFFSET+6;
     static constexpr const wchar_t ICON_ARTIFICIAL_HORIZON=(wchar_t)ICONS_OFFSET+7;
 private:
-    static const std::string VS(const DistortionManager* distortionManager1){
+    static const std::string VS(const DistortionManager& distortionManager1){
         std::stringstream s;
         s<<"uniform mat4 uMVMatrix;\n";
         s<<"uniform mat4 uPMatrix;\n";

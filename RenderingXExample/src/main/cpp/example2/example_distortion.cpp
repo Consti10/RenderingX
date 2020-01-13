@@ -17,7 +17,7 @@ ExampleRenderer::ExampleRenderer(JNIEnv *env, jobject androidContext,gvr_context
         RENDER_SCENE_USING_VERTEX_DISPLACEMENT(RENDER_SCENE_USING_VERTEX_DISPLACEMENT),
         ENABLE_SCENE_MESH_2D(MESH),
         ENABLE_SCENE_360_SPHERE(SPHERE),
-        distortionManager(DistortionManager::RADIAL_2),mFPSCalculator("OpenGL FPS",2000){
+        distortionManager(DistortionManager::RADIAL_CARDBOARD),mFPSCalculator("OpenGL FPS",2000){
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
     vrHeadsetParams.setGvrApi(gvr_api_.get());
     buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();
@@ -37,9 +37,9 @@ void ExampleRenderer::onSurfaceCreated(JNIEnv *env, jobject context) {
     specs[0].SetDepthStencilFormat(GVR_DEPTH_STENCIL_FORMAT_DEPTH_16);
     swap_chain = std::make_unique<gvr::SwapChain>(gvr_api_->CreateSwapChain(specs));
 
-    mBasicGLPrograms=std::make_unique<BasicGLPrograms>(&distortionManager);
+    mBasicGLPrograms=std::make_unique<BasicGLPrograms>(distortionManager);
     mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
-    mGLProgramTexture=std::make_unique<GLProgramTexture>(false,&distortionManager);
+    mGLProgramTexture=std::make_unique<GLProgramTexture>(false,distortionManager);
     glGenTextures(1,&mTextureEquirectangularImage);
     mGLProgramTexture->loadTexture(mTextureEquirectangularImage,env,context,"EquirectangularSphere/out.png");
     EquirectangularSphere::create_sphere(mEquirecangularSphereB,2560,1280);

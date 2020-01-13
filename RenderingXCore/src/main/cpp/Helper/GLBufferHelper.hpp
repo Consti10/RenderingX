@@ -5,74 +5,94 @@
 #include <GLES2/gl2.h>
 #include "GeometryBuilder/TexturedGeometry.hpp"
 
-class GLBufferHelper{
+class GLBufferHelper {
 public:
-    static void allocateGLBufferStatic(GLuint buff,void* array,GLsizeiptr arraySizeBytes){
-        glBindBuffer(GL_ARRAY_BUFFER,buff);
+    static void allocateGLBufferStatic(GLuint buff, void *array, GLsizeiptr arraySizeBytes) {
+        glBindBuffer(GL_ARRAY_BUFFER, buff);
         glBufferData(GL_ARRAY_BUFFER, arraySizeBytes,
                      array, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
-    static void allocateGLBufferDynamic(GLuint buff,void* array,GLsizeiptr arraySizeBytes){
-        glBindBuffer(GL_ARRAY_BUFFER,buff);
+
+    static void allocateGLBufferDynamic(GLuint buff, void *array, GLsizeiptr arraySizeBytes) {
+        glBindBuffer(GL_ARRAY_BUFFER, buff);
         glBufferData(GL_ARRAY_BUFFER, arraySizeBytes,
                      array, GL_DYNAMIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
-    template<typename T> static int allocateGLBufferStatic(const GLuint buff,const std::vector<T>& data){
-        const auto size=data.size();
-        const GLsizeiptr sizeBytes=size*sizeof(T);
-        allocateGLBufferStatic(buff,(void*)data.data(),sizeBytes);
-        return (int)size;
-    }
-    template<typename T> static int allocateGLBufferDynamic(const GLuint buff,const std::vector<T>& data){
-        const auto size=data.size();
-        const GLsizeiptr sizeBytes=size*sizeof(T);
-        allocateGLBufferDynamic(buff,(void*)data.data(),sizeBytes);
-        return (int)size;
-    }
-    static void allocateGLBufferStatic(const GLuint vertexB,const GLuint indexB,const TexturedGeometry::IndicesVertices& data){
-        allocateGLBufferStatic(vertexB,data.vertices);
-        allocateGLBufferStatic(indexB,data.indices);
+
+    template<typename T>
+    static int allocateGLBufferStatic(const GLuint buff, const std::vector<T> &data) {
+        const auto size = data.size();
+        const GLsizeiptr sizeBytes = size * sizeof(T);
+        allocateGLBufferStatic(buff, (void *) data.data(), sizeBytes);
+        return (int) size;
     }
 
-    template<typename T> static int createAllocateGLBufferStatic(GLuint& buff,const std::vector<T>& data){
-        glGenBuffers(1,&buff);
-        const auto size=data.size();
-        const GLsizeiptr sizeBytes=size*sizeof(T);
-        allocateGLBufferStatic(buff,(void*)data.data(),sizeBytes);
-        return (int)size;
+    template<typename T>
+    static int allocateGLBufferDynamic(const GLuint buff, const std::vector<T> &data) {
+        const auto size = data.size();
+        const GLsizeiptr sizeBytes = size * sizeof(T);
+        allocateGLBufferDynamic(buff, (void *) data.data(), sizeBytes);
+        return (int) size;
     }
-    template<typename T> static int createAllocateGLBufferDynamic(GLuint& buff,const std::vector<T>& data){
-        glGenBuffers(1,&buff);
-        const auto size=data.size();
-        const GLsizeiptr sizeBytes=size*sizeof(T);
-        allocateGLBufferDynamic(buff,(void*)data.data(),sizeBytes);
-        return (int)size;
+
+    static void allocateGLBufferStatic(const GLuint vertexB, const GLuint indexB,
+                                       const TexturedGeometry::IndicesVertices &data) {
+        allocateGLBufferStatic(vertexB, data.vertices);
+        allocateGLBufferStatic(indexB, data.indices);
+    }
+
+    template<typename T>
+    static int createAllocateGLBufferStatic(GLuint &buff, const std::vector<T> &data) {
+        glGenBuffers(1, &buff);
+        const auto size = data.size();
+        const GLsizeiptr sizeBytes = size * sizeof(T);
+        allocateGLBufferStatic(buff, (void *) data.data(), sizeBytes);
+        return (int) size;
+    }
+
+    template<typename T>
+    static int createAllocateGLBufferDynamic(GLuint &buff, const std::vector<T> &data) {
+        glGenBuffers(1, &buff);
+        const auto size = data.size();
+        const GLsizeiptr sizeBytes = size * sizeof(T);
+        allocateGLBufferDynamic(buff, (void *) data.data(), sizeBytes);
+        return (int) size;
     }
 public:
-    struct VertexIndexBuffer{
+    //Helps Generalizing the following re-occuring pattern:
+    //1) create vertices/indices on stack
+    //2) upload vertex/index data to gpu
+    //3) render all vertices using indices - the nIndices has to be stored, too
+    struct VertexIndexBuffer {
         GLuint vertexB;
         GLuint indexB;
         int nIndices;
     };
-    template <typename T,typename T2>
+    template<typename T, typename T2>
     static void createAllocateVertexIndexBuffer(const std::vector<T> &vertices,
                                                 const std::vector<T2> &indices,
-                                                VertexIndexBuffer &vertexIndexBuffer){
-        createAllocateGLBufferStatic(vertexIndexBuffer.vertexB,vertices);
-        vertexIndexBuffer.nIndices=createAllocateGLBufferStatic(vertexIndexBuffer.indexB,indices);
+                                                VertexIndexBuffer &vertexIndexBuffer) {
+        createAllocateGLBufferStatic(vertexIndexBuffer.vertexB, vertices);
+        vertexIndexBuffer.nIndices = createAllocateGLBufferStatic(vertexIndexBuffer.indexB,
+                                                                  indices);
     }
-public:
-    struct VertexBuffer{
-            GLuint vertexB;
-            int nVertices;
+    static void deleteVertexIndexBuffer(VertexIndexBuffer &vertexIndexBuffer) {
+        glDeleteBuffers(1, &vertexIndexBuffer.vertexB);
+        glDeleteBuffers(1, &vertexIndexBuffer.indexB);
+    }
+    struct VertexBuffer {
+        GLuint vertexB;
+        int nVertices;
     };
-    template <typename T>
+    template<typename T>
     static void createAllocateVertexBuffer(const std::vector<T> &vertices,
-                                                VertexBuffer &vertexBuffer){
-        vertexBuffer.nVertices=createAllocateGLBufferStatic(vertexBuffer.vertexB,vertices);
+                                           VertexBuffer &vertexBuffer) {
+        vertexBuffer.nVertices = createAllocateGLBufferStatic(vertexBuffer.vertexB, vertices);
+    }
+    static void deleteVertexBuffer(VertexBuffer &vertexBuffer) {
+        glDeleteBuffers(1, &vertexBuffer.vertexB);
     }
 };
-
 #endif //RENDERINGX_CORE_HELPER_GLBufferHelper

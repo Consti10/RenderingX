@@ -5,7 +5,7 @@
 constexpr auto TAG="GLRenderTexture(-External)";
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
-GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const DistortionManager* distortionManager,const bool use2dCoordinates)
+GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const DistortionManager& distortionManager,const bool use2dCoordinates)
         :USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE),distortionManager(distortionManager) {
     mProgram = GLHelper::createProgram(VS(distortionManager,use2dCoordinates),FS(USE_EXTERNAL_TEXTURE));
     mMVMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
@@ -13,9 +13,7 @@ GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const Distort
     mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
     mTextureHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aTexCoord");
     mSamplerHandle = glGetUniformLocation (mProgram, "sTexture" );
-    if(distortionManager!=nullptr){
-        mUndistortionHandles=distortionManager->getUndistortionUniformHandles(mProgram);
-    }
+    mUndistortionHandles=distortionManager.getUndistortionUniformHandles(mProgram);
     GLHelper::checkGlError(TAG);
 }
 
@@ -31,9 +29,7 @@ void GLProgramTexture::beforeDraw(const GLuint buffer,GLuint texture) const{
     glVertexAttribPointer((GLuint)mPositionHandle, 3/*xyz*/, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
     glEnableVertexAttribArray((GLuint)mTextureHandle);
     glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,u));
-    if(distortionManager!= nullptr){
-        distortionManager->beforeDraw(mUndistortionHandles);
-    }
+    distortionManager.beforeDraw(mUndistortionHandles);
 }
 
 void GLProgramTexture::draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, const int verticesOffset, const int numberVertices) const{
@@ -68,9 +64,7 @@ void GLProgramTexture::afterDraw() const{
     glDisableVertexAttribArray((GLuint)mPositionHandle);
     glDisableVertexAttribArray((GLuint)mTextureHandle);
     glBindTexture(USE_EXTERNAL_TEXTURE ? GL_TEXTURE_EXTERNAL_OES : GL_TEXTURE_2D,0);
-    if(distortionManager!= nullptr){
-        distortionManager->afterDraw();
-    }
+    distortionManager.afterDraw();
 }
 
 void GLProgramTexture::loadTexture(GLuint texture,JNIEnv *env, jobject androidContext, const char *name) {

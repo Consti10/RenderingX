@@ -21,7 +21,7 @@ private:
     GLuint mPositionHandle,mNormalHandle,mLineWidthHandle,mBaseColorHandle,mOutlineColorHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
     GLuint uEdge,uBorderEdge,uOutlineStrength;
-    const DistortionManager* distortionManager;
+    const DistortionManager& distortionManager;
     DistortionManager::UndistortionHandles mUndistortionHandles;
 public:
     struct Vertex{
@@ -32,7 +32,7 @@ public:
         TrueColor outlineColor;
     };
     static constexpr int VERTICES_PER_LINE=6;
-    explicit GLProgramLine(const DistortionManager* distortionManager=nullptr);
+    explicit GLProgramLine(const DistortionManager& distortionManager=DistortionManager());
     void beforeDraw(GLuint buffer) const;
     void setOtherUniforms(float outlineWidth=0.4f,float edge=0.1f,float borderEdge=0.1f)const;
     void draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, int verticesOffset, int numberVertices) const;
@@ -41,7 +41,7 @@ public:
     static void convertLineToRenderingData(const glm::vec3& start,const glm::vec3& end,float lineWidth,
             Vertex array[],int arrayOffset,TrueColor baseColor=Color::BLACK,TrueColor  outlineColor=Color::WHITE);
 private:
-    static const std::string VS(const DistortionManager* distortionManager1){
+    static const std::string VS(const DistortionManager& distortionManager1){
         std::stringstream s;
         s<<"uniform mat4 uMVMatrix;\n";
         s<<"uniform mat4 uPMatrix;\n";

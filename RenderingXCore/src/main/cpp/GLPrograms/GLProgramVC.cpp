@@ -2,16 +2,14 @@
 #include "GLProgramVC.h"
 
 
-GLProgramVC::GLProgramVC(const DistortionManager* distortionManager,bool coordinates2D):
+GLProgramVC::GLProgramVC(const DistortionManager& distortionManager,bool coordinates2D):
     distortionManager(distortionManager){
     mProgram = GLHelper::createProgram(VS(distortionManager,coordinates2D),FS());
     mMVMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
     mPMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uPMatrix");
     mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
     mColorHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aColor");
-    if(distortionManager!=nullptr){
-        mUndistortionHandles=distortionManager->getUndistortionUniformHandles(mProgram);
-    }
+    mUndistortionHandles=distortionManager.getUndistortionUniformHandles(mProgram);
     GLHelper::checkGlError("glGetAttribLocation OGProgramColor");
 }
 
@@ -23,9 +21,7 @@ void GLProgramVC::beforeDraw(const GLuint buffer) const {
     glVertexAttribPointer((GLuint)mPositionHandle, 3/*xyz*/, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
     glEnableVertexAttribArray((GLuint)mColorHandle);
     glVertexAttribPointer((GLuint)mColorHandle, 4/*rgba*/,GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex),(GLvoid*)offsetof(Vertex,colorRGBA));
-    if(distortionManager!= nullptr){
-        distortionManager->beforeDraw(mUndistortionHandles);
-    }
+    distortionManager.beforeDraw(mUndistortionHandles);
 }
 
 
@@ -45,9 +41,7 @@ void GLProgramVC::afterDraw() const {
     glDisableVertexAttribArray((GLuint)mPositionHandle);
     glDisableVertexAttribArray((GLuint)mColorHandle);
     glBindBuffer(GL_ARRAY_BUFFER,0);
-    if(distortionManager!= nullptr){
-        distortionManager->afterDraw();
-    }
+    distortionManager.afterDraw();
 }
 
 void GLProgramVC::drawIndexed(GLuint indexBuffer, Mat4x4 ViewM, Mat4x4 ProjM, int indicesOffset,

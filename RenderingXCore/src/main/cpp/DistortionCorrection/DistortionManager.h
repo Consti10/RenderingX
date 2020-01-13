@@ -27,12 +27,11 @@ public:
     //Even tough the distortion parameters are only up to 2 radial values,
     //We need more for the inverse for a good fit
     static constexpr const int N_RADIAL_UNDISTORTION_COEFICIENTS=8;
+    //These make up a Polynomial radial distortion with input inside intervall [0..maxRadSq]
     struct RadialDistortionCoefficients{
         float maxRadSquared;
         std::array<float,N_RADIAL_UNDISTORTION_COEFICIENTS> kN;
     };
-    RadialDistortionCoefficients radialDistortionCoefficients;
-
     struct UndistortionHandles{
         GLuint uMaxRadSq;
         GLuint uKN;
@@ -47,26 +46,28 @@ public:
         GLuint uTextureParams_x_off;
         GLuint uTextureParams_y_off;
     };
+    //NONE: Nothing is distorted,use a normal gl_Position=MVP*pos; multiplication
+    //RADIAL: Distortion in view space as done in cardboard design lab. Deprectaed.
+    //CARDBOARD: Distortion in ? space, creates exact same distorted position(s) as in google cardboard https://github.com/googlevr/cardboard
+    enum DISTORTION_MODE{NONE,RADIAL_VIEW_SPACE,RADIAL_CARDBOARD};
+private:
+    RadialDistortionCoefficients radialDistortionCoefficients;
+    const DISTORTION_MODE distortionMode;
     //Left and right eye each
     std::array<MLensDistortion::ViewportParams,2> screen_params;
     std::array<MLensDistortion::ViewportParams,2> texture_params;
-
-    enum DISTORTION_MODE{RADIAL,RADIAL_2};
-    const DISTORTION_MODE distortionMode;
-
-    bool leftEye=true;
-
 public:
-    DistortionManager():distortionMode(DISTORTION_MODE::RADIAL){updateDistortionWithIdentity();};
+    bool leftEye=true;
+    //Default: no distortion whatsoever
+    DistortionManager():distortionMode(DISTORTION_MODE::NONE){};
     DistortionManager(const DISTORTION_MODE& distortionMode1):distortionMode(distortionMode1){updateDistortionWithIdentity();}
 
     UndistortionHandles getUndistortionUniformHandles(const GLuint program)const;
     void beforeDraw(const UndistortionHandles& undistortionHandles)const;
     void afterDraw()const;
 
-    static std::string writeGLPosition(const DistortionManager* distortionManager,const std::string &positionAttribute="aPosition");
-    static std::string writeGLPositionWithDistortion(const DistortionManager &distortionManager, const std::string &positionAttribute);
-    static std::string writeDistortionParams(const DistortionManager *distortionManager);
+    static std::string writeDistortionParams(const DistortionManager& distortionManager);
+    static std::string writeGLPosition(const DistortionManager& distortionManager,const std::string &positionAttribute="aPosition");
 
     void updateDistortion(const MPolynomialRadialDistortion& distortion,float maxRadSq);
     void updateDistortion(const MPolynomialRadialDistortion& inverseDistortion,float maxRadSq,

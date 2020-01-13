@@ -7,10 +7,10 @@
 DistortionManager::UndistortionHandles
 DistortionManager::getUndistortionUniformHandles(const GLuint program) const {
     UndistortionHandles ret{};
-    if(distortionMode==DISTORTION_MODE::RADIAL){
+    if(distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
         ret.uMaxRadSq=(GLuint)glGetUniformLocation(program,"uMaxRadSq");
         ret.uKN=(GLuint)glGetUniformLocation(program,"uKN");
-    }else if(distortionMode==DISTORTION_MODE::RADIAL_2){
+    }else if(distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD){
         ret.uMaxRadSq=(GLuint)glGetUniformLocation(program,"uMaxRadSq");
         ret.uKN=(GLuint)glGetUniformLocation(program,"uKN");
         ret.uScreenParams_w=(GLuint)glGetUniformLocation(program,"uScreenParams.width");
@@ -27,10 +27,10 @@ DistortionManager::getUndistortionUniformHandles(const GLuint program) const {
 
 void DistortionManager::beforeDraw(
         const DistortionManager::UndistortionHandles& undistortionHandles) const {
-    if(distortionMode==DISTORTION_MODE::RADIAL){
+    if(distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
         glUniform1f(undistortionHandles.uMaxRadSq,radialDistortionCoefficients.maxRadSquared);
         glUniform1fv(undistortionHandles.uKN,N_RADIAL_UNDISTORTION_COEFICIENTS,radialDistortionCoefficients.kN.data());
-    }else if(distortionMode==DISTORTION_MODE::RADIAL_2) {
+    }else if(distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD) {
         glUniform1f(undistortionHandles.uMaxRadSq,radialDistortionCoefficients.maxRadSquared);
         glUniform1fv(undistortionHandles.uKN,N_RADIAL_UNDISTORTION_COEFICIENTS,radialDistortionCoefficients.kN.data());
         const int i=leftEye ? 0 : 1;
@@ -50,47 +50,12 @@ void DistortionManager::afterDraw() const {
     //glBindTexture(GL_TEXTURE_2D,0);
 }
 
-std::string DistortionManager::writeGLPositionWithDistortion(const DistortionManager &distortionManager,
-                                                 const std::string &positionAttribute) {
-    std::stringstream s;
-    if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL){
-        s<<"vec4 pos=uMVMatrix*"+positionAttribute+";\n";
-        s<<"float r2=dot(pos.xy,pos.xy)/(pos.z*pos.z);\n";
-        //s<<"r2=clamp(r2,0.0,uMaxRadSq);\n";
-        s<<"float dist_factor=PolynomialDistortionFactor(r2,uKN);";
-        s<<"pos.xy*=dist_factor;\n";
-        //s<<"gl_Position=pos;\n";
-        s<<"gl_Position=uPMatrix*pos;\n";
-        //s<<"gl_Position.x=gl_Position.x*uScreenParams.width+uScreenParams.x_eye_offset;";
-        //s<<"gl_Position.y=gl_Position.y*uScreenParams.height+uScreenParams.y_eye_offset;";
-    }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_2){
-        s<<"vec4 pos_view=uMVMatrix*"+positionAttribute+";\n";
-        s<<"vec4 pos_clip=uPMatrix*pos_view;\n";
-        s<<"vec3 ndc=pos_clip.xyz/pos_clip.w;";
-        s<<"vec2 dist_p=UndistortedNDCForDistortedNDC(uKN,uScreenParams,uTextureParams,ndc.xy,uMaxRadSq);";
-        s<<"gl_Position=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);";
-        //s<<"gl_Position=vec4(dist_p,0,1);";
-
-        //s<<"gl_Position=vec4(lol,0,1);";
-        //s<<"gl_Position=pos_clip;";
-        //s<<"vec3 ndc=pos.xyz/pos.w;";
-        //s<<"vec2 lol=ndc.xy/ndc.z;";
-        //s<<"pos.xy=UndistortedNDCForDistortedNDC(uKN,uScreenParams,uTextureParams,ndc);";
-        //s<<"gl_Position.x+=1.0*gl_Position.w;";
-        //s<<"gl_Position.y+=1.0*gl_Position.w;";
-
-        //s<<"pos.y+=-0.18;";
-        //s<<"pos.x+=0.1;";
-
-    }
-    return s.str();
-}
-
 std::string DistortionManager::writeDistortionParams(
-        const DistortionManager *distortionManager) {
+        const DistortionManager& distortionManager) {
     std::stringstream s;
-    if(distortionManager==nullptr)return "";
-
+    if(distortionManager.distortionMode==NONE){
+        return "";
+    }
     const int N_COEFICIENTS=DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS;
 
     //All GLSL functions (declare before main in vertex shader, then use anywhere)
@@ -137,10 +102,10 @@ std::string DistortionManager::writeDistortionParams(
     s<<"}\n";
 
     //The uniforms needed for vddc
-    if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL){
+    if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
         s<<"uniform float uMaxRadSq;";
         s<<"uniform float uKN["<<N_COEFICIENTS<<"];";
-    }else if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL_2){
+    }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD){
         s<<"uniform float uMaxRadSq;";
         s<<"uniform float uKN["<<N_COEFICIENTS<<"];";
         s<<"uniform ViewportParams uScreenParams;";
@@ -149,12 +114,42 @@ std::string DistortionManager::writeDistortionParams(
     return s.str();
 }
 
-std::string DistortionManager::writeGLPosition(const DistortionManager *distortionManager,
+std::string DistortionManager::writeGLPosition(const DistortionManager &distortionManager,
                                                      const std::string &positionAttribute) {
-    if(distortionManager!= nullptr)return writeGLPositionWithDistortion(*distortionManager,positionAttribute);
-    //return"vec4 lul=uMVMatrix * "+positionAttribute+";\n"+"";
-    return "gl_Position = (uPMatrix*uMVMatrix)* "+positionAttribute+";\n";
-    //return "gl_Position = vec4("+positionAttribute+".xy*2.0, 0, 1);";
+    std::stringstream s;
+    if(distortionManager.distortionMode==NONE){
+        s<<"gl_Position = (uPMatrix*uMVMatrix)* "<<positionAttribute<<";\n";
+    }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
+        s<<"vec4 pos=uMVMatrix*"+positionAttribute+";\n";
+        s<<"float r2=dot(pos.xy,pos.xy)/(pos.z*pos.z);\n";
+        //s<<"r2=clamp(r2,0.0,uMaxRadSq);\n";
+        s<<"float dist_factor=PolynomialDistortionFactor(r2,uKN);";
+        s<<"pos.xy*=dist_factor;\n";
+        //s<<"gl_Position=pos;\n";
+        s<<"gl_Position=uPMatrix*pos;\n";
+        //s<<"gl_Position.x=gl_Position.x*uScreenParams.width+uScreenParams.x_eye_offset;";
+        //s<<"gl_Position.y=gl_Position.y*uScreenParams.height+uScreenParams.y_eye_offset;";
+    }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD){
+        s<<"vec4 pos_view=uMVMatrix*"+positionAttribute+";\n";
+        s<<"vec4 pos_clip=uPMatrix*pos_view;\n";
+        s<<"vec3 ndc=pos_clip.xyz/pos_clip.w;";
+        s<<"vec2 dist_p=UndistortedNDCForDistortedNDC(uKN,uScreenParams,uTextureParams,ndc.xy,uMaxRadSq);";
+        s<<"gl_Position=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);";
+        //s<<"gl_Position=vec4(dist_p,0,1);";
+
+        //s<<"gl_Position=vec4(lol,0,1);";
+        //s<<"gl_Position=pos_clip;";
+        //s<<"vec3 ndc=pos.xyz/pos.w;";
+        //s<<"vec2 lol=ndc.xy/ndc.z;";
+        //s<<"pos.xy=UndistortedNDCForDistortedNDC(uKN,uScreenParams,uTextureParams,ndc);";
+        //s<<"gl_Position.x+=1.0*gl_Position.w;";
+        //s<<"gl_Position.y+=1.0*gl_Position.w;";
+
+        //s<<"pos.y+=-0.18;";
+        //s<<"pos.x+=0.1;";
+
+    }
+    return s.str();
 }
 
 void DistortionManager::updateDistortion(const MPolynomialRadialDistortion &inverseDistortion,

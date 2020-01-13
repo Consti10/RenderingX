@@ -26,7 +26,7 @@ private:
     GLuint mProgram;
     GLuint mPositionHandle,mColorHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
-    const DistortionManager* distortionManager;
+    const DistortionManager& distortionManager;
     DistortionManager::UndistortionHandles mUndistortionHandles;
 public:
     struct Vertex{
@@ -34,14 +34,14 @@ public:
         TrueColor colorRGBA;
     };
     using INDEX_DATA=GLushort;
-    explicit GLProgramVC(const DistortionManager* distortionManager=nullptr,bool coordinates2D=false);
+    explicit GLProgramVC(const DistortionManager& distortionManager=DistortionManager(),bool coordinates2D=false);
     void beforeDraw(GLuint buffer) const;
     void draw(Mat4x4 ViewM, Mat4x4 ProjM, int indicesOffset,int numberIndices, GLenum mode) const;
     void draw(glm::mat4 ViewM,glm::mat4 ProjM, int indicesOffset,int numberIndices, GLenum mode) const;
     void drawIndexed(GLuint indexBuffer,Mat4x4 ViewM, Mat4x4 ProjM,int indicesOffset,int numberIndices, GLenum mode) const;
     void afterDraw() const;
 private:
-    static const std::string VS(const DistortionManager* distortionManager1,bool coordinates2D){
+    static const std::string VS(const DistortionManager& distortionManager1,bool coordinates2D){
         std::stringstream s;
         s<<"uniform mat4 uMVMatrix;\n";
         s<<"uniform mat4 uPMatrix;\n";
