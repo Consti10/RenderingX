@@ -6,11 +6,17 @@ Core library (with example) for rendering smooth lines and Text with OpenGL.
 Vertex displacment distortion correction
 SuperSync
 
+| Video file with video, audio and subtitle streams | Audio file |
+| :---:  | :---: |
+| <img src="Screenshots/main.png"> | <img src="Screenshots/main.png"> |
+
+
+
 <img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/main.png" alt="Example" width="240"/> \
 <img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/smoothText.png" width="240"/> <img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/smoothIcons.png" width="240"/>
 <img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/smoothLines.png" width="240"/> <img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/geometry.png" width="240"/> \
 
-<img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/example_distortion_vertex_displacement.png" width="240"/> <img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/example_distortion_360.png" width="240"/>
+<img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/example_distortion_vertex_displacement.png" width="480"/> <img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/example_distortion_360.png" width="480"/>
 
 
 **Setup Dependencies** \
