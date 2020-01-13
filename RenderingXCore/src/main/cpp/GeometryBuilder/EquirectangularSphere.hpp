@@ -118,7 +118,7 @@ public:
         verts.push_back(fx - 0.5);
         verts.push_back(fy - 0.5);
         verts.push_back(fz);
-        verts.push_back(u);
+        verts.push_back(1.0f-u);
         verts.push_back(v);
     }
 
