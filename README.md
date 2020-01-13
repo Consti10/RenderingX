@@ -6,9 +6,13 @@ Core library (with example) for rendering smooth lines and Text with OpenGL.
 Vertex displacment distortion correction
 SuperSync
 
-| Video file with video, audio and subtitle streams | Audio file |
+| Main screen | Smooth text |
 | :---:  | :---: |
-| <img src="Screenshots/main.png"> | <img src="Screenshots/main.png"> |
+| <img src="Screenshots/main.png"> | <img src="Screenshots/smoothText.png"> |
+
+| Smooth icons | Smooth lines | Colored geometry
+| :---:  | :---: | :---: |
+| <img src="Screenshots/smoothIcons.png"> | <img src="Screenshots/smoothLines.png"> | <img src="Screenshots/geometry.png"> |
 
 
 
