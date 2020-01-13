@@ -14,13 +14,9 @@ SuperSync
 | :---:  | :---: | :---: |
 | <img src="Screenshots/smoothIcons.png"> | <img src="Screenshots/smoothLines.png"> | <img src="Screenshots/geometry.png"> |
 
-
-
-<img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/main.png" alt="Example" width="240"/> \
-<img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/smoothText.png" width="240"/> <img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/smoothIcons.png" width="240"/>
-<img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/smoothLines.png" width="240"/> <img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/geometry.png" width="240"/> \
-
-<img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/example_distortion_vertex_displacement.png" width="480"/> <img src="https://github.com/Consti10/RenderingX/blob/master/Screenshots/example_distortion_360.png" width="480"/>
+| Example Vertex Displacement | Example 360 image |
+| :---:  | :---: |
+| <img src="Screenshots/example_distortion_vertex_displacement.png"> | <img src="Screenshots/example_distortion_360.png"> |
 
 
 **Setup Dependencies** \
