@@ -72,6 +72,7 @@ private:
         }
         s<<"precision mediump float;\n";
         s<<"varying vec2 vTexCoord;\n";
+        s<<"varying float invisibleFragment;";
         if(externalTexture){
             s<<"uniform samplerExternalOES sTexture;\n";
         }else{
@@ -79,6 +80,10 @@ private:
         }
         s<<"void main() {\n";
         s<<"gl_FragColor = texture2D(sTexture,vTexCoord);\n";
+        //s<<"if(invisibleFragment>=0.9){";
+        //s<<"gl_FragColor=vec4(0.0,0.0,0.0,0.0);";
+        //s<<"}";
+
         //s.append("gl_FragColor.rgb = vec3(1.0,1.0,1.0);\n");
 #ifdef WIREFRAME
         s<<"gl_FragColor.rgb=vec3(1.0,1.0,1.0);\n";
