@@ -16,6 +16,7 @@
 #include <glm/vec2.hpp>
 #include <glm/glm.hpp>
 #include <GLES2/gl2.h>
+#include <GLPrograms/GLProgramTexture.h>
 
 
 class Sphere
@@ -39,6 +40,9 @@ public:
     const int stackCount;                         // latitude
 public:
     void uploadToGPU(GLuint glBuffVertices)const;
+
+
+    static std::vector<GLProgramTexture::Vertex> createGvrSphere(float radius,int latitudes,int longitudes);;
 };
 
 #endif

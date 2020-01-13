@@ -135,3 +135,23 @@ std::vector<float> GvrSphere::createUvSphere(
     return ret;
 }
 
+std::vector<GvrSphere::Vertex>
+GvrSphere::createUvSphere2(float radius, int latitudes, int longitudes, float verticalFovDegrees,
+                           float horizontalFovDegrees, int mediaFormat) {
+    const std::vector<float> tmp=createUvSphere(radius,latitudes,longitudes,verticalFovDegrees,horizontalFovDegrees,mediaFormat);
+    std::vector<GvrSphere::Vertex> ret;
+    for(unsigned int i=0;i<=tmp.size()-GvrSphere::CPV;i+=GvrSphere::CPV){
+        const GvrSphere::Vertex vertex{
+                tmp.at(i),
+                tmp.at(i+1),
+                tmp.at(i+2),
+                tmp.at(i+3),
+                tmp.at(i+4),
+                tmp.at(i+5),
+                tmp.at(i+6)
+        };
+        ret.push_back(vertex);
+    }
+    return ret;
+}
+

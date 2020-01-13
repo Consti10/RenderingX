@@ -8,15 +8,18 @@
 #include <MatrixHelper.h>
 #include <array>
 #include <GeometryBuilder/EquirectangularSphere.hpp>
+#include <GeometryBuilder/GvrSphere.h>
+#include <GeometryBuilder/Sphere.h>
 
 constexpr auto TAG="DistortionExample";
 
 ExampleRenderer::ExampleRenderer(JNIEnv *env, jobject androidContext,gvr_context *gvr_context,bool RENDER_SCENE_USING_GVR_RENDERBUFFER,
-        bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT,bool MESH,bool SPHERE):
+        bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT,bool MESH,bool SPHERE,bool SPHERE2):
         RENDER_SCENE_USING_GVR_RENDERBUFFER(RENDER_SCENE_USING_GVR_RENDERBUFFER),
         RENDER_SCENE_USING_VERTEX_DISPLACEMENT(RENDER_SCENE_USING_VERTEX_DISPLACEMENT),
         ENABLE_SCENE_MESH_2D(MESH),
         ENABLE_SCENE_360_SPHERE(SPHERE),
+        ENABLE_SCENE_360_SPHERE_EQUIRECTANGULAR(SPHERE2),
         distortionManager(DistortionManager::RADIAL_CARDBOARD),mFPSCalculator("OpenGL FPS",2000){
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
     vrHeadsetParams.setGvrApi(gvr_api_.get());
@@ -40,16 +43,21 @@ void ExampleRenderer::onSurfaceCreated(JNIEnv *env, jobject context) {
     mBasicGLPrograms=std::make_unique<BasicGLPrograms>(distortionManager);
     mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
     mGLProgramTexture=std::make_unique<GLProgramTexture>(false,distortionManager);
-    glGenTextures(1,&mTextureEquirectangularImage);
-    mGLProgramTexture->loadTexture(mTextureEquirectangularImage,env,context,"EquirectangularSphere/out.png");
+    glGenTextures(1,&mTexture360Image);
+    GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
+    GLProgramTexture::loadTexture(mTexture360ImageEquirectangular,env,context,"360DegreeImages/insta_360_equirectangular.png");
+    //create the insta360 sphere
     EquirectangularSphere::create_sphere(mEquirecangularSphereB,2560,1280);
-    //
+    //create the green and blue mesh
     float tesselatedRectSize=2.5; //6.2f
     const float offsetY=0.0f;
     auto tmp=ColoredGeometry::makeTesselatedColoredRectLines(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,Color::BLUE);
     GLBufferHelper::createAllocateVertexBuffer(tmp,blueMeshB);
     tmp=ColoredGeometry::makeTesselatedColoredRectLines(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,Color::GREEN);
     GLBufferHelper::createAllocateVertexBuffer(tmp,greenMeshB);
+    //create the gvr sphere
+    const auto tmp2=Sphere::createGvrSphere(1.0,36,18);
+    GLBufferHelper::createAllocateVertexBuffer(tmp2,mGvrSphereB);
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
@@ -87,7 +95,7 @@ void ExampleRenderer::onDrawFrame() {
         glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
         distortionManager.updateDistortionWithIdentity();
         for(uint32_t eye=0;eye<2;eye++){
-            drawEyeGvr(static_cast<gvr::Eye>(eye));
+            drawEyeGvrRenderbuffer(static_cast<gvr::Eye>(eye));
         }
         frame.Unbind();
         frame.Submit(buffer_viewports, vrHeadsetParams.GetLatestHeadSpaceFromStartSpaceRotation_());
@@ -104,7 +112,7 @@ void ExampleRenderer::onDrawFrame() {
     GLHelper::checkGlError("ExampleRenderer2::onDrawFrame");
 }
 
-void ExampleRenderer::drawEyeGvr(gvr::Eye eye) {
+void ExampleRenderer::drawEyeGvrRenderbuffer(gvr::Eye eye) {
     buffer_viewports.GetBufferViewport(eye, &scratch_viewport);
 
     const gvr::Rectf& rect = scratch_viewport.GetSourceUv();
@@ -122,17 +130,7 @@ void ExampleRenderer::drawEyeGvr(gvr::Eye eye) {
     const auto viewM=toGLM(ndk_hello_vr::MatrixMul(eyeM,rotM));
     const auto projectionM=toGLM(perspective);
     glLineWidth(6.0f);
-
-    if(ENABLE_SCENE_360_SPHERE){
-        mGLProgramTexture->beforeDraw(mEquirecangularSphereB.vertexB,mTextureEquirectangularImage);
-        mGLProgramTexture->drawIndexed(mEquirecangularSphereB.indexB,viewM,projectionM,0,mEquirecangularSphereB.nIndices,GL_TRIANGLE_STRIP);
-        mGLProgramTexture->afterDraw();
-    }
-    if(ENABLE_SCENE_MESH_2D){
-        mBasicGLPrograms->vc.beforeDraw(blueMeshB.vertexB);
-        mBasicGLPrograms->vc.draw(viewM,projectionM,0,blueMeshB.nVertices,GL_LINES);
-        mBasicGLPrograms->vc.afterDraw();
-    }
+    drawEye(viewM,projectionM,false);
     GLHelper::checkGlError("ExampleRenderer2::drawEyeGvr");
 }
 
@@ -143,17 +141,27 @@ void ExampleRenderer::drawEyeVDDC(gvr::Eye eye) {
     auto viewM=vrHeadsetParams.GetEyeFromHeadMatrix(eye)*rotM;
     auto projM=vrHeadsetParams.GetProjectionMatrix(eye);
     glLineWidth(3.0f);
+    drawEye(viewM,projM,true);
+    GLHelper::checkGlError("ExampleRenderer2::drawEyeVDDC");
+}
+
+void ExampleRenderer::drawEye(glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen) {
     if(ENABLE_SCENE_MESH_2D){
-        mBasicGLPrograms->vc.beforeDraw(greenMeshB.vertexB);
-        mBasicGLPrograms->vc.draw(viewM,projM,0,greenMeshB.nVertices,GL_LINES);
+        const GLBufferHelper::VertexBuffer& tmp=meshColorGreen ? greenMeshB : blueMeshB;
+        mBasicGLPrograms->vc.beforeDraw(tmp.vertexB);
+        mBasicGLPrograms->vc.draw(viewM,projM,0,tmp.nVertices,GL_LINES);
         mBasicGLPrograms->vc.afterDraw();
     }
     if(ENABLE_SCENE_360_SPHERE){
-        mGLProgramTexture->beforeDraw(mEquirecangularSphereB.vertexB,mTextureEquirectangularImage);
+        mGLProgramTexture->beforeDraw(mGvrSphereB.vertexB,mTexture360Image);
+        mGLProgramTexture->draw(viewM,projM,0,mGvrSphereB.nVertices,GL_TRIANGLE_STRIP);
+        mGLProgramTexture->afterDraw();
+    }
+    if(ENABLE_SCENE_360_SPHERE_EQUIRECTANGULAR){
+        mGLProgramTexture->beforeDraw(mEquirecangularSphereB.vertexB,mTexture360ImageEquirectangular);
         mGLProgramTexture->drawIndexed(mEquirecangularSphereB.indexB,viewM,projM,0,mEquirecangularSphereB.nIndices,GL_TRIANGLE_STRIP);
         mGLProgramTexture->afterDraw();
     }
-    GLHelper::checkGlError("ExampleRenderer2::drawEyeVDDC");
 }
 
 
@@ -172,9 +180,9 @@ extern "C" {
 
 JNI_METHOD(jlong, nativeConstruct)
 (JNIEnv *env, jobject obj,jobject androidContext,jlong native_gvr_api,jboolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
- jboolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,jboolean MESH,jboolean SPHERE) {
+ jboolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,jboolean MESH,jboolean SPHERE,jboolean SPHERE2) {
     return jptr(new ExampleRenderer(env,androidContext,reinterpret_cast<gvr_context *>(native_gvr_api),RENDER_SCENE_USING_GVR_RENDERBUFFER,
-            RENDER_SCENE_USING_VERTEX_DISPLACEMENT,MESH,SPHERE));
+            RENDER_SCENE_USING_VERTEX_DISPLACEMENT,MESH,SPHERE,SPHERE2));
 }
 JNI_METHOD(void, nativeDelete)
 (JNIEnv *env, jobject obj, jlong p) {

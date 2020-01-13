@@ -30,10 +30,10 @@ public class TestActivity2 extends AppCompatActivity {
         gLView.setEGLContextClientVersion(2);
         if(MODE==0){
             renderer=new GLRTest(this,gvrLayout.getGvrApi(),true,
-                    true,true,false);
+                    true,true,false,false);
         }else{
             renderer=new GLRTest(this,gvrLayout.getGvrApi(),false,
-                    true,false,true);
+                    true,false,true,false);
         }
         gLView.setRenderer(renderer);
         gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);

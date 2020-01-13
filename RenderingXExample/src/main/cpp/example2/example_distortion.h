@@ -40,10 +40,11 @@ public:
     const bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT;
     const bool ENABLE_SCENE_MESH_2D;
     const bool ENABLE_SCENE_360_SPHERE;
+    const bool ENABLE_SCENE_360_SPHERE_EQUIRECTANGULAR;
 public:
     ExampleRenderer(JNIEnv* env,jobject androidContext,gvr_context *gvr_context,
             bool RENDER_SCENE_USING_GVR_RENDERBUFFER=true,bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT=true,
-            bool ENABLE_SCENE_MESH_2D=true,bool ENABLE_SCENE_360_SPHERE=false);
+            bool ENABLE_SCENE_MESH_2D=true,bool ENABLE_SCENE_360_SPHERE=false,bool ENABLE_SCENE_360_SPHERE_EQUIRECTANGULAR=false);
     void onSurfaceCreated(JNIEnv* env,jobject context);
     void onSurfaceChanged(int width, int height);
     void onDrawFrame();
@@ -58,10 +59,23 @@ private:
     FPSCalculator mFPSCalculator;
     std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
     std::unique_ptr<GLProgramTexture> mGLProgramTexture=nullptr;
-    GLuint mTextureEquirectangularImage;
+    GLuint mTexture360Image;
+    GLuint mTexture360ImageEquirectangular;
     GLBufferHelper::VertexIndexBuffer mEquirecangularSphereB;
-    void drawEyeGvr(gvr::Eye eye);
+    GLBufferHelper::VertexBuffer mGvrSphereB;
+    /*
+     * draws into gvr renderbuffer which is then distorted into framebuffer
+     */
+    void drawEyeGvrRenderbuffer(gvr::Eye eye);
+    /*
+     * draw into framebuffer applying undistortion to the vertices
+     * No intermediate renderbuffer needed
+     */
     void drawEyeVDDC(gvr::Eye eye);
+    /*
+     * draw everything into what's currently bound (renderbuffer for gvr,framebuffer for vddc)
+     */
+    void drawEye(glm::mat4 viewM,glm::mat4 projM,bool meshColorGreen);
 private:
     static constexpr int LINE_MESH_TESSELATION_FACTOR=10;
     GLBufferHelper::VertexBuffer blueMeshB;

@@ -156,3 +156,16 @@ void Sphere::uploadToGPU(GLuint glBuffVertices) const{
     //LOGD("mSphere.getInterleavedVertexCount():%d",mSphere.getInterleavedVertexCount());
 }
 
+std::vector<GLProgramTexture::Vertex>
+Sphere::createGvrSphere(float radius, int latitudes, int longitudes) {
+    const auto vertexDataAsInGvr=GvrSphere::createUvSphere2(radius,latitudes,longitudes,180,360,GvrSphere::MEDIA_MONOSCOPIC);
+    std::vector<GLProgramTexture::Vertex> ret;
+    for(const auto& vertex:vertexDataAsInGvr){
+        GLProgramTexture::Vertex v{
+            vertex.x,vertex.y,vertex.z,vertex.u_left,vertex.v_left
+        };
+        ret.push_back(v);
+    }
+    return ret;
+}
+

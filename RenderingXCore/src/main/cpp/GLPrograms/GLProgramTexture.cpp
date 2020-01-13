@@ -32,11 +32,11 @@ void GLProgramTexture::beforeDraw(const GLuint buffer,GLuint texture) const{
     distortionManager.beforeDraw(mUndistortionHandles);
 }
 
-void GLProgramTexture::draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, const int verticesOffset, const int numberVertices) const{
+void GLProgramTexture::draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, const int verticesOffset, const int numberVertices,GLenum mode) const{
     glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
     glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
 #ifndef WIREFRAME
-    glDrawArrays(GL_TRIANGLES, verticesOffset, numberVertices);
+    glDrawArrays(mode, verticesOffset, numberVertices);
 #else
     glLineWidth(4.0f);
     glDrawArrays(GL_LINES, verticesOffset, numberVertices);

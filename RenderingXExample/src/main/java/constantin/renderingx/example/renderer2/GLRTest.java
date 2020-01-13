@@ -16,7 +16,7 @@ public class GLRTest implements GLSurfaceView.Renderer{
         System.loadLibrary("example-renderer2");
     }
     private native long nativeConstruct(Context context,long nativeGvrContext,boolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
-                                        boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,boolean MESH,boolean SPHERE);
+                                        boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,boolean MESH,boolean SPHERE,boolean SPHERE_2);
     private native void nativeDelete(long p);
     private native void nativeOnSurfaceCreated(long p,final Context context);
     private native void nativeOnSurfaceChanged(long p,int width,int height);
@@ -35,13 +35,13 @@ public class GLRTest implements GLSurfaceView.Renderer{
     private final long nativeRenderer;
 
     public GLRTest(final Context context, final GvrApi gvrApi,boolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
-                   boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,boolean MESH,boolean SPHERE){
+                   boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,boolean MESH,boolean SPHERE,boolean SPHERE2){
         mContext=context;
         GvrView view=new GvrView(context);
         final GvrViewerParams params=view.getGvrViewerParams();
 
         nativeRenderer=nativeConstruct(context,
-                gvrApi.getNativeGvrContext(),RENDER_SCENE_USING_GVR_RENDERBUFFER,RENDER_SCENE_USING_VERTEX_DISPLACEMENT,MESH,SPHERE);
+                gvrApi.getNativeGvrContext(),RENDER_SCENE_USING_GVR_RENDERBUFFER,RENDER_SCENE_USING_VERTEX_DISPLACEMENT,MESH,SPHERE,SPHERE2);
 
         float[] fov=new float[4];
         fov[0]=params.getLeftEyeMaxFov().getLeft();

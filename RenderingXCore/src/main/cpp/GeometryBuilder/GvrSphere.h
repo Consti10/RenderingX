@@ -18,13 +18,6 @@
 
 class GvrSphere{
 public:
-    //The gvr vertex is different than what I use in my GLProgram's. See Sphere.cpp for conversion
-    struct Vertex{
-        float x,y,z;
-        float u_left,v_left;
-        float u_right,v_right;
-    };
-public:
     /** Standard media where a single camera frame takes up the entire media frame. */
     static constexpr int MEDIA_MONOSCOPIC = 0;
 /**
@@ -58,6 +51,23 @@ public:
             float verticalFovDegrees,
             float horizontalFovDegrees,
             int mediaFormat);
+
+public:
+    //The gvr vertex is different than what I use in my GLProgram's.
+    //A struct better represents the internal data layout than a float array
+    struct Vertex{
+        float x,y,z;
+        float u_left,v_left;
+        float u_right,v_right;
+    };
+    static std::vector<Vertex> createUvSphere2(
+            float radius,
+            int latitudes,
+            int longitudes,
+            float verticalFovDegrees,
+            float horizontalFovDegrees,
+            int mediaFormat);
 };
+
 
 #endif //FPV_VR_2018_GVRSPHERE_H
