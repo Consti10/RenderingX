@@ -61,8 +61,10 @@ void ExampleRenderer::onSurfaceCreated(JNIEnv *env, jobject context) {
     const auto tmp2=Sphere::createGvrSphere(1.0,36,18);
     GLBufferHelper::createAllocateVertexBuffer(tmp2,mGvrSphereB);
     //create the occlusion mesh, left and right viewport
-    GLBufferHelper::createAllocateVertexBuffer(CardboardViewportOcclusion::makeMesh(vrHeadsetParams,0),mOcclusionMesh[0]);
-    GLBufferHelper::createAllocateVertexBuffer(CardboardViewportOcclusion::makeMesh(vrHeadsetParams,1),mOcclusionMesh[1]);
+    //use a slightly different color than clear color to make mesh visible
+    const TrueColor color=Color::fromRGBA(0.1,0.1,0.1,1.0);
+    GLBufferHelper::createAllocateVertexBuffer(CardboardViewportOcclusion::makeMesh(vrHeadsetParams,0,color),mOcclusionMesh[0]);
+    GLBufferHelper::createAllocateVertexBuffer(CardboardViewportOcclusion::makeMesh(vrHeadsetParams,1,color),mOcclusionMesh[1]);
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 

@@ -7,7 +7,6 @@
 
 #import "../DistortionCorrection/VRHeadsetParams.h"
 
-//typedef std::function<std::array<float,2>(const std::array<float,2>& input)> DISTORT_POINT;
 
 class CardboardViewportOcclusion{
 public:
