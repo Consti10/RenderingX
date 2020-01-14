@@ -15,40 +15,21 @@
 
 class EquirectangularSphere {
 public:
+    // Adjust this to fit the FOV of the lens on the 360 camera.
+    // Smaller values indicate a larger FOV and more overlap between the two sides.
+    static constexpr const float radius_scale = 0.44f;
+    // Larger number means more triangles
+    static constexpr const float triangle_density = 100;
+
     static void create_sphere(std::vector<GLfloat>& vertexData,std::vector<GLuint>& indexData,int surf_w,int surf_h){
-        uint32_t cam1_cx = 1.01 * surf_w / 4;
+        uint32_t cam1_cx = 1.0 * surf_w / 4;
         uint32_t cam1_cy = surf_h / 2;
-        uint32_t cam2_cx = 0.99 * 3 * surf_w / 4;
+        uint32_t cam2_cx = 1.0 * 3 * surf_w / 4;
         uint32_t cam2_cy = surf_h / 2;
-        uint32_t radius = 0.45 * surf_h;
-        uint32_t triangle_size = surf_h / 30; //50
+        uint32_t radius = static_cast<uint32_t>(rint(radius_scale * surf_h));
+        uint32_t triangle_size = static_cast<uint32_t>(rint(surf_h / triangle_density));
         create_rect(vertexData, indexData, surf_w, surf_h, radius, cam1_cx, cam1_cy, cam2_cx, cam2_cy,
                     triangle_size);
-    }
-    //GLushort instead of GLuint should be sufficient for index data
-    //Also, convert to GLProgramTexture::Vertex
-    static void create_sphere(std::vector<GLProgramTexture::Vertex>& vertexData,std::vector<GLProgramTexture::INDEX_DATA >& indexData,int surf_w,int surf_h){
-        std::vector<GLfloat> tmpVertices;
-        std::vector<GLuint> tmpIndices;
-        create_sphere(tmpVertices,tmpIndices,surf_w,surf_h);
-        for(int i=0;i<=tmpVertices.size()-5;i+=5){
-            GLProgramTexture::Vertex v;
-            v.x=tmpVertices[i+0];
-            v.y=tmpVertices[i+1];
-            v.z=tmpVertices[i+2];
-            v.u=tmpVertices[i+3];
-            v.v=tmpVertices[i+4];
-            vertexData.push_back(v);
-        }
-        for(unsigned int i=0;i<tmpIndices.size();i++){
-            indexData.push_back((GLProgramTexture::INDEX_DATA) tmpIndices.at(i));
-        }
-    }
-    static void create_sphere(GLBufferHelper::VertexIndexBuffer& data,int surf_w,int surf_h){
-        std::vector<GLProgramTexture::Vertex> vertices;
-        std::vector<GLProgramTexture::INDEX_DATA > indices;
-        EquirectangularSphere::create_sphere(vertices,indices,surf_w,surf_h);
-        GLBufferHelper::createAllocateVertexIndexBuffer(vertices, indices,data);
     }
 
     static void create_rect(std::vector<GLfloat> &verts, std::vector<GLuint> &indexes,
@@ -104,13 +85,13 @@ public:
             float dx = static_cast<float>(x) - static_cast<float>(c1x);
             float dy = static_cast<float>(y) - static_cast<float>(c1y);
             float d2 = dx * dx + dy * dy;
-            fz = (d2 > r2) ? 0.0001 : 0.5 * sqrt(r2 - d2) / static_cast<float>(radius);
+            fz = (d2 > r2) ? 0.0001 : 0.5 * sqrt(r2 - d2) / static_cast<float>(height / 2);
             fx = 2.0 * fx;
         } else {
             float dx = static_cast<float>(x) - static_cast<float>(c2x);
             float dy = static_cast<float>(y) - static_cast<float>(c2y);
             float d2 = dx * dx + dy * dy;
-            fz = (d2 > r2) ? -0.0001 : 0.5 * -sqrt(r2 - d2) / static_cast<float>(radius);
+            fz = (d2 > r2) ? -0.0001 : 0.5 * -sqrt(r2 - d2) / static_cast<float>(height / 2);
             fx = 2.0 * (1.0 - fx);
         }
 
@@ -121,7 +102,35 @@ public:
         verts.push_back(1.0f-u);
         verts.push_back(v);
     }
-
+public:
+    //
+    //Convenient conversions from original data layout to RenderingXCore Vertex data
+    //
+    //GLushort instead of GLuint should be sufficient for index data and is used by GLProgramTexture
+    //Also, convert to GLProgramTexture::Vertex
+    static void create_sphere(std::vector<GLProgramTexture::Vertex>& vertexData,std::vector<GLProgramTexture::INDEX_DATA >& indexData,int surf_w,int surf_h){
+        std::vector<GLfloat> tmpVertices;
+        std::vector<GLuint> tmpIndices;
+        create_sphere(tmpVertices,tmpIndices,surf_w,surf_h);
+        for(int i=0;i<=tmpVertices.size()-5;i+=5){
+            GLProgramTexture::Vertex v;
+            v.x=tmpVertices[i+0];
+            v.y=tmpVertices[i+1];
+            v.z=tmpVertices[i+2];
+            v.u=tmpVertices[i+3];
+            v.v=tmpVertices[i+4];
+            vertexData.push_back(v);
+        }
+        for(unsigned int i=0;i<tmpIndices.size();i++){
+            indexData.push_back((GLProgramTexture::INDEX_DATA) tmpIndices.at(i));
+        }
+    }
+    static void create_sphere(GLBufferHelper::VertexIndexBuffer& data,int surf_w,int surf_h){
+        std::vector<GLProgramTexture::Vertex> vertices;
+        std::vector<GLProgramTexture::INDEX_DATA > indices;
+        EquirectangularSphere::create_sphere(vertices,indices,surf_w,surf_h);
+        GLBufferHelper::createAllocateVertexIndexBuffer(vertices, indices,data);
+    }
 };
 
 
