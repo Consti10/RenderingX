@@ -59,10 +59,12 @@ private:
     FPSCalculator mFPSCalculator;
     std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
     std::unique_ptr<GLProgramTexture> mGLProgramTexture=nullptr;
+    std::unique_ptr<GLProgramVC> mGLProgramVC2D;
     GLuint mTexture360Image;
     GLuint mTexture360ImageEquirectangular;
     GLBufferHelper::VertexIndexBuffer mEquirecangularSphereB;
     GLBufferHelper::VertexBuffer mGvrSphereB;
+    GLBufferHelper::VertexBuffer mOcclusionMesh[2];
     /*
      * draws into gvr renderbuffer which is then distorted into framebuffer
      */
@@ -75,7 +77,7 @@ private:
     /*
      * draw everything into what's currently bound (renderbuffer for gvr,framebuffer for vddc)
      */
-    void drawEye(glm::mat4 viewM,glm::mat4 projM,bool meshColorGreen);
+    void drawEye(gvr::Eye eye,glm::mat4 viewM,glm::mat4 projM,bool meshColorGreen,bool vignette=false);
 private:
     static constexpr int LINE_MESH_TESSELATION_FACTOR=10;
     GLBufferHelper::VertexBuffer blueMeshB;

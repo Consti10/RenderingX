@@ -183,13 +183,14 @@ std::array<float, 2> MLensDistortion::UndistortedUvForDistortedUv_Inverse(
 std::array<float, 2> MLensDistortion::UndistortedNDCForDistortedNDC(
         const MPolynomialRadialDistortion &inverseDistortion,
         const MLensDistortion::ViewportParams &screen_params,
-        const MLensDistortion::ViewportParams &texture_params, const std::array<float, 2> &in) {
+        const MLensDistortion::ViewportParams &texture_params, const std::array<float, 2> &in,const bool isInverse) {
     std::array<float, 2> distorted_ndc_tanangle = {
             in[0] * texture_params.width - texture_params.x_eye_offset,
             in[1] * texture_params.height - texture_params.y_eye_offset};
 
-    std::array<float, 2> undistorted_ndc_tanangle =
-            inverseDistortion.Distort(distorted_ndc_tanangle);
+    std::array<float, 2> undistorted_ndc_tanangle = isInverse ?
+            inverseDistortion.Distort(distorted_ndc_tanangle):
+            inverseDistortion.DistortInverse(distorted_ndc_tanangle);
 
     std::array<float,2> ret={undistorted_ndc_tanangle[0]*screen_params.width+screen_params.x_eye_offset,
                  undistorted_ndc_tanangle[1]*screen_params.height+screen_params.y_eye_offset};

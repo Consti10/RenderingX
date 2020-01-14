@@ -36,8 +36,8 @@ public:
     using INDEX_DATA=GLushort;
     explicit GLProgramVC(const DistortionManager& distortionManager=DistortionManager(),bool coordinates2D=false);
     void beforeDraw(GLuint buffer) const;
-    void draw(Mat4x4 ViewM, Mat4x4 ProjM, int indicesOffset,int numberIndices, GLenum mode) const;
-    void draw(glm::mat4 ViewM,glm::mat4 ProjM, int indicesOffset,int numberIndices, GLenum mode) const;
+    void draw(Mat4x4 ViewM, Mat4x4 ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
+    void draw(glm::mat4 ViewM,glm::mat4 ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
     void drawIndexed(GLuint indexBuffer,Mat4x4 ViewM, Mat4x4 ProjM,int indicesOffset,int numberIndices, GLenum mode) const;
     void afterDraw() const;
 private:

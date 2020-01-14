@@ -10,6 +10,7 @@
 #include <GeometryBuilder/EquirectangularSphere.hpp>
 #include <GeometryBuilder/GvrSphere.h>
 #include <GeometryBuilder/Sphere.h>
+#include <GeometryBuilder/CardboardViewportOcclusion.h>
 
 constexpr auto TAG="DistortionExample";
 
@@ -43,6 +44,7 @@ void ExampleRenderer::onSurfaceCreated(JNIEnv *env, jobject context) {
     mBasicGLPrograms=std::make_unique<BasicGLPrograms>(distortionManager);
     mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
     mGLProgramTexture=std::make_unique<GLProgramTexture>(false,distortionManager);
+    mGLProgramVC2D=std::make_unique<GLProgramVC>(DistortionManager(),true);
     glGenTextures(1,&mTexture360Image);
     GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
     GLProgramTexture::loadTexture(mTexture360ImageEquirectangular,env,context,"360DegreeImages/insta_360_equirectangular.png");
@@ -58,6 +60,9 @@ void ExampleRenderer::onSurfaceCreated(JNIEnv *env, jobject context) {
     //create the gvr sphere
     const auto tmp2=Sphere::createGvrSphere(1.0,36,18);
     GLBufferHelper::createAllocateVertexBuffer(tmp2,mGvrSphereB);
+    //create the occlusion mesh, left and right viewport
+    GLBufferHelper::createAllocateVertexBuffer(CardboardViewportOcclusion::makeMesh(vrHeadsetParams,0),mOcclusionMesh[0]);
+    GLBufferHelper::createAllocateVertexBuffer(CardboardViewportOcclusion::makeMesh(vrHeadsetParams,1),mOcclusionMesh[1]);
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
@@ -130,7 +135,7 @@ void ExampleRenderer::drawEyeGvrRenderbuffer(gvr::Eye eye) {
     const auto viewM=toGLM(ndk_hello_vr::MatrixMul(eyeM,rotM));
     const auto projectionM=toGLM(perspective);
     glLineWidth(6.0f);
-    drawEye(viewM,projectionM,false);
+    drawEye(eye,viewM,projectionM,false);
     GLHelper::checkGlError("ExampleRenderer2::drawEyeGvr");
 }
 
@@ -141,11 +146,11 @@ void ExampleRenderer::drawEyeVDDC(gvr::Eye eye) {
     auto viewM=vrHeadsetParams.GetEyeFromHeadMatrix(eye)*rotM;
     auto projM=vrHeadsetParams.GetProjectionMatrix(eye);
     glLineWidth(3.0f);
-    drawEye(viewM,projM,true);
+    drawEye(eye,viewM,projM,true,true);
     GLHelper::checkGlError("ExampleRenderer2::drawEyeVDDC");
 }
 
-void ExampleRenderer::drawEye(glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen) {
+void ExampleRenderer::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen,bool occlusion) {
     if(ENABLE_SCENE_MESH_2D){
         const GLBufferHelper::VertexBuffer& tmp=meshColorGreen ? greenMeshB : blueMeshB;
         mBasicGLPrograms->vc.beforeDraw(tmp.vertexB);
@@ -161,6 +166,12 @@ void ExampleRenderer::drawEye(glm::mat4 viewM, glm::mat4 projM, bool meshColorGr
         mGLProgramTexture->beforeDraw(mEquirecangularSphereB.vertexB,mTexture360ImageEquirectangular);
         mGLProgramTexture->drawIndexed(mEquirecangularSphereB.indexB,viewM,projM,0,mEquirecangularSphereB.nIndices,GL_TRIANGLE_STRIP);
         mGLProgramTexture->afterDraw();
+    }
+    if(occlusion){
+        int idx=eye==GVR_LEFT_EYE ? 0 : 1;
+        mGLProgramVC2D->beforeDraw(mOcclusionMesh[eye].vertexB);
+        mGLProgramVC2D->draw(glm::mat4(1.0f),glm::mat4(1.0f),0,mOcclusionMesh[eye].nVertices,GL_TRIANGLE_STRIP);
+        mGLProgramVC2D->afterDraw();
     }
 }
 

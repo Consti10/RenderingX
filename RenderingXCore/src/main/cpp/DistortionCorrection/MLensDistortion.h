@@ -58,6 +58,9 @@ public:
                                             ViewportParams *screen_params,
                                             ViewportParams *texture_params);
 
+    //calculates the viewport parameters to use with
+    //@UndistortedNDCForDistortedNDC
+    //Left eye viewport is left half of screen, right eye viewport is right half of screen
     static void CalculateViewportParameters_NDC(int eye,
                                             const float GetYEyeOffsetMeters,
                                             const float screen_to_lens_distance,
@@ -87,7 +90,7 @@ public:
     static std::array<float, 2> UndistortedNDCForDistortedNDC(
             const MPolynomialRadialDistortion &inverseDistortion,
             const ViewportParams &screen_params, const ViewportParams &texture_params,
-            const std::array<float, 2> &in);
+            const std::array<float, 2> &in,const bool isInverse=true);
 
     static std::string MDeviceParamsAsString(const MDeviceParams& dp);
 

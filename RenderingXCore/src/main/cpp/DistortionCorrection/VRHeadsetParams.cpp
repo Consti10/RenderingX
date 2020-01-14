@@ -31,6 +31,7 @@ void VRHeadsetParams::updateHeadsetParams(const MDeviceParams &mDP,int screenWid
     this->screenWidthP=screenWidthP;
     this->screenHeightP=screenHeightP;
     LOGD("%s",MLensDistortion::MDeviceParamsAsString(mDP).c_str());
+    mDistortion=MPolynomialRadialDistortion(mDP.radial_distortion_params);;
     auto polynomialRadialDistortion=MPolynomialRadialDistortion(mDP.radial_distortion_params);
     //auto polynomialRadialDistortion=MPolynomialRadialDistortion({0.441, 0.156});
 

@@ -121,10 +121,11 @@ public:
     }
 
     //Create a tesselated wireframe mesh that spawns exactly the viewport
-    static const std::vector<GLProgramVC::Vertex> makeTesselatedColoredRectLines0_1(const int tesselation,const TrueColor color){
+    //e.q [-1,1] in x and y direction
+    static const std::vector<GLProgramVC::Vertex> makeTesselatedColoredRectLinesNDC(
+            const int tesselation, const TrueColor color){
         return makeTesselatedColoredRectLines(tesselation,{-1.0f,-1.0f,0},2.0f,2.0f,color);
     }
-
 
     static const void makeOutlineQuadWithLines(GLProgramVC::Vertex array[],const float mX,const float mY,const float mZ,const float quadWith,const float quadHeight,
                                                const TrueColor color){
