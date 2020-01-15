@@ -19,7 +19,12 @@
 #include <Helper/NDKHelper.h>
 #include "android/log.h"
 #include "MLensDistortion.h"
-//#include "polynomial_radial_distortion.h"
+
+
+/*
+ * Handles Vertex Displacement Distortion Correction. See GLPrograms for some example OpenGL Shader
+ * with V.D.D.C
+ */
 
 class DistortionManager {
 public:

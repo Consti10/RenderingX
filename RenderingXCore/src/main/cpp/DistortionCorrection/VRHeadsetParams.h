@@ -50,6 +50,8 @@ public:
     //where framebuffer size==screen size
     void setOpenGLViewport(gvr::Eye eye);
 public:
+    //This one does not use the inverse and is therefore (relatively) slow compared to when
+    //using the approximate inverse
     std::array<float, 2> UndistortedNDCForDistortedNDC(const std::array<float,2>& in_ndc,int eye)const{
         return MLensDistortion::UndistortedNDCForDistortedNDC(mDistortion,screen_params[eye],texture_params[eye],in_ndc,false);
     }

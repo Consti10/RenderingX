@@ -59,7 +59,6 @@ private:
     FPSCalculator mFPSCalculator;
     std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
     std::unique_ptr<GLProgramTexture> mGLProgramTexture=nullptr;
-    std::unique_ptr<GLProgramVC> mGLProgramVC2D;
     GLuint mTexture360Image;
     GLuint mTexture360ImageEquirectangular;
     GLBufferHelper::VertexIndexBuffer mEquirecangularSphereB;

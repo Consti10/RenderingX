@@ -7,21 +7,11 @@
 #include <cmath>
 #include <limits>
 #include <sstream>
-#include <android/log.h>
 
 
 MPolynomialRadialDistortion::MPolynomialRadialDistortion(
         const std::vector<float>& coefficients)
         : coefficients_(coefficients) {
-    //LOGD("N coefficients:%d k1 %f k2 %f",coefficients_.size(),coefficients_[0],coefficients_[1]);
-    /*for(float x=0.0f;x<2.0f;x+=0.001f){
-        std::array<float,2> p={x,x};
-        auto p1=DistortInverse(p);
-        auto p2=DistortInverse2(p);
-        float diffX=p2[0]-p1[0];
-        float diffY=p2[1]-p1[1];
-        LOGD("Diff %f %f",diffX,diffY);
-    }*/
 }
 
 float MPolynomialRadialDistortion::DistortionFactor(float r_squared) const {
@@ -33,11 +23,30 @@ float MPolynomialRadialDistortion::DistortionFactor(float r_squared) const {
         distortion_factor += ki * r_factor;
     }
     return distortion_factor;
-    //return 1.0f;
 }
 
 float MPolynomialRadialDistortion::DistortRadius(float r) const {
     return r * DistortionFactor(r * r);
+}
+
+float MPolynomialRadialDistortion::DistortRadiusInverse(const float radius)const {
+    if (std::fabs(radius - 0.0f) < std::numeric_limits<float>::epsilon()) {
+        return 0;
+    }
+    // Based on the shape of typical distortion curves, |radius| / 2 and
+    // |radius| / 3 are good initial guesses for the Secant method that will
+    // remain within the intended range of the polynomial.
+    float r0 = radius / 2.0f;
+    float r1 = radius / 3.0f;
+    float dr0 = radius - DistortRadius(r0);
+    while (std::fabs(r1 - r0) > 0.0001f /** 0.1mm */) {
+        const float dr1 = radius - DistortRadius(r1);
+        const float r2 = r1 - dr1 * ((r1 - r0) / (dr1 - dr0));
+        r0 = r1;
+        r1 = r2;
+        dr0 = dr1;
+    }
+    return r1;
 }
 
 std::array<float, 2> MPolynomialRadialDistortion::Distort(
@@ -47,67 +56,19 @@ std::array<float, 2> MPolynomialRadialDistortion::Distort(
                                 distortion_factor * p[1]};
 }
 
-float MPolynomialRadialDistortion::DistortRadiusInverse(float radius)const {
-    if (std::fabs(radius - 0.0f) < std::numeric_limits<float>::epsilon()) {
-        return 0;
-    }
-    // Based on the shape of typical distortion curves, |radius| / 2 and
-    // |radius| / 3 are good initial guesses for the Secant method that will
-    // remain within the intended range of the polynomial.
-    float r0 = radius / 2.0f;
-    float r1 = radius / 3.0f;
-    float r2;
-    float dr0 = radius - DistortRadius(r0);
-    float dr1;
-    while (std::fabs(r1 - r0) > 0.0001f /** 0.1mm */) {
-        dr1 = radius - DistortRadius(r1);
-        r2 = r1 - dr1 * ((r1 - r0) / (dr1 - dr0));
-        r0 = r1;
-        r1 = r2;
-        dr0 = dr1;
-    }
-    return r1/radius;
-}
 
-std::array<float,2> MPolynomialRadialDistortion::DistortInverse2(const std::array<float, 2> &p) const {
+std::array<float,2> MPolynomialRadialDistortion::DistortInverse(const std::array<float, 2> &p) const {
     const float radius = std::sqrt(p[0] * p[0] + p[1] * p[1]);
-    float distortionFactor=DistortRadiusInverse(radius);
-    return std::array<float, 2>{distortionFactor * p[0], distortionFactor * p[1]};
+    float inverseRadius=DistortRadiusInverse(radius);
+    return std::array<float, 2>{(inverseRadius/radius) * p[0], (inverseRadius/radius) * p[1]};
 }
 
-std::array<float, 2> MPolynomialRadialDistortion::DistortInverse(
-        const std::array<float, 2>& p) const {
-    const float radius = std::sqrt(p[0] * p[0] + p[1] * p[1]);
-    if (std::fabs(radius - 0.0f) < std::numeric_limits<float>::epsilon()) {
-        return std::array<float, 2>();
-    }
-
-    // Based on the shape of typical distortion curves, |radius| / 2 and
-    // |radius| / 3 are good initial guesses for the Secant method that will
-    // remain within the intended range of the polynomial.
-    float r0 = radius / 2.0f;
-    float r1 = radius / 3.0f;
-    float r2;
-    float dr0 = radius - DistortRadius(r0);
-    float dr1;
-    while (std::fabs(r1 - r0) > 0.0001f /** 0.1mm */) {
-        dr1 = radius - DistortRadius(r1);
-        r2 = r1 - dr1 * ((r1 - r0) / (dr1 - dr0));
-        r0 = r1;
-        r1 = r2;
-        dr0 = dr1;
-    }
-
-    return std::array<float, 2>{(r1 / radius) * p[0], (r1 / radius) * p[1]};
-}
-
-MPolynomialRadialDistortion MPolynomialRadialDistortion::getApproximateInverseDistortion(float maxRadius,int numCoefficients) {
+MPolynomialRadialDistortion MPolynomialRadialDistortion::getApproximateInverseDistortion(float maxRadius,int numCoefficients)const {
     constexpr unsigned int CALCULATION_SIZE=100; //100 by default
     std::vector<std::vector<double>> matA(CALCULATION_SIZE,std::vector<double>(numCoefficients));
     std::vector<double> vecY(CALCULATION_SIZE);
     for(int i = 0; i < CALCULATION_SIZE; ++i) {
         float r = maxRadius * (float)(i + 1) / ((float)CALCULATION_SIZE);
-        //double rp = (double)this.distort(r);
         auto rp = (double)DistortRadius(r);
         double v = rp;
 
@@ -186,7 +147,7 @@ std::vector<float> MPolynomialRadialDistortion::getCoeficients()const {
 std::string MPolynomialRadialDistortion::toString()const {
     std::stringstream ss;
     ss<<"PolynomialRadialDistortion:: k1..kn(";
-    for(float coefficient : coefficients_){
+    for(const float coefficient : coefficients_){
         ss<<coefficient<<",";
     }
     ss<<")";
@@ -194,8 +155,20 @@ std::string MPolynomialRadialDistortion::toString()const {
 }
 
 float MPolynomialRadialDistortion::calculateDeviation(float radius,const MPolynomialRadialDistortion &distortion,const MPolynomialRadialDistortion &inverseDistortion) {
-    const auto p1=distortion.DistortInverse({radius,0});
-    const auto p2=inverseDistortion.Distort({radius,0});
-    const auto deviation=std::abs(p2[0]-p1[0]);
+    const auto v1=distortion.DistortRadiusInverse(radius);
+    const auto v2=inverseDistortion.DistortRadius(radius);
+    const auto deviation=std::abs(v2-v1);
     return deviation;
+}
+
+float MPolynomialRadialDistortion::calculateMaxDeviation(const MPolynomialRadialDistortion &distortion,const MPolynomialRadialDistortion &inverse,
+        const float maxRadSq, const float stepSize) {
+    float maxDeviation=0.0F;
+    for(float r2=0;r2<=maxRadSq;r2+=stepSize) {
+        const float deviation = MPolynomialRadialDistortion::calculateDeviation(r2,distortion,inverse);
+        if (deviation > maxDeviation) {
+            maxDeviation=deviation;
+        }
+    }
+    return maxDeviation;
 }

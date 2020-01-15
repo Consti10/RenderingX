@@ -4,6 +4,7 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 
 import com.google.vr.ndk.base.GvrApi;
+import com.google.vr.sdk.base.Distortion;
 import com.google.vr.sdk.base.GvrView;
 import com.google.vr.sdk.base.GvrViewerParams;
 
@@ -49,6 +50,7 @@ public class GLRTest implements GLSurfaceView.Renderer{
         fov[2]=params.getLeftEyeMaxFov().getBottom();
         fov[3]=params.getLeftEyeMaxFov().getTop();
         float[] kN=params.getDistortion().getCoefficients();
+
         nativeUpdateHeadsetParams(nativeRenderer,view.getScreenParams().getWidthMeters(),view.getScreenParams().getHeightMeters(),
                 params.getScreenToLensDistance(),params.getInterLensDistance(),params.getVerticalAlignment().ordinal(),params.getVerticalDistanceToLensCenter(),
                 fov,kN,view.getScreenParams().getWidth(),view.getScreenParams().getHeight());

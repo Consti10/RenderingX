@@ -60,6 +60,9 @@ std::string DistortionManager::writeDistortionParams(
 
     //All GLSL functions (declare before main in vertex shader, then use anywhere)
     //
+    s<<"bool isInsideViewPort(const in vec2 ndc){\n";
+    s<<"if(ndc.x>=-1.0 && ndc.x<=1.0 && ndc.y>=-1.0 && ndc.y<=1.0){return true;}\n";
+    s<<"return false;}\n";
     //same as PolynomialRadialDistortion::DistortionFactor but unrolled loop for easier optimization by compiler
     s<<"float PolynomialDistortionFactor(const in float r_squared,const in float["<<N_COEFICIENTS<<"] coefficients){\n";
     //manually unrolled loop
@@ -76,10 +79,6 @@ std::string DistortionManager::writeDistortionParams(
     //But with maxRadSq as limit
     s<<"vec2 PolynomialDistort(const in float["<<N_COEFICIENTS<<"] coefficients,const in vec2 in_pos,const in float maxRadSq){\n";
     s<<"float r2=dot(in_pos.xy,in_pos.xy);\n";
-    //s<<"invisibleFragment=-1.0;";
-    //s<<"if(r2>1.0){";
-    //s<<"invisibleFragment=1.0;";
-    //s<<"}";
     s<<"r2=clamp(r2,0.0,maxRadSq);";
     s<<"float dist_factor=PolynomialDistortionFactor(r2,coefficients);";
     s<<"vec2 ret=in_pos.xy*dist_factor;\n";
@@ -139,10 +138,14 @@ std::string DistortionManager::writeGLPosition(const DistortionManager &distorti
         s<<"vec4 pos_view=uMVMatrix*"+positionAttribute+";\n";
         s<<"vec4 pos_clip=uPMatrix*pos_view;\n";
         s<<"vec3 ndc=pos_clip.xyz/pos_clip.w;";
+        //s<<"bool inside=isInsideViewPort(ndc.xy);";
+        //s<<"ndc.xy=clamp(ndc.xy,-1.0,1.0);";
+        //s<<"if(inside){";
         s<<"vec2 dist_p=UndistortedNDCForDistortedNDC(uKN,uScreenParams,uTextureParams,ndc.xy,uMaxRadSq);";
         s<<"gl_Position=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);";
-        //s<<"gl_Position=vec4(dist_p,0,1);";
-
+        //s<<"}else{";
+        //s<<"gl_Position=pos_clip;";
+        //s<<"}";
         //s<<"gl_Position=vec4(lol,0,1);";
         //s<<"gl_Position=pos_clip;";
         //s<<"vec3 ndc=pos.xyz/pos.w;";
@@ -150,10 +153,8 @@ std::string DistortionManager::writeGLPosition(const DistortionManager &distorti
         //s<<"pos.xy=UndistortedNDCForDistortedNDC(uKN,uScreenParams,uTextureParams,ndc);";
         //s<<"gl_Position.x+=1.0*gl_Position.w;";
         //s<<"gl_Position.y+=1.0*gl_Position.w;";
-
         //s<<"pos.y+=-0.18;";
         //s<<"pos.x+=0.1;";
-
     }
     return s.str();
 }

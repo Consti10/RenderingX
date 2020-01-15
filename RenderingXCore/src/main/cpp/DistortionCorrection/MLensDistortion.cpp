@@ -130,13 +130,6 @@ void MLensDistortion::CalculateViewportParameters_NDC(
 
     texture_params.x_eye_offset = static_cast<float>((tan(fov[0] * M_PI / 180)-tan(fov[1] * M_PI / 180))*0.5);
     texture_params.y_eye_offset =  static_cast<float>((tan(fov[2] * M_PI / 180)-tan(fov[3] * M_PI / 180))*0.5);
-
-    std::stringstream ss;ss<<"\n";
-    ss<<"Screen_params width:"<<screen_params.width<<" height:"<<screen_params.height<<"\n";
-    ss<<"Screen_params offset X:"<<screen_params.x_eye_offset<<" Y:"<<screen_params.y_eye_offset<<"\n";
-    ss<<"Texture_params width:"<<texture_params.width<<" height:"<<texture_params.height<<"\n";
-    ss<<"Texture_params offset X:"<<texture_params.x_eye_offset<<" Y:"<<texture_params.y_eye_offset<<"\n";
-    LOGD("%s",ss.str().c_str());
 }
 
 
@@ -198,5 +191,27 @@ std::array<float, 2> MLensDistortion::UndistortedNDCForDistortedNDC(
 }
 
 std::string MLensDistortion::MDeviceParamsAsString(const MDeviceParams& dp) {
-    return std::string("");
+    std::stringstream ss;
+    ss<<"DeviceParams:\n";
+    ss<<"screen_width_meters "<<dp.screen_width_meters<<" ";
+    ss<<"screen_height_meters "<<dp.screen_height_meters<<"\n";
+    ss<<"screen_to_lens_distance "<<dp.screen_to_lens_distance<<" ";
+    ss<<"inter_lens_distance "<<dp.inter_lens_distance<<"\n";
+    ss<<"vertical_alignment "<<dp.vertical_alignment<<"";
+    ss<<"tray_to_lens_distance "<<dp.tray_to_lens_distance<<"\n";
+    ss<<"device_fov_left ["<<dp.device_fov_left[0]<<","<<dp.device_fov_left[0]<<","<<dp.device_fov_left[0]<<","<<dp.device_fov_left[0]<<")\n";
+    ss<<"radial_distortion_params"<<MPolynomialRadialDistortion(dp.radial_distortion_params).toString()<<"";
+    return ss.str();
 }
+
+std::string
+MLensDistortion::ViewportParamsAsString(const MLensDistortion::ViewportParams &screen_params,
+                                        const MLensDistortion::ViewportParams &texture_params) {
+    std::stringstream ss;
+    ss<<"Screen_params width:"<<screen_params.width<<" height:"<<screen_params.height<<"\n";
+    ss<<"Screen_params offset X:"<<screen_params.x_eye_offset<<" Y:"<<screen_params.y_eye_offset<<"\n";
+    ss<<"Texture_params width:"<<texture_params.width<<" height:"<<texture_params.height<<"\n";
+    ss<<"Texture_params offset X:"<<texture_params.x_eye_offset<<" Y:"<<texture_params.y_eye_offset<<"\n";
+    return ss.str();
+}
+

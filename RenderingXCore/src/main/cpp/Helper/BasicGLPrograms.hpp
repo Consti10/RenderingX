@@ -9,22 +9,25 @@
 #include "GLProgramVC.h"
 #include "GLProgramLine.h"
 
-//Every renderer uses these 3
-//makes it easier to create all 3 of them at once
-//and pass all 3 GLPrograms to functions together
+//Every renderer uses these 4
+//makes it easier to create all of them at once
+//and pass all GLPrograms to functions together
 
 class BasicGLPrograms{
 public:
     explicit BasicGLPrograms(const DistortionManager& distortionManager=DistortionManager()):
         vc(distortionManager),
         text(distortionManager),
-        line(distortionManager)
+        line(distortionManager),
+        vc2D(DistortionManager(),true)
     {}
 public:
     //Once these GLPrograms are created, they don't change - only the content of the buffers they draw changes
     const GLProgramVC vc;
     const GLProgramText text;
     const GLProgramLine line;
+    //The 2D program never does V.D.D.C -it only works on ('raw') viewport coordinates
+    const GLProgramVC vc2D;
 };
 
 

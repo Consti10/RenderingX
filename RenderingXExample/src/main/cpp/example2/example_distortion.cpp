@@ -44,7 +44,6 @@ void ExampleRenderer::onSurfaceCreated(JNIEnv *env, jobject context) {
     mBasicGLPrograms=std::make_unique<BasicGLPrograms>(distortionManager);
     mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
     mGLProgramTexture=std::make_unique<GLProgramTexture>(false,distortionManager);
-    mGLProgramVC2D=std::make_unique<GLProgramVC>(DistortionManager(),true);
     glGenTextures(1,&mTexture360Image);
     GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
     GLProgramTexture::loadTexture(mTexture360ImageEquirectangular,env,context,"360DegreeImages/insta_360_equirectangular.png");
@@ -58,7 +57,7 @@ void ExampleRenderer::onSurfaceCreated(JNIEnv *env, jobject context) {
     tmp=ColoredGeometry::makeTesselatedColoredRectLines(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,Color::GREEN);
     GLBufferHelper::createAllocateVertexBuffer(tmp,greenMeshB);
     //create the gvr sphere
-    const auto tmp2=Sphere::createGvrSphere(1.0,36,18);
+    const auto tmp2=Sphere::createGvrSphere(1.0,72,36);
     GLBufferHelper::createAllocateVertexBuffer(tmp2,mGvrSphereB);
     //create the occlusion mesh, left and right viewport
     //use a slightly different color than clear color to make mesh visible
@@ -171,9 +170,9 @@ void ExampleRenderer::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, boo
     }
     if(occlusion){
         int idx=eye==GVR_LEFT_EYE ? 0 : 1;
-        mGLProgramVC2D->beforeDraw(mOcclusionMesh[eye].vertexB);
-        mGLProgramVC2D->draw(glm::mat4(1.0f),glm::mat4(1.0f),0,mOcclusionMesh[eye].nVertices,GL_TRIANGLE_STRIP);
-        mGLProgramVC2D->afterDraw();
+        mBasicGLPrograms->vc2D.beforeDraw(mOcclusionMesh[eye].vertexB);
+        mBasicGLPrograms->vc2D.draw(glm::mat4(1.0f),glm::mat4(1.0f),0,mOcclusionMesh[eye].nVertices,GL_TRIANGLE_STRIP);
+        mBasicGLPrograms->vc2D.afterDraw();
     }
 }
 

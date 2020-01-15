@@ -92,7 +92,10 @@ public:
             const ViewportParams &screen_params, const ViewportParams &texture_params,
             const std::array<float, 2> &in,const bool isInverse=true);
 
+
     static std::string MDeviceParamsAsString(const MDeviceParams& dp);
+
+    static std::string ViewportParamsAsString(const ViewportParams& screen_params,const ViewportParams& texture_params);
 
 };
 

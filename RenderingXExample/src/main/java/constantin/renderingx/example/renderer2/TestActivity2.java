@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Environment;
 
 import com.google.vr.ndk.base.GvrLayout;
+import com.google.vr.sdk.base.Distortion;
 
 import constantin.renderingX.PerformanceHelper;
 import constantin.renderingx.example.R;
@@ -41,6 +42,7 @@ public class TestActivity2 extends AppCompatActivity {
         setContentView(gvrLayout);
 
         System.out.println("Path is:"+ Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS));
+
     }
 
     @Override
@@ -54,5 +56,11 @@ public class TestActivity2 extends AppCompatActivity {
     protected void onPause(){
         super.onPause();
         gvrLayout.onPause();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        gvrLayout.shutdown();
     }
 }
