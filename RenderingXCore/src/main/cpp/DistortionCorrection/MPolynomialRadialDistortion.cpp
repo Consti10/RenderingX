@@ -7,6 +7,7 @@
 #include <cmath>
 #include <limits>
 #include <sstream>
+#include <android/log.h>
 
 
 MPolynomialRadialDistortion::MPolynomialRadialDistortion(
@@ -15,6 +16,7 @@ MPolynomialRadialDistortion::MPolynomialRadialDistortion(
 }
 
 float MPolynomialRadialDistortion::DistortionFactor(float r_squared) const {
+    __android_log_print(ANDROID_LOG_DEBUG,"DF"," r2 is:%f",r_squared);
     float r_factor = 1.0f;
     float distortion_factor = 1.0f;
 

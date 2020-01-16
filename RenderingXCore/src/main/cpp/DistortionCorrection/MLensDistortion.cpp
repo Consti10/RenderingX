@@ -185,8 +185,9 @@ std::array<float, 2> MLensDistortion::UndistortedNDCForDistortedNDC(
             inverseDistortion.Distort(distorted_ndc_tanangle):
             inverseDistortion.DistortInverse(distorted_ndc_tanangle);
 
-    std::array<float,2> ret={undistorted_ndc_tanangle[0]*screen_params.width+screen_params.x_eye_offset,
-                 undistorted_ndc_tanangle[1]*screen_params.height+screen_params.y_eye_offset};
+    std::array<float,2> ret={
+            undistorted_ndc_tanangle[0]*screen_params.width+screen_params.x_eye_offset,
+            undistorted_ndc_tanangle[1]*screen_params.height+screen_params.y_eye_offset};
     return ret;
 }
 

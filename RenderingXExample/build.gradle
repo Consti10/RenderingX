@@ -9,8 +9,8 @@ android {
         applicationId "constantin.renderingx.example"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "2.0"
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++17"

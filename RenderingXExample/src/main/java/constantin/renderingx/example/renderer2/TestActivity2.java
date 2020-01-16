@@ -8,6 +8,7 @@ import android.os.Environment;
 
 import com.google.vr.ndk.base.GvrLayout;
 import com.google.vr.sdk.base.Distortion;
+import com.google.vr.sdk.base.GvrView;
 
 import constantin.renderingX.PerformanceHelper;
 import constantin.renderingx.example.R;
@@ -22,6 +23,7 @@ public class TestActivity2 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         gvrLayout=new GvrLayout(this);
 
         final Bundle bundle=getIntent().getExtras();
