@@ -165,6 +165,12 @@ std::array<float, 2> MLensDistortion::UndistortedNDCForDistortedNDC(
             in[0] * texture_params.width + texture_params.x_eye_offset,
             in[1] * texture_params.height + texture_params.y_eye_offset};
 
+    const float r2=distorted_ndc_tanangle[0]*distorted_ndc_tanangle[0]+
+            distorted_ndc_tanangle[1]*distorted_ndc_tanangle[1];
+    if(r2>1.789877f){
+        //return std::array<float,2>{0,0};
+    }
+
     std::array<float, 2> undistorted_ndc_tanangle = isInverse ?
             inverseDistortion.Distort(distorted_ndc_tanangle):
             inverseDistortion.DistortInverse(distorted_ndc_tanangle);

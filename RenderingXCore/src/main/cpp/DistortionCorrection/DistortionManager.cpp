@@ -79,6 +79,9 @@ std::string DistortionManager::writeDistortionParams(
     //But with maxRadSq as limit
     s<<"vec2 PolynomialDistort(const in float["<<N_COEFICIENTS<<"] coefficients,const in vec2 in_pos,const in float maxRadSq){\n";
     s<<"float r2=dot(in_pos.xy,in_pos.xy);\n";
+    //s<<"if(r2>1.789877){";
+    //s<<"r2=0.0;";
+    //s<<"}";
     s<<"r2=clamp(r2,0.0,maxRadSq);";
     s<<"float dist_factor=PolynomialDistortionFactor(r2,coefficients);";
     s<<"vec2 ret=in_pos.xy*dist_factor;\n";
