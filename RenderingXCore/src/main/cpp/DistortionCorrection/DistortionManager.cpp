@@ -98,8 +98,8 @@ std::string DistortionManager::writeDistortionParams(
     s<<"const in float["<<N_COEFICIENTS<<"] coefficients,";
     s<<"const in ViewportParams screen_params,const in ViewportParams texture_params,const in vec2 in_ndc,const in float maxRadSq){\n";
     s<<"vec2 distorted_ndc_tanangle=vec2(";
-    s<<"in_ndc.x * texture_params.width - texture_params.x_eye_offset,";
-    s<<"in_ndc.y * texture_params.height - texture_params.y_eye_offset);";
+    s<<"in_ndc.x * texture_params.width+texture_params.x_eye_offset,";
+    s<<"in_ndc.y * texture_params.height+texture_params.y_eye_offset);";
     s<<"vec2 undistorted_ndc_tanangle = PolynomialDistort(coefficients,distorted_ndc_tanangle,maxRadSq);";
     s<<"vec2 ret=vec2(undistorted_ndc_tanangle.x*screen_params.width+screen_params.x_eye_offset,";
     s<<"undistorted_ndc_tanangle.y*screen_params.height+screen_params.y_eye_offset);";

@@ -81,11 +81,11 @@ public:
 
     //This one takes and returns values between -1 and 1 (e.g. OpenGL viewport coordinates)
     //Viewport Parameters have to be calculated accordingly @CalculateViewportParameters_NDC
+    //Uses n*x+t instead of n*x-t (compared to the cardboard original)
     static std::array<float, 2> UndistortedNDCForDistortedNDC(
             const MPolynomialRadialDistortion &inverseDistortion,
             const ViewportParams &screen_params, const ViewportParams &texture_params,
             const std::array<float, 2> &in,const bool isInverse=true);
-
 
     static std::string MDeviceParamsAsString(const MDeviceParams& dp);
 

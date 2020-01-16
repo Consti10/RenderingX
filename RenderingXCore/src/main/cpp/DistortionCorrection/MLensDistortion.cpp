@@ -105,6 +105,29 @@ void MLensDistortion::CalculateViewportParameters(
     texture_params->y_eye_offset = static_cast<float>(tan(fov[2] * M_PI / 180));
 }
 
+std::array<float, 2> MLensDistortion::UndistortedUvForDistortedUv(
+        const MPolynomialRadialDistortion &distortion,
+        const ViewportParams &screen_params, const ViewportParams &texture_params,
+        const std::array<float, 2> &in,const bool isInverse){
+    // Convert input from normalized [0, 1] pre distort texture space to
+    // eye-centered tanangle units.
+    std::array<float, 2> distorted_uv_tanangle = {
+            in[0] * texture_params.width - texture_params.x_eye_offset,
+            in[1] * texture_params.height - texture_params.y_eye_offset};
+
+    std::array<float, 2> undistorted_uv_tanangle = isInverse ?
+                                                   distortion.Distort(distorted_uv_tanangle):
+                                                   distortion.DistortInverse(distorted_uv_tanangle);
+
+    // Convert output from tanangle units to normalized [0, 1] screen coordinates.
+    return {(undistorted_uv_tanangle[0] + screen_params.x_eye_offset) /
+            screen_params.width,
+            (undistorted_uv_tanangle[1] + screen_params.y_eye_offset) /
+            screen_params.height};
+}
+
+
+
 void MLensDistortion::CalculateViewportParameters_NDC(
         int eye,
         const float GetYEyeOffsetMeters,
@@ -128,32 +151,9 @@ void MLensDistortion::CalculateViewportParameters_NDC(
     texture_params.width = static_cast<float>(tan(fov[0] * M_PI / 180) + tan(fov[1] * M_PI / 180))*0.5f;
     texture_params.height = static_cast<float>(tan(fov[2] * M_PI / 180) + tan(fov[3] * M_PI / 180))*0.5f;
 
-    texture_params.x_eye_offset = static_cast<float>((tan(fov[0] * M_PI / 180)-tan(fov[1] * M_PI / 180))*0.5);
-    texture_params.y_eye_offset =  static_cast<float>((tan(fov[2] * M_PI / 180)-tan(fov[3] * M_PI / 180))*0.5);
+    texture_params.x_eye_offset = -(static_cast<float>((tan(fov[0] * M_PI / 180)-tan(fov[1] * M_PI / 180))*0.5));
+    texture_params.y_eye_offset = -(static_cast<float>((tan(fov[2] * M_PI / 180)-tan(fov[3] * M_PI / 180))*0.5));
 }
-
-
-std::array<float, 2> MLensDistortion::UndistortedUvForDistortedUv(
-        const MPolynomialRadialDistortion &distortion,
-        const ViewportParams &screen_params, const ViewportParams &texture_params,
-        const std::array<float, 2> &in,const bool isInverse){
-    // Convert input from normalized [0, 1] pre distort texture space to
-    // eye-centered tanangle units.
-    std::array<float, 2> distorted_uv_tanangle = {
-            in[0] * texture_params.width - texture_params.x_eye_offset,
-            in[1] * texture_params.height - texture_params.y_eye_offset};
-
-    std::array<float, 2> undistorted_uv_tanangle = isInverse ?
-            distortion.Distort(distorted_uv_tanangle):
-            distortion.DistortInverse(distorted_uv_tanangle);
-
-    // Convert output from tanangle units to normalized [0, 1] screen coordinates.
-    return {(undistorted_uv_tanangle[0] + screen_params.x_eye_offset) /
-            screen_params.width,
-            (undistorted_uv_tanangle[1] + screen_params.y_eye_offset) /
-            screen_params.height};
-}
-
 
 //Almost the same as the original (inverse) version, but note we do a
 // x*a+b instead of (x+a)/b when transforming back to screen coordinates
@@ -162,8 +162,8 @@ std::array<float, 2> MLensDistortion::UndistortedNDCForDistortedNDC(
         const MLensDistortion::ViewportParams &screen_params,
         const MLensDistortion::ViewportParams &texture_params, const std::array<float, 2> &in,const bool isInverse) {
     std::array<float, 2> distorted_ndc_tanangle = {
-            in[0] * texture_params.width - texture_params.x_eye_offset,
-            in[1] * texture_params.height - texture_params.y_eye_offset};
+            in[0] * texture_params.width + texture_params.x_eye_offset,
+            in[1] * texture_params.height + texture_params.y_eye_offset};
 
     std::array<float, 2> undistorted_ndc_tanangle = isInverse ?
             inverseDistortion.Distort(distorted_ndc_tanangle):
