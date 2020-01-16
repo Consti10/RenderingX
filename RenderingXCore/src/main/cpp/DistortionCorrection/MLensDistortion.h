@@ -72,17 +72,11 @@ public:
                                             ViewportParams& texture_params);
 
 
+    //Use isInverse==true when passing a distortion that is already a inverse
     static std::array<float, 2> UndistortedUvForDistortedUv(
             const MPolynomialRadialDistortion &distortion,
             const ViewportParams &screen_params, const ViewportParams &texture_params,
-            const std::array<float, 2> &in);
-
-    //same as UndistortedUvForDistortedUv, but takes the inverse polynomial instead such that the distorted point
-    //can be calulated with less computational effort
-    static std::array<float, 2> UndistortedUvForDistortedUv_Inverse(
-            const MPolynomialRadialDistortion &inverseDistortion,
-            const ViewportParams &screen_params, const ViewportParams &texture_params,
-            const std::array<float, 2> &in);
+            const std::array<float, 2> &in,bool isInverse=false);
 
 
     //This one takes and returns values between -1 and 1 (e.g. OpenGL viewport coordinates)

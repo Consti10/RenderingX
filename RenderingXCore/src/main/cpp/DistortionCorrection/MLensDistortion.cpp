@@ -136,14 +136,15 @@ void MLensDistortion::CalculateViewportParameters_NDC(
 std::array<float, 2> MLensDistortion::UndistortedUvForDistortedUv(
         const MPolynomialRadialDistortion &distortion,
         const ViewportParams &screen_params, const ViewportParams &texture_params,
-        const std::array<float, 2> &in){
+        const std::array<float, 2> &in,const bool isInverse){
     // Convert input from normalized [0, 1] pre distort texture space to
     // eye-centered tanangle units.
     std::array<float, 2> distorted_uv_tanangle = {
             in[0] * texture_params.width - texture_params.x_eye_offset,
             in[1] * texture_params.height - texture_params.y_eye_offset};
 
-    std::array<float, 2> undistorted_uv_tanangle =
+    std::array<float, 2> undistorted_uv_tanangle = isInverse ?
+            distortion.Distort(distorted_uv_tanangle):
             distortion.DistortInverse(distorted_uv_tanangle);
 
     // Convert output from tanangle units to normalized [0, 1] screen coordinates.
@@ -153,23 +154,6 @@ std::array<float, 2> MLensDistortion::UndistortedUvForDistortedUv(
             screen_params.height};
 }
 
-std::array<float, 2> MLensDistortion::UndistortedUvForDistortedUv_Inverse(
-        const MPolynomialRadialDistortion &inverseDistortion,
-        const MLensDistortion::ViewportParams &screen_params,
-        const MLensDistortion::ViewportParams &texture_params, const std::array<float, 2> &in) {
-    std::array<float, 2> distorted_uv_tanangle = {
-            in[0] * texture_params.width - texture_params.x_eye_offset,
-            in[1] * texture_params.height - texture_params.y_eye_offset};
-
-    std::array<float, 2> undistorted_uv_tanangle =
-            inverseDistortion.Distort(distorted_uv_tanangle);
-
-    // Convert output from tanangle units to normalized [0, 1] screen coordinates.
-    return {(undistorted_uv_tanangle[0] + screen_params.x_eye_offset) /
-            screen_params.width,
-            (undistorted_uv_tanangle[1] + screen_params.y_eye_offset) /
-            screen_params.height};
-}
 
 //Almost the same as the original (inverse) version, but note we do a
 // x*a+b instead of (x+a)/b when transforming back to screen coordinates
