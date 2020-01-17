@@ -47,22 +47,24 @@ void ExampleRenderer::onSurfaceCreated(JNIEnv *env, jobject context) {
     GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
     GLProgramTexture::loadTexture(mTexture360ImageEquirectangular,env,context,"360DegreeImages/insta_360_equirectangular.png");
     //create the insta360 sphere
-    EquirectangularSphere::create_sphere(mEquirecangularSphereB,2560,1280);
+    mEquirecangularSphereB.initializeGL();
+    EquirectangularSphere::uploadSphereGL(mEquirecangularSphereB,2560,1280);
     //create the green and blue mesh
     float tesselatedRectSize=2.5; //6.2f
     const float offsetY=0.0f;
     auto tmp=ColoredGeometry::makeTesselatedColoredRectLines(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,Color::BLUE);
-    GLBufferHelper::createAllocateVertexBuffer(tmp,blueMeshB);
+    blueMeshB.initializeAndUploadGL(tmp);
+
     tmp=ColoredGeometry::makeTesselatedColoredRectLines(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,Color::GREEN);
-    GLBufferHelper::createAllocateVertexBuffer(tmp,greenMeshB);
+    greenMeshB.initializeAndUploadGL(tmp);
     //create the gvr sphere
     const auto tmp2=GvrSphere::createGvrSphere(1.0,72,36);
-    GLBufferHelper::createAllocateVertexBuffer(tmp2,mGvrSphereB);
+    mGvrSphereB.initializeAndUploadGL(tmp2);
     //create the occlusion mesh, left and right viewport
     //use a slightly different color than clear color to make mesh visible
     const TrueColor color=Color::fromRGBA(0.1,0.1,0.1,1.0);
-    GLBufferHelper::createAllocateVertexBuffer(CardboardViewportOcclusion::makeMesh(vrHeadsetParams,0,color),mOcclusionMesh[0]);
-    GLBufferHelper::createAllocateVertexBuffer(CardboardViewportOcclusion::makeMesh(vrHeadsetParams,1,color),mOcclusionMesh[1]);
+    mOcclusionMesh[0].initializeAndUploadGL(CardboardViewportOcclusion::makeMesh(vrHeadsetParams,0,color));
+    mOcclusionMesh[1].initializeAndUploadGL(CardboardViewportOcclusion::makeMesh(vrHeadsetParams,1,color));
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
@@ -152,7 +154,7 @@ void ExampleRenderer::drawEyeVDDC(gvr::Eye eye) {
 
 void ExampleRenderer::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen,bool occlusion) {
     if(ENABLE_SCENE_MESH_2D){
-        const GLBufferHelper::VertexBuffer& tmp=meshColorGreen ? greenMeshB : blueMeshB;
+        const VertexBuffer& tmp=meshColorGreen ? greenMeshB : blueMeshB;
         mBasicGLPrograms->vc.beforeDraw(tmp.vertexB);
         mBasicGLPrograms->vc.draw(viewM,projM,0,tmp.nVertices,GL_LINES);
         mBasicGLPrograms->vc.afterDraw();

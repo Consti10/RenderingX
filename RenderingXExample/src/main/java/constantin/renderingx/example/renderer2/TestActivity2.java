@@ -20,6 +20,7 @@ public class TestActivity2 extends AppCompatActivity {
     private GLRTest renderer;
 
     public static final String KEY_MODE="KEY_MODE";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,9 +35,12 @@ public class TestActivity2 extends AppCompatActivity {
         if(MODE==0){
             renderer=new GLRTest(this,gvrLayout.getGvrApi(),true,
                     true,true,false,false);
-        }else{
+        }else if(MODE==1){
             renderer=new GLRTest(this,gvrLayout.getGvrApi(),false,
                     true,false,true,false);
+        }else{
+            renderer=new GLRTest(this,gvrLayout.getGvrApi(),false,
+                    true,false,false,true);
         }
         gLView.setRenderer(renderer);
         gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);

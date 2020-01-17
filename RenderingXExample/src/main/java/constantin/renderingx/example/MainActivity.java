@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -35,13 +36,14 @@ public class MainActivity extends AppCompatActivity {
     private final List<String> missingPermission = new ArrayList<>();
     private static final int REQUEST_PERMISSION_CODE = 12345;
 
-
+    private Switch mSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context=this;
         setContentView(R.layout.activity_main);
+        mSwitch=findViewById(R.id.switch1);
         //This retreives any HW info needed for the app
         AWriteGLESInfo.writeGLESInfoIfNeeded(this);
 
@@ -73,7 +75,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final Intent intent=new Intent().setClass(context,TestActivity2.class);
-                intent.putExtra(TestActivity2.KEY_MODE,1);
+                if(mSwitch.isChecked()){
+                    intent.putExtra(TestActivity2.KEY_MODE,2);
+                }else{
+                    intent.putExtra(TestActivity2.KEY_MODE,1);
+                }
                 startActivity(intent);
             }
         });

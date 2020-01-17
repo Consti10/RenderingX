@@ -76,11 +76,11 @@ void VRHeadsetParams::updateHeadsetParams(const MDeviceParams &mDP,int screenWid
     for(float i=MAX_RAD_SQ;i<3;i+=0.01f){
         const float d=mInverse.DistortRadius(i);
         if(d>=last){
-            LOGD("Increasing maxRadSq %f",MAX_RAD_SQ);
+            //LOGD("Increasing maxRadSq %f",MAX_RAD_SQ);
             MAX_RAD_SQ=i;
             last=d;
         }else{
-            LOGD("Cannot increase %f %f",last,d);
+            //LOGD("Cannot increase %f %f",last,d);
             last=d;
             break;
         }

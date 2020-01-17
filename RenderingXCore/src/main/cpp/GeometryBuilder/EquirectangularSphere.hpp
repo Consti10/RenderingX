@@ -125,12 +125,24 @@ public:
             indexData.push_back((GLProgramTexture::INDEX_DATA) tmpIndices.at(i));
         }
     }
-    static void create_sphere(GLBufferHelper::VertexIndexBuffer& data,int surf_w,int surf_h){
+
+    //Takes a !already initialized! VertexIndex Buffer
+    static void uploadSphereGL(VertexIndexBuffer& data,int surf_w,int surf_h){
         std::vector<GLProgramTexture::Vertex> vertices;
         std::vector<GLProgramTexture::INDEX_DATA > indices;
         EquirectangularSphere::create_sphere(vertices,indices,surf_w,surf_h);
-        GLBufferHelper::createAllocateVertexIndexBuffer(vertices, indices,data);
+
+        /*LOGD("N vertices %d N indices %d",vertices.size(),indices.size());
+        for(unsigned int i=0;i<indices.size();i++){
+            const int value=indices.at(i);
+            //LOGD("Index %d has value %d ",i,value);
+            if(value>vertices.size()){
+                LOGD("Error value too high");
+            }
+        }*/
+        data.uploadGL(vertices,indices);
     }
+
 };
 
 

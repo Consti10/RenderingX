@@ -81,7 +81,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     GLProgramVC::Vertex coloredVertices[3];
     const float triangleWidth=5.0F;
     ColoredGeometry::makeColoredTriangle1(coloredVertices,glm::vec3(-triangleWidth/2,0,0),triangleWidth,triangleWidth,Color::RED);
-    GLBufferHelper::allocateGLBufferStatic(glBufferVC,coloredVertices,3*sizeof(GLProgramVC::Vertex));
+    GLBufferHelper::uploadGLBufferStatic(glBufferVC,coloredVertices,3*sizeof(GLProgramVC::Vertex));
     //some smooth lines
     //create 5 lines of increasing stroke width
     GLProgramLine::Vertex lines[N_LINES*GLProgramLine::VERTICES_PER_LINE];
@@ -95,7 +95,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
         GLProgramLine::convertLineToRenderingData({-lineLength/2,yOffset,0},{lineLength/2,yOffset,0},strokeWidth,lines,i*GLProgramLine::VERTICES_PER_LINE,
                 baseColor,outlineColor);
     }
-    GLBufferHelper::allocateGLBufferStatic(glBufferLine,lines,sizeof(lines));
+    GLBufferHelper::uploadGLBufferStatic(glBufferLine,lines,sizeof(lines));
     //some smooth characters
     GLProgramText::Character charactersAsVertices[EXAMPLE_TEXT_LENGTH*EXAMPLE_TEXT_N_LINES];
     yOffset=TEXT_Y_OFFSET;
@@ -106,7 +106,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
         yOffset+=textHeight;
         textHeight+=0.3;
     }
-    GLBufferHelper::allocateGLBufferStatic(glBufferText,charactersAsVertices,sizeof(charactersAsVertices));
+    GLBufferHelper::uploadGLBufferStatic(glBufferText,charactersAsVertices,sizeof(charactersAsVertices));
     //some icons
     GLProgramText::Character iconsAsVertices[N_ICONS];
     yOffset=TEXT_Y_OFFSET;
@@ -116,7 +116,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
                 Color::YELLOW,iconsAsVertices,i);
         yOffset+=textHeight;
     }
-    GLBufferHelper::allocateGLBufferStatic(glBufferIcons,iconsAsVertices,sizeof(iconsAsVertices));
+    GLBufferHelper::uploadGLBufferStatic(glBufferIcons,iconsAsVertices,sizeof(iconsAsVertices));
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 

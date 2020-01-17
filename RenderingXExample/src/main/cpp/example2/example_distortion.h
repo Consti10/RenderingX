@@ -61,9 +61,9 @@ private:
     std::unique_ptr<GLProgramTexture> mGLProgramTexture=nullptr;
     GLuint mTexture360Image;
     GLuint mTexture360ImageEquirectangular;
-    GLBufferHelper::VertexIndexBuffer mEquirecangularSphereB;
-    GLBufferHelper::VertexBuffer mGvrSphereB;
-    GLBufferHelper::VertexBuffer mOcclusionMesh[2];
+    VertexIndexBuffer mEquirecangularSphereB;
+    VertexBuffer mGvrSphereB;
+    VertexBuffer mOcclusionMesh[2];
     /*
      * draws into gvr renderbuffer which is then distorted into framebuffer
      */
@@ -79,8 +79,8 @@ private:
     void drawEye(gvr::Eye eye,glm::mat4 viewM,glm::mat4 projM,bool meshColorGreen,bool vignette=false);
 private:
     static constexpr int LINE_MESH_TESSELATION_FACTOR=10;
-    GLBufferHelper::VertexBuffer blueMeshB;
-    GLBufferHelper::VertexBuffer greenMeshB;
+    VertexBuffer blueMeshB;
+    VertexBuffer greenMeshB;
 private:
     DistortionManager distortionManager;
 public:

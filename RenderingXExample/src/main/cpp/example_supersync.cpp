@@ -59,7 +59,7 @@ void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext) {
     for(int i=0;i<N_TRIANGLES;i++){
         ColoredGeometry::makeColoredTriangle1(&coloredVertices[i*3],glm::vec3(-triangleWidth/2,0,0),triangleWidth,triangleWidth,Color::RED);
     }
-    GLBufferHelper::allocateGLBufferStatic(glBufferVC,coloredVertices,sizeof(coloredVertices));
+    GLBufferHelper::uploadGLBufferStatic(glBufferVC,coloredVertices,sizeof(coloredVertices));
 }
 
 
