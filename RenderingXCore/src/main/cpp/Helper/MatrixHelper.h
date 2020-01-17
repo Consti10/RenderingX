@@ -60,10 +60,10 @@ static bool TEST(){
 }
 
 static glm::mat4 perspective(std::array<float,4> fov,float zNear, float zFar){
-    const float xLeft = -std::tan(fov[0] * M_PI / 180.0f) * zNear;
-    const float xRight = std::tan(fov[1] * M_PI / 180.0f) * zNear;
-    const float yBottom = -std::tan(fov[2] * M_PI / 180.0f) * zNear;
-    const float yTop = std::tan(fov[3] * M_PI / 180.0f) * zNear;
+    const float xLeft = (float)(-std::tan(fov[0] * M_PI / 180.0f) * zNear);
+    const float xRight = (float)(std::tan(fov[1] * M_PI / 180.0f) * zNear);
+    const float yBottom = (float)(-std::tan(fov[2] * M_PI / 180.0f) * zNear);
+    const float yTop = (float)(std::tan(fov[3] * M_PI / 180.0f) * zNear);
     return glm::frustum(xLeft,xRight,yBottom,yTop,zNear,zFar);
 }
 
