@@ -16,16 +16,17 @@ public:
     //TODO: Better documentation of the used algorithm
     static const std::vector<GLProgramVC::Vertex> makeMesh(const VRHeadsetParams& params,const int eye,const TrueColor color=Color::BLACK){
 
+        const int tesselation=32;
         //create the 4 meshes (left,right,top,bottom) that are
         //later merged into one big mesh
         std::array<std::vector<GLProgramVC::Vertex>,4> mesh;
 
         //Make two vertical (left and right)
-        mesh.at(0)=makeSomething({-1,-1},2.0f,false,color);
-        mesh.at(1)=makeSomething({1,-1},2.0f,false,color);
+        mesh.at(0)=makeSomething({-1,-1},2.0f,false,color,tesselation);
+        mesh.at(1)=makeSomething({1,-1},2.0f,false,color,tesselation);
         //Make two horizontal (top and bottom)
-        mesh.at(2)=makeSomething({-1,1},2.0f,true,color);
-        mesh.at(3)=makeSomething({-1,-1},2.0f,true,color);
+        mesh.at(2)=makeSomething({-1,1},2.0f,true,color,tesselation);
+        mesh.at(3)=makeSomething({-1,-1},2.0f,true,color,tesselation);
 
         //Distort every second vertex
         for(auto& tmp:mesh){
@@ -58,7 +59,9 @@ public:
     // V1--V3--V5-- .... VN
     //  |  |   |          |
     // V2--V4--V6-- ...  VN
-    static const std::vector<GLProgramVC::Vertex> makeSomething(const glm::vec2 start,const float size,const bool horizontal,const TrueColor color){
+    //tesselation should be 8 or 16 or 32 ..
+    static const std::vector<GLProgramVC::Vertex> makeSomething(const glm::vec2 start,const float size,const bool horizontal,const TrueColor color,
+            const int tesselation){
         //create a strip in the form of
         //1   | 0 1
         //0.5 | 2 3
@@ -66,7 +69,7 @@ public:
         //-0.5| 6 7
         //-1  | 8 9
         //0.5 0.25 0.125 ...
-        const float stepSize=size/8;
+        const float stepSize=size/tesselation;
         std::vector<GLProgramVC::Vertex> ret;
         for(float i=0;i<=size;i+=stepSize){
             if(horizontal){

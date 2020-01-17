@@ -12,6 +12,7 @@
 #include "MPolynomialRadialDistortion.h"
 
 //Based on @cardboard/LensDistortion
+//CardboardLensDistortion
 
 constexpr float kDefaultBorderSizeMeters = 0.003f;
 

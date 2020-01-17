@@ -9,7 +9,6 @@
 #include <array>
 #include <GeometryBuilder/EquirectangularSphere.hpp>
 #include <GeometryBuilder/GvrSphere.h>
-#include <GeometryBuilder/Sphere.h>
 #include <GeometryBuilder/CardboardViewportOcclusion.h>
 
 constexpr auto TAG="DistortionExample";
@@ -57,7 +56,7 @@ void ExampleRenderer::onSurfaceCreated(JNIEnv *env, jobject context) {
     tmp=ColoredGeometry::makeTesselatedColoredRectLines(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,Color::GREEN);
     GLBufferHelper::createAllocateVertexBuffer(tmp,greenMeshB);
     //create the gvr sphere
-    const auto tmp2=Sphere::createGvrSphere(1.0,72,36);
+    const auto tmp2=GvrSphere::createGvrSphere(1.0,72,36);
     GLBufferHelper::createAllocateVertexBuffer(tmp2,mGvrSphereB);
     //create the occlusion mesh, left and right viewport
     //use a slightly different color than clear color to make mesh visible

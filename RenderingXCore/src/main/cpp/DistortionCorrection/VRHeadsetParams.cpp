@@ -50,44 +50,50 @@ void VRHeadsetParams::updateHeadsetParams(const MDeviceParams &mDP,int screenWid
     LOGD("Left Eye: %s",MLensDistortion::ViewportParamsAsString(screen_params[0],texture_params[0]).c_str());
     LOGD("Right Eye: %s", MLensDistortion::ViewportParamsAsString(screen_params[1],texture_params[1]).c_str());
 
-
-    const float maxX=1*texture_params[0].width+texture_params[0].x_eye_offset;
+    //TODO calculate right maxRadSq
+    /*const float maxX=1*texture_params[0].width+texture_params[0].x_eye_offset;
     const float maxY=1*texture_params[0].height+texture_params[0].y_eye_offset;
     const float maxR2=maxX*maxX+maxY*maxY;
-    LOGD("Max X Y %f %f |  maxR2 %f maxR %f",maxX,maxY,maxR2,sqrt(maxR2));
+    const float maxR=sqrt(maxR2);
+    const float iMaxRad=mDistortion.DistortRadiusInverse(maxR);
+    LOGD("Max X Y %f %f |  maxR2 %f maxR %f iMaxRad %f",maxX,maxY,maxR2,maxR,iMaxRad);*/
 
-    //The daydream headset v2 distortion function is the only function where we cannot achieve a proper maxRadSq value
-    //with a deviation of less than 0.001f
-    MAX_RAD_SQ=1.0f;
+    //Find the maximum value we can use to create a inverse polynomial distortion that
+    //never has a deviation higher from x in the range [0..maxRangeInverse]
+    float maxRangeInverse=1.0f;
     for(float i=1.0f;i<=2.0f;i+=0.01f){
-        const auto& inverse=mDistortion.getApproximateInverseDistortion(sqrt(MAX_RAD_SQ),DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
-        const float maxDeviation=MPolynomialRadialDistortion::calculateMaxDeviation(mDistortion,inverse,sqrt(MAX_RAD_SQ));
-        if(maxDeviation<=0.002f){
-            MAX_RAD_SQ=i;
+        const auto& inverse=mDistortion.getApproximateInverseDistortion(maxRangeInverse,DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
+        const float maxDeviation=MPolynomialRadialDistortion::calculateMaxDeviation(mDistortion,inverse,maxRangeInverse);
+        if(maxDeviation<=0.001f){
+            maxRangeInverse=i;
         }
     }
-    LOGD("Max Rad Sq%f",MAX_RAD_SQ);
-    mInverse=mDistortion.getApproximateInverseDistortion(sqrt(MAX_RAD_SQ),DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
+    LOGD("Max value used for getApproximateInverseDistortion() %f",maxRangeInverse);
+    mInverse=mDistortion.getApproximateInverseDistortion(maxRangeInverse,DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
+    //as long as the function is still strict monotonic increasing we can increase the value that will be used for
+    //clamping later in the vertex shader.
+    float last=mInverse.DistortRadius(MAX_RAD_SQ);
+    for(float i=MAX_RAD_SQ;i<3;i+=0.01f){
+        const float d=mInverse.DistortRadius(i);
+        if(d>=last){
+            LOGD("Increasing maxRadSq %f",MAX_RAD_SQ);
+            MAX_RAD_SQ=i;
+            last=d;
+        }else{
+            LOGD("Cannot increase %f %f",last,d);
+            last=d;
+            break;
+        }
+    }
     mProjectionM[0]=perspective(fovLeft,MIN_Z_DISTANCE,MAX_Z_DISTANCE);
     mProjectionM[1]=perspective(fovRight,MIN_Z_DISTANCE,MAX_Z_DISTANCE);
     const float inter_lens_distance=mDP.inter_lens_distance;
     eyeFromHead[0]=glm::translate(glm::mat4(1.0f),glm::vec3(inter_lens_distance*0.5f,0,0));
     eyeFromHead[1]=glm::translate(glm::mat4(1.0f),glm::vec3(-inter_lens_distance*0.5f,0,0));
-
-    MAX_RAD_SQ=1.8f;
-
-
-    //as long as the inverse is strict monotone increasing, we can increase the maxRadSq value
-    /*float lastValue=0;
-    for(float r2=MAX_RAD_SQ;r2<3.0f;r2+=0.01f){
-        const float v=mInverse.DistortRadius(sqr)
-    }*/
-    //MAX_RAD_SQ=3.0f;
-
 }
 
 
-void VRHeadsetParams::updateDistortionManager(DistortionManager &distortionManager) {
+void VRHeadsetParams::updateDistortionManager(DistortionManager &distortionManager)const {
     distortionManager.updateDistortion(mInverse,MAX_RAD_SQ,screen_params,texture_params);
 }
 
@@ -96,19 +102,19 @@ void VRHeadsetParams::updateLatestHeadSpaceFromStartSpaceRotation() {
     latestHeadSpaceFromStartSpaceRotation=toGLM(latestHeadSpaceFromStartSpaceRotation_);
 }
 
-glm::mat4 VRHeadsetParams::GetLatestHeadSpaceFromStartSpaceRotation() {
+glm::mat4 VRHeadsetParams::GetLatestHeadSpaceFromStartSpaceRotation()const{
     return latestHeadSpaceFromStartSpaceRotation;
 }
 
-gvr::Mat4f VRHeadsetParams::GetLatestHeadSpaceFromStartSpaceRotation_() {
+gvr::Mat4f VRHeadsetParams::GetLatestHeadSpaceFromStartSpaceRotation_()const {
     return latestHeadSpaceFromStartSpaceRotation_;
 }
 
-glm::mat4 VRHeadsetParams::GetEyeFromHeadMatrix(gvr::Eye eye) {
+glm::mat4 VRHeadsetParams::GetEyeFromHeadMatrix(gvr::Eye eye)const{
     return eyeFromHead[eye];
 }
 
-glm::mat4 VRHeadsetParams::GetProjectionMatrix(gvr::Eye eye) {
+glm::mat4 VRHeadsetParams::GetProjectionMatrix(gvr::Eye eye)const{
     return mProjectionM[eye];
 }
 

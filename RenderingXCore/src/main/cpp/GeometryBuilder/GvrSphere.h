@@ -6,6 +6,7 @@
 #define FPV_VR_2018_GVRSPHERE_H
 
 #include <vector>
+#include <GLPrograms/GLProgramTexture.h>
 
 //Inside th gvr 360° video example source code, there is a function to create
 //The geometry with texture data for a 360° video sphere
@@ -67,6 +68,22 @@ public:
             float verticalFovDegrees,
             float horizontalFovDegrees,
             int mediaFormat);
+    //
+    //And here is the binding for GLProgramTexture::Vertex
+    //
+    static std::vector<GLProgramTexture::Vertex>
+    createGvrSphere(float radius, int latitudes, int longitudes) {
+        const auto vertexDataAsInGvr=GvrSphere::createUvSphere2(radius,latitudes,longitudes,180,360,GvrSphere::MEDIA_MONOSCOPIC);
+        std::vector<GLProgramTexture::Vertex> ret;
+        for(const auto& vertex:vertexDataAsInGvr){
+            GLProgramTexture::Vertex v{
+                    vertex.x,vertex.y,vertex.z,vertex.u_left,vertex.v_left
+            };
+            ret.push_back(v);
+        }
+        return ret;
+    }
+
 };
 
 
