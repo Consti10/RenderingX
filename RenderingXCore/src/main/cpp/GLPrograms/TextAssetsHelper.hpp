@@ -26,4 +26,5 @@ public:
         return ss.str();
     }
 };
+
 #endif //FPV_VR_TEXTASSETS_H
