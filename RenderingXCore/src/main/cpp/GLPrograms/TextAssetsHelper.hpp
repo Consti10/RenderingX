@@ -12,15 +12,23 @@
 class TextAssetsHelper {
 public:
     enum TEXT_STYLE{ARIAL_PLAIN,ARIAL_BOLD,ARIAL_ITALIC,ARIAL_BOLDITALIC,MONOSPACE};
+private:
+    static int getIndexSafe(const TEXT_STYLE& textStyle){
+        const int index=static_cast<int>(textStyle);
+        if(index>5 || index<0){
+            return 0;
+        }
+        return index;
+    }
 public:
     static std::string getDistanceFieldNameByStyle(const TEXT_STYLE& textStyle){
-        const int index=static_cast<int>(textStyle);
+        const int index=getIndexSafe(textStyle);
         std::stringstream ss;
         ss<<"Text/"<<"DistanceFields/"<<"TEXT_ATLAS_DF_"<<index<<".png";
         return ss.str();
     }
     static std::string getOtherDataNameByStyle(const TEXT_STYLE& textStyle){
-        const int index=static_cast<int>(textStyle);
+        const int index=getIndexSafe(textStyle);
         std::stringstream ss;
         ss<<"Text/"<<"OtherData/"<<"TEXT_OTHER_DATA_"<<index<<".ser";
         return ss.str();
