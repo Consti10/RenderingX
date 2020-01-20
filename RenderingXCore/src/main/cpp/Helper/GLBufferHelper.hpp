@@ -69,7 +69,7 @@ public:
 class VertexBuffer{
 public:
     GLuint vertexB;
-    int nVertices;
+    int nVertices=0;
 
 public:
     void initializeGL(){
@@ -79,6 +79,11 @@ public:
     template<typename T>
     void uploadGL(const std::vector<T> &vertices){
         nVertices = GLBufferHelper::uploadGLBufferStatic(vertexB, vertices);
+    }
+    template<typename T,size_t s>
+    void uploadGL(const std::array<T,s> &vertices){
+        const auto tmp=std::vector<T>(vertices.begin(),vertices.end());
+        VertexBuffer::uploadGL(tmp);
     }
 
     template<typename T>
@@ -100,7 +105,7 @@ class VertexIndexBuffer {
 public:
     GLuint vertexB;
     GLuint indexB;
-    int nIndices;
+    int nIndices=0;
 
     void initializeGL(){
         glGenBuffers(1,&vertexB);
