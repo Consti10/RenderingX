@@ -80,6 +80,7 @@ public:
     void uploadGL(const std::vector<T> &vertices){
         nVertices = GLBufferHelper::uploadGLBufferStatic(vertexB, vertices);
     }
+
     template<typename T,size_t s>
     void uploadGL(const std::array<T,s> &vertices){
         const auto tmp=std::vector<T>(vertices.begin(),vertices.end());

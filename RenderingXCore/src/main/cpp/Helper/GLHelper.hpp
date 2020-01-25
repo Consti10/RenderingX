@@ -35,6 +35,7 @@ public:
             GLsizei len;
             glGetShaderInfoLog(shader,1024,&len,infoLog);
             MDebug::log("Couldn't compile shader "+std::string(infoLog),TAG);
+            MDebug::log("Code is "+shaderCode);
         }
         return shader;
     }
