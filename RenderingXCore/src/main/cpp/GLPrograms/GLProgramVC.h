@@ -43,6 +43,7 @@ public:
 private:
     static const std::string VS(const DistortionManager& distortionManager1,bool coordinates2D){
         std::stringstream s;
+        //s<<"#version 100\n";
         s<<"uniform mat4 uMVMatrix;\n";
         s<<"uniform mat4 uPMatrix;\n";
         s<<"attribute vec4 aPosition;\n";

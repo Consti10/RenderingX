@@ -60,11 +60,12 @@ std::string DistortionManager::writeDistortionParams(
 
     //All GLSL functions (declare before main in vertex shader, then use anywhere)
     //
-    s<<"bool isInsideViewPort(const in vec2 ndc){\n";
+    /*s<<"bool isInsideViewPort(const in vec2 ndc){\n";
     s<<"if(ndc.x>=-1.0 && ndc.x<=1.0 && ndc.y>=-1.0 && ndc.y<=1.0){return true;}\n";
-    s<<"return false;}\n";
+    s<<"return false;}\n";*/
+    //
     //same as PolynomialRadialDistortion::DistortionFactor but unrolled loop for easier optimization by compiler
-    s<<"float PolynomialDistortionFactor(const in float r_squared,const in float["<<N_COEFICIENTS<<"] coefficients){\n";
+    s<<"\nfloat PolynomialDistortionFactor(const in float r_squared,const in float coefficients["<<N_COEFICIENTS<<"]){\n";
     //manually unrolled loop
     s<<"float ret = 0.0;\n";
     for(int i=N_COEFICIENTS-1;i>=0;i--){
@@ -73,20 +74,16 @@ std::string DistortionManager::writeDistortionParams(
     s<<"return 1.0+ret;\n";
     s<<"}\n";
 
-    //s<<"varying float invisibleFragment;";
 
     //same as PolynomialRadialDistortion::Distort
     //But with maxRadSq as limit
-    s<<"vec2 PolynomialDistort(const in float["<<N_COEFICIENTS<<"] coefficients,const in vec2 in_pos,const in float maxRadSq){\n";
+    s<<"vec2 PolynomialDistort(const in float coefficients["<<N_COEFICIENTS<<"],const in vec2 in_pos,const in float maxRadSq){\n";
     s<<"float r2=dot(in_pos.xy,in_pos.xy);\n";
-    //s<<"if(r2>1.789877){";
-    //s<<"r2=0.0;";
-    //s<<"}";
-    s<<"r2=clamp(r2,0.0,maxRadSq);";
-    s<<"float dist_factor=PolynomialDistortionFactor(r2,coefficients);";
+    s<<"r2=clamp(r2,0.0,maxRadSq);\n";
+    s<<"float dist_factor=PolynomialDistortionFactor(r2,coefficients);\n";
     s<<"vec2 ret=in_pos.xy*dist_factor;\n";
     s<<"return ret;\n";
-    s<<"}";
+    s<<"}\n";
 
     //Same as MLensDistortion::ViewportParams
     s<<"struct ViewportParams\n"
@@ -95,10 +92,10 @@ std::string DistortionManager::writeDistortionParams(
        "  float height;\n"
        "  float x_eye_offset;\n"
        "  float y_eye_offset;\n"
-       "};";
+       "};\n";
     //Same as MLensDistortion::UndistortedNDCForDistortedNDC
     s<<"vec2 UndistortedNDCForDistortedNDC(";
-    s<<"const in float["<<N_COEFICIENTS<<"] coefficients,";
+    s<<"const in float coefficients["<<N_COEFICIENTS<<"],";
     s<<"const in ViewportParams screen_params,const in ViewportParams texture_params,const in vec2 in_ndc,const in float maxRadSq){\n";
     s<<"vec2 distorted_ndc_tanangle=vec2(";
     s<<"in_ndc.x * texture_params.width+texture_params.x_eye_offset,";
@@ -111,14 +108,15 @@ std::string DistortionManager::writeDistortionParams(
 
     //The uniforms needed for vddc
     if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
-        s<<"uniform float uMaxRadSq;";
-        s<<"uniform float uKN["<<N_COEFICIENTS<<"];";
+        s<<"uniform float uMaxRadSq;\n";
+        s<<"uniform float uKN["<<N_COEFICIENTS<<"];\n";
     }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD){
-        s<<"uniform float uMaxRadSq;";
-        s<<"uniform float uKN["<<N_COEFICIENTS<<"];";
-        s<<"uniform ViewportParams uScreenParams;";
-        s<<"uniform ViewportParams uTextureParams;";
+        s<<"uniform float uMaxRadSq;\n";
+        s<<"uniform float uKN["<<N_COEFICIENTS<<"];\n";
+        s<<"uniform ViewportParams uScreenParams;\n";
+        s<<"uniform ViewportParams uTextureParams;\n";
     }
+
     return s.str();
 }
 
