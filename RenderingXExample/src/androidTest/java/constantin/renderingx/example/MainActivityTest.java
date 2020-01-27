@@ -20,7 +20,7 @@ import constantin.renderingx.example.renderer2.AExampleVRRendering;
 
 @LargeTest
 public class MainActivityTest {
-    private static final int WAIT_TIME = 2*1000; //2 seconds
+    private static final int WAIT_TIME = 5*1000; //2 seconds
 
     @Rule
     public ActivityTestRule<MainActivity> mMainActivityRule = new ActivityTestRule<>(MainActivity.class);
