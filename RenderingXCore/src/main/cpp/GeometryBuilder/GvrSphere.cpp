@@ -12,7 +12,6 @@
 #include <android/log.h>
 
 constexpr auto TAG="GvrSphere";
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
 
 constexpr double PI = 3.141592653589793;
 
