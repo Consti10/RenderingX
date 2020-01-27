@@ -12,7 +12,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 
-public class GLRTest implements GLSurfaceView.Renderer{
+public class GLRExampleVR implements GLSurfaceView.Renderer{
     static {
         System.loadLibrary("example-renderer2");
     }
@@ -35,8 +35,8 @@ public class GLRTest implements GLSurfaceView.Renderer{
     private final Context mContext;
     private final long nativeRenderer;
 
-    public GLRTest(final Context context, final GvrApi gvrApi,boolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
-                   boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,boolean MESH,boolean SPHERE,boolean SPHERE2){
+    public GLRExampleVR(final Context context, final GvrApi gvrApi, boolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
+                        boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT, boolean MESH, boolean SPHERE, boolean SPHERE2){
         mContext=context;
         GvrView view=new GvrView(context);
         final GvrViewerParams params=view.getGvrViewerParams();

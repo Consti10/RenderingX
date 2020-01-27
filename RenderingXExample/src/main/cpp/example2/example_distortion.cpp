@@ -13,7 +13,7 @@
 
 constexpr auto TAG="DistortionExample";
 
-ExampleRenderer::ExampleRenderer(JNIEnv *env, jobject androidContext,gvr_context *gvr_context,bool RENDER_SCENE_USING_GVR_RENDERBUFFER,
+ExampleRendererVR::ExampleRendererVR(JNIEnv *env, jobject androidContext,gvr_context *gvr_context,bool RENDER_SCENE_USING_GVR_RENDERBUFFER,
         bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT,bool MESH,bool SPHERE,bool SPHERE2):
         RENDER_SCENE_USING_GVR_RENDERBUFFER(RENDER_SCENE_USING_GVR_RENDERBUFFER),
         RENDER_SCENE_USING_VERTEX_DISPLACEMENT(RENDER_SCENE_USING_VERTEX_DISPLACEMENT),
@@ -29,7 +29,7 @@ ExampleRenderer::ExampleRenderer(JNIEnv *env, jobject androidContext,gvr_context
 }
 
 
-void ExampleRenderer::onSurfaceCreated(JNIEnv *env, jobject context) {
+void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context) {
 //Instantiate all our OpenGL rendering 'Programs'
     gvr_api_->InitializeGl();
     std::vector<gvr::BufferSpec> specs;
@@ -68,11 +68,11 @@ void ExampleRenderer::onSurfaceCreated(JNIEnv *env, jobject context) {
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
-void ExampleRenderer::onSurfaceChanged(int width, int height) {
+void ExampleRendererVR::onSurfaceChanged(int width, int height) {
     //Nothing
 }
 
-void ExampleRenderer::updateBufferViewports() {
+void ExampleRendererVR::updateBufferViewports() {
     recommended_buffer_viewports.SetToRecommendedBufferViewports();
     for(size_t eye=0;eye<2;eye++){
         recommended_buffer_viewports.GetBufferViewport(eye, &scratch_viewport);
@@ -81,7 +81,7 @@ void ExampleRenderer::updateBufferViewports() {
     }
 }
 
-void ExampleRenderer::onDrawFrame() {
+void ExampleRendererVR::onDrawFrame() {
     mFPSCalculator.tick();
     //LOGD("FPS: %f",mFPSCalculator.getCurrentFPS());
 
@@ -119,7 +119,7 @@ void ExampleRenderer::onDrawFrame() {
     GLHelper::checkGlError("ExampleRenderer2::onDrawFrame");
 }
 
-void ExampleRenderer::drawEyeGvrRenderbuffer(gvr::Eye eye) {
+void ExampleRendererVR::drawEyeGvrRenderbuffer(gvr::Eye eye) {
     buffer_viewports.GetBufferViewport(eye, &scratch_viewport);
 
     const gvr::Rectf& rect = scratch_viewport.GetSourceUv();
@@ -141,7 +141,7 @@ void ExampleRenderer::drawEyeGvrRenderbuffer(gvr::Eye eye) {
     GLHelper::checkGlError("ExampleRenderer2::drawEyeGvr");
 }
 
-void ExampleRenderer::drawEyeVDDC(gvr::Eye eye) {
+void ExampleRendererVR::drawEyeVDDC(gvr::Eye eye) {
     vrHeadsetParams.setOpenGLViewport(eye);
     distortionManager.leftEye=eye==0;
     const auto rotM=vrHeadsetParams.GetLatestHeadSpaceFromStartSpaceRotation();
@@ -152,7 +152,7 @@ void ExampleRenderer::drawEyeVDDC(gvr::Eye eye) {
     GLHelper::checkGlError("ExampleRenderer2::drawEyeVDDC");
 }
 
-void ExampleRenderer::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen,bool occlusion) {
+void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen,bool occlusion) {
     if(ENABLE_SCENE_MESH_2D){
         const VertexBuffer& tmp=meshColorGreen ? greenMeshB : blueMeshB;
         mBasicGLPrograms->vc.beforeDraw(tmp.vertexB);
@@ -180,13 +180,13 @@ void ExampleRenderer::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, boo
 
 #define JNI_METHOD(return_type, method_name) \
   JNIEXPORT return_type JNICALL              \
-      Java_constantin_renderingx_example_renderer2_GLRTest_##method_name
+      Java_constantin_renderingx_example_renderer2_GLRExampleVR_##method_name
 
-inline jlong jptr(ExampleRenderer *p) {
+inline jlong jptr(ExampleRendererVR *p) {
     return reinterpret_cast<intptr_t>(p);
 }
-inline ExampleRenderer *native(jlong ptr) {
-    return reinterpret_cast<ExampleRenderer*>(ptr);
+inline ExampleRendererVR *native(jlong ptr) {
+    return reinterpret_cast<ExampleRendererVR*>(ptr);
 }
 
 extern "C" {
@@ -194,7 +194,7 @@ extern "C" {
 JNI_METHOD(jlong, nativeConstruct)
 (JNIEnv *env, jobject obj,jobject androidContext,jlong native_gvr_api,jboolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
  jboolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,jboolean MESH,jboolean SPHERE,jboolean SPHERE2) {
-    return jptr(new ExampleRenderer(env,androidContext,reinterpret_cast<gvr_context *>(native_gvr_api),RENDER_SCENE_USING_GVR_RENDERBUFFER,
+    return jptr(new ExampleRendererVR(env,androidContext,reinterpret_cast<gvr_context *>(native_gvr_api),RENDER_SCENE_USING_GVR_RENDERBUFFER,
             RENDER_SCENE_USING_VERTEX_DISPLACEMENT,MESH,SPHERE,SPHERE2));
 }
 JNI_METHOD(void, nativeDelete)

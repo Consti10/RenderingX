@@ -31,7 +31,9 @@
 #include <gvr_util/util.h>
 #include <Helper/GLBufferHelper.hpp>
 
-class ExampleRenderer{
+//Example that uses VDDC to render VR content
+
+class ExampleRendererVR{
 public:
     //Since blending is enabled, when selecting both rendering modes simultaneously the visual difference between them
     //can be observed when only rendering the 2D Mesh (the mesh is rendered with a smaller line width the second time)
@@ -42,7 +44,7 @@ public:
     const bool ENABLE_SCENE_360_SPHERE;
     const bool ENABLE_SCENE_360_SPHERE_EQUIRECTANGULAR;
 public:
-    ExampleRenderer(JNIEnv* env,jobject androidContext,gvr_context *gvr_context,
+    ExampleRendererVR(JNIEnv* env,jobject androidContext,gvr_context *gvr_context,
             bool RENDER_SCENE_USING_GVR_RENDERBUFFER=true,bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT=true,
             bool ENABLE_SCENE_MESH_2D=true,bool ENABLE_SCENE_360_SPHERE=false,bool ENABLE_SCENE_360_SPHERE_EQUIRECTANGULAR=false);
     void onSurfaceCreated(JNIEnv* env,jobject context);

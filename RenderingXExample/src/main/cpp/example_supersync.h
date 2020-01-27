@@ -28,8 +28,17 @@
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
 
-//in contrast to example_renderer, here we are using an object-oriented native binding approach - the lifecycle of the cpp object  is tied to the lifecycle of the same named java object
+//in contrast to example_renderer, here we are using an object-oriented native binding approach - the lifecycle of the cpp object  is tied to the lifecycle
+//of the same named java object
 //See implementation for more details on SuperSnyc
+
+//Super sync (synchronous front buffer rendering) is a technique for reducing latency in VR
+//It renders both the left and right eye alternating in sync with the VSYNC.
+//Since it only halves the frame buffer, it can be both called scan line racing and scan line chasing
+
+//This is just an example for showing the basics, see FPV-VR for a useful implementation
+//It only clears the screen and renders a triangle from the left and right eye view
+
 
 class GLRSuperSyncExample{
 public:

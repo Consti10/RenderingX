@@ -22,10 +22,9 @@ import java.util.List;
 
 import constantin.renderingX.GLESInfo.AWriteGLESInfo;
 import constantin.renderingX.GLESInfo.GLESInfo;
-import constantin.renderingx.example.renderer1.ExampleRenderingA;
-import constantin.renderingx.example.renderer2.GLRTest;
-import constantin.renderingx.example.renderer2.TestActivity2;
-import constantin.renderingx.example.supersync.ExampleSuperSyncA;
+import constantin.renderingx.example.renderer1.AExampleRendering;
+import constantin.renderingx.example.renderer2.AExampleVRRendering;
+import constantin.renderingx.example.supersync.AExampleSuperSync;
 
 public class MainActivity extends AppCompatActivity {
     Context context;
@@ -50,14 +49,14 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent().setClass(context, ExampleRenderingA.class));
+                startActivity(new Intent().setClass(context, AExampleRendering.class));
             }
         });
         findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(GLESInfo.isExtensionAvailable(context,GLESInfo.EGL_ANDROID_front_buffer_auto_refresh) && GLESInfo.isExtensionAvailable(context,GLESInfo.EGL_KHR_mutable_render_buffer)){
-                    startActivity(new Intent().setClass(context, ExampleSuperSyncA.class));
+                    startActivity(new Intent().setClass(context, AExampleSuperSync.class));
                 }else{
                     Toast.makeText(context,"SuperSync is not supported on this phone",Toast.LENGTH_LONG).show();
                 }
@@ -66,19 +65,19 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent intent=new Intent().setClass(context,TestActivity2.class);
-                intent.putExtra(TestActivity2.KEY_MODE,0);
+                final Intent intent=new Intent().setClass(context, AExampleVRRendering.class);
+                intent.putExtra(AExampleVRRendering.KEY_MODE,0);
                 startActivity(intent);
             }
         });
         findViewById(R.id.button4).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent intent=new Intent().setClass(context,TestActivity2.class);
+                final Intent intent=new Intent().setClass(context, AExampleVRRendering.class);
                 if(mSwitch.isChecked()){
-                    intent.putExtra(TestActivity2.KEY_MODE,2);
+                    intent.putExtra(AExampleVRRendering.KEY_MODE,2);
                 }else{
-                    intent.putExtra(TestActivity2.KEY_MODE,1);
+                    intent.putExtra(AExampleVRRendering.KEY_MODE,1);
                 }
                 startActivity(intent);
             }

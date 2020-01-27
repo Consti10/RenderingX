@@ -26,14 +26,6 @@
 #include "VRFrameCPUChronometer.h"
 #include "example_supersync.h"
 
-//Super sync (synchronous front buffer rendering) is a technique for reducing latency in VR
-//It renders both the left and right eye alternating in sync with the VSYNC.
-//Since it only halves the frame buffer, it can be both called scan line racing and scan line chasing
-
-//This is just an example for showing the basics, see FPV-VR for a useful implementation
-//It only clears the screen and renders a triangle from the left and right eye view
-
-
 GLRSuperSyncExample::GLRSuperSyncExample(JNIEnv *env, jobject androidContext,
                                        bool qcomTiledRenderingAvailable,
                                        bool reusableSyncAvailable):

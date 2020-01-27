@@ -6,6 +6,8 @@
 #include <sstream>
 #include "MDebug.hpp"
 
+//#define CRASH_APPLICATION_ON_GL_ERROR
+
 class GLHelper{
 private:
     inline static const std::string TAG="GLHelper";
@@ -21,6 +23,9 @@ public:
             anyError=true;
         }
         if(anyError)MDebug::log(ss.str(),TAG);
+#ifdef CRASH_APPLICATION_ON_GL_ERROR
+        if(anyError)exit(-1);
+#endif
     }
     static const GLuint loadShader(GLenum type,const std::string& shaderCode){
         GLuint shader = glCreateShader(type);

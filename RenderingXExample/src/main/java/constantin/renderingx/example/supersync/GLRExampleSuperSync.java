@@ -12,7 +12,7 @@ import com.google.vr.sdk.base.Eye;
 import constantin.renderingX.GLESInfo.GLESInfo;
 import constantin.renderingX.ViewSuperSync;
 
-public class GLRSuperSyncExample implements ViewSuperSync.IRendererSuperSync {
+public class GLRExampleSuperSync implements ViewSuperSync.IRendererSuperSync {
     static {
         System.loadLibrary("example-renderer");
     }
@@ -28,7 +28,7 @@ public class GLRSuperSyncExample implements ViewSuperSync.IRendererSuperSync {
     // Opaque native pointer to the native GLRStereoSuperSync instance.
     private final long nativeGLRSuperSync;
 
-    public GLRSuperSyncExample(final Context context, GvrApi gvrApi){
+    public GLRExampleSuperSync(final Context context, GvrApi gvrApi){
         mContext=context;
         final boolean qcomTiledRenderingAvailable= GLESInfo.isExtensionAvailable(context, GLESInfo.GL_QCOM_tiled_rendering);
         final boolean reusableSyncAvailable=GLESInfo.isExtensionAvailable(context,GLESInfo.EGL_KHR_reusable_sync);

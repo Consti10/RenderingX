@@ -7,15 +7,15 @@ import android.os.Bundle;
 import constantin.renderingX.PerformanceHelper;
 import constantin.renderingX.ViewSuperSync;
 
-public class ExampleSuperSyncA extends AppCompatActivity {
+public class AExampleSuperSync extends AppCompatActivity {
     private ViewSuperSync mViewSuperSync;
-    private GLRSuperSyncExample mGLRStereoSuperSync;
+    private GLRExampleSuperSync mGLRStereoSuperSync;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewSuperSync=new ViewSuperSync(this);
-        mGLRStereoSuperSync = new GLRSuperSyncExample(this,mViewSuperSync.getGvrApi());
+        mGLRStereoSuperSync = new GLRExampleSuperSync(this,mViewSuperSync.getGvrApi());
         mViewSuperSync.setRenderer(mGLRStereoSuperSync);
         setContentView(mViewSuperSync);
     }

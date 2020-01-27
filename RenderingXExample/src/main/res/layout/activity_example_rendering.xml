@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".supersync.ExampleSuperSyncA">
+    tools:context=".supersync.AExampleSuperSync">
     <Spinner
         android:id="@+id/spinner"
         android:layout_gravity="start"

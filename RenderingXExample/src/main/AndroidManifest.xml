@@ -25,14 +25,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".supersync.ExampleSuperSyncA"
+            android:name=".supersync.AExampleSuperSync"
             android:screenOrientation="landscape"
             android:theme="@style/MyStyleFullscreen" />
         <activity
-            android:name=".renderer1.ExampleRenderingA"
+            android:name=".renderer1.AExampleRendering"
             android:theme="@style/MyStyleNoActionBar" />
         <activity android:name="constantin.renderingX.GLESInfo.AWriteGLESInfo" />
-        <activity android:name=".renderer2.TestActivity2"
+        <activity android:name=".renderer2.AExampleVRRendering"
             android:theme="@style/MyStyleFullscreen"
             android:screenOrientation="landscape">
         </activity>

@@ -14,7 +14,7 @@ import android.widget.Spinner;
 
 import constantin.renderingx.example.R;
 
-public class ExampleRenderingA extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
+public class AExampleRendering extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
     private GLSurfaceView gLView;
     private GLRExample renderer;
     private SeekBar seekBar1,seekBar2,seekBar3;

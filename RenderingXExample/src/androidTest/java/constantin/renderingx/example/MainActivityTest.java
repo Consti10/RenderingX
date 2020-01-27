@@ -13,7 +13,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import constantin.renderingX.GLESInfo.AWriteGLESInfo;
-import constantin.renderingx.example.renderer1.ExampleRenderingA;
+import constantin.renderingx.example.renderer1.AExampleRendering;
+import constantin.renderingx.example.renderer2.AExampleVRRendering;
 
 //Launch Main Activity
 //Launch the writeGLESInfo Activity manually
@@ -25,12 +26,15 @@ public class MainActivityTest {
     private static final int WAIT_TIME = 2*1000; //2 seconds
 
     @Rule
-    public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
-
+    public ActivityTestRule<MainActivity> mMainActivityRule = new ActivityTestRule<>(MainActivity.class);
     @Rule
     public ActivityTestRule<AWriteGLESInfo> mGLESInfoRule = new ActivityTestRule<>(AWriteGLESInfo.class,false,false);
+
     @Rule
-    public ActivityTestRule<ExampleRenderingA> mExampleRenderingRule = new ActivityTestRule<>(ExampleRenderingA.class,false,false);
+    public ActivityTestRule<AExampleRendering> mExampleRenderingRule = new ActivityTestRule<>(AExampleRendering.class,false,false);
+    @Rule
+    public ActivityTestRule<AExampleVRRendering> mExampleVRRenderingRule = new ActivityTestRule<>(AExampleVRRendering.class,false,false);
+
 
     @Rule
     public GrantPermissionRule mGrantPermissionRule =
@@ -52,11 +56,26 @@ public class MainActivityTest {
         mExampleRenderingRule.finishActivity();
     }
 
+    private void testVRRendering(int mode){
+        Intent i = new Intent();
+        i.putExtra(AExampleVRRendering.KEY_MODE,mode);
+        mExampleVRRenderingRule.launchActivity(i);
+        try { Thread.sleep(WAIT_TIME); } catch (InterruptedException e) { e.printStackTrace(); }
+        mExampleVRRenderingRule.finishActivity();
+    }
+
 
     @Test
     public void mainActivityTest() {
         startGLESInfo();
+        //without VDDC / VR
         testRendering();
+        //VDDC
+        testVRRendering(0);
+        //Sphere Equi
+        testVRRendering(1);
+        //Sphere Gvr
+        testVRRendering(2);
     }
 
 }

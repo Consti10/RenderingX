@@ -7,19 +7,16 @@ import android.os.Bundle;
 import android.os.Environment;
 
 import com.google.vr.ndk.base.GvrLayout;
-import com.google.vr.sdk.base.Distortion;
-import com.google.vr.sdk.base.GvrView;
 
 import constantin.renderingX.PerformanceHelper;
-import constantin.renderingx.example.R;
-import constantin.renderingx.example.renderer1.GLRExample;
 
-public class TestActivity2 extends AppCompatActivity {
+public class AExampleVRRendering extends AppCompatActivity {
     private GvrLayout gvrLayout;
     private GLSurfaceView gLView;
-    private GLRTest renderer;
+    private GLRExampleVR renderer;
 
     public static final String KEY_MODE="KEY_MODE";
+    //Default mode is 0 (test VDDC)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +30,13 @@ public class TestActivity2 extends AppCompatActivity {
         gLView = new GLSurfaceView(this);
         gLView.setEGLContextClientVersion(2);
         if(MODE==0){
-            renderer=new GLRTest(this,gvrLayout.getGvrApi(),true,
+            renderer=new GLRExampleVR(this,gvrLayout.getGvrApi(),true,
                     true,true,false,false);
         }else if(MODE==1){
-            renderer=new GLRTest(this,gvrLayout.getGvrApi(),false,
+            renderer=new GLRExampleVR(this,gvrLayout.getGvrApi(),false,
                     true,false,true,false);
         }else{
-            renderer=new GLRTest(this,gvrLayout.getGvrApi(),false,
+            renderer=new GLRExampleVR(this,gvrLayout.getGvrApi(),false,
                     true,false,false,true);
         }
         gLView.setRenderer(renderer);
