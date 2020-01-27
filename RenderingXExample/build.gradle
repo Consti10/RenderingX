@@ -52,6 +52,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation "com.google.vr:sdk-base:$mGvrVersion"
 
+    //for touch input (scale/rotate text)
+    implementation 'com.dinuscxj:multitouchgesturedetector:1.0.0'
+
     //firebase
     implementation 'com.google.firebase:firebase-core:17.2.2'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
