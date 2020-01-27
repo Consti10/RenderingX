@@ -99,11 +99,11 @@ std::string DistortionManager::writeDistortionParams(
     s<<"const in ViewportParams screen_params,const in ViewportParams texture_params,const in vec2 in_ndc,const in float maxRadSq){\n";
     s<<"vec2 distorted_ndc_tanangle=vec2(";
     s<<"in_ndc.x * texture_params.width+texture_params.x_eye_offset,";
-    s<<"in_ndc.y * texture_params.height+texture_params.y_eye_offset);";
-    s<<"vec2 undistorted_ndc_tanangle = PolynomialDistort(coefficients,distorted_ndc_tanangle,maxRadSq);";
+    s<<"in_ndc.y * texture_params.height+texture_params.y_eye_offset);\n";
+    s<<"vec2 undistorted_ndc_tanangle = PolynomialDistort(coefficients,distorted_ndc_tanangle,maxRadSq);\n";
     s<<"vec2 ret=vec2(undistorted_ndc_tanangle.x*screen_params.width+screen_params.x_eye_offset,";
-    s<<"undistorted_ndc_tanangle.y*screen_params.height+screen_params.y_eye_offset);";
-    s<<"return ret;";
+    s<<"undistorted_ndc_tanangle.y*screen_params.height+screen_params.y_eye_offset);\n";
+    s<<"return ret;\n";
     s<<"}\n";
 
     //The uniforms needed for vddc
@@ -129,7 +129,7 @@ std::string DistortionManager::writeGLPosition(const DistortionManager &distorti
         s<<"vec4 pos=uMVMatrix*"+positionAttribute+";\n";
         s<<"float r2=dot(pos.xy,pos.xy)/(pos.z*pos.z);\n";
         //s<<"r2=clamp(r2,0.0,uMaxRadSq);\n";
-        s<<"float dist_factor=PolynomialDistortionFactor(r2,uKN);";
+        s<<"float dist_factor=PolynomialDistortionFactor(r2,uKN);\n";
         s<<"pos.xy*=dist_factor;\n";
         //s<<"gl_Position=pos;\n";
         s<<"gl_Position=uPMatrix*pos;\n";
@@ -138,12 +138,12 @@ std::string DistortionManager::writeGLPosition(const DistortionManager &distorti
     }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD){
         s<<"vec4 pos_view=uMVMatrix*"+positionAttribute+";\n";
         s<<"vec4 pos_clip=uPMatrix*pos_view;\n";
-        s<<"vec3 ndc=pos_clip.xyz/pos_clip.w;";
+        s<<"vec3 ndc=pos_clip.xyz/pos_clip.w;\n";
         //s<<"bool inside=isInsideViewPort(ndc.xy);";
         //s<<"ndc.xy=clamp(ndc.xy,-1.0,1.0);";
         //s<<"if(inside){";
-        s<<"vec2 dist_p=UndistortedNDCForDistortedNDC(uKN,uScreenParams,uTextureParams,ndc.xy,uMaxRadSq);";
-        s<<"gl_Position=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);";
+        s<<"vec2 dist_p=UndistortedNDCForDistortedNDC(uKN,uScreenParams,uTextureParams,ndc.xy,uMaxRadSq);\n";
+        s<<"gl_Position=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);\n";
         //s<<"}else{";
         //s<<"gl_Position=pos_clip;";
         //s<<"}";
