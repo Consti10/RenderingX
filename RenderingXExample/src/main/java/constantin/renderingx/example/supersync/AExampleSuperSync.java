@@ -4,8 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import constantin.renderingX.core.PerformanceHelper;
-import constantin.renderingX.core.ViewSuperSync;
+import constantin.renderingx.core.PerformanceHelper;
+import constantin.renderingx.core.ViewSuperSync;
 
 public class AExampleSuperSync extends AppCompatActivity {
     private ViewSuperSync mViewSuperSync;

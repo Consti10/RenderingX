@@ -6,13 +6,11 @@ import android.content.Intent;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
-import androidx.test.runner.AndroidJUnit4;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import constantin.renderingX.core.GLESInfo.AWriteGLESInfo;
+import constantin.renderingx.core.GLESInfo.AWriteGLESInfo;
 import constantin.renderingx.example.renderer1.AExampleRendering;
 import constantin.renderingx.example.renderer2.AExampleVRRendering;
 

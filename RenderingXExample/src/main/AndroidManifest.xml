@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".MainActivity">
+        <activity android:name="constantin.renderingx.example.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,18 +25,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".supersync.AExampleSuperSync"
+            android:name="constantin.renderingx.example.supersync.AExampleSuperSync"
             android:screenOrientation="landscape"
             android:theme="@style/MyStyleFullscreen" />
         <activity
-            android:name=".renderer1.AExampleRendering"
+            android:name="constantin.renderingx.example.renderer1.AExampleRendering"
             android:theme="@style/MyStyleNoActionBar" />
-        <activity android:name=".renderer2.AExampleVRRendering"
+        <activity android:name="constantin.renderingx.example.renderer2.AExampleVRRendering"
             android:theme="@style/MyStyleFullscreen"
             android:screenOrientation="landscape">
         </activity>
 
-        <activity android:name="constantin.renderingX.core.GLESInfo.AWriteGLESInfo" />
+        <activity android:name="constantin.renderingx.core.GLESInfo.AWriteGLESInfo" />
 
     </application>
 

@@ -12,7 +12,7 @@
 
 class NDKHelper {
 private:
-    static constexpr const auto CLASS_NAME="constantin/renderingX/core/NDKHelper";
+    static constexpr const auto CLASS_NAME="constantin/renderingx/core/NDKHelper";
 public:
     //documentation @Java/NDKHelper/uploadAssetImageToGPU()
     static void uploadAssetImageToGPU(JNIEnv *env, jobject androidContext,const char* filename,const bool extractAlpha){

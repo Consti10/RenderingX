@@ -1,4 +1,4 @@
-package constantin.renderingX.core;
+package constantin.renderingx.core;
 
 import android.content.Context;
 import android.opengl.EGL14;
@@ -18,7 +18,7 @@ import java.util.Objects;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import static constantin.renderingX.core.MyEGLWindowSurfaceFactory.EGL_ANDROID_front_buffer_auto_refresh;
+import static constantin.renderingx.core.MyEGLWindowSurfaceFactory.EGL_ANDROID_front_buffer_auto_refresh;
 
 
 /**

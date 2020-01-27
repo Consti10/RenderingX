@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import constantin.renderingX.core.GLESInfo.AWriteGLESInfo;
-import constantin.renderingX.core.GLESInfo.GLESInfo;
+import constantin.renderingx.core.GLESInfo.AWriteGLESInfo;
+import constantin.renderingx.core.GLESInfo.GLESInfo;
 import constantin.renderingx.example.renderer1.AExampleRendering;
 import constantin.renderingx.example.renderer2.AExampleVRRendering;
 import constantin.renderingx.example.supersync.AExampleSuperSync;

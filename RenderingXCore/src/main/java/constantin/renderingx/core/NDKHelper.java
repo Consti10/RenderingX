@@ -1,4 +1,4 @@
-package constantin.renderingX.core;
+package constantin.renderingx.core;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -10,7 +10,6 @@ import android.opengl.GLUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.lang.annotation.Native;
 
 
 /**

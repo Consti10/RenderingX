@@ -8,7 +8,7 @@ import android.os.Environment;
 
 import com.google.vr.ndk.base.GvrLayout;
 
-import constantin.renderingX.core.PerformanceHelper;
+import constantin.renderingx.core.PerformanceHelper;
 
 public class AExampleVRRendering extends AppCompatActivity {
     private GvrLayout gvrLayout;
