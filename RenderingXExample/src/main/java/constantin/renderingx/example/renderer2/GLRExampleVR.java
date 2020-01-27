@@ -4,7 +4,6 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 
 import com.google.vr.ndk.base.GvrApi;
-import com.google.vr.sdk.base.Distortion;
 import com.google.vr.sdk.base.GvrView;
 import com.google.vr.sdk.base.GvrViewerParams;
 

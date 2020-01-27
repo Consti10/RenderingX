@@ -2,7 +2,6 @@ package constantin.renderingx.example.renderer1;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
-import android.view.MotionEvent;
 
 import com.dinuscxj.gesture.MultiTouchGestureDetector;
 

@@ -1,4 +1,4 @@
-package constantin.renderingX.GLESInfo;
+package constantin.renderingX.core.GLESInfo;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.opengles.GL10;
 
-import constantin.renderingX.MyEGLConfigChooser;
+import constantin.renderingX.core.MyEGLConfigChooser;
 
-import static constantin.renderingX.MyEGLConfigChooser.findConfigAttrib;
+import static constantin.renderingX.core.MyEGLConfigChooser.findConfigAttrib;
 
 
 /*

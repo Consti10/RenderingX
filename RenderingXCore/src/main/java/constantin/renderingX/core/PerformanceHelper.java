@@ -1,4 +1,4 @@
-package constantin.renderingX;
+package constantin.renderingX.core;
 
 import android.app.Activity;
 import android.os.Build;

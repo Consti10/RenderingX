@@ -1,16 +1,11 @@
 package constantin.renderingx.example.supersync;
 
 import android.content.Context;
-import android.graphics.SurfaceTexture;
-import android.opengl.GLES20;
-import android.view.Surface;
 
-import com.google.vr.ndk.base.BufferViewport;
 import com.google.vr.ndk.base.GvrApi;
-import com.google.vr.sdk.base.Eye;
 
-import constantin.renderingX.GLESInfo.GLESInfo;
-import constantin.renderingX.ViewSuperSync;
+import constantin.renderingX.core.GLESInfo.GLESInfo;
+import constantin.renderingX.core.ViewSuperSync;
 
 public class GLRExampleSuperSync implements ViewSuperSync.IRendererSuperSync {
     static {

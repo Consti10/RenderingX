@@ -11,11 +11,12 @@
 //links to @Java / NDKHelper
 
 class NDKHelper {
+private:
+    static constexpr const auto CLASS_NAME="constantin/renderingX/core/NDKHelper";
 public:
     //documentation @Java/NDKHelper/uploadAssetImageToGPU()
     static void uploadAssetImageToGPU(JNIEnv *env, jobject androidContext,const char* filename,const bool extractAlpha){
-        const std::string className="constantin/renderingX/NDKHelper";
-        jclass NDKHelper_ = env->FindClass(className.c_str());
+        jclass NDKHelper_ = env->FindClass(CLASS_NAME);
         jstring filenameDistanceField_=env->NewStringUTF(filename);
         jmethodID uploadAssetImageToGPU_=env->GetStaticMethodID(
                 NDKHelper_,"uploadAssetImageToGPU", "(Landroid/content/Context;Ljava/lang/String;Z)V");
@@ -24,8 +25,7 @@ public:
     }
     //documentation @Java/NDKHelper/getFloatArrayFromAssets()
     static void getFloatArrayFromAssets(JNIEnv *env, jobject androidContext,const char* filename,float* array,const int arrayLength){
-        const std::string className="constantin/renderingX/NDKHelper";
-        jclass NDKHelper_ = env->FindClass(className.c_str());
+        jclass NDKHelper_ = env->FindClass(CLASS_NAME);
         jfloatArray aFontWidthsU=env->NewFloatArray(arrayLength);
         jstring filenameFontWidthsU_=env->NewStringUTF(filename);
         jmethodID getFloatArrayFromAssets_=env->GetStaticMethodID(
@@ -36,7 +36,6 @@ public:
         env->ReleaseFloatArrayElements(aFontWidthsU,arrayP,0);
         env->DeleteLocalRef(NDKHelper_);
     }
-
 };
 
 

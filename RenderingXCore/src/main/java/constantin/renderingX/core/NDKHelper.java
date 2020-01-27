@@ -1,4 +1,4 @@
-package constantin.renderingX;
+package constantin.renderingX.core;
 
 import android.content.Context;
 import android.content.res.AssetManager;

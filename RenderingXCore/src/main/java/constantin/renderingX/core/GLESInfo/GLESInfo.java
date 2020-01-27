@@ -1,4 +1,4 @@
-package constantin.renderingX.GLESInfo;
+package constantin.renderingX.core.GLESInfo;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

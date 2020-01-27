@@ -8,7 +8,7 @@ import android.os.Environment;
 
 import com.google.vr.ndk.base.GvrLayout;
 
-import constantin.renderingX.PerformanceHelper;
+import constantin.renderingX.core.PerformanceHelper;
 
 public class AExampleVRRendering extends AppCompatActivity {
     private GvrLayout gvrLayout;
@@ -25,7 +25,7 @@ public class AExampleVRRendering extends AppCompatActivity {
         gvrLayout=new GvrLayout(this);
 
         final Bundle bundle=getIntent().getExtras();
-        final int MODE=bundle.getInt(KEY_MODE,0);
+        final int MODE=bundle==null ? 0 : bundle.getInt(KEY_MODE,0);
 
         gLView = new GLSurfaceView(this);
         gLView.setEGLContextClientVersion(2);

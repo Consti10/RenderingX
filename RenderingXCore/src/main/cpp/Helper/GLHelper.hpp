@@ -22,10 +22,12 @@ public:
             ss<<" |"<<error;
             anyError=true;
         }
-        if(anyError)MDebug::log(ss.str(),TAG);
+        if(anyError){
+            MDebug::log(ss.str(),TAG);
 #ifdef CRASH_APPLICATION_ON_GL_ERROR
-        if(anyError)exit(-1);
+            exit(-1);
 #endif
+        }
     }
     static const GLuint loadShader(GLenum type,const std::string& shaderCode){
         GLuint shader = glCreateShader(type);

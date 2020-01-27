@@ -12,7 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import constantin.renderingX.GLESInfo.AWriteGLESInfo;
+import constantin.renderingX.core.GLESInfo.AWriteGLESInfo;
 import constantin.renderingx.example.renderer1.AExampleRendering;
 import constantin.renderingx.example.renderer2.AExampleVRRendering;
 
@@ -21,7 +21,6 @@ import constantin.renderingx.example.renderer2.AExampleVRRendering;
 //Launch the Rendering Activity and select all 4 options
 
 @LargeTest
-@RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
     private static final int WAIT_TIME = 2*1000; //2 seconds
 
