@@ -15,7 +15,7 @@
 
 class BasicGLPrograms{
 public:
-    explicit BasicGLPrograms(const DistortionManager& distortionManager=DistortionManager()):
+    explicit BasicGLPrograms(const DistortionManager* distortionManager):
         vc(distortionManager),
         text(distortionManager),
         line(distortionManager),

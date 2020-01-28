@@ -40,9 +40,9 @@ void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context) {
     specs[0].SetDepthStencilFormat(GVR_DEPTH_STENCIL_FORMAT_DEPTH_16);
     swap_chain = std::make_unique<gvr::SwapChain>(gvr_api_->CreateSwapChain(specs));
 
-    mBasicGLPrograms=std::make_unique<BasicGLPrograms>(distortionManager);
+    mBasicGLPrograms=std::make_unique<BasicGLPrograms>(&distortionManager);
     mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
-    mGLProgramTexture=std::make_unique<GLProgramTexture>(false,distortionManager);
+    mGLProgramTexture=std::make_unique<GLProgramTexture>(false,&distortionManager);
     glGenTextures(1,&mTexture360Image);
     GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
     GLProgramTexture::loadTexture(mTexture360ImageEquirectangular,env,context,"360DegreeImages/insta_360_equirectangular.png");

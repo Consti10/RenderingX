@@ -84,10 +84,8 @@ private:
 };
 
 class GLProgramVC2D: public GLProgramVC{
-private:
-    const DistortionManager distortionManager=DistortionManager();
 public:
-    GLProgramVC2D():GLProgramVC(distortionManager,true){
+    GLProgramVC2D():GLProgramVC(nullptr,true){
     }
 };
 
