@@ -32,7 +32,7 @@ public:
         float u,v;
     };
     using INDEX_DATA=GLushort;
-    explicit GLProgramTexture(const bool USE_EXTERNAL_TEXTURE=true,const DistortionManager* distortionManager=nullptr,const bool use2dCoordinates=false);
+    explicit GLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const DistortionManager* distortionManager=nullptr,const bool use2dCoordinates=false);
     void beforeDraw(GLuint buffer,GLuint texture) const;
     void draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLenum mode=GL_TRIANGLES) const;
     void drawIndexed(GLuint indexBuffer,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int indicesOffset, int numberIndices,GLenum mode) const;
@@ -90,6 +90,12 @@ private:
 #endif
         s<<"}\n";
         return s.str();
+    }
+};
+
+class GLProgramTextureExt: public GLProgramTexture{
+public:
+    GLProgramTextureExt(const DistortionManager* dm=nullptr):GLProgramTexture(true,dm){
     }
 };
 

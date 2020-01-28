@@ -86,8 +86,9 @@ public:
         if(distortionMode==RADIAL_CARDBOARD)return "RADIAL_CARDBOARD";
         return "ERROR";
     }
+    //returns true if dm==nullptr or mode==NONE
     static bool isNullOrDisabled(const DistortionManager* dm){
-        return dm!= nullptr && dm->distortionMode!=NONE;
+        return dm==nullptr || dm->distortionMode==NONE;
     };
 private:
     //All GLSL functions (declare before main in vertex shader, then use anywhere)

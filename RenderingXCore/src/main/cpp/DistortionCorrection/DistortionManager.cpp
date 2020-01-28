@@ -54,10 +54,9 @@ void DistortionManager::afterDraw() const {
 }
 
 std::string DistortionManager::writeDistortionParams(
-        const DistortionManager* distortionManager1) {
-    if(isNullOrDisabled(distortionManager1))
+        const DistortionManager* distortionManager) {
+    if(isNullOrDisabled(distortionManager))
         return "";
-    const DistortionManager& distortionManager=*distortionManager1;
     std::stringstream s;
     //Write all shader function(s) needed for VDDC
     const int N_COEFICIENTS=DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS;
@@ -66,10 +65,10 @@ std::string DistortionManager::writeDistortionParams(
     s<<glsl_ViewportParams();
     s<<glsl_UndistortedNDCForDistortedNDC(N_COEFICIENTS);
     //The uniforms needed for vddc
-    if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
+    if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
         s<<"uniform float uMaxRadSq;\n";
         s<<"uniform float uKN["<<N_COEFICIENTS<<"];\n";
-    }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD){
+    }else if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD){
         s<<"uniform float uMaxRadSq;\n";
         s<<"uniform float uKN["<<N_COEFICIENTS<<"];\n";
         s<<"uniform ViewportParams uScreenParams;\n";
