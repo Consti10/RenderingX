@@ -49,10 +49,12 @@ private:
         s<<"attribute vec4 aPosition;\n";
         s<<"attribute vec4 aColor;\n";
         s<<"varying vec4 vColor;\n";
-        s<< DistortionManager::writeDistortionParams(distortionManager1);
+        if(!coordinates2D){
+            s<< DistortionManager::writeDistortionParams(distortionManager1);
+        }
         s<<"void main(){\n";
         if(coordinates2D){
-            s<<"gl_Position = vec4(aPosition.xy,0,1);";
+            s<<"gl_Position=vec4(aPosition.xy,0,1);\n";
         }else{
             s<<DistortionManager::writeGLPosition(distortionManager1);
         }
@@ -78,6 +80,14 @@ private:
         s<<"}\n";
         s<<"\n";
         return s.str();
+    }
+};
+
+class GLProgramVC2D: public GLProgramVC{
+private:
+    const DistortionManager distortionManager=DistortionManager();
+public:
+    GLProgramVC2D():GLProgramVC(distortionManager,true){
     }
 };
 

@@ -6,6 +6,8 @@
 #define RENDERINGX_CARDBOARDVIEWPORTOCCLUSION_H
 
 #import "../DistortionCorrection/VRHeadsetParams.h"
+#include <array>
+#include <vector>
 
 
 class CardboardViewportOcclusion{
@@ -88,6 +90,9 @@ public:
         }
         return ret;
     }
+    //static const std::array<VertexBuffer,2> createOcclusionMeshLeftAndRight(){
+
+    //}
 };
 
 

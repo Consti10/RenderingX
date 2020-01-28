@@ -11,8 +11,6 @@ import android.view.Choreographer;
 import android.view.Display;
 import android.view.WindowManager;
 
-import com.google.vr.ndk.base.GvrLayout;
-
 import java.util.Objects;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -22,13 +20,13 @@ import static constantin.renderingx.core.MyEGLWindowSurfaceFactory.EGL_ANDROID_f
 
 
 /**
- * Wrapper around GvrLayout that includes its own rendering interface, created for SuperSync
+ * Wrapper around GvrLayout/GLSurfaceView that includes its own rendering interface, created for SuperSync
  * Provides a convenient IRendererSuperSync
  * SuperSync allows developers to build their own Time Warp /other similar latency reducing techniques without
  * Specifying the device as 'Daydream ready'
  */
 
-public class ViewSuperSync extends GvrLayout implements GLSurfaceView.Renderer, Choreographer.FrameCallback{
+public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer, Choreographer.FrameCallback{
     private static final String TAG="ViewSuperSync";
     private final GLSurfaceView mGLSurfaceView;
     private IRendererSuperSync mRenderer;
@@ -41,8 +39,8 @@ public class ViewSuperSync extends GvrLayout implements GLSurfaceView.Renderer, 
 
     public ViewSuperSync(final Context context){
         super(context);
-        getUiLayout().setTransitionViewEnabled(false);
-        setAsyncReprojectionEnabled(false);
+        //getUiLayout().setTransitionViewEnabled(false);
+        //setAsyncReprojectionEnabled(false);
         mGLSurfaceView =new GLSurfaceView(context);
         mGLSurfaceView.setEGLContextClientVersion(2);
         mGLSurfaceView.setEGLConfigChooser(new MyEGLConfigChooser(true,0));
@@ -62,8 +60,8 @@ public class ViewSuperSync extends GvrLayout implements GLSurfaceView.Renderer, 
     }
 
 
-    public void resume(){
-        onResume();
+    public void onResume(){
+        onResumeX();
         mGLSurfaceView.onResume();
         mGLSurfaceView.queueEvent(new Runnable() {
             @Override
@@ -78,11 +76,11 @@ public class ViewSuperSync extends GvrLayout implements GLSurfaceView.Renderer, 
     }
 
 
-    public void pause(){
+    public void onPause(){
         mRenderer.requestExitSuperSyncLoop();
         Choreographer.getInstance().removeFrameCallback(this);
         mGLSurfaceView.onPause();
-        onPause();
+        onPauseX();
     }
 
     public void destroy(){

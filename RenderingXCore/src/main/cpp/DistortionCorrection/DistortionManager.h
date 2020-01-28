@@ -79,6 +79,13 @@ public:
                           const std::array<MLensDistortion::ViewportParams,2> screen_params,const std::array<MLensDistortion::ViewportParams,2> texture_params);
     //Identity leaves x,y values untouched (as if no vddc was enabled in the shader)
     void updateDistortionWithIdentity();
+    //
+    std::string getModeAsString()const{
+        if(distortionMode==NONE)return "NONE";
+        if(distortionMode==RADIAL_VIEW_SPACE)return "RADIAL_VIEW_SPACE";
+        if(distortionMode==RADIAL_CARDBOARD)return "RADIAL_CARDBOARD";
+        return "ERROR";
+    }
 };
 
 

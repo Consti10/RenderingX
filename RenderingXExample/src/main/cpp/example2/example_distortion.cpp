@@ -149,7 +149,7 @@ void ExampleRendererVR::drawEyeVDDC(gvr::Eye eye) {
     auto projM=vrHeadsetParams.GetProjectionMatrix(eye);
     glLineWidth(3.0f);
     drawEye(eye,viewM,projM,true,true);
-    GLHelper::checkGlError("ExampleRenderer2::drawEyeVDDC");
+    GLHelper::checkGlError("ExampleRenderer2::drawEyeVDDC2");
 }
 
 void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen,bool occlusion) {
@@ -170,11 +170,12 @@ void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, b
         mGLProgramTexture->afterDraw();
     }
     if(occlusion){
-        int idx=eye==GVR_LEFT_EYE ? 0 : 1;
-        mBasicGLPrograms->vc2D.beforeDraw(mOcclusionMesh[eye].vertexB);
-        mBasicGLPrograms->vc2D.draw(glm::mat4(1.0f),glm::mat4(1.0f),0,mOcclusionMesh[eye].nVertices,GL_TRIANGLE_STRIP);
+        const auto& occlusionMeshForEye=mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1];
+        mBasicGLPrograms->vc2D.beforeDraw(occlusionMeshForEye.vertexB);
+        mBasicGLPrograms->vc2D.draw(glm::mat4(1.0f),glm::mat4(1.0f),0,occlusionMeshForEye.nVertices,GL_TRIANGLE_STRIP);
         mBasicGLPrograms->vc2D.afterDraw();
     }
+    GLHelper::checkGlError("ExampleRenderer2::drawEye");
 }
 
 

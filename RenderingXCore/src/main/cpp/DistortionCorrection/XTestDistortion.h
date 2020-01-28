@@ -12,9 +12,6 @@ void test(){
         const auto p2=polynomialRadialDistortion.DistortInverse2({i,0});
         LOGD("X %f , DistortInverse %f , DistortInverse2 %f", i,p1[0],p2[0] );
     }*/
-    for(float i=0;i<2;i+=0.1f){
-        LOGD("Radius:%f Inv1:%f Inv2:%f",i,mInverse.DistortRadius(i),polynomialRadialDistortion.DistortRadiusInverse(i));
-    }
 }
 
 /*

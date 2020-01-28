@@ -19,7 +19,7 @@ public:
         vc(distortionManager),
         text(distortionManager),
         line(distortionManager),
-        vc2D(DistortionManager(),true)
+        vc2D()
     {}
 public:
     //Once these GLPrograms are created, they don't change - only the content of the buffers they draw changes
@@ -27,7 +27,7 @@ public:
     const GLProgramText text;
     const GLProgramLine line;
     //The 2D program never does V.D.D.C -it only works on ('raw') viewport coordinates
-    const GLProgramVC vc2D;
+    const GLProgramVC2D vc2D;
 };
 
 

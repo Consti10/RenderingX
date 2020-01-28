@@ -13,7 +13,6 @@ GLProgramVC::GLProgramVC(const DistortionManager& distortionManager,bool coordin
     GLHelper::checkGlError("glGetAttribLocation OGProgramColor");
 }
 
-
 void GLProgramVC::beforeDraw(const GLuint buffer) const {
     glUseProgram(mProgram);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -23,7 +22,6 @@ void GLProgramVC::beforeDraw(const GLuint buffer) const {
     glVertexAttribPointer((GLuint)mColorHandle, 4/*rgba*/,GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex),(GLvoid*)offsetof(Vertex,colorRGBA));
     distortionManager.beforeDraw(mUndistortionHandles);
 }
-
 
 void GLProgramVC::draw(const Mat4x4 ViewM, const Mat4x4 ProjM,
                        const int verticesOffset, const int numberVertices,const GLenum mode) const{

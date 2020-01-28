@@ -5,15 +5,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Environment;
+import android.widget.FrameLayout;
 
+import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrLayout;
 
+import constantin.renderingx.core.MyVRLayout;
 import constantin.renderingx.core.PerformanceHelper;
+import constantin.renderingx.example.R;
 
 public class AExampleVRRendering extends AppCompatActivity {
-    private GvrLayout gvrLayout;
     private GLSurfaceView gLView;
     private GLRExampleVR renderer;
+    //Use one of both
+    private static final boolean USE_GVR_LAYOUT=false;
+    private GvrLayout gvrLayout;
+    private MyVRLayout myVRLayout;
 
     public static final String KEY_MODE="KEY_MODE";
     //Default mode is 0 (test VDDC)
@@ -22,7 +29,16 @@ public class AExampleVRRendering extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        gvrLayout=new GvrLayout(this);
+        GvrApi gvrApi;
+        if(USE_GVR_LAYOUT){
+            gvrLayout=new GvrLayout(this);
+            gvrApi =gvrLayout.getGvrApi();
+        }else{
+            //displaySynchronizer=new DisplaySynchronizer(this,getWindowManager().getDefaultDisplay());
+            //gvrApi=new GvrApi(this,null);
+            myVRLayout=new MyVRLayout(this);
+            gvrApi=myVRLayout.getGvrApi();
+        }
 
         final Bundle bundle=getIntent().getExtras();
         final int MODE=bundle==null ? 0 : bundle.getInt(KEY_MODE,0);
@@ -30,40 +46,57 @@ public class AExampleVRRendering extends AppCompatActivity {
         gLView = new GLSurfaceView(this);
         gLView.setEGLContextClientVersion(2);
         if(MODE==0){
-            renderer=new GLRExampleVR(this,gvrLayout.getGvrApi(),true,
+            renderer=new GLRExampleVR(this, gvrApi,true,
                     true,true,false,false);
         }else if(MODE==1){
-            renderer=new GLRExampleVR(this,gvrLayout.getGvrApi(),false,
+            renderer=new GLRExampleVR(this, gvrApi,false,
                     true,false,true,false);
         }else{
-            renderer=new GLRExampleVR(this,gvrLayout.getGvrApi(),false,
+            renderer=new GLRExampleVR(this, gvrApi,false,
                     true,false,false,true);
         }
         gLView.setRenderer(renderer);
         gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-        gvrLayout.setPresentationView(gLView);
-        setContentView(gvrLayout);
 
+        if(USE_GVR_LAYOUT){
+            gvrLayout.setPresentationView(gLView);
+            setContentView(R.layout.activity_vr_rendering);
+            FrameLayout frameLayout=findViewById(R.id.my_frame_layout);
+            frameLayout.addView(gvrLayout,0);
+        }else{
+            setContentView(myVRLayout);
+            myVRLayout.setPresentationView(gLView);
+        }
         System.out.println("Path is:"+ Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS));
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        gvrLayout.onResume();
-        PerformanceHelper.setImmersiveSticky(this);
+        if(gvrLayout!=null)gvrLayout.onResume();
+        if(myVRLayout!=null)myVRLayout.onResumeX();
     }
 
     @Override
     protected void onPause(){
         super.onPause();
-        gvrLayout.onPause();
+        if(gvrLayout!=null)gvrLayout.onPause();
+        if(myVRLayout!=null)myVRLayout.onPauseX();
     }
 
     @Override
     protected void onDestroy(){
         super.onDestroy();
-        gvrLayout.shutdown();
+        if(gvrLayout!=null)gvrLayout.shutdown();
+        if(myVRLayout!=null)myVRLayout.shutdown();
     }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            PerformanceHelper.setImmersiveSticky(this);
+        }
+    }
+
 }

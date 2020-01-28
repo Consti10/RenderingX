@@ -23,18 +23,18 @@ public class AExampleSuperSync extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println("YYY onResume()");
+        System.out.println("YYY onResumeX()");
         PerformanceHelper.setImmersiveSticky(this);
         PerformanceHelper.enableAndroidVRModeIfPossible(this);
         PerformanceHelper.enableSustainedPerformanceIfPossible(this);
-        mViewSuperSync.resume();
+        mViewSuperSync.onResume();
     }
 
     @Override
     protected void onPause(){
         super.onPause();
-        System.out.println("YYY onPause()");
-        mViewSuperSync.pause();
+        System.out.println("YYY onPauseX()");
+        mViewSuperSync.onPause();
         PerformanceHelper.disableSustainedPerformanceIfEnabled(this);
         PerformanceHelper.disableAndroidVRModeIfEnabled(this);
     }

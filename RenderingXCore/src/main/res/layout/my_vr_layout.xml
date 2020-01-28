@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.FrameLayout"
+    tools:ignore="HardcodedText" >
+
+    <View
+        android:layout_width="2dip"
+        android:layout_height="24mm"
+        android:layout_gravity="center_horizontal|bottom"
+        android:background="#1A237E" >
+    </View>
+
+    <!-- Default UiLayer layout that assumes landscape orientation !-->
+    <!-- The ui and settings button holders are 84dp. This is twice the size -->
+    <!-- of the button itself after padding (24dp image, 9dp padding twice). -->
+    <FrameLayout
+        android:id="@+id/ui_back_button_holder"
+        android:layout_gravity="top|start"
+        android:layout_width="84dp"
+        android:layout_height="84dp">
+        <ImageButton
+            style="@style/UiButton"
+            android:id="@+id/vr_overlay_back_button"
+            android:contentDescription="back"
+            android:src="@drawable/quantum_ic_close_white_24"
+            android:layout_gravity="start|top"/>
+    </FrameLayout>
+
+
+    <FrameLayout
+        android:id="@+id/ui_settings_button_holder"
+        android:layout_gravity="top|end"
+        android:layout_width="42dp"
+        android:layout_height="42dp">
+        <ImageButton
+            style="@style/UiButton"
+            android:id="@+id/vr_overlay_settings_button"
+            android:contentDescription="settings"
+            android:src="@drawable/quantum_ic_settings_white_24"
+            android:layout_gravity="end|top" />
+    </FrameLayout>
+
+</merge>

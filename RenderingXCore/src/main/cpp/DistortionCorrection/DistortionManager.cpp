@@ -33,12 +33,12 @@ void DistortionManager::beforeDraw(
     }else if(distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD) {
         glUniform1f(undistortionHandles.uMaxRadSq,radialDistortionCoefficients.maxRadSquared);
         glUniform1fv(undistortionHandles.uKN,N_RADIAL_UNDISTORTION_COEFICIENTS,radialDistortionCoefficients.kN.data());
-        const int i=leftEye ? 0 : 1;
+        const int i=leftEye ? 0 : 1; //update screen params
         glUniform1f(undistortionHandles.uScreenParams_w,screen_params[i].width);
         glUniform1f(undistortionHandles.uScreenParams_h,screen_params[i].height);
         glUniform1f(undistortionHandles.uScreenParams_x_off,screen_params[i].x_eye_offset);
         glUniform1f(undistortionHandles.uScreenParams_y_off,screen_params[i].y_eye_offset);
-
+        //same for texture params
         glUniform1f(undistortionHandles.uTextureParams_w,texture_params[i].width);
         glUniform1f(undistortionHandles.uTextureParams_h,texture_params[i].height);
         glUniform1f(undistortionHandles.uTextureParams_x_off,texture_params[i].x_eye_offset);
