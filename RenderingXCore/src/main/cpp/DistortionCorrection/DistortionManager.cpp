@@ -5,12 +5,15 @@
 #include "DistortionManager.h"
 
 DistortionManager::UndistortionHandles
-DistortionManager::getUndistortionUniformHandles(const GLuint program) const {
+DistortionManager::getUndistortionUniformHandles(const DistortionManager* dm,const GLuint program){
     UndistortionHandles ret{};
-    if(distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
+    if(isNullOrDisabled(dm)){
+        return ret;
+    }
+    if(dm->distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
         ret.uMaxRadSq=(GLuint)glGetUniformLocation(program,"uMaxRadSq");
         ret.uKN=(GLuint)glGetUniformLocation(program,"uKN");
-    }else if(distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD){
+    }else if(dm->distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD){
         ret.uMaxRadSq=(GLuint)glGetUniformLocation(program,"uMaxRadSq");
         ret.uKN=(GLuint)glGetUniformLocation(program,"uKN");
         ret.uScreenParams_w=(GLuint)glGetUniformLocation(program,"uScreenParams.width");
@@ -51,11 +54,11 @@ void DistortionManager::afterDraw() const {
 }
 
 std::string DistortionManager::writeDistortionParams(
-        const DistortionManager& distortionManager) {
-    std::stringstream s;
-    if(distortionManager.distortionMode==NONE){
+        const DistortionManager* distortionManager1) {
+    if(isNullOrDisabled(distortionManager1))
         return "";
-    }
+    const DistortionManager& distortionManager=*distortionManager1;
+    std::stringstream s;
     //Write all shader function(s) needed for VDDC
     const int N_COEFICIENTS=DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS;
     s<<glsl_PolynomialDistortionFactor(N_COEFICIENTS);
@@ -76,12 +79,13 @@ std::string DistortionManager::writeDistortionParams(
     return s.str();
 }
 
-std::string DistortionManager::writeGLPosition(const DistortionManager &distortionManager,
+std::string DistortionManager::writeGLPosition(const DistortionManager* distortionManager1,
                                                      const std::string &positionAttribute) {
+    if(isNullOrDisabled(distortionManager1))
+        return "gl_Position = (uPMatrix*uMVMatrix)* "+positionAttribute+";\n";;
+    const DistortionManager& distortionManager=*distortionManager1;
     std::stringstream s;
-    if(distortionManager.distortionMode==NONE){
-        s<<"gl_Position = (uPMatrix*uMVMatrix)* "<<positionAttribute<<";\n";
-    }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
+    if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
         s<<"vec4 pos=uMVMatrix*"+positionAttribute+";\n";
         s<<"float r2=dot(pos.xy,pos.xy)/(pos.z*pos.z);\n";
         //s<<"r2=clamp(r2,0.0,uMaxRadSq);\n";

@@ -22,7 +22,7 @@ private:
     GLuint mProgram;
     GLint mPositionHandle,mTextureHandle,mSamplerHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
-    const DistortionManager& distortionManager;
+    const DistortionManager* distortionManager;
     DistortionManager::UndistortionHandles mUndistortionHandles;
     static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
     static constexpr auto MY_SAMPLER_UNIT=1;
@@ -32,14 +32,14 @@ public:
         float u,v;
     };
     using INDEX_DATA=GLushort;
-    explicit GLProgramTexture(const bool USE_EXTERNAL_TEXTURE=true,const DistortionManager& distortionManager=DistortionManager(),const bool use2dCoordinates=false);
+    explicit GLProgramTexture(const bool USE_EXTERNAL_TEXTURE=true,const DistortionManager* distortionManager=nullptr,const bool use2dCoordinates=false);
     void beforeDraw(GLuint buffer,GLuint texture) const;
     void draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLenum mode=GL_TRIANGLES) const;
     void drawIndexed(GLuint indexBuffer,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int indicesOffset, int numberIndices,GLenum mode) const;
     void afterDraw() const;
     static void loadTexture(GLuint texture,JNIEnv *env, jobject androidContext,const char* name);
 private:
-    static const std::string VS(const DistortionManager& distortionManager1,const bool use2dCoordinates){
+    static const std::string VS(const DistortionManager* distortionManager1,const bool use2dCoordinates){
         std::stringstream s;
         s<<"uniform mat4 uMVMatrix;\n";
         s<<"uniform mat4 uPMatrix;\n";

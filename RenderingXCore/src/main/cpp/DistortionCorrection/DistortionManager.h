@@ -67,12 +67,12 @@ public:
     DistortionManager():distortionMode(DISTORTION_MODE::NONE){};
     DistortionManager(const DISTORTION_MODE& distortionMode1):distortionMode(distortionMode1){updateDistortionWithIdentity();}
 
-    UndistortionHandles getUndistortionUniformHandles(const GLuint program)const;
+    static UndistortionHandles getUndistortionUniformHandles(const DistortionManager* distortionManager,const GLuint program);
     void beforeDraw(const UndistortionHandles& undistortionHandles)const;
     void afterDraw()const;
 
-    static std::string writeDistortionParams(const DistortionManager& distortionManager);
-    static std::string writeGLPosition(const DistortionManager& distortionManager,const std::string &positionAttribute="aPosition");
+    static std::string writeDistortionParams(const DistortionManager* distortionManager);
+    static std::string writeGLPosition(const DistortionManager* distortionManager,const std::string &positionAttribute="aPosition");
 
     void updateDistortion(const MPolynomialRadialDistortion& distortion,float maxRadSq);
     void updateDistortion(const MPolynomialRadialDistortion& inverseDistortion,float maxRadSq,
@@ -86,6 +86,9 @@ public:
         if(distortionMode==RADIAL_CARDBOARD)return "RADIAL_CARDBOARD";
         return "ERROR";
     }
+    static bool isNullOrDisabled(const DistortionManager* dm){
+        return dm!= nullptr && dm->distortionMode!=NONE;
+    };
 private:
     //All GLSL functions (declare before main in vertex shader, then use anywhere)
     //

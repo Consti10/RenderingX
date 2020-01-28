@@ -19,7 +19,7 @@ static float FONTS_WIDTHS_U[CHAR_CNT];
 
 //#define WIREFRAME
 
-GLProgramText::GLProgramText(const DistortionManager& distortionManager):
+GLProgramText::GLProgramText(const DistortionManager* distortionManager):
     distortionManager(distortionManager)
     {
     mProgram = GLHelper::createProgram(VS(distortionManager),FS2());
@@ -37,7 +37,7 @@ GLProgramText::GLProgramText(const DistortionManager& distortionManager):
     mOutlineStrengthHandle=(GLuint)glGetUniformLocation(mProgram,"uOutlineStrength");
     uEdge=(GLuint)glGetUniformLocation(mProgram,"uEdge");
     uBorderEdge=(GLuint)glGetUniformLocation(mProgram,"uBorderEdge");
-    mUndistortionHandles=distortionManager.getUndistortionUniformHandles(mProgram);
+    mUndistortionHandles=DistortionManager::getUndistortionUniformHandles(distortionManager,mProgram);
     GLHelper::checkGlError("GLProgramText() uniforms3");
 
 #ifdef WIREFRAME
@@ -83,7 +83,7 @@ void GLProgramText::beforeDraw(const GLuint buffer) const{
     glEnableVertexAttribArray((GLuint)mColorHandle);
     glVertexAttribPointer((GLuint)mColorHandle,4/*r,g,b,a*/,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,color));
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndicesB);
-    distortionManager.beforeDraw(mUndistortionHandles);
+    if(distortionManager)distortionManager->beforeDraw(mUndistortionHandles);
 }
 
 void GLProgramText::setOtherUniforms(float edge, float borderEdge)const {
@@ -118,7 +118,7 @@ void GLProgramText::afterDraw() const {
     glDisableVertexAttribArray((GLuint)mTextureHandle);
     glBindTexture(GL_TEXTURE_2D,0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
-    distortionManager.afterDraw();
+    //distortionManager.afterDraw();
 }
 
 int GLProgramText::convertStringToRenderingData(const float X, const float Y, const float Z, const float charHeight,

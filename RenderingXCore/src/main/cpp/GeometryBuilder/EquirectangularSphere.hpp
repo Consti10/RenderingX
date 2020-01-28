@@ -131,7 +131,6 @@ public:
         std::vector<GLProgramTexture::Vertex> vertices;
         std::vector<GLProgramTexture::INDEX_DATA > indices;
         EquirectangularSphere::create_sphere(vertices,indices,surf_w,surf_h);
-
         /*LOGD("N vertices %d N indices %d",vertices.size(),indices.size());
         for(unsigned int i=0;i<indices.size();i++){
             const int value=indices.at(i);
