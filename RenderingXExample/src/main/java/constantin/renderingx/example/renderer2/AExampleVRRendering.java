@@ -59,10 +59,8 @@ public class AExampleVRRendering extends AppCompatActivity {
         gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
         if(USE_GVR_LAYOUT){
+            setContentView(gvrLayout);
             gvrLayout.setPresentationView(gLView);
-            setContentView(R.layout.activity_vr_rendering);
-            FrameLayout frameLayout=findViewById(R.id.my_frame_layout);
-            frameLayout.addView(gvrLayout,0);
         }else{
             setContentView(myVRLayout);
             myVRLayout.setPresentationView(gLView);
