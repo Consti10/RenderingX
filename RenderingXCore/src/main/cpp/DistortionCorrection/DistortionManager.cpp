@@ -56,56 +56,12 @@ std::string DistortionManager::writeDistortionParams(
     if(distortionManager.distortionMode==NONE){
         return "";
     }
+    //Write all shader function(s) needed for VDDC
     const int N_COEFICIENTS=DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS;
-
-    //All GLSL functions (declare before main in vertex shader, then use anywhere)
-    //
-    /*s<<"bool isInsideViewPort(const in vec2 ndc){\n";
-    s<<"if(ndc.x>=-1.0 && ndc.x<=1.0 && ndc.y>=-1.0 && ndc.y<=1.0){return true;}\n";
-    s<<"return false;}\n";*/
-    //
-    //same as PolynomialRadialDistortion::DistortionFactor but unrolled loop for easier optimization by compiler
-    s<<"\nfloat PolynomialDistortionFactor(const in float r_squared,const in float coefficients["<<N_COEFICIENTS<<"]){\n";
-    //manually unrolled loop
-    s<<"float ret = 0.0;\n";
-    for(int i=N_COEFICIENTS-1;i>=0;i--){
-        s<<"ret = r_squared * (ret + coefficients["<<i<<"]);\n";
-    }
-    s<<"return 1.0+ret;\n";
-    s<<"}\n";
-
-
-    //same as PolynomialRadialDistortion::Distort
-    //But with maxRadSq as limit
-    s<<"vec2 PolynomialDistort(const in float coefficients["<<N_COEFICIENTS<<"],const in vec2 in_pos,const in float maxRadSq){\n";
-    s<<"float r2=dot(in_pos.xy,in_pos.xy);\n";
-    s<<"r2=clamp(r2,0.0,maxRadSq);\n";
-    s<<"float dist_factor=PolynomialDistortionFactor(r2,coefficients);\n";
-    s<<"vec2 ret=in_pos.xy*dist_factor;\n";
-    s<<"return ret;\n";
-    s<<"}\n";
-
-    //Same as MLensDistortion::ViewportParams
-    s<<"struct ViewportParams\n"
-       "{\n"
-       "  float width;\n"
-       "  float height;\n"
-       "  float x_eye_offset;\n"
-       "  float y_eye_offset;\n"
-       "};\n";
-    //Same as MLensDistortion::UndistortedNDCForDistortedNDC
-    s<<"vec2 UndistortedNDCForDistortedNDC(";
-    s<<"const in float coefficients["<<N_COEFICIENTS<<"],";
-    s<<"const in ViewportParams screen_params,const in ViewportParams texture_params,const in vec2 in_ndc,const in float maxRadSq){\n";
-    s<<"vec2 distorted_ndc_tanangle=vec2(";
-    s<<"in_ndc.x * texture_params.width+texture_params.x_eye_offset,";
-    s<<"in_ndc.y * texture_params.height+texture_params.y_eye_offset);\n";
-    s<<"vec2 undistorted_ndc_tanangle = PolynomialDistort(coefficients,distorted_ndc_tanangle,maxRadSq);\n";
-    s<<"vec2 ret=vec2(undistorted_ndc_tanangle.x*screen_params.width+screen_params.x_eye_offset,";
-    s<<"undistorted_ndc_tanangle.y*screen_params.height+screen_params.y_eye_offset);\n";
-    s<<"return ret;\n";
-    s<<"}\n";
-
+    s<<glsl_PolynomialDistortionFactor(N_COEFICIENTS);
+    s<<glsl_PolynomialDistort(N_COEFICIENTS);
+    s<<glsl_ViewportParams();
+    s<<glsl_UndistortedNDCForDistortedNDC(N_COEFICIENTS);
     //The uniforms needed for vddc
     if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
         s<<"uniform float uMaxRadSq;\n";
