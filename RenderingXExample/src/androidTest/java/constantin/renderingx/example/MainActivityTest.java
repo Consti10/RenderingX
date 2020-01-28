@@ -61,6 +61,11 @@ public class MainActivityTest {
         mExampleVRRenderingRule.finishActivity();
     }
 
+    private void testSuperSyncIfPossible(){
+
+    }
+
+
 
     @Test
     public void mainActivityTest() {
