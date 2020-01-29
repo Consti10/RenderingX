@@ -74,7 +74,6 @@ std::string DistortionManager::writeDistortionParams(
         s<<"uniform ViewportParams uScreenParams;\n";
         s<<"uniform ViewportParams uTextureParams;\n";
     }
-
     return s.str();
 }
 
@@ -127,8 +126,7 @@ void DistortionManager::updateDistortion(const MPolynomialRadialDistortion &inve
     radialDistortionCoefficients.maxRadSquared=maxRadSq;
 }
 
-void DistortionManager::updateDistortion(const MPolynomialRadialDistortion &inverseDistortion,
-                                    float maxRadSq,
+void DistortionManager::updateDistortion(const MPolynomialRadialDistortion &inverseDistortion,float maxRadSq,
                                     const std::array<MLensDistortion::ViewportParams, 2> screen_params,
                                     const std::array<MLensDistortion::ViewportParams, 2> texture_params) {
     this->screen_params=screen_params;
