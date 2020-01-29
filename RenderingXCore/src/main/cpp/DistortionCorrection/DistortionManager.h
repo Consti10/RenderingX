@@ -97,7 +97,6 @@ private:
     static std::string glsl_PolynomialDistortionFactor(const int N_COEFICIENTS){
         std::stringstream s;
         s<<"\nfloat PolynomialDistortionFactor(const in float r_squared,const in float coefficients["<<N_COEFICIENTS<<"]){\n";
-        //manually unrolled loop
         s<<"float ret = 0.0;\n";
         for(int i=N_COEFICIENTS-1;i>=0;i--){
             s<<"ret = r_squared * (ret + coefficients["<<i<<"]);\n";
@@ -109,15 +108,13 @@ private:
     //same as PolynomialRadialDistortion::Distort
     //But with maxRadSq as limit
     static std::string glsl_PolynomialDistort(const int N_COEFICIENTS){
-        std::stringstream s;
-        s<<"vec2 PolynomialDistort(const in float coefficients["<<N_COEFICIENTS<<"],const in vec2 in_pos,const in float maxRadSq){\n";
-        s<<"float r2=dot(in_pos.xy,in_pos.xy);\n";
-        s<<"r2=clamp(r2,0.0,maxRadSq);\n";
-        s<<"float dist_factor=PolynomialDistortionFactor(r2,coefficients);\n";
-        s<<"vec2 ret=in_pos.xy*dist_factor;\n";
-        s<<"return ret;\n";
-        s<<"}\n";
-        return s.str();
+        return "vec2 PolynomialDistort(const in float coefficients["+std::to_string(N_COEFICIENTS)+"],const in vec2 in_pos,const in float maxRadSq){\n"
+        "float r2=dot(in_pos.xy,in_pos.xy);\n"
+        "r2=clamp(r2,0.0,maxRadSq);\n"
+        "float dist_factor=PolynomialDistortionFactor(r2,coefficients);\n"
+        "vec2 ret=in_pos.xy*dist_factor;\n"
+        "return ret;\n"
+        "}\n";
     }
     //Same as MLensDistortion::ViewportParams
     static std::string glsl_ViewportParams(){
@@ -131,19 +128,17 @@ private:
     }
     //Same as MLensDistortion::UndistortedNDCForDistortedNDC but with maxRadSq
     static std::string glsl_UndistortedNDCForDistortedNDC(const int N_COEFICIENTS){
-        std::stringstream s;
-        s<<"vec2 UndistortedNDCForDistortedNDC(";
-        s<<"const in float coefficients["<<N_COEFICIENTS<<"],";
-        s<<"const in ViewportParams screen_params,const in ViewportParams texture_params,const in vec2 in_ndc,const in float maxRadSq){\n";
-        s<<"vec2 distorted_ndc_tanangle=vec2(";
-        s<<"in_ndc.x * texture_params.width+texture_params.x_eye_offset,";
-        s<<"in_ndc.y * texture_params.height+texture_params.y_eye_offset);\n";
-        s<<"vec2 undistorted_ndc_tanangle = PolynomialDistort(coefficients,distorted_ndc_tanangle,maxRadSq);\n";
-        s<<"vec2 ret=vec2(undistorted_ndc_tanangle.x*screen_params.width+screen_params.x_eye_offset,";
-        s<<"undistorted_ndc_tanangle.y*screen_params.height+screen_params.y_eye_offset);\n";
-        s<<"return ret;\n";
-        s<<"}\n";
-        return s.str();
+        return "vec2 UndistortedNDCForDistortedNDC("
+        "const in float coefficients["+std::to_string(N_COEFICIENTS)+"],"
+        "const in ViewportParams screen_params,const in ViewportParams texture_params,const in vec2 in_ndc,const in float maxRadSq){\n"
+        "vec2 distorted_ndc_tanangle=vec2("
+        "in_ndc.x * texture_params.width+texture_params.x_eye_offset,"
+        "in_ndc.y * texture_params.height+texture_params.y_eye_offset);\n"
+        "vec2 undistorted_ndc_tanangle = PolynomialDistort(coefficients,distorted_ndc_tanangle,maxRadSq);\n"
+        "vec2 ret=vec2(undistorted_ndc_tanangle.x*screen_params.width+screen_params.x_eye_offset,"
+        "undistorted_ndc_tanangle.y*screen_params.height+screen_params.y_eye_offset);\n"
+        "return ret;\n"
+        "}\n";
     }
 };
 
