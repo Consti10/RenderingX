@@ -74,11 +74,13 @@ public:
 public:
     void initializeGL(){
         glGenBuffers(1,&vertexB);
+        GLHelper::checkGlError("VertexBuffer::initializeGL");
     }
 
     template<typename T>
     void uploadGL(const std::vector<T> &vertices){
         nVertices = GLBufferHelper::uploadGLBufferStatic(vertexB, vertices);
+        GLHelper::checkGlError("VertexBuffer::uploadGL");
     }
 
     template<typename T,size_t s>
@@ -111,12 +113,14 @@ public:
     void initializeGL(){
         glGenBuffers(1,&vertexB);
         glGenBuffers(1,&indexB);
+        GLHelper::checkGlError("VertexIndexBuffer::initializeGL");
     }
 
     template<typename T, typename T2>
     void uploadGL(const std::vector<T> &vertices,const std::vector<T2> &indices){
         GLBufferHelper::uploadGLBufferStatic(vertexB, vertices);
         nIndices = GLBufferHelper::uploadGLBufferStatic(indexB, indices);
+        GLHelper::checkGlError("VertexIndexBuffer::uploadGL");
     }
 
     template<typename T, typename T2>
