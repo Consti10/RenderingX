@@ -46,12 +46,13 @@ void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext) {
     leftEyeView=glm::translate(eyeView,glm::vec3(-IPD/2.0f,0,0));
     rightEyeView=glm::translate(eyeView,glm::vec3(IPD/2.0f,0,0));
     //some colored geometry
-    GLProgramVC::Vertex coloredVertices[N_COLOR_VERTICES];
+    std::vector<GLProgramVC::Vertex> coloredVertices(N_COLOR_VERTICES);
     const float triangleWidth=3.0F;
     for(int i=0;i<N_TRIANGLES;i++){
         ColoredGeometry::makeColoredTriangle1(&coloredVertices[i*3],glm::vec3(-triangleWidth/2,0,0),triangleWidth,triangleWidth,Color::RED);
     }
-    GLBufferHelper::uploadGLBufferStatic(glBufferVC,coloredVertices,sizeof(coloredVertices));
+    mVertexBufferVC.initializeGL();
+    mVertexBufferVC.uploadGL(coloredVertices);
 }
 
 
@@ -110,12 +111,11 @@ void GLRSuperSyncExample::drawEye(JNIEnv *env, bool whichEye) {
     //A typical application has way more than 1 draw call only
     for(int i=0;i<5;i++){
         const glm::mat4 leftOrRightEyeView= whichEye==0 ? leftEyeView : rightEyeView;
-        glProgramVC->beforeDraw(glBufferVC);
-        glProgramVC->draw(leftOrRightEyeView,projection,0,N_COLOR_VERTICES,GL_TRIANGLES);
+        glProgramVC->beforeDraw(mVertexBufferVC.vertexB);
+        glProgramVC->draw(leftOrRightEyeView,projection,0,mVertexBufferVC.nVertices,GL_TRIANGLES);
         glProgramVC->afterDraw();
     }
 }
-
 
 #define JNI_METHOD(return_type, method_name) \
   JNIEXPORT return_type JNICALL              \

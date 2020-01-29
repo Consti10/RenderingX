@@ -84,7 +84,7 @@ private:
     glm::mat4 eyeView;
     glm::mat4 leftEyeView,rightEyeView;
     //holds colored geometry vertices
-    GLuint glBufferVC;
+    VertexBuffer mVertexBufferVC;
     static constexpr int N_TRIANGLES=5;
     static constexpr int N_COLOR_VERTICES=3*N_TRIANGLES;
 };
