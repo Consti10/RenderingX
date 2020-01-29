@@ -27,14 +27,14 @@ private:
     GLuint mPositionHandle,mColorHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
     const DistortionManager* distortionManager;
-    DistortionManager::UndistortionHandles mUndistortionHandles;
+    DistortionManager::UndistortionHandles* mUndistortionHandles;
 public:
     struct Vertex{
         float x,y,z;
         TrueColor colorRGBA;
     };
     using INDEX_DATA=GLushort;
-    explicit GLProgramVC(const DistortionManager* distortionManager= nullptr,bool coordinates2D=false);
+    explicit GLProgramVC(const DistortionManager* distortionManager=nullptr,bool coordinates2D=false);
     void beforeDraw(GLuint buffer) const;
     void draw(Mat4x4 ViewM, Mat4x4 ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
     void draw(glm::mat4 ViewM,glm::mat4 ProjM, int verticesOffset,int numberVertices, GLenum mode) const;

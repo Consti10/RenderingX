@@ -23,7 +23,7 @@ private:
     GLint mPositionHandle,mTextureHandle,mSamplerHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
     const DistortionManager* distortionManager;
-    DistortionManager::UndistortionHandles mUndistortionHandles;
+    DistortionManager::UndistortionHandles* mUndistortionHandles;
     static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
     static constexpr auto MY_SAMPLER_UNIT=1;
 public:

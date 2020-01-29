@@ -4,36 +4,40 @@
 
 #include "DistortionManager.h"
 
-DistortionManager::UndistortionHandles
+DistortionManager::UndistortionHandles*
 DistortionManager::getUndistortionUniformHandles(const DistortionManager* dm,const GLuint program){
-    UndistortionHandles ret{};
     if(isNullOrDisabled(dm)){
-        return ret;
+        return nullptr;
     }
+    UndistortionHandles* ret=new UndistortionHandles();
     if(dm->distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
-        ret.uMaxRadSq=(GLuint)glGetUniformLocation(program,"uMaxRadSq");
-        ret.uKN=(GLuint)glGetUniformLocation(program,"uKN");
+        ret->uMaxRadSq=(GLuint)glGetUniformLocation(program,"uMaxRadSq");
+        ret->uKN=(GLuint)glGetUniformLocation(program,"uKN");
     }else if(dm->distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD){
-        ret.uMaxRadSq=(GLuint)glGetUniformLocation(program,"uMaxRadSq");
-        ret.uKN=(GLuint)glGetUniformLocation(program,"uKN");
-        ret.uScreenParams_w=(GLuint)glGetUniformLocation(program,"uScreenParams.width");
-        ret.uScreenParams_h=(GLuint)glGetUniformLocation(program,"uScreenParams.height");
-        ret.uScreenParams_x_off=(GLuint)glGetUniformLocation(program,"uScreenParams.x_eye_offset");
-        ret.uScreenParams_y_off=(GLuint)glGetUniformLocation(program,"uScreenParams.y_eye_offset");
-        ret.uTextureParams_w=(GLuint)glGetUniformLocation(program,"uTextureParams.width");
-        ret.uTextureParams_h=(GLuint)glGetUniformLocation(program,"uTextureParams.height");
-        ret.uTextureParams_x_off=(GLuint)glGetUniformLocation(program,"uTextureParams.x_eye_offset");
-        ret.uTextureParams_y_off=(GLuint)glGetUniformLocation(program,"uTextureParams.y_eye_offset");
+        ret->uMaxRadSq=(GLuint)glGetUniformLocation(program,"uMaxRadSq");
+        ret->uKN=(GLuint)glGetUniformLocation(program,"uKN");
+        ret->uScreenParams_w=(GLuint)glGetUniformLocation(program,"uScreenParams.width");
+        ret->uScreenParams_h=(GLuint)glGetUniformLocation(program,"uScreenParams.height");
+        ret->uScreenParams_x_off=(GLuint)glGetUniformLocation(program,"uScreenParams.x_eye_offset");
+        ret->uScreenParams_y_off=(GLuint)glGetUniformLocation(program,"uScreenParams.y_eye_offset");
+        ret->uTextureParams_w=(GLuint)glGetUniformLocation(program,"uTextureParams.width");
+        ret->uTextureParams_h=(GLuint)glGetUniformLocation(program,"uTextureParams.height");
+        ret->uTextureParams_x_off=(GLuint)glGetUniformLocation(program,"uTextureParams.x_eye_offset");
+        ret->uTextureParams_y_off=(GLuint)glGetUniformLocation(program,"uTextureParams.y_eye_offset");
     }
     return ret;
 }
 
 void DistortionManager::beforeDraw(
-        const DistortionManager::UndistortionHandles& undistortionHandles) const {
-    if(distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
+        const DistortionManager::UndistortionHandles* uh) const {
+    if(distortionMode==NONE){
+        return;
+    }else if(distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
+        const UndistortionHandles& undistortionHandles=*uh;
         glUniform1f(undistortionHandles.uMaxRadSq,radialDistortionCoefficients.maxRadSquared);
         glUniform1fv(undistortionHandles.uKN,N_RADIAL_UNDISTORTION_COEFICIENTS,radialDistortionCoefficients.kN.data());
     }else if(distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD) {
+        const UndistortionHandles& undistortionHandles=*uh;
         glUniform1f(undistortionHandles.uMaxRadSq,radialDistortionCoefficients.maxRadSquared);
         glUniform1fv(undistortionHandles.uKN,N_RADIAL_UNDISTORTION_COEFICIENTS,radialDistortionCoefficients.kN.data());
         const int i=leftEye ? 0 : 1; //update screen params

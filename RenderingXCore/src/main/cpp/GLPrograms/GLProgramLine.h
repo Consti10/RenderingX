@@ -22,7 +22,7 @@ private:
     GLuint mMVMatrixHandle,mPMatrixHandle;
     GLuint uEdge,uBorderEdge,uOutlineStrength;
     const DistortionManager* distortionManager;
-    DistortionManager::UndistortionHandles mUndistortionHandles;
+    DistortionManager::UndistortionHandles* mUndistortionHandles;
 public:
     struct Vertex{
         float x,y,z;
@@ -41,7 +41,7 @@ public:
     static void convertLineToRenderingData(const glm::vec3& start,const glm::vec3& end,float lineWidth,
             Vertex array[],int arrayOffset,TrueColor baseColor=Color::BLACK,TrueColor  outlineColor=Color::WHITE);
 private:
-    static const std::string VS(const DistortionManager* distortionManager1){
+    static const std::string VS(const DistortionManager* distortionManager){
         std::stringstream s;
         s<<"uniform mat4 uMVMatrix;\n";
         s<<"uniform mat4 uPMatrix;\n";
@@ -53,11 +53,11 @@ private:
         s<<"varying vec3 vNormal;";
         s<<"varying vec4 vBaseColor;";
         s<<"varying vec4 vOutlineColor;";
-        s<<DistortionManager::writeDistortionParams(distortionManager1);
+        s<<DistortionManager::writeDistortionParams(distortionManager);
         s<<"vec4 extruded_pos;";
         s<<"void main(){\n";
         s<<"extruded_pos=aPosition+vec4(aNormal*aLineWidth,0.0);\n";
-        s<<DistortionManager::writeGLPosition(distortionManager1,"extruded_pos");
+        s<<DistortionManager::writeGLPosition(distortionManager,"extruded_pos");
         //s<<"gl_Position = (uPMatrix*uMVMatrix)* extruded_pos;\n";
         s<<"vNormal=aNormal;";
         s<<"vBaseColor=aBaseColor;";

@@ -67,8 +67,8 @@ public:
     DistortionManager():distortionMode(DISTORTION_MODE::NONE){};
     DistortionManager(const DISTORTION_MODE& distortionMode1):distortionMode(distortionMode1){updateDistortionWithIdentity();}
 
-    static UndistortionHandles getUndistortionUniformHandles(const DistortionManager* distortionManager,const GLuint program);
-    void beforeDraw(const UndistortionHandles& undistortionHandles)const;
+    static UndistortionHandles* getUndistortionUniformHandles(const DistortionManager* distortionManager,const GLuint program);
+    void beforeDraw(const UndistortionHandles* undistortionHandles)const;
     void afterDraw()const;
 
     static std::string writeDistortionParams(const DistortionManager* distortionManager);

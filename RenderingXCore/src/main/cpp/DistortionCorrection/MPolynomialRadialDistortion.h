@@ -89,5 +89,10 @@ private:
     std::vector<float> coefficients_;
 };
 
+class PolynomialRadialInverse:public MPolynomialRadialDistortion{
+public:
+    float maxRadSq;
+};
+
 
 #endif //CARDBOARD_MPOLYNOMIALRADIALDISTORTION_H

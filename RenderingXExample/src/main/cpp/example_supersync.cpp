@@ -111,7 +111,7 @@ void GLRSuperSyncExample::drawEye(JNIEnv *env, bool whichEye) {
     for(int i=0;i<5;i++){
         const glm::mat4 leftOrRightEyeView= whichEye==0 ? leftEyeView : rightEyeView;
         glProgramVC->beforeDraw(glBufferVC);
-        glProgramVC->draw(glm::value_ptr(leftOrRightEyeView),glm::value_ptr(projection),0,N_COLOR_VERTICES,GL_TRIANGLES);
+        glProgramVC->draw(leftOrRightEyeView,projection,0,N_COLOR_VERTICES,GL_TRIANGLES);
         glProgramVC->afterDraw();
     }
 }
