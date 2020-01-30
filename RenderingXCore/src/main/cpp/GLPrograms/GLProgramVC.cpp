@@ -35,11 +35,9 @@ void GLProgramVC::draw(const Mat4x4 ViewM, const Mat4x4 ProjM,
 #endif
 }
 
-void GLProgramVC::afterDraw() const {
-    glDisableVertexAttribArray((GLuint)mPositionHandle);
-    glDisableVertexAttribArray((GLuint)mColorHandle);
-    glBindBuffer(GL_ARRAY_BUFFER,0);
-    //distortionManager.afterDraw();
+void GLProgramVC::draw(const glm::mat4& ViewM,const glm::mat4& ProjM, int indicesOffset, int numberIndices,
+                       GLenum mode) const {
+    draw(glm::value_ptr(ViewM),glm::value_ptr(ProjM),indicesOffset,numberIndices,mode);
 }
 
 void GLProgramVC::drawIndexed(GLuint indexBuffer, Mat4x4 ViewM, Mat4x4 ProjM, int indicesOffset,
@@ -56,7 +54,28 @@ void GLProgramVC::drawIndexed(GLuint indexBuffer, Mat4x4 ViewM, Mat4x4 ProjM, in
 #endif
 }
 
-void GLProgramVC::draw(glm::mat4 ViewM, glm::mat4 ProjM, int indicesOffset, int numberIndices,
-                       GLenum mode) const {
-    draw(glm::value_ptr(ViewM),glm::value_ptr(ProjM),indicesOffset,numberIndices,mode);
+void GLProgramVC::drawIndexed(GLuint indexBuffer,const glm::mat4& ViewM,const glm::mat4& ProjM,int indicesOffset,int numberIndices, GLenum mode) const{
+    drawIndexed(indexBuffer,glm::value_ptr(ViewM),glm::value_ptr(ProjM),indicesOffset,numberIndices,mode);
 }
+
+void GLProgramVC::afterDraw() const {
+    glDisableVertexAttribArray((GLuint)mPositionHandle);
+    glDisableVertexAttribArray((GLuint)mColorHandle);
+    glBindBuffer(GL_ARRAY_BUFFER,0);
+    //distortionManager.afterDraw();
+}
+
+void GLProgramVC::drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const VertexBuffer& vb)const{
+    beforeDraw(vb.vertexB);
+    draw(ViewM,ProjM,0,vb.nVertices,vb.mMode);
+    afterDraw();
+}
+
+void GLProgramVC::drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const VertexIndexBuffer& vib)const{
+    beforeDraw(vib.vertexB);
+    drawIndexed(vib.indexB,ViewM,ProjM,0,vib.nIndices,vib.mMode);
+    afterDraw();
+}
+
+
+

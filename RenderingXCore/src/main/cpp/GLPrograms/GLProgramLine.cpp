@@ -62,6 +62,12 @@ void GLProgramLine::afterDraw() const {
     //distortionManager.afterDraw();
 }
 
+void GLProgramLine::drawX(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM,const VertexBuffer& vb){
+    beforeDraw(vb.vertexB);
+    draw(ViewM,ProjM,0,vb.nVertices);
+    afterDraw();
+}
+
 static void writePos(GLProgramLine::Vertex &v,const glm::vec3 &pos){
     v.x=pos.x;
     v.y=pos.y;

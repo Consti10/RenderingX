@@ -3,62 +3,47 @@
 #define RENDERINGX_CORE_HELPER_GLBufferHelper
 
 #include <GLES2/gl2.h>
-#include "GeometryBuilder/TexturedGeometry.hpp"
+#include <vector>
+#include <array>
 
+//Provides convenient functions to upload cpp
+//std::vector<T> / std::array<T,size> data type to GPU using OpenGL c style api
 class GLBufferHelper {
 public:
-    static void uploadGLBufferStatic(GLuint buff, void *array, GLsizeiptr arraySizeBytes) {
+    //c-style function that takes a data pointer and the data size in bytes
+    //binds and un-binds gl buffer for data upload
+    static void uploadGLBuffer(const GLuint buff,const void *array,GLsizeiptr arraySizeBytes,GLenum usage=GL_STATIC_DRAW) {
         glBindBuffer(GL_ARRAY_BUFFER, buff);
         glBufferData(GL_ARRAY_BUFFER, arraySizeBytes,
-                     array, GL_STATIC_DRAW);
+                     array,usage);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
-
-    static void uploadGLBufferDynamic(GLuint buff, void *array, GLsizeiptr arraySizeBytes) {
-        glBindBuffer(GL_ARRAY_BUFFER, buff);
-        glBufferData(GL_ARRAY_BUFFER, arraySizeBytes,
-                     array, GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-    }
-
+    //wrap std::vector<>
+    //returns the n of elements inside the vector (NOT the n of bytes)
     template<typename T>
-    static int uploadGLBufferStatic(const GLuint buff, const std::vector<T> &data) {
+    static int uploadGLBuffer(const GLuint buff, const std::vector<T> &data,GLenum usage=GL_STATIC_DRAW) {
         const auto size = data.size();
         const GLsizeiptr sizeBytes = size * sizeof(T);
-        uploadGLBufferStatic(buff, (void *) data.data(), sizeBytes);
+        uploadGLBuffer(buff, (void *) data.data(), sizeBytes);
         return (int) size;
     }
-
-    template<typename T>
-    static int uploadGLBufferDynamic(const GLuint buff, const std::vector<T> &data) {
-        const auto size = data.size();
-        const GLsizeiptr sizeBytes = size * sizeof(T);
-        uploadGLBufferDynamic(buff, (void *) data.data(), sizeBytes);
-        return (int) size;
+    //wrap std::array
+    template<typename T,std::size_t S>
+    static int uploadGLBuffer(const GLuint buff, const std::array<T,S> &data,GLenum usage=GL_STATIC_DRAW) {
+        const GLsizeiptr sizeBytes = S * sizeof(T);
+        uploadGLBuffer(buff, (void *) data.data(), sizeBytes);
+        return (int) S;
     }
-
-    static void uploadGLBufferStatic(const GLuint vertexB, const GLuint indexB,
-                                     const TexturedGeometry::IndicesVertices &data) {
-        uploadGLBufferStatic(vertexB, data.vertices);
-        uploadGLBufferStatic(indexB, data.indices);
-    }
-
+    //Also create the GL Buffer, both for array and vector
     template<typename T>
-    static int createUploadGLBufferStatic(GLuint &buff, const std::vector<T> &data) {
+    static int createUploadGLBuffer(GLuint &buff, const std::vector<T> &data,GLenum usage=GL_STATIC_DRAW) {
         glGenBuffers(1, &buff);
-        const auto size = data.size();
-        const GLsizeiptr sizeBytes = size * sizeof(T);
-        uploadGLBufferStatic(buff, (void *) data.data(), sizeBytes);
-        return (int) size;
+        return uploadGLBuffer(buff,data,usage);
     }
-
-    template<typename T>
-    static int createUploadGLBufferDynamic(GLuint &buff, const std::vector<T> &data) {
-        glGenBuffers(1, &buff);
-        const auto size = data.size();
-        const GLsizeiptr sizeBytes = size * sizeof(T);
-        uploadGLBufferDynamic(buff, (void *) data.data(), sizeBytes);
-        return (int) size;
+    template<typename T,std::size_t S>
+    static int createUploadGLBuffer(GLuint &buff, const std::array<T,S> &data,GLenum usage=GL_STATIC_DRAW) {
+        glGenBuffers(1,&buff);
+        return uploadGLBuffer(buff,data,usage);
     }
 };
 
@@ -66,11 +51,12 @@ public:
 //1) create vertices on stack
 //2) upload vertex data to gpu, then object on stack is freed
 //3) render all vertices. The nVertices has to be stored,too since it gets lost when object on stack is deleted
+
 class VertexBuffer{
 public:
     GLuint vertexB;
     int nVertices=0;
-
+    GLenum mMode=GL_TRIANGLES;
 public:
     void initializeGL(){
         glGenBuffers(1,&vertexB);
@@ -78,21 +64,22 @@ public:
     }
 
     template<typename T>
-    void uploadGL(const std::vector<T> &vertices){
-        nVertices = GLBufferHelper::uploadGLBufferStatic(vertexB, vertices);
+    void uploadGL(const std::vector<T> &vertices,GLenum mode=GL_TRIANGLES){
+        nVertices = GLBufferHelper::uploadGLBuffer(vertexB, vertices);
+        mMode=mode;
         GLHelper::checkGlError("VertexBuffer::uploadGL");
     }
 
     template<typename T,size_t s>
-    void uploadGL(const std::array<T,s> &vertices){
+    void uploadGL(const std::array<T,s> &vertices,GLenum mode=GL_TRIANGLES){
         const auto tmp=std::vector<T>(vertices.begin(),vertices.end());
-        VertexBuffer::uploadGL(tmp);
+        VertexBuffer::uploadGL(tmp,mode);
     }
 
     template<typename T>
-    void initializeAndUploadGL(const std::vector<T> &vertices){
+    void initializeAndUploadGL(const std::vector<T> &vertices,GLenum mode=GL_TRIANGLES){
         initializeGL();
-        nVertices = GLBufferHelper::uploadGLBufferStatic(vertexB, vertices);
+        uploadGL(vertices,mode);
     }
 
     void deleteGL() {
@@ -109,7 +96,7 @@ public:
     GLuint vertexB;
     GLuint indexB;
     int nIndices=0;
-
+    GLenum mMode=GL_TRIANGLES;
     void initializeGL(){
         glGenBuffers(1,&vertexB);
         glGenBuffers(1,&indexB);
@@ -117,17 +104,17 @@ public:
     }
 
     template<typename T, typename T2>
-    void uploadGL(const std::vector<T> &vertices,const std::vector<T2> &indices){
-        GLBufferHelper::uploadGLBufferStatic(vertexB, vertices);
-        nIndices = GLBufferHelper::uploadGLBufferStatic(indexB, indices);
+    void uploadGL(const std::vector<T> &vertices,const std::vector<T2> &indices,GLenum mode=GL_TRIANGLES){
+        GLBufferHelper::uploadGLBuffer(vertexB, vertices);
+        nIndices = GLBufferHelper::uploadGLBuffer(indexB, indices);
+        mMode=mode;
         GLHelper::checkGlError("VertexIndexBuffer::uploadGL");
     }
 
     template<typename T, typename T2>
-    void initializeAndUploadGL(const std::vector<T> &vertices,const std::vector<T2> &indices){
+    void initializeAndUploadGL(const std::vector<T> &vertices,const std::vector<T2> &indices,GLenum mode=GL_TRIANGLES){
         initializeGL();
-        GLBufferHelper::uploadGLBufferStatic(vertexB, vertices);
-        nIndices = GLBufferHelper::uploadGLBufferStatic(indexB, indices);
+        uploadGL(vertices,indices,mode);
     }
 
     void deleteGL() {

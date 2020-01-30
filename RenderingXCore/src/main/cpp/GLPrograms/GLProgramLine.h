@@ -14,6 +14,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <Color/Color.hpp>
 #include <DistortionCorrection/DistortionManager.h>
+#include <GLBufferHelper.hpp>
 
 class GLProgramLine {
 private:
@@ -37,6 +38,8 @@ public:
     void setOtherUniforms(float outlineWidth=0.4f,float edge=0.1f,float borderEdge=0.1f)const;
     void draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, int verticesOffset, int numberVertices) const;
     void afterDraw() const;
+    //convenient method for VertexBuffer
+    void drawX(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM,const VertexBuffer& vb);
 public:
     static void convertLineToRenderingData(const glm::vec3& start,const glm::vec3& end,float lineWidth,
             Vertex array[],int arrayOffset,TrueColor baseColor=Color::BLACK,TrueColor  outlineColor=Color::WHITE);

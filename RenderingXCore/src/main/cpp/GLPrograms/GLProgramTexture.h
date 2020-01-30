@@ -13,6 +13,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <array>
 #include <DistortionCorrection/DistortionManager.h>
+#include <GLBufferHelper.hpp>
 
 //#define WIREFRAME
 
@@ -38,6 +39,9 @@ public:
     void drawIndexed(GLuint indexBuffer,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int indicesOffset, int numberIndices,GLenum mode) const;
     void afterDraw() const;
     static void loadTexture(GLuint texture,JNIEnv *env, jobject androidContext,const char* name);
+    //Advanced
+    void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const VertexBuffer& vb)const;
+    void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const VertexIndexBuffer& vib)const;
 private:
     static const std::string VS(const DistortionManager* distortionManager1,const bool use2dCoordinates){
         std::stringstream s;

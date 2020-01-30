@@ -139,7 +139,7 @@ public:
                 LOGD("Error value too high");
             }
         }*/
-        data.uploadGL(vertices,indices);
+        data.uploadGL(vertices,indices,GL_TRIANGLE_STRIP);
     }
 
 };

@@ -98,9 +98,11 @@ public:
         }
         return ret;
     }
-    //static const std::array<VertexBuffer,2> createOcclusionMeshLeftAndRight(){
 
-    //}
+    static const void uploadOcclusionMeshLeftRight(const VRHeadsetParams& params,TrueColor color,std::array<VertexBuffer,2>& vb){
+        vb[0].uploadGL(makeMesh(params,0,color),GL_TRIANGLE_STRIP);
+        vb[1].uploadGL(makeMesh(params,1,color),GL_TRIANGLE_STRIP);
+    }
 };
 
 

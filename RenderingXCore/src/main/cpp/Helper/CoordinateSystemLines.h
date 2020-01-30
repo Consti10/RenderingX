@@ -23,7 +23,7 @@ public:
     void initializeGL(){
         const auto coordinateSystemLines=ColoredGeometry::makeDebugCoordinateSystemLines(100);
         glGenBuffers(1,&glBufferCoordinateSystemLines);
-        nCoordinateSystemLinesVertices=GLBufferHelper::uploadGLBufferStatic(glBufferCoordinateSystemLines,coordinateSystemLines);
+        nCoordinateSystemLinesVertices=GLBufferHelper::uploadGLBuffer(glBufferCoordinateSystemLines,coordinateSystemLines);
     }
     void drawGL(GLProgramVC* glProgramVC,const int viewportX,const int viewportY,const int viewportW,const int viewportH){
         glProgramVC->beforeDraw(glBufferCoordinateSystemLines);

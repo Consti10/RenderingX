@@ -84,3 +84,14 @@ void GLProgramTexture::loadTexture(GLuint texture,JNIEnv *env, jobject androidCo
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+void GLProgramTexture::drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const VertexBuffer& vb)const{
+    beforeDraw(vb.vertexB,texture);
+    draw(ViewM,ProjM,0,vb.nVertices,vb.mMode);
+    afterDraw();
+}
+
+void GLProgramTexture::drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const VertexIndexBuffer& vib)const{
+    beforeDraw(vib.vertexB,texture);
+    drawIndexed(vib.indexB,ViewM,ProjM,0,vib.nIndices,vib.mMode);
+    afterDraw();
+}

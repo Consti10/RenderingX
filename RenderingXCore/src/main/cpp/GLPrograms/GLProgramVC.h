@@ -15,7 +15,7 @@
 #include <array>
 #include <Color/Color.hpp>
 #include <DistortionCorrection/DistortionManager.h>
-
+#include <GLBufferHelper.hpp>
 
 //#define WIREFRAME
 
@@ -37,9 +37,14 @@ public:
     explicit GLProgramVC(const DistortionManager* distortionManager=nullptr,bool coordinates2D=false);
     void beforeDraw(GLuint buffer) const;
     void draw(Mat4x4 ViewM, Mat4x4 ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
-    void draw(glm::mat4 ViewM,glm::mat4 ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
+    void draw(const glm::mat4& ViewM,const glm::mat4& ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
     void drawIndexed(GLuint indexBuffer,Mat4x4 ViewM, Mat4x4 ProjM,int indicesOffset,int numberIndices, GLenum mode) const;
+    void drawIndexed(GLuint indexBuffer,const glm::mat4& ViewM,const glm::mat4& ProjM,int indicesOffset,int numberIndices, GLenum mode) const;
     void afterDraw() const;
+    //convenient methods for drawing Vertex / VertexIndex buffer(s)
+    //calls beforeDraw(), draw() and afterDraw() properly
+    void drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const VertexBuffer& vb)const;
+    void drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const VertexIndexBuffer& vib)const;
 private:
     static const std::string VS(const DistortionManager* distortionManager1,bool coordinates2D){
         std::stringstream s;
