@@ -81,13 +81,10 @@ public:
     static float calculateMaxDeviation(const MPolynomialRadialDistortion& distortion,const MPolynomialRadialDistortion& inverse,
             const float maxRadSq,const float stepSize=0.01f);
 private:
-//see @java Distortion.solveLeastSquares()
-    static std::vector<double> solveLeastSquares(const std::vector<std::vector<double>>& matA,const std::vector<double>& vecY);
-
-    //see @java Distortion.solveLinear()
-    static std::vector<double> solveLinear(std::vector<std::vector<double>>& a,std::vector<double>& y);
     std::vector<float> coefficients_;
 };
+
+//Inverse polynomial is a close approximation of the inverse in the range [0..MAX_RAD_SQ]
 
 class PolynomialRadialInverse:public MPolynomialRadialDistortion{
 public:

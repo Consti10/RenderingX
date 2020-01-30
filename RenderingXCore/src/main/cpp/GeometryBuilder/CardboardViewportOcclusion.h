@@ -12,6 +12,11 @@
 
 class CardboardViewportOcclusion{
 public:
+    //Values that are not in range [-1,..,1] before un-distortion are not visible through the headset lenses anyway (FOV)
+    //Values not in the range [-0.9,...,0.9] are 'just barely visible at the edge of the max fov of the headset' and to emulate the gvr-android-sdk behaviour
+    //TODO: create a transition between +-(0.9..1) of alpha==1.0 to alpha==0.0
+
+
     //Creates a Mesh using Normalized device coordinates that occludes
     //everything except the part actually visible inside the headset
     //Vertex data can be rendered using GL_TRAINGLE_STRIP
@@ -60,8 +65,11 @@ public:
 
     // V1--V3--V5-- .... VN
     //  |  |   |          |
-    // V2--V4--V6-- ...  VN
-    //tesselation should be 8 or 16 or 32 ..
+    // V2--V4--V6-- ...  VN+1
+    //Tesselation has to be 8 or 16 or 32 ..
+    //Creates a construct like drawn above that can be rendered using GL_TRIANGLE_STRIP
+    //However, V1==V2 and V3==V4 .. VN==VN+1 or in other words
+    //The V2,V4,V6..VN+1 values are not distorted yet
     static const std::vector<GLProgramVC::Vertex> makeSomething(const glm::vec2 start,const float size,const bool horizontal,const TrueColor color,
             const int tesselation){
         //create a strip in the form of
