@@ -44,11 +44,9 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env) {
     shouldRender= true;
     cNanoseconds before,diff=0;
     while(shouldRender){
-#ifndef MY_RELEASE
         if(diff>=DISPLAY_REFRESH_TIME){
             LOGD("WARNING: rendering a eye took longer than displayRefreshTime ! Error. Time: %d",(int)(diff/1000/1000));
         }
-#endif
         vsyncStartWT.start();
         int64_t leOffset=waitUntilVsyncStart();
         vsyncStartWT.stop();
@@ -59,11 +57,9 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env) {
         if(!shouldRender){
             break;
         }
-#ifndef MY_RELEASE
         if(diff>=DISPLAY_REFRESH_TIME){
             LOGD("WARNING: rendering a eye took longer than displayRefreshTime ! Error. Time: %d",(int)(diff/1000/1000));
         }
-#endif
         vsyncMiddleWT.start();
         int64_t reOffset=waitUntilVsyncMiddle();
         vsyncMiddleWT.stop();
@@ -325,7 +321,6 @@ void FBRManager::printLog() {
         if(useVSYNC_CALLBACK_ADVANCE_NS){
             VSYNC_CALLBACK_ADVANCE_NS=(int64_t)(MS_TO_NS*advanceMS);
         }
-#ifndef MY_RELEASE
         std::ostringstream avgLog;
         avgLog<<"------------------------FBRManager Averages------------------------";
         avgLog<<"\nGPU time:"<<": leftEye:"<<leGPUTimeAvg<<" | rightEye:"<<reGPUTimeAvg<<" | left&right:"<<leAreGPUTimeAvg;
@@ -337,7 +332,6 @@ void FBRManager::printLog() {
         //avgLog<<"\nDisplay refresh time ms:"<<DISPLAY_REFRESH_TIME/1000.0/1000.0;
         avgLog<<"\n----  -----  ----  ----  ----  ----  ----  ----  --- ---";
         LOGD("%s",avgLog.str().c_str());
-#endif
         resetTS();
     }
 }
