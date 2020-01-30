@@ -25,7 +25,7 @@ public:
         if(anyError){
             MDebug::log(ss.str(),TAG);
 #ifdef CRASH_APPLICATION_ON_GL_ERROR
-            exit(-1);
+            std::exit(-1);
 #endif
         }
     }
