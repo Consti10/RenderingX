@@ -47,7 +47,7 @@ public:
     ExampleRendererVR(JNIEnv* env,jobject androidContext,gvr_context *gvr_context,
             bool RENDER_SCENE_USING_GVR_RENDERBUFFER=true,bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT=true,
             bool ENABLE_SCENE_MESH_2D=true,bool ENABLE_SCENE_360_SPHERE=false,bool ENABLE_SCENE_360_SPHERE_EQUIRECTANGULAR=false);
-    void onSurfaceCreated(JNIEnv* env,jobject context);
+    void onSurfaceCreated(JNIEnv* env,jobject context,int videoTexture);
     void onSurfaceChanged(int width, int height);
     void onDrawFrame();
 private:
@@ -61,11 +61,13 @@ private:
     FPSCalculator mFPSCalculator;
     std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
     std::unique_ptr<GLProgramTexture> mGLProgramTexture=nullptr;
+    std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt=nullptr;
     GLuint mTexture360Image;
     GLuint mTexture360ImageEquirectangular;
+    GLuint mVideoTexture;
     VertexIndexBuffer mEquirecangularSphereB;
     VertexBuffer mGvrSphereB;
-    VertexBuffer mOcclusionMesh[2];
+    std::array<VertexBuffer,2> mOcclusionMesh;
     /*
      * draws into gvr renderbuffer which is then distorted into framebuffer
      */

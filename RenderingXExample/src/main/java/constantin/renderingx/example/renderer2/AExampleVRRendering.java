@@ -80,6 +80,7 @@ public class AExampleVRRendering extends AppCompatActivity {
         super.onPause();
         if(gvrLayout!=null)gvrLayout.onPause();
         if(myVRLayout!=null)myVRLayout.onPauseX();
+        renderer.end();
     }
 
     @Override

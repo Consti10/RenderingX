@@ -29,7 +29,7 @@ ExampleRendererVR::ExampleRendererVR(JNIEnv *env, jobject androidContext,gvr_con
 }
 
 
-void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context) {
+void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context,int videoTexture) {
 //Instantiate all our OpenGL rendering 'Programs'
     gvr_api_->InitializeGl();
     std::vector<gvr::BufferSpec> specs;
@@ -42,8 +42,11 @@ void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context) {
 
     mBasicGLPrograms=std::make_unique<BasicGLPrograms>(&distortionManager);
     mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
+    mGLProgramTextureExt=std::make_unique<GLProgramTextureExt>(&distortionManager);
+    mVideoTexture=videoTexture;
     mGLProgramTexture=std::make_unique<GLProgramTexture>(false,&distortionManager);
     glGenTextures(1,&mTexture360Image);
+    glGenTextures(1,&mTexture360ImageEquirectangular);
     GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
     GLProgramTexture::loadTexture(mTexture360ImageEquirectangular,env,context,"360DegreeImages/insta_360_equirectangular.png");
     //create the insta360 sphere
@@ -53,18 +56,18 @@ void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context) {
     float tesselatedRectSize=2.5; //6.2f
     const float offsetY=0.0f;
     auto tmp=ColoredGeometry::makeTesselatedColoredRectLines(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,Color::BLUE);
-    blueMeshB.initializeAndUploadGL(tmp);
-
+    blueMeshB.initializeAndUploadGL(tmp,GL_LINES);
     tmp=ColoredGeometry::makeTesselatedColoredRectLines(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,Color::GREEN);
-    greenMeshB.initializeAndUploadGL(tmp);
+    greenMeshB.initializeAndUploadGL(tmp,GL_LINES);
     //create the gvr sphere
     const auto tmp2=GvrSphere::createGvrSphere(1.0,72,36);
-    mGvrSphereB.initializeAndUploadGL(tmp2);
+    mGvrSphereB.initializeAndUploadGL(tmp2,GL_TRIANGLE_STRIP);
     //create the occlusion mesh, left and right viewport
     //use a slightly different color than clear color to make mesh visible
     const TrueColor color=Color::fromRGBA(0.1,0.1,0.1,1.0);
-    mOcclusionMesh[0].initializeAndUploadGL(CardboardViewportOcclusion::makeMesh(vrHeadsetParams,0,color));
-    mOcclusionMesh[1].initializeAndUploadGL(CardboardViewportOcclusion::makeMesh(vrHeadsetParams,1,color));
+    mOcclusionMesh[0].initializeGL();
+    mOcclusionMesh[1].initializeGL();
+    CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(vrHeadsetParams,color,mOcclusionMesh);
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
@@ -155,25 +158,17 @@ void ExampleRendererVR::drawEyeVDDC(gvr::Eye eye) {
 void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen,bool occlusion) {
     if(ENABLE_SCENE_MESH_2D){
         const VertexBuffer& tmp=meshColorGreen ? greenMeshB : blueMeshB;
-        mBasicGLPrograms->vc.beforeDraw(tmp.vertexB);
-        mBasicGLPrograms->vc.draw(viewM,projM,0,tmp.nVertices,GL_LINES);
-        mBasicGLPrograms->vc.afterDraw();
+        mBasicGLPrograms->vc.drawX(viewM,projM,tmp);
     }
     if(ENABLE_SCENE_360_SPHERE){
-        mGLProgramTexture->beforeDraw(mGvrSphereB.vertexB,mTexture360Image);
-        mGLProgramTexture->draw(viewM,projM,0,mGvrSphereB.nVertices,GL_TRIANGLE_STRIP);
-        mGLProgramTexture->afterDraw();
+        mGLProgramTexture->drawX(mVideoTexture,viewM,projM,mGvrSphereB);
     }
     if(ENABLE_SCENE_360_SPHERE_EQUIRECTANGULAR){
-        mGLProgramTexture->beforeDraw(mEquirecangularSphereB.vertexB,mTexture360ImageEquirectangular);
-        mGLProgramTexture->drawIndexed(mEquirecangularSphereB.indexB,viewM,projM,0,mEquirecangularSphereB.nIndices,GL_TRIANGLE_STRIP);
-        mGLProgramTexture->afterDraw();
+        mGLProgramTexture->drawX(mVideoTexture,viewM,projM,mEquirecangularSphereB);
     }
     if(occlusion){
         const auto& occlusionMeshForEye=mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1];
-        mBasicGLPrograms->vc2D.beforeDraw(occlusionMeshForEye.vertexB);
-        mBasicGLPrograms->vc2D.draw(glm::mat4(1.0f),glm::mat4(1.0f),0,occlusionMeshForEye.nVertices,GL_TRIANGLE_STRIP);
-        mBasicGLPrograms->vc2D.afterDraw();
+        mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),occlusionMeshForEye);
     }
     GLHelper::checkGlError("ExampleRenderer2::drawEye");
 }
@@ -204,8 +199,8 @@ JNI_METHOD(void, nativeDelete)
 }
 
 JNI_METHOD(void, nativeOnSurfaceCreated)
-(JNIEnv *env, jobject obj,jlong p,jobject androidContext) {
-    native(p)->onSurfaceCreated(env,androidContext);
+(JNIEnv *env, jobject obj,jlong p,jobject androidContext,jint videoTexture) {
+    native(p)->onSurfaceCreated(env,androidContext,videoTexture);
 }
 
 JNI_METHOD(void, nativeOnSurfaceChanged)
