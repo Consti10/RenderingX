@@ -27,7 +27,7 @@ import constantin.renderingx.example.renderer2.AExampleVRRendering;
 import constantin.renderingx.example.supersync.AExampleSuperSync;
 
 public class MainActivity extends AppCompatActivity {
-    Context context;
+    private Context context;
     private static final String[] REQUIRED_PERMISSION_LIST = new String[]{
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(GLESInfo.isExtensionAvailable(context,GLESInfo.EGL_ANDROID_front_buffer_auto_refresh) && GLESInfo.isExtensionAvailable(context,GLESInfo.EGL_KHR_mutable_render_buffer)){
+                if(isSuperSyncSupported()){
                     startActivity(new Intent().setClass(context, AExampleSuperSync.class));
                 }else{
                     Toast.makeText(context,"SuperSync is not supported on this phone",Toast.LENGTH_LONG).show();
@@ -123,6 +123,10 @@ public class MainActivity extends AppCompatActivity {
             checkAndRequestPermissions();
         }
 
+    }
+
+    public boolean isSuperSyncSupported(){
+        return GLESInfo.isExtensionAvailable(context,GLESInfo.EGL_ANDROID_front_buffer_auto_refresh) && GLESInfo.isExtensionAvailable(context,GLESInfo.EGL_KHR_mutable_render_buffer);
     }
 
 }

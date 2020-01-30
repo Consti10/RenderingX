@@ -13,6 +13,7 @@ import org.junit.Test;
 import constantin.renderingx.core.GLESInfo.AWriteGLESInfo;
 import constantin.renderingx.example.renderer1.AExampleRendering;
 import constantin.renderingx.example.renderer2.AExampleVRRendering;
+import constantin.renderingx.example.supersync.AExampleSuperSync;
 
 //Launch Main Activity
 //Launch the writeGLESInfo Activity manually
@@ -26,7 +27,8 @@ public class MainActivityTest {
     public ActivityTestRule<MainActivity> mMainActivityRule = new ActivityTestRule<>(MainActivity.class);
     @Rule
     public ActivityTestRule<AWriteGLESInfo> mGLESInfoRule = new ActivityTestRule<>(AWriteGLESInfo.class,false,false);
-
+    @Rule
+    public ActivityTestRule<AExampleSuperSync> mExampleSuperSyncRule = new ActivityTestRule<>(AExampleSuperSync.class,false,false);
     @Rule
     public ActivityTestRule<AExampleRendering> mExampleRenderingRule = new ActivityTestRule<>(AExampleRendering.class,false,false);
     @Rule
@@ -62,10 +64,13 @@ public class MainActivityTest {
     }
 
     private void testSuperSyncIfPossible(){
-
+        if(mMainActivityRule.getActivity().isSuperSyncSupported()){
+            Intent i = new Intent();
+            mExampleSuperSyncRule.launchActivity(i);
+            try { Thread.sleep(WAIT_TIME); } catch (InterruptedException e) { e.printStackTrace(); }
+            mExampleSuperSyncRule.finishActivity();
+        }
     }
-
-
 
     @Test
     public void mainActivityTest() {
@@ -78,6 +83,8 @@ public class MainActivityTest {
         testVRRendering(1);
         //Sphere Gvr
         testVRRendering(2);
+        //Super sync
+        testSuperSyncIfPossible();
     }
 
 }

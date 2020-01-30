@@ -8,15 +8,18 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.google.vr.cardboard.DisplaySynchronizer;
 import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrUiLayout;
 
 //The GvrLayout does not allow users to create a 'normal' context when selected headset==Daydream
 //Simple workaround, you can use this as a drop-in replacement of GvrLayout when using your own presentationView anyway
+//TODO do we need DisplaySynchronizer ? Its implementation seems to be broken
 
 public class MyVRLayout extends FrameLayout {
 
     private GvrApi gvrApi;
+    //private DisplaySynchronizer displaySynchronizer;
 
     public MyVRLayout(final Context context) {
         super(context);
@@ -30,6 +33,7 @@ public class MyVRLayout extends FrameLayout {
 
     private void init(){
         LayoutInflater.from(getContext()).inflate(R.layout.my_vr_layout, this, true);
+        //displaySynchronizer=new DisplaySynchronizer(getContext(),getDisplay());
         gvrApi=new GvrApi(getContext(),null);
         final Activity activity=(Activity)getContext();
         findViewById(R.id.vr_overlay_settings_button).setOnClickListener(new View.OnClickListener() {
