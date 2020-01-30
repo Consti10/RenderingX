@@ -23,13 +23,13 @@ SuperSync
 **Forking the repo and including sources manually:** \
 * To your top level settings.gradle file, add
 ```
-include ':VideoCore'
-project(':VideoCore').projectDir=new File('..\\Telemetry\\TelemetryCore')
+include ':RenderingXCore'
+project(':RenderingXCore').projectDir=new File('..\\RenderingX\\RenderingXCore')
 ```
 and modify the path according to your download file
 * To your app level gradle file add
 ```
-implementation project(':TelemetryCore')
+implementation project(':RenderingXCore')
 ```
 See [FPV-VR](https://github.com/Consti10/FPV_VR_2018) as an example how to add dependencies.
 
