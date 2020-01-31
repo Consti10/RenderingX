@@ -164,7 +164,7 @@ void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, b
         mGLProgramTexture->drawX(mVideoTexture,viewM,projM,mGvrSphereB);
     }
     if(ENABLE_SCENE_360_SPHERE_EQUIRECTANGULAR){
-        mGLProgramTexture->drawX(mVideoTexture,viewM,projM,mEquirecangularSphereB);
+        mGLProgramTexture->drawX(mTexture360ImageEquirectangular,viewM,projM,mEquirecangularSphereB);
     }
     if(occlusion){
         mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);
