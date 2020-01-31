@@ -167,8 +167,7 @@ void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, b
         mGLProgramTexture->drawX(mVideoTexture,viewM,projM,mEquirecangularSphereB);
     }
     if(occlusion){
-        const auto& occlusionMeshForEye=mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1];
-        mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),occlusionMeshForEye);
+        mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);
     }
     GLHelper::checkGlError("ExampleRenderer2::drawEye");
 }

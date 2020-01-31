@@ -43,6 +43,7 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
     //initialized when Surface ready
     private SurfaceTexture displayTexture=null;
     private Surface videoSurface;
+    private static final boolean useLiveVideo20ms=false;
     private final MediaPlayer mediaPlayer;
 
     public GLRExampleVR(final Context context, final GvrApi gvrApi, boolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
@@ -104,6 +105,14 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
     public void onDrawFrame(GL10 gl) {
         displayTexture.updateTexImage();
         nativeOnDrawFrame(nativeRenderer);
+    }
+
+    public void onPause(){
+
+    }
+
+    public void onResume(){
+
     }
 
     public void end(){

@@ -65,5 +65,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0-alpha03'
     androidTestImplementation 'androidx.test:rules:1.3.0-alpha03'
 
+    //implementation project(':VideoCore')
+
 }
 apply plugin: 'com.google.gms.google-services'
