@@ -53,10 +53,8 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
     //initialized when Surface ready
     private SurfaceTexture displayTexture=null;
     private Surface videoSurface;
-    //We only need to play video when rendering one of the 360Degree spheres
+    //Disable video playback completely
     private final boolean PLAY_VIDEO;
-    //Switch between Android Media player and LiveVideo10ms Core Video player
-    //First one plays mp4, second one plays .h264
     private final TestVideoPlayer testVideoPlayer;
 
     @SuppressLint("ApplySharedPref")
@@ -66,6 +64,8 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
         //Only create video surface/ start video Player if rendering one of both spheres
         PLAY_VIDEO=SPHERE_MODE!=SPHERE_MODE_NONE;
         if(PLAY_VIDEO){
+            //Switch between Android Media player and LiveVideo10ms Core Video player
+            //First one plays mp4, second one plays .h264
             if(SPHERE_MODE==SPHERE_MODE_GVR_EQUIRECTANGULAR){
                 testVideoPlayer=new TestVideoPlayer(context,true,"360DegreeVideos/testvideo.mp4");
             }else{
@@ -116,7 +116,7 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        displayTexture.updateTexImage();
+        if(PLAY_VIDEO)displayTexture.updateTexImage();
         nativeOnDrawFrame(nativeRenderer);
     }
 

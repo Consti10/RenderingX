@@ -57,8 +57,10 @@ public class TestVideoPlayer {
 
     public void end(){
         if(USE_ANDROID_MEDIA_PLAYER){
-            mediaPlayer.stop();
-            mediaPlayer.release();
+            if(mediaPlayer.isPlaying()){
+                mediaPlayer.stop();
+                mediaPlayer.release();
+            }
         }else{
             videoPlayer.stopAndRemovePlayerReceiver();
         }
