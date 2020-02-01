@@ -1,4 +1,1 @@
 include  ':RenderingXCore', ':RenderingXExample'
-
-//include ':VideoCore'
-//project(':VideoCore').projectDir=new File('..\\LiveVideo10ms\\VideoCore')

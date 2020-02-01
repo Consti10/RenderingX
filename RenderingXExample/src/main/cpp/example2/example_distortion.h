@@ -37,16 +37,16 @@ class ExampleRendererVR{
 public:
     //Since blending is enabled, when selecting both rendering modes simultaneously the visual difference between them
     //can be observed when only rendering the 2D Mesh (the mesh is rendered with a smaller line width the second time)
-    //When rendering the equirectangular sphere you should only use one of the two rendering methods since the first one will be overwritten
+    //When rendering any sphere you should only use one of the two rendering methods since the first one will be overwritten
     const bool RENDER_SCENE_USING_GVR_RENDERBUFFER;
     const bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT;
     const bool ENABLE_SCENE_MESH_2D;
-    const bool ENABLE_SCENE_360_SPHERE;
-    const bool ENABLE_SCENE_360_SPHERE_EQUIRECTANGULAR;
+    enum SPHERE_MODE{SPHERE_MODE_NONE,SPHERE_MODE_GVR_EQUIRECTANGULAR,SPHERE_MODE_INSTA360_TEST};
+    const SPHERE_MODE M_SPHERE_MODE;
 public:
     ExampleRendererVR(JNIEnv* env,jobject androidContext,gvr_context *gvr_context,
             bool RENDER_SCENE_USING_GVR_RENDERBUFFER=true,bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT=true,
-            bool ENABLE_SCENE_MESH_2D=true,bool ENABLE_SCENE_360_SPHERE=false,bool ENABLE_SCENE_360_SPHERE_EQUIRECTANGULAR=false);
+            bool ENABLE_SCENE_MESH_2D=true,const int SPHERE_MODE=0);
     void onSurfaceCreated(JNIEnv* env,jobject context,int videoTexture);
     void onSurfaceChanged(int width, int height);
     void onDrawFrame();
@@ -63,7 +63,7 @@ private:
     std::unique_ptr<GLProgramTexture> mGLProgramTexture=nullptr;
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt=nullptr;
     GLuint mTexture360Image;
-    GLuint mTexture360ImageEquirectangular;
+    GLuint mTexture360ImageInsta360;
     GLuint mVideoTexture;
     VertexIndexBuffer mEquirecangularSphereB;
     VertexBuffer mGvrSphereB;

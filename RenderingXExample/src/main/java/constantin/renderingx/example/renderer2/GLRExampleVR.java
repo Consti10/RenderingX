@@ -1,6 +1,8 @@
 package constantin.renderingx.example.renderer2;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
@@ -17,13 +19,21 @@ import java.io.IOException;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import constantin.renderingx.example.TestVideoPlayer;
+import constantin.video.core.VideoNative.VideoNative;
+import constantin.video.core.VideoPlayer;
+
+
 
 public class GLRExampleVR implements GLSurfaceView.Renderer{
+    public static final int SPHERE_MODE_NONE=0;
+    public static final int SPHERE_MODE_GVR_EQUIRECTANGULAR=1;
+    public static final int SPHERE_MODE_INSTA360_TEST=2;
     static {
         System.loadLibrary("example-renderer2");
     }
     private native long nativeConstruct(Context context,long nativeGvrContext,boolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
-                                        boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,boolean MESH,boolean SPHERE,boolean SPHERE_2);
+                                        boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,boolean MESH,int SPHERE_MODE);
     private native void nativeDelete(long p);
     private native void nativeOnSurfaceCreated(long p,final Context context,int videoTexture);
     private native void nativeOnSurfaceChanged(long p,int width,int height);
@@ -43,25 +53,33 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
     //initialized when Surface ready
     private SurfaceTexture displayTexture=null;
     private Surface videoSurface;
-    private static final boolean useLiveVideo20ms=false;
-    private final MediaPlayer mediaPlayer;
+    //We only need to play video when rendering one of the 360Degree spheres
+    private final boolean PLAY_VIDEO;
+    //Switch between Android Media player and LiveVideo10ms Core Video player
+    //First one plays mp4, second one plays .h264
+    private final TestVideoPlayer testVideoPlayer;
 
+    @SuppressLint("ApplySharedPref")
     public GLRExampleVR(final Context context, final GvrApi gvrApi, boolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
-                        boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT, boolean MESH, boolean SPHERE, boolean SPHERE2){
+                        boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT, boolean MESH,int SPHERE_MODE){
         mContext=context;
-        mediaPlayer=new MediaPlayer();
-        try {
-            AssetFileDescriptor afd = context.getAssets().openFd("testvideo.mp4");
-            mediaPlayer.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(), afd.getLength());
-        } catch (IOException e) {
-            e.printStackTrace();
+        //Only create video surface/ start video Player if rendering one of both spheres
+        PLAY_VIDEO=SPHERE_MODE!=SPHERE_MODE_NONE;
+        if(PLAY_VIDEO){
+            if(SPHERE_MODE==SPHERE_MODE_GVR_EQUIRECTANGULAR){
+                testVideoPlayer=new TestVideoPlayer(context,true,"360DegreeVideos/testvideo.mp4");
+            }else{
+                testVideoPlayer=new TestVideoPlayer(context,false,"360DegreeVideos/360_test.h264");
+            }
+        }else{
+            testVideoPlayer=null;
         }
 
         GvrView view=new GvrView(context);
         final GvrViewerParams params=view.getGvrViewerParams();
 
         nativeRenderer=nativeConstruct(context,
-                gvrApi.getNativeGvrContext(),RENDER_SCENE_USING_GVR_RENDERBUFFER,RENDER_SCENE_USING_VERTEX_DISPLACEMENT,MESH,SPHERE,SPHERE2);
+                gvrApi.getNativeGvrContext(),RENDER_SCENE_USING_GVR_RENDERBUFFER,RENDER_SCENE_USING_VERTEX_DISPLACEMENT,MESH,SPHERE_MODE);
 
         float[] fov=new float[4];
         fov[0]=params.getLeftEyeMaxFov().getLeft();
@@ -79,20 +97,15 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        int[] videoTexture=new int[1];
-        GLES20.glGenTextures(1, videoTexture, 0);
-        final int mGLTextureVideo = videoTexture[0];
-        displayTexture=new SurfaceTexture(mGLTextureVideo,false);
-        videoSurface=new Surface(displayTexture);
-        mediaPlayer.setSurface(videoSurface);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-                mediaPlayer.start();
-            }
-        });
-        mediaPlayer.prepareAsync();
+        int mGLTextureVideo=0;
+        if(PLAY_VIDEO){
+            int[] videoTexture=new int[1];
+            GLES20.glGenTextures(1, videoTexture, 0);
+            mGLTextureVideo = videoTexture[0];
+            displayTexture=new SurfaceTexture(mGLTextureVideo,false);
+            videoSurface=new Surface(displayTexture);
+            testVideoPlayer.setSurfaceAndStart(videoSurface);
+        }
         nativeOnSurfaceCreated(nativeRenderer,mContext,mGLTextureVideo);
     }
 
@@ -116,8 +129,7 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
     }
 
     public void end(){
-        mediaPlayer.stop();
-        mediaPlayer.release();
+       if(PLAY_VIDEO)testVideoPlayer.end();
     }
 
     @Override

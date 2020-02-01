@@ -7,8 +7,7 @@ buildscript {
         google()
         jcenter()
         maven { url 'https://maven.fabric.io/public' }
-        maven {
-            url 'https://maven.google.com/'
+        maven { url 'https://maven.google.com/'
             name 'Google'
         }
     }
@@ -24,6 +23,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven { url "https://jitpack.io" }
     }
     ext {
         minSdkVersion = 21

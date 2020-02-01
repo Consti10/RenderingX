@@ -14,12 +14,11 @@
 constexpr auto TAG="DistortionExample";
 
 ExampleRendererVR::ExampleRendererVR(JNIEnv *env, jobject androidContext,gvr_context *gvr_context,bool RENDER_SCENE_USING_GVR_RENDERBUFFER,
-        bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT,bool MESH,bool SPHERE,bool SPHERE2):
+        bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT,bool MESH,const int vSPHERE_MODE):
         RENDER_SCENE_USING_GVR_RENDERBUFFER(RENDER_SCENE_USING_GVR_RENDERBUFFER),
         RENDER_SCENE_USING_VERTEX_DISPLACEMENT(RENDER_SCENE_USING_VERTEX_DISPLACEMENT),
         ENABLE_SCENE_MESH_2D(MESH),
-        ENABLE_SCENE_360_SPHERE(SPHERE),
-        ENABLE_SCENE_360_SPHERE_EQUIRECTANGULAR(SPHERE2),
+        M_SPHERE_MODE(static_cast<SPHERE_MODE>(vSPHERE_MODE)),
         distortionManager(DistortionManager::RADIAL_CARDBOARD),mFPSCalculator("OpenGL FPS",2000){
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
     vrHeadsetParams.setGvrApi(gvr_api_.get());
@@ -43,12 +42,12 @@ void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context,int videoT
     mBasicGLPrograms=std::make_unique<BasicGLPrograms>(&distortionManager);
     mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
     mGLProgramTextureExt=std::make_unique<GLProgramTextureExt>(&distortionManager);
-    mVideoTexture=videoTexture;
+    mVideoTexture=(GLuint)videoTexture;
     mGLProgramTexture=std::make_unique<GLProgramTexture>(false,&distortionManager);
     glGenTextures(1,&mTexture360Image);
-    glGenTextures(1,&mTexture360ImageEquirectangular);
+    glGenTextures(1,&mTexture360ImageInsta360);
     GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
-    GLProgramTexture::loadTexture(mTexture360ImageEquirectangular,env,context,"360DegreeImages/insta_360_equirectangular.png");
+    GLProgramTexture::loadTexture(mTexture360ImageInsta360,env,context,"360DegreeImages/insta_360_equirectangular.png");
     //create the insta360 sphere
     mEquirecangularSphereB.initializeGL();
     EquirectangularSphere::uploadSphereGL(mEquirecangularSphereB,2560,1280);
@@ -160,11 +159,11 @@ void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, b
         const VertexBuffer& tmp=meshColorGreen ? greenMeshB : blueMeshB;
         mBasicGLPrograms->vc.drawX(viewM,projM,tmp);
     }
-    if(ENABLE_SCENE_360_SPHERE){
-        mGLProgramTexture->drawX(mVideoTexture,viewM,projM,mGvrSphereB);
+    if(M_SPHERE_MODE==SPHERE_MODE_GVR_EQUIRECTANGULAR){
+        mGLProgramTextureExt->drawX(mVideoTexture,viewM,projM,mGvrSphereB);
     }
-    if(ENABLE_SCENE_360_SPHERE_EQUIRECTANGULAR){
-        mGLProgramTexture->drawX(mTexture360ImageEquirectangular,viewM,projM,mEquirecangularSphereB);
+    if(M_SPHERE_MODE==SPHERE_MODE_INSTA360_TEST){
+        mGLProgramTextureExt->drawX(mVideoTexture,viewM,projM,mEquirecangularSphereB);
     }
     if(occlusion){
         mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);
@@ -188,9 +187,9 @@ extern "C" {
 
 JNI_METHOD(jlong, nativeConstruct)
 (JNIEnv *env, jobject obj,jobject androidContext,jlong native_gvr_api,jboolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
- jboolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,jboolean MESH,jboolean SPHERE,jboolean SPHERE2) {
+ jboolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,jboolean MESH,jint SPHERE_MODE) {
     return jptr(new ExampleRendererVR(env,androidContext,reinterpret_cast<gvr_context *>(native_gvr_api),RENDER_SCENE_USING_GVR_RENDERBUFFER,
-            RENDER_SCENE_USING_VERTEX_DISPLACEMENT,MESH,SPHERE,SPHERE2));
+            RENDER_SCENE_USING_VERTEX_DISPLACEMENT,MESH,SPHERE_MODE));
 }
 JNI_METHOD(void, nativeDelete)
 (JNIEnv *env, jobject obj, jlong p) {

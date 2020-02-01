@@ -5,6 +5,7 @@
 #include <GLES2/gl2.h>
 #include <vector>
 #include <array>
+#include <iterator>
 
 //Provides convenient functions to upload cpp
 //std::vector<T> / std::array<T,size> data type to GPU using OpenGL c style api
@@ -18,20 +19,23 @@ public:
                      array,usage);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
+    //template<typename T,typename Container>
+    //static void uploadGLBuffer(const GLuint buff,const Container& data,GLenum usage=GL_STATIC_DRAW){
+    //    uploadGLBuffer(buff,data.data(),data.size()*sizeof(T) );
+    //}
     //wrap std::vector<>
     //returns the n of elements inside the vector (NOT the n of bytes)
+    //since they often are the n of triangles/indices that need to be drawn
     template<typename T>
     static int uploadGLBuffer(const GLuint buff, const std::vector<T> &data,GLenum usage=GL_STATIC_DRAW) {
         const auto size = data.size();
-        const GLsizeiptr sizeBytes = size * sizeof(T);
-        uploadGLBuffer(buff, (void *) data.data(), sizeBytes);
+        uploadGLBuffer(buff, (void *) data.data(), size * sizeof(T));
         return (int) size;
     }
-    //wrap std::array
+    //wrap std::array, similar to std::vector<>
     template<typename T,std::size_t S>
     static int uploadGLBuffer(const GLuint buff, const std::array<T,S> &data,GLenum usage=GL_STATIC_DRAW) {
-        const GLsizeiptr sizeBytes = S * sizeof(T);
-        uploadGLBuffer(buff, (void *) data.data(), sizeBytes);
+        uploadGLBuffer(buff, (void *)data.data(), S * sizeof(T));
         return (int) S;
     }
     //Also create the GL Buffer, both for array and vector
