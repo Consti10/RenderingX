@@ -118,13 +118,18 @@ private:
     }
     //Same as MLensDistortion::ViewportParams
     static std::string glsl_ViewportParams(){
-        return "struct ViewportParams\n"
-           "{\n"
+        return "struct ViewportParams{\n"
            "  float width;\n"
            "  float height;\n"
            "  float x_eye_offset;\n"
            "  float y_eye_offset;\n"
            "};\n";
+    }
+    static std::string glsl_PolynomialRadialInverse(const int N_COEFICIENTS){
+        return "struct PolynomialRadialInverse{\n"
+               "float coefficients["+std::to_string(N_COEFICIENTS)+"];\n"
+               "float MAX_RAD_SQ;\n"
+               "};\n";
     }
     //Same as MLensDistortion::UndistortedNDCForDistortedNDC but with maxRadSq
     static std::string glsl_UndistortedNDCForDistortedNDC(const int N_COEFICIENTS){

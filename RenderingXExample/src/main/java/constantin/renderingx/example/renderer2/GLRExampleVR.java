@@ -20,10 +20,10 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import constantin.renderingx.example.TestVideoPlayer;
-import constantin.video.core.VideoNative.VideoNative;
-import constantin.video.core.VideoPlayer;
 
-
+// !
+// At the time, pausing / resuming the video is not implemented and will result in an app crash !
+// !
 
 public class GLRExampleVR implements GLSurfaceView.Renderer{
     public static final int SPHERE_MODE_NONE=0;

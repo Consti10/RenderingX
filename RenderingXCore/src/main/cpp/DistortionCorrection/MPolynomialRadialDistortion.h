@@ -45,6 +45,18 @@ public:
     // Distort to get point p (approximately).
     std::array<float, 2> DistortInverse(const std::array<float, 2>& p) const;
 
+    // Given a radius (measuring distance from the optical axis of the lens),
+    // returns the distortion factor for that radius.
+    float DistortionFactor(float r_squared) const;
+
+    // Given a radius (measuring distance from the optical axis of the lens),
+    // returns the corresponding distorted radius.
+    float DistortRadius(float r) const;
+
+    //Given a radius r, returns the radius that would need to be passed
+    //to DistortRadius to get r (approximately).
+    float DistortRadiusInverse(float r)const;
+
     //calculate a polynomial function that describes the inverse of this distortion
     //Translation of the google cardboard 'Distortion.java' class into .cpp
     //(the getApproximateInverseDistortion stuff)
@@ -56,18 +68,6 @@ public:
 
     //Convert into human-readable string for debugging
     std::string toString()const;
-
-    // Given a radius (measuring distance from the optical axis of the lens),
-    // returns the distortion factor for that radius.
-    float DistortionFactor(float r_squared) const;
-
-    // Given a radius (measuring distance from the optical axis of the lens),
-    // returns the corresponding distorted radius.
-    float DistortRadius(float r) const;
-
-    //Given a radius r, returns the radius that would need to be passed
-    //to DistortRadius to get r
-    float DistortRadiusInverse(float r)const;
 
     //The un-distortion function created by getApproximateInverseDistortion() is not a perfect fit
     //calculate the deviation between the real un-distortion value (as obtained by @DistortInverse)
@@ -85,7 +85,6 @@ private:
 };
 
 //Inverse polynomial is a close approximation of the inverse in the range [0..MAX_RAD_SQ]
-
 class PolynomialRadialInverse:public MPolynomialRadialDistortion{
 public:
     float maxRadSq;
