@@ -15,7 +15,8 @@
 //As less modifcations have been made as possible
 //Only the functions Math.toRadians and System.arraycopy() did not exist in .cpp
 //Also std::vector<float> instead of dynamic java float array
-
+//U,Vs map to an Equirectangular image
+//https://en.wikipedia.org/wiki/Equirectangular_projection
 
 class GvrSphere{
 public:
@@ -45,6 +46,20 @@ public:
 // Data is tightly packed. Each vertex is [x, y, z, u_left, v_left, u_right, v_right].
     static constexpr int VERTEX_STRIDE_BYTES = CPV * sizeof(float);//CPV * Utils.BYTES_PER_FLOAT;
 public:
+    /**
+  * Generates a 3D UV sphere for rendering monoscopic or stereoscopic video.
+  *
+  * @param radius Size of the sphere. Must be > 0.
+  * @param latitudes Number of rows that make up the sphere. Must be >= 1.
+  * @param longitudes Number of columns that make up the sphere. Must be >= 1.
+  * @param verticalFovDegrees Total latitudinal degrees that are covered by the sphere. Must be in
+  *    (0, 180].
+  * @param horizontalFovDegrees Total longitudinal degrees that are covered by the sphere.Must be
+  *    in (0, 360].
+  * @param mediaFormat A MEDIA_* value.
+  * @return a std::vector of type float where its internal data layout resembles std::vector<GvrSphere::Vertex>. use
+     * GvrSphere::createUvSphere2 for a more understandable data layout
+  */
     static std::vector<float> createUvSphere(
             float radius,
             int latitudes,
@@ -52,7 +67,6 @@ public:
             float verticalFovDegrees,
             float horizontalFovDegrees,
             int mediaFormat);
-
 public:
     //The gvr vertex is different than what I use in my GLProgram's.
     //A struct better represents the internal data layout than a float array
@@ -83,7 +97,6 @@ public:
         }
         return ret;
     }
-
 };
 
 
