@@ -87,6 +87,9 @@ private:
     VertexBuffer mVertexBufferVC;
     static constexpr int N_TRIANGLES=5;
     static constexpr int N_COLOR_VERTICES=3*N_TRIANGLES;
+    //Create buffer(s) for
+    std::array<VertexBuffer,10> triangleBuffersVCRed;
+    std::array<VertexBuffer,10> triangleBuffersVCYellow;
 };
 
 #endif //RENDERINGX_EXAMPLE_SUPERSYNC_H

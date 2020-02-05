@@ -39,7 +39,7 @@ include_directories(${RX_CORE_DIR}/src/main/cpp/Helper)
 include_directories(${RX_CORE_DIR}/src/main/cpp/Other)
 add_library( GLPrograms SHARED
         ${RX_CORE_DIR}/src/main/cpp/DistortionCorrection/DistortionManager.cpp
-        ${RX_CORE_DIR}/src/main/cpp/DistortionCorrection/MPolynomialRadialDistortion.cpp
+        ${RX_CORE_DIR}/src/main/cpp/DistortionCorrection/PolynomialRadialDistortion.cpp
         ${RX_CORE_DIR}/src/main/cpp/DistortionCorrection/VRHeadsetParams.cpp
         ${RX_CORE_DIR}/src/main/cpp/DistortionCorrection/MLensDistortion.cpp
         ${RX_CORE_DIR}/src/main/cpp/GLPrograms/GLProgramVC.cpp

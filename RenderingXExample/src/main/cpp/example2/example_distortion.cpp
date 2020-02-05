@@ -54,13 +54,15 @@ void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context,int videoT
     //create the green and blue mesh
     float tesselatedRectSize=2.5; //6.2f
     const float offsetY=0.0f;
-    auto tmp=ColoredGeometry::makeTesselatedColoredRectLines(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,Color::BLUE);
-    blueMeshB.initializeAndUploadGL(tmp,GL_LINES);
-    tmp=ColoredGeometry::makeTesselatedColoredRectLines(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,Color::GREEN);
-    greenMeshB.initializeAndUploadGL(tmp,GL_LINES);
+    blueMeshB.initializeAndUploadGL(
+            ColoredGeometry::makeTesselatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,
+                    Color::BLUE),GL_LINES);
+    greenMeshB.initializeAndUploadGL(
+            ColoredGeometry::makeTesselatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,
+                    Color::GREEN),GL_LINES);
     //create the gvr sphere
-    const auto tmp2=GvrSphere::createGvrSphere(1.0,72,36);
-    mGvrSphereB.initializeAndUploadGL(tmp2,GL_TRIANGLE_STRIP);
+    mGvrSphereB.initializeAndUploadGL(
+            GvrSphere::createSphereEquirectangularMonoscopic(1.0,72,36),GL_TRIANGLE_STRIP);
     //create the occlusion mesh, left and right viewport
     //use a slightly different color than clear color to make mesh visible
     const TrueColor color=Color::fromRGBA(0.1,0.1,0.1,1.0);
@@ -145,7 +147,7 @@ void ExampleRendererVR::drawEyeGvrRenderbuffer(gvr::Eye eye) {
 
 void ExampleRendererVR::drawEyeVDDC(gvr::Eye eye) {
     vrHeadsetParams.setOpenGLViewport(eye);
-    distortionManager.leftEye=eye==0;
+    distortionManager.setEye(eye==0);
     const auto rotM=vrHeadsetParams.GetLatestHeadSpaceFromStartSpaceRotation();
     auto viewM=vrHeadsetParams.GetEyeFromHeadMatrix(eye)*rotM;
     auto projM=vrHeadsetParams.GetProjectionMatrix(eye);
@@ -153,6 +155,8 @@ void ExampleRendererVR::drawEyeVDDC(gvr::Eye eye) {
     drawEye(eye,viewM,projM,true,true);
     GLHelper::checkGlError("ExampleRenderer2::drawEyeVDDC2");
 }
+
+float la=0;
 
 void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen,bool occlusion) {
     if(ENABLE_SCENE_MESH_2D){

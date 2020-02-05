@@ -82,10 +82,9 @@ private:
      */
     void drawEye(gvr::Eye eye,glm::mat4 viewM,glm::mat4 projM,bool meshColorGreen,bool vignette=false);
 private:
-    static constexpr int LINE_MESH_TESSELATION_FACTOR=10;
+    static constexpr int LINE_MESH_TESSELATION_FACTOR=12;
     VertexBuffer blueMeshB;
     VertexBuffer greenMeshB;
-private:
     DistortionManager distortionManager;
 public:
     VRHeadsetParams vrHeadsetParams;
