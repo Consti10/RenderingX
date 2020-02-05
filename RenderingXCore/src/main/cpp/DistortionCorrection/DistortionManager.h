@@ -28,68 +28,67 @@
 
 class DistortionManager {
 public:
-    //This is the inverse function to the kN distortion parameters from the headset
-    //Even tough the distortion parameters are only up to 2 radial values,
-    //We need more for the inverse for a good fit
+    //NONE: Nothing is distorted,use a normal gl_Position=MVP*pos; multiplication
+    //RADIAL: Distortion in view space as done in cardboard design lab. Deprecated.
+    //CARDBOARD: Distortion in ?tan-angle? space, creates exact same distorted position(s) as in google cardboard https://github.com/googlevr/cardboard
+    enum DISTORTION_MODE{NONE,RADIAL_VIEW_SPACE,RADIAL_CARDBOARD};
+    //Default: no distortion whatsoever
+    DistortionManager():distortionMode(DISTORTION_MODE::NONE){};
+    DistortionManager(const DISTORTION_MODE& distortionMode1):distortionMode(distortionMode1){updateDistortionWithIdentity();}
+    //Number of coefficients for the inverse distortion. This value needs to be present at compile time
     static constexpr const int N_RADIAL_UNDISTORTION_COEFICIENTS=8;
-    //These make up a Polynomial radial distortion with input inside intervall [0..maxRadSq]
-    struct RadialDistortionCoefficients{
+    //These make up a Polynomial radial distortion with input inside interval [0..maxRadSq].
+    //Note that the N of coefficients is NOT dynamic !
+    struct DataPolynomialRadialInverse{
         float maxRadSquared;
         std::array<float,N_RADIAL_UNDISTORTION_COEFICIENTS> kN;
     };
+    //Each GLSL shader programs needs these uniform handles. See DistortionManager::getUnDistortionUniformHandles
     struct UndistortionHandles{
-        GLuint uMaxRadSq;
-        GLuint uKN;
-        //Only active if mode==2
+        GLuint uPolynomialRadialInverse_maxRadSq;
+        GLuint uPolynomialRadialInverse_coefficients;
+        //Only active if mode==RADIAL_CARDBOARD
         GLuint uScreenParams_w;
         GLuint uScreenParams_h;
         GLuint uScreenParams_x_off;
         GLuint uScreenParams_y_off;
-        //
         GLuint uTextureParams_w;
         GLuint uTextureParams_h;
         GLuint uTextureParams_x_off;
         GLuint uTextureParams_y_off;
     };
-    //NONE: Nothing is distorted,use a normal gl_Position=MVP*pos; multiplication
-    //RADIAL: Distortion in view space as done in cardboard design lab. Deprectaed.
-    //CARDBOARD: Distortion in ? space, creates exact same distorted position(s) as in google cardboard https://github.com/googlevr/cardboard
-    enum DISTORTION_MODE{NONE,RADIAL_VIEW_SPACE,RADIAL_CARDBOARD};
-private:
-    RadialDistortionCoefficients radialDistortionCoefficients;
-    const DISTORTION_MODE distortionMode;
-    //Left and right eye each
-    std::array<MLensDistortion::ViewportParams,2> screen_params;
-    std::array<MLensDistortion::ViewportParams,2> texture_params;
-public:
-    bool leftEye=true;
-    //Default: no distortion whatsoever
-    DistortionManager():distortionMode(DISTORTION_MODE::NONE){};
-    DistortionManager(const DISTORTION_MODE& distortionMode1):distortionMode(distortionMode1){updateDistortionWithIdentity();}
-
+    //Each GLSL program needs to bind its own distortion parameter uniforms
+    //TODO when using OpenGL ES 3.0 use uniform buffers for that
+    //Returns null if DistortionManager is null or disabled
     static UndistortionHandles* getUndistortionUniformHandles(const DistortionManager* distortionManager,const GLuint program);
     void beforeDraw(const UndistortionHandles* undistortionHandles)const;
     void afterDraw()const;
 
+    //Add this string to your GLSL vertex shader if enabled
     static std::string writeDistortionParams(const DistortionManager* distortionManager);
+    //Write "gl_Position"  with or without Distortion
     static std::string writeGLPosition(const DistortionManager* distortionManager,const std::string &positionAttribute="aPosition");
-
-    void updateDistortion(const MPolynomialRadialDistortion& distortion,float maxRadSq);
-    void updateDistortion(const MPolynomialRadialDistortion& inverseDistortion,float maxRadSq,
-                          const std::array<MLensDistortion::ViewportParams,2> screen_params,const std::array<MLensDistortion::ViewportParams,2> texture_params);
-    //Identity leaves x,y values untouched (as if no vddc was enabled in the shader)
+    //successive calls to DistortionManager::beforeDraw will upload the new un-distortion parameters
+    void updateDistortion(const PolynomialRadialInverse& distortion);
+    void updateDistortion(const PolynomialRadialInverse& inverseDistortion,const std::array<MLensDistortion::ViewportParams,2> screen_params,const std::array<MLensDistortion::ViewportParams,2> texture_params);
+    //Identity leaves x,y values untouched (as if no V.D.D.C was enabled in the shader)
     void updateDistortionWithIdentity();
-    //
-    std::string getModeAsString()const{
-        if(distortionMode==NONE)return "NONE";
-        if(distortionMode==RADIAL_VIEW_SPACE)return "RADIAL_VIEW_SPACE";
-        if(distortionMode==RADIAL_CARDBOARD)return "RADIAL_CARDBOARD";
-        return "ERROR";
+    //Successive calls to DistortionManager::beforeDraw apply left or right eye distortion
+    void setEye(bool leftEye){
+        this->leftEye=leftEye;
     }
     //returns true if dm==nullptr or mode==NONE
     static bool isNullOrDisabled(const DistortionManager* dm){
         return dm==nullptr || dm->distortionMode==NONE;
     };
+private:
+    DataPolynomialRadialInverse radialDistortionCoefficients;
+    const DISTORTION_MODE distortionMode;
+    //Left and right eye each
+    std::array<MLensDistortion::ViewportParams,2> screen_params;
+    std::array<MLensDistortion::ViewportParams,2> texture_params;
+    //Differentiate between left and right eye screen/texture params
+    bool leftEye=true;
 private:
     //All GLSL functions (declare before main in vertex shader, then use anywhere)
     //
@@ -105,13 +104,19 @@ private:
         s<<"}\n";
         return s.str();
     }
-    //same as PolynomialRadialDistortion::Distort
-    //But with maxRadSq as limit
-    static std::string glsl_PolynomialDistort(const int N_COEFICIENTS){
-        return "vec2 PolynomialDistort(const in float coefficients["+std::to_string(N_COEFICIENTS)+"],const in vec2 in_pos,const in float maxRadSq){\n"
+    //PolynomialRadialInverse
+    static std::string glsl_struct_PolynomialRadialInverse(const int N_COEFICIENTS){
+        return "struct PolynomialRadialInverse{\n"
+               "float coefficients["+std::to_string(N_COEFICIENTS)+"];\n"
+               "float maxRadSq;\n"
+               "};\n";
+    }
+    //same as PolynomialRadialInverse::Distort (e.g. [0...maxRadSq])
+    static std::string glsl_PolynomialDistort(){
+        return "vec2 PolynomialDistort(const in PolynomialRadialInverse inv,const in vec2 in_pos){\n"
         "float r2=dot(in_pos.xy,in_pos.xy);\n"
-        "r2=clamp(r2,0.0,maxRadSq);\n"
-        "float dist_factor=PolynomialDistortionFactor(r2,coefficients);\n"
+        "r2=clamp(r2,0.0,inv.maxRadSq);\n"
+        "float dist_factor=PolynomialDistortionFactor(r2,inv.coefficients);\n"
         "vec2 ret=in_pos.xy*dist_factor;\n"
         "return ret;\n"
         "}\n";
@@ -125,21 +130,14 @@ private:
            "  float y_eye_offset;\n"
            "};\n";
     }
-    static std::string glsl_PolynomialRadialInverse(const int N_COEFICIENTS){
-        return "struct PolynomialRadialInverse{\n"
-               "float coefficients["+std::to_string(N_COEFICIENTS)+"];\n"
-               "float MAX_RAD_SQ;\n"
-               "};\n";
-    }
     //Same as MLensDistortion::UndistortedNDCForDistortedNDC but with maxRadSq
-    static std::string glsl_UndistortedNDCForDistortedNDC(const int N_COEFICIENTS){
+    static std::string glsl_UndistortedNDCForDistortedNDC(){
         return "vec2 UndistortedNDCForDistortedNDC("
-        "const in float coefficients["+std::to_string(N_COEFICIENTS)+"],"
-        "const in ViewportParams screen_params,const in ViewportParams texture_params,const in vec2 in_ndc,const in float maxRadSq){\n"
+        "const in PolynomialRadialInverse inv,const in ViewportParams screen_params,const in ViewportParams texture_params,const in vec2 in_ndc){\n"
         "vec2 distorted_ndc_tanangle=vec2("
         "in_ndc.x * texture_params.width+texture_params.x_eye_offset,"
         "in_ndc.y * texture_params.height+texture_params.y_eye_offset);\n"
-        "vec2 undistorted_ndc_tanangle = PolynomialDistort(coefficients,distorted_ndc_tanangle,maxRadSq);\n"
+        "vec2 undistorted_ndc_tanangle = PolynomialDistort(inv,distorted_ndc_tanangle);\n"
         "vec2 ret=vec2(undistorted_ndc_tanangle.x*screen_params.width+screen_params.x_eye_offset,"
         "undistorted_ndc_tanangle.y*screen_params.height+screen_params.y_eye_offset);\n"
         "return ret;\n"

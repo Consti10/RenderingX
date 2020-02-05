@@ -7,7 +7,6 @@
 #include "MLensDistortion.h"
 
 
-
 float MLensDistortion::GetYEyeOffsetMeters(const int vertical_alignment,
                                            const float tray_to_lens_distance,
                                            const float screen_height_meters) {
@@ -29,7 +28,7 @@ std::array<float, 4> MLensDistortion::CalculateFov(
         const std::array<float, 4> device_fov,
         const float GetYEyeOffsetMeters,
         const float screen_to_lens_distance, const float inter_lens_distance,
-        const MPolynomialRadialDistortion &distortion, float screen_width_meters,
+        const PolynomialRadialDistortion &distortion, float screen_width_meters,
         float screen_height_meters) {
     const float eye_to_screen_distance = screen_to_lens_distance;
     const float outer_distance =
@@ -106,7 +105,7 @@ void MLensDistortion::CalculateViewportParameters(
 }
 
 std::array<float, 2> MLensDistortion::UndistortedUvForDistortedUv(
-        const MPolynomialRadialDistortion &distortion,
+        const PolynomialRadialDistortion &distortion,
         const ViewportParams &screen_params, const ViewportParams &texture_params,
         const std::array<float, 2> &in,const bool isInverse){
     // Convert input from normalized [0, 1] pre distort texture space to
@@ -158,7 +157,7 @@ void MLensDistortion::CalculateViewportParameters_NDC(
 //Almost the same as the original (inverse) version, but note we do a
 // x*a+b instead of (x+a)/b when transforming back to screen coordinates
 std::array<float, 2> MLensDistortion::UndistortedNDCForDistortedNDC(
-        const MPolynomialRadialDistortion &inverseDistortion,
+        const PolynomialRadialDistortion &inverseDistortion,
         const MLensDistortion::ViewportParams &screen_params,
         const MLensDistortion::ViewportParams &texture_params, const std::array<float, 2> &in,const bool isInverse) {
     std::array<float, 2> distorted_ndc_tanangle = {
@@ -191,7 +190,7 @@ std::string MLensDistortion::MDeviceParamsAsString(const MDeviceParams& dp) {
     ss<<"vertical_alignment "<<dp.vertical_alignment<<"";
     ss<<"tray_to_lens_distance "<<dp.tray_to_lens_distance<<"\n";
     ss<<"device_fov_left ["<<dp.device_fov_left[0]<<","<<dp.device_fov_left[0]<<","<<dp.device_fov_left[0]<<","<<dp.device_fov_left[0]<<")\n";
-    ss<<"radial_distortion_params"<<MPolynomialRadialDistortion(dp.radial_distortion_params).toString()<<"";
+    ss<<"radial_distortion_params"<<PolynomialRadialDistortion(dp.radial_distortion_params).toString()<<"";
     return ss.str();
 }
 
@@ -205,4 +204,11 @@ MLensDistortion::ViewportParamsAsString(const MLensDistortion::ViewportParams &s
     ss<<"Texture_params offset X:"<<texture_params.x_eye_offset<<" Y:"<<texture_params.y_eye_offset<<"\n";
     return ss.str();
 }
-
+static const MLensDistortion::ViewportParams& convert(const MLensDistortion::ViewportParamsNDC& vp){
+    return {vp.width,vp.height,vp.x_eye_offset,vp.y_eye_offset};
+}
+std::string
+MLensDistortion::ViewportParamsNDCAsString(const MLensDistortion::ViewportParamsNDC &screen_params,
+                                        const MLensDistortion::ViewportParamsNDC &texture_params) {
+    return ViewportParamsAsString(convert(screen_params),convert(texture_params));
+}

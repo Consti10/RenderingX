@@ -30,9 +30,8 @@ public:
 public:
     std::array<MLensDistortion::ViewportParams,2> screen_params;
     std::array<MLensDistortion::ViewportParams,2> texture_params;
-    MPolynomialRadialDistortion mDistortion{{0}};
-    MPolynomialRadialDistortion mInverse{{0}};
-    float MAX_RAD_SQ;
+    PolynomialRadialDistortion mDistortion{};
+    PolynomialRadialInverse mInverse{};
 public:
     //update with vr headset params
     void updateHeadsetParams(const MDeviceParams& mDP,int screenWidthP,int screenHeightP);
@@ -64,6 +63,9 @@ public:
     //using the approximate inverse
     std::array<float, 2> UndistortedNDCForDistortedNDC(const std::array<float,2>& in_ndc,int eye)const{
         return MLensDistortion::UndistortedNDCForDistortedNDC(mDistortion,screen_params[eye],texture_params[eye],in_ndc,false);
+    }
+    static std::array<float,4> reverseFOV(const std::array<float,4>& fov){
+        return {fov[1],fov[0],fov[2],fov[3]};
     }
 };
 

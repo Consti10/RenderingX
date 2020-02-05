@@ -9,6 +9,7 @@
 #include <MatrixHelper.h>
 #include "VRHeadsetParams.h"
 #include "DistortionManager.h"
+#include "XTestDistortion.h"
 
 void VRHeadsetParams::setGvrApi(gvr::GvrApi *gvrApi) {
     this->gvr_api=gvrApi;
@@ -18,12 +19,12 @@ void VRHeadsetParams::updateHeadsetParams(const MDeviceParams &mDP,int screenWid
     this->screenWidthP=screenWidthP;
     this->screenHeightP=screenHeightP;
     LOGD("%s",MLensDistortion::MDeviceParamsAsString(mDP).c_str());
-    mDistortion=MPolynomialRadialDistortion(mDP.radial_distortion_params);
+    mDistortion=PolynomialRadialDistortion(mDP.radial_distortion_params);
     //Workaround for bug
     const std::array<float,2> daydreamV2{0.4331F,-0.0856F};
     if(mDP.radial_distortion_params.at(0)==daydreamV2[0] && mDP.radial_distortion_params.at(1)==daydreamV2[1]){
         std::vector<float> daydreamV1{0.385F,0.593F};
-        mDistortion=MPolynomialRadialDistortion(daydreamV1);
+        mDistortion=PolynomialRadialDistortion(daydreamV1);
         LOGD("Daydream v2 distortion params detected. Using v1 instead");
     }
     const auto GetYEyeOffsetMeters= MLensDistortion::GetYEyeOffsetMeters(mDP.vertical_alignment,
@@ -34,7 +35,7 @@ void VRHeadsetParams::updateHeadsetParams(const MDeviceParams &mDP,int screenWid
                                                       mDP.inter_lens_distance,
                                                       mDistortion,
                                                       mDP.screen_width_meters, mDP.screen_height_meters);
-    const auto fovRight=MLensDistortion::reverseFOV(fovLeft);
+    const auto fovRight=VRHeadsetParams::reverseFOV(fovLeft);
 
     MLensDistortion::CalculateViewportParameters_NDC(0, GetYEyeOffsetMeters,
                                                      mDP.screen_to_lens_distance,
@@ -62,16 +63,19 @@ void VRHeadsetParams::updateHeadsetParams(const MDeviceParams &mDP,int screenWid
     //never has a deviation higher from x in the range [0..maxRangeInverse]
     float maxRangeInverse=1.0f;
     for(float i=1.0f;i<=2.0f;i+=0.01f){
-        const auto& inverse=mDistortion.getApproximateInverseDistortion(maxRangeInverse,DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
-        const float maxDeviation=MPolynomialRadialDistortion::calculateMaxDeviation(mDistortion,inverse,maxRangeInverse);
+        const auto inverse=PolynomialRadialInverse(mDistortion,maxRangeInverse,DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
+        const float maxDeviation=PolynomialRadialInverse::calculateMaxDeviation(mDistortion,inverse,maxRangeInverse);
         if(maxDeviation<=0.001f){
             maxRangeInverse=i;
         }
     }
     LOGD("Max value used for getApproximateInverseDistortion() %f",maxRangeInverse);
-    mInverse=mDistortion.getApproximateInverseDistortion(maxRangeInverse,DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
+    mInverse=PolynomialRadialInverse(mDistortion,maxRangeInverse,DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
+    MDebug::log("Inverse is:"+mInverse.toStringX());
+
     //as long as the function is still strict monotonic increasing we can increase the value that will be used for
     //clamping later in the vertex shader.
+    float MAX_RAD_SQ=0;
     float last=mInverse.DistortRadius(MAX_RAD_SQ);
     for(float i=MAX_RAD_SQ;i<3;i+=0.01f){
         const float d=mInverse.DistortRadius(i);
@@ -85,16 +89,22 @@ void VRHeadsetParams::updateHeadsetParams(const MDeviceParams &mDP,int screenWid
             break;
         }
     }
+    mInverse.maxRadSq=MAX_RAD_SQ;
+
     mProjectionM[0]=perspective(fovLeft,MIN_Z_DISTANCE,MAX_Z_DISTANCE);
     mProjectionM[1]=perspective(fovRight,MIN_Z_DISTANCE,MAX_Z_DISTANCE);
     const float inter_lens_distance=mDP.inter_lens_distance;
     eyeFromHead[0]=glm::translate(glm::mat4(1.0f),glm::vec3(inter_lens_distance*0.5f,0,0));
     eyeFromHead[1]=glm::translate(glm::mat4(1.0f),glm::vec3(-inter_lens_distance*0.5f,0,0));
+
+    //
+    //test2();
+    //test3();
 }
 
 
 void VRHeadsetParams::updateDistortionManager(DistortionManager &distortionManager)const {
-    distortionManager.updateDistortion(mInverse,MAX_RAD_SQ,screen_params,texture_params);
+    distortionManager.updateDistortion(mInverse,screen_params,texture_params);
 }
 
 void VRHeadsetParams::updateLatestHeadSpaceFromStartSpaceRotation() {

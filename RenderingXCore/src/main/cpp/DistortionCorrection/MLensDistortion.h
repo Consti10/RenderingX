@@ -9,7 +9,7 @@
 #include <memory>
 #include <math.h>
 
-#include "MPolynomialRadialDistortion.h"
+#include "PolynomialRadialDistortion.h"
 
 //Based on @cardboard/LensDistortion
 //CardboardLensDistortion
@@ -36,9 +36,14 @@ public:
         float x_eye_offset;
         float y_eye_offset;
     };
-    static std::array<float,4> reverseFOV(const std::array<float,4>& fov){
-        return {fov[1],fov[0],fov[2],fov[3]};
-    }
+    //Same data as above, but used in a different context
+    //(Normalized device coordinates for half screen viewport)
+    struct ViewportParamsNDC{
+        float width;
+        float height;
+        float x_eye_offset;
+        float y_eye_offset;
+    };
 public:
     static float GetYEyeOffsetMeters(const int vertical_alignment,
                                      const float tray_to_lens_distance,
@@ -47,7 +52,7 @@ public:
             const std::array<float, 4> device_fov,
             const float GetYEyeOffsetMeters,
             const float screen_to_lens_distance, const float inter_lens_distance,
-            const MPolynomialRadialDistortion &distortion, float screen_width_meters,
+            const PolynomialRadialDistortion &distortion, float screen_width_meters,
             float screen_height_meters);
     static void CalculateViewportParameters(int eye,
                                             const float GetYEyeOffsetMeters,
@@ -75,7 +80,7 @@ public:
 
     //Use isInverse==true when passing a distortion that is already a inverse
     static std::array<float, 2> UndistortedUvForDistortedUv(
-            const MPolynomialRadialDistortion &distortion,
+            const PolynomialRadialDistortion &distortion,
             const ViewportParams &screen_params, const ViewportParams &texture_params,
             const std::array<float, 2> &in,bool isInverse=false);
 
@@ -84,14 +89,14 @@ public:
     //Viewport Parameters have to be calculated accordingly @CalculateViewportParameters_NDC
     //Uses n*x+t instead of n*x-t (compared to the cardboard original)
     static std::array<float, 2> UndistortedNDCForDistortedNDC(
-            const MPolynomialRadialDistortion &inverseDistortion,
+            const PolynomialRadialDistortion &inverseDistortion,
             const ViewportParams &screen_params, const ViewportParams &texture_params,
             const std::array<float, 2> &in,const bool isInverse=true);
 
     static std::string MDeviceParamsAsString(const MDeviceParams& dp);
 
     static std::string ViewportParamsAsString(const ViewportParams& screen_params,const ViewportParams& texture_params);
-
+    static std::string ViewportParamsNDCAsString(const ViewportParamsNDC& screen_params,const ViewportParamsNDC& texture_params);
 };
 
 

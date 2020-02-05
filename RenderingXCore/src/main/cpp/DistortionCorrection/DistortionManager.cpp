@@ -11,11 +11,11 @@ DistortionManager::getUndistortionUniformHandles(const DistortionManager* dm,con
     }
     UndistortionHandles* ret=new UndistortionHandles();
     if(dm->distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
-        ret->uMaxRadSq=(GLuint)glGetUniformLocation(program,"uMaxRadSq");
-        ret->uKN=(GLuint)glGetUniformLocation(program,"uKN");
+        ret->uPolynomialRadialInverse_coefficients=(GLuint)glGetUniformLocation(program,"uPolynomialRadialInverse.coefficients");
+        ret->uPolynomialRadialInverse_maxRadSq=(GLuint)glGetUniformLocation(program,"uPolynomialRadialInverse.maxRadSq");
     }else if(dm->distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD){
-        ret->uMaxRadSq=(GLuint)glGetUniformLocation(program,"uMaxRadSq");
-        ret->uKN=(GLuint)glGetUniformLocation(program,"uKN");
+        ret->uPolynomialRadialInverse_coefficients=(GLuint)glGetUniformLocation(program,"uPolynomialRadialInverse.coefficients");
+        ret->uPolynomialRadialInverse_maxRadSq=(GLuint)glGetUniformLocation(program,"uPolynomialRadialInverse.maxRadSq");
         ret->uScreenParams_w=(GLuint)glGetUniformLocation(program,"uScreenParams.width");
         ret->uScreenParams_h=(GLuint)glGetUniformLocation(program,"uScreenParams.height");
         ret->uScreenParams_x_off=(GLuint)glGetUniformLocation(program,"uScreenParams.x_eye_offset");
@@ -34,12 +34,12 @@ void DistortionManager::beforeDraw(
         return;
     }else if(distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
         const UndistortionHandles& undistortionHandles=*uh;
-        glUniform1f(undistortionHandles.uMaxRadSq,radialDistortionCoefficients.maxRadSquared);
-        glUniform1fv(undistortionHandles.uKN,N_RADIAL_UNDISTORTION_COEFICIENTS,radialDistortionCoefficients.kN.data());
+        glUniform1f(undistortionHandles.uPolynomialRadialInverse_maxRadSq,radialDistortionCoefficients.maxRadSquared);
+        glUniform1fv(undistortionHandles.uPolynomialRadialInverse_coefficients,N_RADIAL_UNDISTORTION_COEFICIENTS,radialDistortionCoefficients.kN.data());
     }else if(distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD) {
         const UndistortionHandles& undistortionHandles=*uh;
-        glUniform1f(undistortionHandles.uMaxRadSq,radialDistortionCoefficients.maxRadSquared);
-        glUniform1fv(undistortionHandles.uKN,N_RADIAL_UNDISTORTION_COEFICIENTS,radialDistortionCoefficients.kN.data());
+        glUniform1f(undistortionHandles.uPolynomialRadialInverse_maxRadSq,radialDistortionCoefficients.maxRadSquared);
+        glUniform1fv(undistortionHandles.uPolynomialRadialInverse_coefficients,N_RADIAL_UNDISTORTION_COEFICIENTS,radialDistortionCoefficients.kN.data());
         const int i=leftEye ? 0 : 1; //update screen params
         glUniform1f(undistortionHandles.uScreenParams_w,screen_params[i].width);
         glUniform1f(undistortionHandles.uScreenParams_h,screen_params[i].height);
@@ -64,17 +64,16 @@ std::string DistortionManager::writeDistortionParams(
     std::stringstream s;
     //Write all shader function(s) needed for VDDC
     const int N_COEFICIENTS=DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS;
+    s<< glsl_struct_PolynomialRadialInverse(N_COEFICIENTS);
     s<<glsl_PolynomialDistortionFactor(N_COEFICIENTS);
-    s<<glsl_PolynomialDistort(N_COEFICIENTS);
+    s<<glsl_PolynomialDistort();
     s<<glsl_ViewportParams();
-    s<<glsl_UndistortedNDCForDistortedNDC(N_COEFICIENTS);
+    s<<glsl_UndistortedNDCForDistortedNDC();
     //The uniforms needed for vddc
     if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
-        s<<"uniform float uMaxRadSq;\n";
-        s<<"uniform float uKN["<<N_COEFICIENTS<<"];\n";
+        s<<"uniform PolynomialRadialInverse uPolynomialRadialInverse;";
     }else if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD){
-        s<<"uniform float uMaxRadSq;\n";
-        s<<"uniform float uKN["<<N_COEFICIENTS<<"];\n";
+        s<<"uniform PolynomialRadialInverse uPolynomialRadialInverse;";
         s<<"uniform ViewportParams uScreenParams;\n";
         s<<"uniform ViewportParams uTextureParams;\n";
     }
@@ -91,7 +90,7 @@ std::string DistortionManager::writeGLPosition(const DistortionManager* distorti
         s<<"vec4 pos=uMVMatrix*"+positionAttribute+";\n";
         s<<"float r2=dot(pos.xy,pos.xy)/(pos.z*pos.z);\n";
         //s<<"r2=clamp(r2,0.0,uMaxRadSq);\n";
-        s<<"float dist_factor=PolynomialDistortionFactor(r2,uKN);\n";
+        s<<"float dist_factor=PolynomialDistortionFactor(r2,uPolynomialRadialInverse.coefficients);\n";
         s<<"pos.xy*=dist_factor;\n";
         //s<<"gl_Position=pos;\n";
         s<<"gl_Position=uPMatrix*pos;\n";
@@ -104,7 +103,7 @@ std::string DistortionManager::writeGLPosition(const DistortionManager* distorti
         //s<<"bool inside=isInsideViewPort(ndc.xy);";
         //s<<"ndc.xy=clamp(ndc.xy,-1.0,1.0);";
         //s<<"if(inside){";
-        s<<"vec2 dist_p=UndistortedNDCForDistortedNDC(uKN,uScreenParams,uTextureParams,ndc.xy,uMaxRadSq);\n";
+        s<<"vec2 dist_p=UndistortedNDCForDistortedNDC(uPolynomialRadialInverse,uScreenParams,uTextureParams,ndc.xy);\n";
         s<<"gl_Position=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);\n";
         //s<<"}else{";
         //s<<"gl_Position=pos_clip;";
@@ -122,30 +121,26 @@ std::string DistortionManager::writeGLPosition(const DistortionManager* distorti
     return s.str();
 }
 
-void DistortionManager::updateDistortion(const MPolynomialRadialDistortion &inverseDistortion,
-                                         float maxRadSq) {
+void DistortionManager::updateDistortion(const PolynomialRadialInverse &inverseDistortion) {
     for(int i=0;i<inverseDistortion.getCoeficients().size();i++){
         radialDistortionCoefficients.kN[i]=inverseDistortion.getCoeficients()[i];
     }
-    radialDistortionCoefficients.maxRadSquared=maxRadSq;
+    radialDistortionCoefficients.maxRadSquared=inverseDistortion.getMaxRadSq();
+    //MDebug::log(inverseDistortion.toString());
 }
 
-void DistortionManager::updateDistortion(const MPolynomialRadialDistortion &inverseDistortion,float maxRadSq,
+void DistortionManager::updateDistortion(const PolynomialRadialInverse &inverseDistortion,
                                     const std::array<MLensDistortion::ViewportParams, 2> screen_params,
                                     const std::array<MLensDistortion::ViewportParams, 2> texture_params) {
     this->screen_params=screen_params;
     this->texture_params=texture_params;
-    updateDistortion(inverseDistortion,maxRadSq);
+    updateDistortion(inverseDistortion);
 }
 
 void DistortionManager::updateDistortionWithIdentity() {
-    std::vector<float> identity;
-    for(int i=0;i<DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS;i++){
-        identity.push_back(0.0F);
-    }
-    MPolynomialRadialDistortion distortion(identity);
+    PolynomialRadialInverse identity(DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
     const MLensDistortion::ViewportParams identityParams{1,1,0,0};
-    updateDistortion(distortion,1000,{identityParams,identityParams},{identityParams,identityParams});
+    updateDistortion(identity,{identityParams,identityParams},{identityParams,identityParams});
 }
 
 

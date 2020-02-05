@@ -5,14 +5,84 @@
 #ifndef RENDERINGX_XTESTDISTORTION_H
 #define RENDERINGX_XTESTDISTORTION_H
 
+#include "PolynomialRadialDistortion.h"
+#include <vector>
+#include <array>
+#include "../Helper/MDebug.hpp"
 
-void test(){
+
+static void EXPECT_NEAR(float a,float b,float tolerance){
+    MDebug::log("Deviation:"+std::to_string(std::abs(a-b)));
+    if(std::abs(a-b)>tolerance){
+        MDebug::log("Test Error");
+    }else{
+        MDebug::log("Test OK");
+    }
+}
+
+
+void test2(){
+    const float kDefaultFloatTolerance = 1.0e-3f;
+    std::vector<std::pair<float, std::vector<float>>> device_range_and_params = {
+            // Cardboard v1:
+            {1.57f, {0.441f, 0.156f}},
+            // Cardboard v2:
+            {1.7f, {0.34f, 0.55f}}};
+
+    for (const auto& device : device_range_and_params) {
+        PolynomialRadialDistortion distortion(device.second);
+        for (float radius = 0.0f; radius < device.first; radius += 0.01f) {
+            // Choose a point whose distance from zero is |radius|.  Rotate by the
+            // radius so that we're testing a range of points that aren't on a line.
+            std::array<float, 2> point = {std::cosf(radius) * radius,
+                                          std::sinf(radius) * radius};
+            std::array<float, 2> inverse_point = distortion.DistortInverse(point);
+            std::array<float, 2> check = distortion.Distort(inverse_point);
+
+            EXPECT_NEAR(point[0], check[0], kDefaultFloatTolerance);
+            EXPECT_NEAR(point[1], check[1], kDefaultFloatTolerance);
+        }
+    }
+}
+
+
+void test3(){
+    const float kDefaultFloatTolerance = 1.0e-3f;
+    std::vector<std::pair<float, std::vector<float>>> device_range_and_params = {
+            // Cardboard v1:
+            {1.57f, {0.441f, 0.156f}}
+    };
+
+    for (const auto& device : device_range_and_params) {
+        const PolynomialRadialDistortion distortion(device.second);
+        const float radius=device.first;
+
+        const PolynomialRadialInverse inverse(distortion,radius*radius,8);
+
+        for (float radius = 0.0f; radius < device.first; radius += 0.01f) {
+            // Choose a point whose distance from zero is |radius|.  Rotate by the
+            // radius so that we're testing a range of points that aren't on a line.
+            const std::array<float, 2> point = {std::cosf(radius) * radius,
+                                          std::sinf(radius) * radius};
+            //Compare the parent.distortInverse with the inverse.distort()
+            const std::array<float, 2> distort_inverse_point = distortion.DistortInverse(point);
+            const std::array<float, 2> inverse_distort_point = inverse.Distort(point);
+
+            EXPECT_NEAR(distort_inverse_point[0], inverse_distort_point[0], kDefaultFloatTolerance);
+            EXPECT_NEAR(distort_inverse_point[1], inverse_distort_point[1], kDefaultFloatTolerance);
+        }
+    }
+}
+
+
+
+
 /*for(float i=0;i<2;i+=0.1f){
         const auto p1=polynomialRadialDistortion.DistortInverse({i,0});
         const auto p2=polynomialRadialDistortion.DistortInverse2({i,0});
         LOGD("X %f , DistortInverse %f , DistortInverse2 %f", i,p1[0],p2[0] );
     }*/
-}
+
 
 /*
     MAX_RAD_SQ=1.0f;
