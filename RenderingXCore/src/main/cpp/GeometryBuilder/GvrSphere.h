@@ -46,6 +46,12 @@ public:
 // Data is tightly packed. Each vertex is [x, y, z, u_left, v_left, u_right, v_right].
     static constexpr int VERTEX_STRIDE_BYTES = CPV * sizeof(float);//CPV * Utils.BYTES_PER_FLOAT;
 public:
+    //A struct better represents the internal data layout than a float array
+    struct Vertex{
+        float x,y,z;
+        float u_left,v_left;
+        float u_right,v_right;
+    };
     /**
   * Generates a 3D UV sphere for rendering monoscopic or stereoscopic video.
   *
@@ -57,10 +63,9 @@ public:
   * @param horizontalFovDegrees Total longitudinal degrees that are covered by the sphere.Must be
   *    in (0, 360].
   * @param mediaFormat A MEDIA_* value.
-  * @return a std::vector of type float where its internal data layout resembles std::vector<GvrSphere::Vertex>. use
-     * GvrSphere::createUvSphere2 for a more understandable data layout
+  * @return  std::vector of type GvrSphere::Vertex (initially a float array)
   */
-    static std::vector<float> createUvSphere(
+    static std::vector<GvrSphere::Vertex> createUvSphere(
             float radius,
             int latitudes,
             int longitudes,
@@ -68,26 +73,12 @@ public:
             float horizontalFovDegrees,
             int mediaFormat);
 public:
-    //The gvr vertex is different than what I use in my GLProgram's.
-    //A struct better represents the internal data layout than a float array
-    struct Vertex{
-        float x,y,z;
-        float u_left,v_left;
-        float u_right,v_right;
-    };
-    static std::vector<Vertex> createUvSphere2(
-            float radius,
-            int latitudes,
-            int longitudes,
-            float verticalFovDegrees,
-            float horizontalFovDegrees,
-            int mediaFormat);
     //
     //And here is the binding for GLProgramTexture::Vertex
     //
     static std::vector<GLProgramTexture::Vertex>
-    createGvrSphere(float radius, int latitudes, int longitudes) {
-        const auto vertexDataAsInGvr=GvrSphere::createUvSphere2(radius,latitudes,longitudes,180,360,GvrSphere::MEDIA_MONOSCOPIC);
+    createSphereEquirectangularMonoscopic(float radius, int latitudes, int longitudes) {
+        const auto vertexDataAsInGvr=GvrSphere::createUvSphere(radius,latitudes,longitudes,180,360,GvrSphere::MEDIA_MONOSCOPIC);
         std::vector<GLProgramTexture::Vertex> ret;
         for(const auto& vertex:vertexDataAsInGvr){
             GLProgramTexture::Vertex v{
