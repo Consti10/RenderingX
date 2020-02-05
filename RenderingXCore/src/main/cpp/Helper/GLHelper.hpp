@@ -33,7 +33,6 @@ public:
         ss<<"GLError:"<<caller.c_str();
         bool anyError=false;
         while ((error = glGetError()) != GL_NO_ERROR) {
-            //__android_log_print(ANDROID_LOG_DEBUG,TAG.c_str(),"%s GLError:%d",op.c_str(),error);
             ss<<" |"<<GlErrorString(error);
             anyError=true;
         }
@@ -58,7 +57,7 @@ public:
             GLsizei len;
             glGetShaderInfoLog(shader,size,&len,infoLog);
             MDebug::log("Couldn't compile shader "+std::string(infoLog),TAG);
-            MDebug::log("Code is:"+shaderCode);
+            MDebug::log("Code is:\n"+shaderCode,TAG);
         }
         return shader;
     }

@@ -8,13 +8,20 @@
 #include "android/log.h"
 #include <string.h>
 
-#define TAGMDEBUG "GLHelper"
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAGMDEBUG, __VA_ARGS__)
+#define TAG_MDEBUG "MDebug"
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG_MDEBUG, __VA_ARGS__)
 
 class MDebug{
 public:
-    static void log(const std::string& data,const std::string& tag="NoTag"){
-        __android_log_print(ANDROID_LOG_DEBUG,tag.c_str(),"%s",data.c_str());
+    //Splits debug messages that exceed the android log maximum length into smaller log(s)
+    static void log(const std::string& message,const std::string& tag="NoTag"){
+        constexpr int MAX_L=1024;
+        if(message.length()>MAX_L){
+            __android_log_print(ANDROID_LOG_DEBUG,tag.c_str(),"%s",message.substr(0,MAX_L).c_str());
+            log(message.substr(MAX_L),tag);
+        }else{
+            __android_log_print(ANDROID_LOG_DEBUG,tag.c_str(),"%s",message.c_str());
+        }
     }
 };
 
