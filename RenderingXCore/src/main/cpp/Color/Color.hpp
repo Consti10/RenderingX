@@ -26,17 +26,6 @@ public:
         std::memcpy(&trueColor,rgba,sizeof(TrueColor));
         return trueColor;
     };
-    static glm::vec4 toRGBA(const TrueColor trueColor){
-        uint8_t rgba[4];
-        std::memcpy(rgba,&trueColor,sizeof(rgba));
-        return glm::vec4(rgba[0]/255.0f,rgba[1]/255.0f,rgba[2]/255.0f,rgba[3]/255.0f);
-    };
-    static std::string asString(const TrueColor trueColor){
-        glm::vec4 rgba=toRGBA(trueColor);
-        std::stringstream ss;
-        ss<<"RGBA("<<rgba.r<<","<<rgba.g<<","<<rgba.b<<","<<rgba.a<<")"<<trueColor;
-        return ss.str();
-    }
     //In Androids JAVA code colors are stored in argb, not rgba
     static TrueColor fromAndroid(const int argb){
         auto alpha=(uint8_t )((argb>>24) & 0xFF);
@@ -52,6 +41,17 @@ public:
         std::memcpy(&ret,rgba,sizeof(TrueColor));
         return ret;
     }
+    static glm::vec4 toRGBA(const TrueColor trueColor){
+        uint8_t rgba[4];
+        std::memcpy(rgba,&trueColor,sizeof(rgba));
+        return glm::vec4(rgba[0]/255.0f,rgba[1]/255.0f,rgba[2]/255.0f,rgba[3]/255.0f);
+    };
+    static std::string asString(const TrueColor trueColor){
+        glm::vec4 rgba=toRGBA(trueColor);
+        std::stringstream ss;
+        ss<<"RGBA("<<rgba.r<<","<<rgba.g<<","<<rgba.b<<","<<rgba.a<<")"<<trueColor;
+        return ss.str();
+    }
 public:
     inline static const TrueColor BLACK=fromRGBA(0,0,0,1);
     inline static const TrueColor TRANSPARENT=fromRGBA(0,0,0,0);
@@ -61,20 +61,5 @@ public:
     inline static const TrueColor BLUE=fromRGBA(0,0,1,1);
     inline static const TrueColor YELLOW= fromRGBA(1.0f, 1.0f, 0.0f, 1);
 };
-
-
-/*static TrueColor fromAndroid(const int color){
-        uint8_t argb[4];
-        std::memcpy(argb,&color,sizeof(TrueColor));
-        uint8_t rgba[4];
-        rgba[0]=argb[1];
-        rgba[1]=argb[2];
-        rgba[2]=argb[3];
-        rgba[3]=argb[0];
-        TrueColor ret;
-        std::memcpy(&ret,rgba,sizeof(TrueColor));
-        return ret;
-    }*/
-
 
 #endif //FPV_VR_GLPROGRAMS_HELPER_COLOR_H

@@ -16,24 +16,23 @@ public:
     //Values not in the range [-0.9,...,0.9] are 'just barely visible at the edge of the max fov of the headset' and to emulate the gvr-android-sdk behaviour
     //TODO: create a transition between +-(0.9..1) of alpha==1.0 to alpha==0.0
 
-
     //Creates a Mesh using Normalized device coordinates that occludes
     //everything except the part actually visible inside the headset
     //Vertex data can be rendered using GL_TRAINGLE_STRIP
     //TODO: Better documentation of the used algorithm
     static const std::vector<GLProgramVC::Vertex> makeMesh(const VRHeadsetParams& params,const int eye,const TrueColor color=Color::BLACK){
 
-        const int tesselation=32;
+        const int tessellation=32;
         //create the 4 meshes (left,right,top,bottom) that are
         //later merged into one big mesh
         std::array<std::vector<GLProgramVC::Vertex>,4> mesh;
 
         //Make two vertical (left and right)
-        mesh.at(0)=makeSomething({-1,-1},2.0f,false,color,tesselation);
-        mesh.at(1)=makeSomething({1,-1},2.0f,false,color,tesselation);
+        mesh.at(0)=makeSomething({-1,-1},2.0f,false,color,tessellation);
+        mesh.at(1)=makeSomething({1,-1},2.0f,false,color,tessellation);
         //Make two horizontal (top and bottom)
-        mesh.at(2)=makeSomething({-1,1},2.0f,true,color,tesselation);
-        mesh.at(3)=makeSomething({-1,-1},2.0f,true,color,tesselation);
+        mesh.at(2)=makeSomething({-1,1},2.0f,true,color,tessellation);
+        mesh.at(3)=makeSomething({-1,-1},2.0f,true,color,tessellation);
 
         //Distort every second vertex
         for(auto& tmp:mesh){
@@ -71,7 +70,7 @@ public:
     //However, V1==V2 and V3==V4 .. VN==VN+1 or in other words
     //The V2,V4,V6..VN+1 values are not distorted yet
     static const std::vector<GLProgramVC::Vertex> makeSomething(const glm::vec2 start,const float size,const bool horizontal,const TrueColor color,
-            const int tesselation){
+            const int tessellation){
         //create a strip in the form of
         //1   | 0 1
         //0.5 | 2 3
@@ -79,7 +78,7 @@ public:
         //-0.5| 6 7
         //-1  | 8 9
         //0.5 0.25 0.125 ...
-        const float stepSize=size/tesselation;
+        const float stepSize=size/tessellation;
         std::vector<GLProgramVC::Vertex> ret;
         for(float i=0;i<=size;i+=stepSize){
             if(horizontal){
