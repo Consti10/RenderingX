@@ -5,14 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Environment;
-import android.widget.FrameLayout;
 
 import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrLayout;
 
+import constantin.renderingx.core.FullscreenHelper;
 import constantin.renderingx.core.MyVRLayout;
-import constantin.renderingx.core.PerformanceHelper;
-import constantin.renderingx.example.R;
 
 public class AExampleVRRendering extends AppCompatActivity {
     private GLSurfaceView gLView;
@@ -94,7 +92,7 @@ public class AExampleVRRendering extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
-            PerformanceHelper.setImmersiveSticky(this);
+            FullscreenHelper.setImmersiveSticky(this);
         }
     }
 

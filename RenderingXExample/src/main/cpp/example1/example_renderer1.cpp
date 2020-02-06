@@ -80,7 +80,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     glProgramText->loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
     glProgramTexture=new GLProgramTexture(false);
     glGenTextures(1,&mExampleTexture);
-    glProgramTexture->loadTexture(mExampleTexture,env,context,"grids/black_grid.png");
+    glProgramTexture->loadTexture(mExampleTexture,env,context,"ExampleTexture/brick_wall_simple.png");
     //create all the gl Buffer for later use
     glBufferVC.initializeGL();
     glBufferText.initializeGL();

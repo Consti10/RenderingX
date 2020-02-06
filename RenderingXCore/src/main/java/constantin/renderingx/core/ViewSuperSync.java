@@ -1,5 +1,6 @@
 package constantin.renderingx.core;
 
+import android.app.Activity;
 import android.content.Context;
 import android.opengl.EGL14;
 import android.opengl.GLES20;
@@ -10,6 +11,8 @@ import android.util.Log;
 import android.view.Choreographer;
 import android.view.Display;
 import android.view.WindowManager;
+
+import com.google.vr.sdk.base.AndroidCompat;
 
 import java.util.Objects;
 
@@ -61,6 +64,9 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
 
 
     public void onResume(){
+        //FullscreenHelper.setImmersiveSticky(this);
+        //FullscreenHelper.enableAndroidVRModeIfPossible(this);
+        //FullscreenHelper.enableSustainedPerformanceIfPossible(this);
         onResumeX();
         mGLSurfaceView.onResume();
         mGLSurfaceView.queueEvent(new Runnable() {
@@ -81,6 +87,8 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
         Choreographer.getInstance().removeFrameCallback(this);
         mGLSurfaceView.onPause();
         onPauseX();
+        //FullscreenHelper.disableSustainedPerformanceIfEnabled(this);
+        //FullscreenHelper.disableAndroidVRModeIfEnabled(this);
     }
 
     public void destroy(){
@@ -169,4 +177,5 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
         void requestExitSuperSyncLoop();
         void setLastVSYNC(long lastVSYNC);
     }
+
 }

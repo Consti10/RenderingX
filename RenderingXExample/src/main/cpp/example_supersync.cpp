@@ -52,10 +52,14 @@ void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext) {
     std::vector<GLProgramVC::Vertex> coloredVertices(N_COLOR_VERTICES);
     const float triangleWidth=3.0F;
     for(int i=0;i<N_TRIANGLES;i++){
-        ColoredGeometry::makeColoredTriangle1(&coloredVertices[i*3],glm::vec3(-triangleWidth/2,0,0),triangleWidth,triangleWidth,Color::RED);
+        ColoredGeometry::makeColoredTriangle1(&coloredVertices[i*3],glm::vec3(-triangleWidth/2,0,0),triangleWidth,triangleWidth,Color::BLUE);
     }
-    mVertexBufferVC.initializeGL();
-    mVertexBufferVC.uploadGL(coloredVertices);
+    mVertexBufferVC.initializeAndUploadGL(coloredVertices);
+    const float cbs=3.0f;
+    solidRectangleRed.initializeAndUploadGL(
+            ColoredGeometry::makeTessellatedColoredRect(10,{-cbs/2,-cbs/2,0},cbs,cbs,Color::RED));
+    solidRectangleYellow.initializeAndUploadGL(
+            ColoredGeometry::makeTessellatedColoredRect(10,{-cbs/2,-cbs/2,0},cbs,cbs,Color::YELLOW));
 }
 
 
@@ -63,10 +67,6 @@ void GLRSuperSyncExample::onSurfaceChanged(int width, int height) {
     ViewPortW=width/2;
     ViewPortH=height;
     projection=glm::perspective(glm::radians(45.0F),((float) ViewPortW)/((float)ViewPortH), 0.05f, 20.0f);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
-    glClearColor(0.0F,0,0,0.0F);
-    glEnable(GL_SCISSOR_TEST);
 }
 
 void GLRSuperSyncExample::enterSuperSyncLoop(JNIEnv *env, jobject obj,int exclusiveVRCore) {
@@ -84,14 +84,21 @@ void GLRSuperSyncExample::setLastVSYNC(int64_t lastVSYNC) {
     mFBRManager->setLastVSYNC(lastVSYNC);
 }
 
-
-void GLRSuperSyncExample::renderNewEyeCallback(JNIEnv *env, bool whichEye, int64_t offsetNS) {
+void GLRSuperSyncExample::renderNewEyeCallback(JNIEnv *env,const bool whichEye,const int64_t offsetNS) {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+    glClearColor(0.5F,0.5F,0.5F,0.0F);
+    glEnable(GL_SCISSOR_TEST);
+    glDisable(GL_DEPTH_TEST);
+    VertexBuffer& background=solidRectangleRed;
     swapColor++;
     if(swapColor>2){
-        glClearColor(0.0f,0.0f,0.0f,0.0f);
+        //glClearColor(0.0f,0.0f,0.0f,0.0f);
+        background=solidRectangleYellow;
         swapColor=0;
     }else{
-        glClearColor(1.0f,1.0f,0.0f,0.0f);
+        //glClearColor(1.0f,1.0f,0.0f,0.0f);
+        background=solidRectangleRed;
     }
     VREyeDurations vrEyeTimeStamps{whichEye};
     mFBRManager->startDirectRendering(whichEye,ViewPortW,ViewPortH);
@@ -117,6 +124,11 @@ void GLRSuperSyncExample::drawEye(JNIEnv *env, bool whichEye) {
         glProgramVC->beforeDraw(mVertexBufferVC.vertexB);
         glProgramVC->draw(leftOrRightEyeView,projection,0,mVertexBufferVC.nVertices,GL_TRIANGLES);
         glProgramVC->afterDraw();
+    }
+    if(whichEye){
+        glProgramVC->drawX(leftEyeView,projection,solidRectangleRed);
+    }else{
+        glProgramVC->drawX(leftEyeView,projection,solidRectangleYellow);
     }
 }
 

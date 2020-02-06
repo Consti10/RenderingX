@@ -85,6 +85,9 @@ private:
     glm::mat4 leftEyeView,rightEyeView;
     //holds colored geometry vertices
     VertexBuffer mVertexBufferVC;
+    //
+    VertexBuffer solidRectangleYellow;
+    VertexBuffer solidRectangleRed;
     static constexpr int N_TRIANGLES=5;
     static constexpr int N_COLOR_VERTICES=3*N_TRIANGLES;
     //Create buffer(s) for

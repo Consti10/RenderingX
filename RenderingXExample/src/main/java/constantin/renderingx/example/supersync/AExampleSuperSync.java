@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import constantin.renderingx.core.PerformanceHelper;
 import constantin.renderingx.core.ViewSuperSync;
 
 public class AExampleSuperSync extends AppCompatActivity {
@@ -24,9 +23,6 @@ public class AExampleSuperSync extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         System.out.println("YYY onResumeX()");
-        PerformanceHelper.setImmersiveSticky(this);
-        PerformanceHelper.enableAndroidVRModeIfPossible(this);
-        PerformanceHelper.enableSustainedPerformanceIfPossible(this);
         mViewSuperSync.onResume();
     }
 
@@ -35,8 +31,6 @@ public class AExampleSuperSync extends AppCompatActivity {
         super.onPause();
         System.out.println("YYY onPauseX()");
         mViewSuperSync.onPause();
-        PerformanceHelper.disableSustainedPerformanceIfEnabled(this);
-        PerformanceHelper.disableAndroidVRModeIfEnabled(this);
     }
 
     @Override
