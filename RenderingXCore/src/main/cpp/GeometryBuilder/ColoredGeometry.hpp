@@ -69,6 +69,7 @@ private:
     //Tessellation 1 : [ ]
     //Tessellation 2 : [ | ]
     //Tessellation 3 : [ | | ]
+    //Optionally: alternating color
     static std::vector<GLProgramVC::Vertex> createGridVertices(const unsigned int tessellation,const glm::vec3& point,float width,float height,const TrueColor color){
         const int tessellationX=tessellation;
         const int tessellationY=tessellation;
@@ -141,25 +142,24 @@ private:
     }
 public:
     //GL_TRIANGLES
-    static const std::vector<GLProgramVC::Vertex> makeTesselatedColoredRect(const unsigned int tessellation,const glm::vec3& point,float width,float height,const TrueColor color){
+    static const std::vector<GLProgramVC::Vertex> makeTessellatedColoredRect(const unsigned int tessellation, const glm::vec3 &point, float width, float height,const TrueColor color){
         const auto vertices=createGridVertices(tessellation,point,width,height,color);
         const auto indices=createIndicesPlane(tessellation);
         //we do not want indices, remove them
         return mergeIndicesIntoVertices(vertices,indices);
     }
     //Can be drawn using GL_LINES
-    static const std::vector<GLProgramVC::Vertex> makeTesselatedColoredRectWireframe(const unsigned int tessellation,const glm::vec3& point,float width,float height,const TrueColor color){
+    static const std::vector<GLProgramVC::Vertex> makeTessellatedColoredRectWireframe(const unsigned int tessellation, const glm::vec3 &point, float width, float height,const TrueColor color){
         const auto vertices=createGridVertices(tessellation,point,width,height,color);
         const auto indices=createIndicesWireframe(tessellation);
         //we do not want indices, remove them
         return mergeIndicesIntoVertices(vertices,indices);
     }
-
     //Create a tesselated wireframe mesh that spawns exactly the viewport
     //e.q [-1,1] in x and y direction
-    static const std::vector<GLProgramVC::Vertex> makeTesselatedColoredRectLinesNDC(
+    static const std::vector<GLProgramVC::Vertex> makeTessellatedColoredRectLinesNDC(
             const int tessellation, const TrueColor color){
-        return makeTesselatedColoredRectWireframe(tessellation,{-1.0f,-1.0f,0},2.0f,2.0f,color);
+        return makeTessellatedColoredRectWireframe(tessellation,{-1.0f,-1.0f,0},2.0f,2.0f,color);
     }
     static const void makeOutlineQuadWithLines(GLProgramVC::Vertex array[],const float mX,const float mY,const float mZ,const float quadWith,const float quadHeight,
                                                const TrueColor color){

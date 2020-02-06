@@ -81,8 +81,8 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     const float rectangleWidth=10.0F;
     //std::vector<GLProgramVC::Vertex> coloredVertices(3);
     //ColoredGeometry::makeColoredTriangle1(coloredVertices.data(),glm::vec3(-triangleWidth/2,0,0),triangleWidth,triangleWidth,Color::RED);
-    const auto coloredVertices=ColoredGeometry::makeTesselatedColoredRect(10,glm::vec3(-rectangleWidth/2,-rectangleWidth/2,0),rectangleWidth,rectangleWidth,Color::RED);
-    glBufferVC.uploadGL(coloredVertices,GL_LINES);
+    glBufferVC.uploadGL(ColoredGeometry::makeTessellatedColoredRect(12,glm::vec3(-rectangleWidth/2,-rectangleWidth/2,0),rectangleWidth,rectangleWidth,Color::RED)
+            ,GL_TRIANGLES);
     //some smooth lines
     //create 5 lines of increasing stroke width
     std::vector<GLProgramLine::Vertex> lines(N_LINES*GLProgramLine::VERTICES_PER_LINE);

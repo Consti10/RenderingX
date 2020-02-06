@@ -55,10 +55,10 @@ void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context,int videoT
     float tesselatedRectSize=2.5; //6.2f
     const float offsetY=0.0f;
     blueMeshB.initializeAndUploadGL(
-            ColoredGeometry::makeTesselatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,
+            ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,
                     Color::BLUE),GL_LINES);
     greenMeshB.initializeAndUploadGL(
-            ColoredGeometry::makeTesselatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,
+            ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,
                     Color::GREEN),GL_LINES);
     //create the gvr sphere
     mGvrSphereB.initializeAndUploadGL(
