@@ -14,9 +14,11 @@
 #include <GLProgramVC.h>
 #include <GLProgramText.h>
 #include <ColoredGeometry.hpp>
+#include <TexturedGeometry.hpp>
 #include <TextAssetsHelper.hpp>
 #include "Helper/GLBufferHelper.hpp"
 #include <GLProgramLine.h>
+#include <GLProgramTexture.h>
 #include <Chronometer.h>
 #include <FPSCalculator.h>
 
@@ -38,6 +40,9 @@ GLProgramVC* glProgramVC;
 GLProgramLine* glProgramLine;
 //used to render smooth text
 GLProgramText* glProgramText;
+//Used to render textured geometry
+GLProgramTexture* glProgramTexture;
+GLuint mExampleTexture;
 
 //holds colored geometry vertices
 VertexBuffer glBufferVC;
@@ -47,6 +52,8 @@ VertexBuffer glBufferText;
 VertexBuffer glBufferIcons;
 //holds smooth line vertices
 VertexBuffer glBufferLine;
+//holds textured vertices
+VertexBuffer glBufferTextured;
 
 //simplifies debugging/benchmarking
 Chronometer cpuFrameTime{"CPU frame time"};
@@ -71,16 +78,18 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     glProgramLine=new GLProgramLine();
     glProgramText=new GLProgramText();
     glProgramText->loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
+    glProgramTexture=new GLProgramTexture(false);
+    glGenTextures(1,&mExampleTexture);
+    glProgramTexture->loadTexture(mExampleTexture,env,context,"grids/black_grid.png");
     //create all the gl Buffer for later use
     glBufferVC.initializeGL();
     glBufferText.initializeGL();
     glBufferLine.initializeGL();
     glBufferIcons.initializeGL();
+    glBufferTextured.initializeGL();
     //create the geometry for our simple test scene
     //some colored geometry
     const float rectangleWidth=10.0F;
-    //std::vector<GLProgramVC::Vertex> coloredVertices(3);
-    //ColoredGeometry::makeColoredTriangle1(coloredVertices.data(),glm::vec3(-triangleWidth/2,0,0),triangleWidth,triangleWidth,Color::RED);
     glBufferVC.uploadGL(ColoredGeometry::makeTessellatedColoredRect(12,glm::vec3(-rectangleWidth/2,-rectangleWidth/2,0),rectangleWidth,rectangleWidth,Color::RED)
             ,GL_TRIANGLES);
     //some smooth lines
@@ -108,7 +117,6 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
         textHeight+=0.3;
     }
     glBufferText.uploadGL(charactersAsVertices);
-
     //some icons
     std::vector<GLProgramText::Character> iconsAsVertices(N_ICONS);
     yOffset=TEXT_Y_OFFSET;
@@ -119,6 +127,9 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
         yOffset+=textHeight;
     }
     glBufferIcons.uploadGL(iconsAsVertices);
+    //Textured geometry
+    const float wh=5.0f;
+    glBufferTextured.uploadGL(TexturedGeometry::makeTesselatedVideoCanvas2(glm::vec3(-wh*0.5f,-wh*0.5f,0),wh,wh,10,0.0f,1.0f));
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
@@ -166,6 +177,8 @@ static void onDrawFrame(int mode){
         glProgramLine->afterDraw();
     }else if(mode==3){
         glProgramVC->drawX(eyeView,projection,glBufferVC);
+    }else if(mode==4){
+        glProgramTexture->drawX(mExampleTexture,eyeView,projection,glBufferTextured);
     }
     GLHelper::checkGlError("example_renderer::onDrawFrame");
     cpuFrameTime.stop();

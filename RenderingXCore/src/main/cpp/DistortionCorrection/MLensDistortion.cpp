@@ -204,7 +204,7 @@ MLensDistortion::ViewportParamsAsString(const MLensDistortion::ViewportParams &s
     ss<<"Texture_params offset X:"<<texture_params.x_eye_offset<<" Y:"<<texture_params.y_eye_offset<<"\n";
     return ss.str();
 }
-static const MLensDistortion::ViewportParams& convert(const MLensDistortion::ViewportParamsNDC& vp){
+static const MLensDistortion::ViewportParams convert(const MLensDistortion::ViewportParamsNDC& vp){
     return {vp.width,vp.height,vp.x_eye_offset,vp.y_eye_offset};
 }
 std::string

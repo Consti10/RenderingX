@@ -11,12 +11,10 @@
 #include <utility>
 
 class TexturedGeometry {
-public:
-    static const std::pair<std::vector<GLProgramTexture::Vertex>,std::vector<GLProgramTexture::INDEX_DATA>>  makeTesselatedVideoCanvas(const  glm::vec3& point,const float width,
-                                                const float height,const int tessellation, const float uOffset,
-                                                const float uRange){
+private:
+    static std::vector<GLProgramTexture::Vertex> createGridVertices(const unsigned int tessellation,const glm::vec3& point,float width,float height,const float uOffset,
+                                                                    const float uRange){
         std::vector<GLProgramTexture::Vertex> vertices((tessellation+1)*(tessellation+1));
-        std::vector<GLProgramTexture::INDEX_DATA> indices(6*tessellation*tessellation);
         const float vRange=1.0f;
         const int tessellationX=tessellation;
         const int tessellationY=tessellation;
@@ -36,40 +34,53 @@ public:
                 count++;
             }
         }
-         //__android_log_print(ANDROID_LOG_DEBUG, "count V:","%d",count);
+        return vertices;
+    }
+    static std::vector<GLProgramTexture::INDEX_DATA> createIndicesPlane(const unsigned int tessellation){
         const int indicesX=tessellation;
         const int indicesY=tessellation;
-        const int rowSize=tessellationX+1;
-        count=0;
+        const int rowSize=tessellation+1;
+        int count=0;
+        std::vector<GLProgramTexture::INDEX_DATA> indices(6*tessellation*tessellation);
         for(int i=0;i<indicesX;i++){
             for(int j=0;j<indicesY;j++){
                 indices.at(count++)=(GLushort)(i*rowSize+j);
                 indices.at(count++)=(GLushort)((i+1)*rowSize+j);
                 indices.at(count++)=(GLushort)(i*rowSize+j+1);
-                //
                 indices.at(count++)=(GLushort)(i*rowSize+j+1);
                 indices.at(count++)=(GLushort)((i+1)*rowSize+j);
                 indices.at(count++)=(GLushort)((i+1)*rowSize+j+1);
             }
         }
+        return indices;
+    }
+    using VerticesIndices=std::pair<std::vector<GLProgramTexture::Vertex>,std::vector<GLProgramTexture::INDEX_DATA>>;
+    static std::vector<GLProgramTexture::Vertex> mergeIndicesIntoVertices(const std::vector<GLProgramTexture::Vertex>& vertices,const std::vector<GLProgramTexture::INDEX_DATA>& indices){
+        std::vector<GLProgramTexture::Vertex> ret;
+        ret.reserve(indices.size());
+        for(unsigned int index:indices){
+            if(index>=vertices.size()){
+                LOGD("Error wanted %d",index);
+            }
+            ret.push_back(vertices.at(index));
+        }
+        return ret;
+    }
+public:
+    static const VerticesIndices makeTesselatedVideoCanvas(const  glm::vec3& point,const float width,
+                                                const float height,const int tessellation, const float uOffset,
+                                                const float uRange){
+        const auto vertices=createGridVertices(tessellation,point,width,height,uOffset,uRange);
+        const auto indices=createIndicesPlane(tessellation);
         return std::pair<std::vector<GLProgramTexture::Vertex>,std::vector<GLProgramTexture::INDEX_DATA>>{
             vertices,indices};
     }
-
     //Sometimes we want no indices for simplicity over performance
     static const std::vector<GLProgramTexture::Vertex> makeTesselatedVideoCanvas2(const  glm::vec3& point,const float width,
                                                                                   const float height,const int tessellation, const float uOffset,const float uRange){
         const auto tmp=makeTesselatedVideoCanvas(point,width,height,tessellation,uOffset,uRange);
-        //we do not want indices
-        std::vector<GLProgramTexture::Vertex> ret;
-        ret.reserve(tmp.second.size());
-        for(int i=0;i<tmp.second.size();i++){
-            const auto index=tmp.second.at(i);
-            ret.push_back(tmp.first.at(index));
-        }
-        return ret;
+        return mergeIndicesIntoVertices(tmp.first,tmp.second);
     }
-
 };
 
 
