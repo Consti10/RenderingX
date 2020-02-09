@@ -30,7 +30,7 @@
 
 //in contrast to example_renderer, here we are using an object-oriented native binding approach - the lifecycle of the cpp object  is tied to the lifecycle
 //of the same named java object
-//See implementation for more details on SuperSnyc
+//See implementation for more details on SuperSync
 
 //Super sync (synchronous front buffer rendering) is a technique for reducing latency in VR
 //It renders both the left and right eye alternating in sync with the VSYNC.

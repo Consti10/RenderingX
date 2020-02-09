@@ -76,6 +76,8 @@ private:
     std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
     std::unique_ptr<GLProgramTexture> mGLProgramTexture=nullptr;
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt=nullptr;
+    std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt2=nullptr;
+
     GLuint mTexture360Image;
     GLuint mTexture360ImageInsta360;
     GLuint mVideoTexture;

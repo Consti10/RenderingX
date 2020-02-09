@@ -27,13 +27,14 @@ private:
     DistortionManager::UndistortionHandles* mUndistortionHandles;
     static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
     static constexpr auto MY_SAMPLER_UNIT=1;
+    const bool mapEquirectangularToInsta360=true;
 public:
     struct Vertex{
         float x,y,z;
         float u,v;
     };
-    using INDEX_DATA=GLushort;
-    explicit GLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const DistortionManager* distortionManager=nullptr,const bool use2dCoordinates=false);
+    using INDEX_DATA=GLuint;
+    explicit GLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const DistortionManager* distortionManager=nullptr,const bool use2dCoordinates=false,const bool mapEquirectangularToInsta360=false);
     void beforeDraw(GLuint buffer,GLuint texture) const;
     void draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLenum mode=GL_TRIANGLES) const;
     void drawIndexed(GLuint indexBuffer,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int indicesOffset, int numberIndices,GLenum mode) const;
@@ -69,7 +70,7 @@ private:
         s<<"}\n";
         return s.str();
     }
-    static const std::string FS(const bool externalTexture){
+    static const std::string FS(const bool externalTexture,const bool mapEquirectangularToInsta360){
         std::stringstream s;
         if(externalTexture){
             s<<"#extension GL_OES_EGL_image_external : require\n";
@@ -82,13 +83,47 @@ private:
         }else{
             s<<"uniform sampler2D sTexture;\n";
         }
+        if(mapEquirectangularToInsta360){
+            s<<"vec2 map_equirectangular(in float x,in float y){\n"
+                "        float pi = 3.14159265359;\n"
+                "        float pi_2 = 1.57079632679;\n"
+                "        float xy;\n"
+                "        if (y < 0.5){\n"
+                "            xy = 2.0 * y;\n"
+                "        } else {\n"
+                "            xy = 2.0 * (1.0 - y);\n"
+                "        }\n"
+                "        float sectorAngle = 2.0 * pi * x;\n"
+                "        float nx = xy * cos(sectorAngle);\n"
+                "        float ny = xy * sin(sectorAngle);\n"
+                "        float scale = 0.93;\n"
+                //"float s;"
+                //"float t;"
+                //"        if(y < 0.5){"
+                //"         t = -ny * scale / 2.0 + 0.5;\n"
+                //"         s = -nx * scale / 4.0 + 0.25;\n"
+                //"        }else{"
+                //"         t = ny * scale / 2.0 + 0.5;\n"
+                //"         s = -nx * scale / 4.0 + 0.25;\n"
+                //"        }\n"
+                "        float t = -ny * scale / 2.0 + 0.5;\n"
+                "        float s = -nx * scale / 4.0 + 0.25;\n"
+                "        if (y > 0.5) {\n"
+                "            s = 1.0 - s;\n"
+                "        }\n"
+                "        return vec2(s,t);"
+                "    }";
+        }
         s<<"void main() {\n";
-        s<<"gl_FragColor = texture2D(sTexture,vTexCoord);\n";
+        if(mapEquirectangularToInsta360){
+            s<<"vec2 newTexCoord=map_equirectangular(vTexCoord.x,vTexCoord.y);";
+            s<<"gl_FragColor = texture2D(sTexture,newTexCoord);\n";
+        }else{
+            s<<"gl_FragColor = texture2D(sTexture,vTexCoord);\n";
+        }
         //s<<"if(invisibleFragment>=0.9){";
-        //s<<"gl_FragColor=vec4(0.0,0.0,0.0,0.0);";
+        //s<<"gl_FragColor=vec4(1.0,0.0,0.0,1.0);";
         //s<<"}";
-
-        //s.append("gl_FragColor.rgb = vec3(1.0,1.0,1.0);\n");
 #ifdef WIREFRAME
         s<<"gl_FragColor.rgb=vec3(1.0,1.0,1.0);\n";
 #endif
@@ -99,7 +134,7 @@ private:
 
 class GLProgramTextureExt: public GLProgramTexture{
 public:
-    GLProgramTextureExt(const DistortionManager* dm=nullptr):GLProgramTexture(true,dm){
+    GLProgramTextureExt(const DistortionManager* dm=nullptr,const bool mapEquirectangularToInsta360=false):GLProgramTexture(true,dm,false,mapEquirectangularToInsta360){
     }
 };
 

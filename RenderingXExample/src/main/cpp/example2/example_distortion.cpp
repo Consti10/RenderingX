@@ -42,6 +42,7 @@ void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context,int videoT
     mBasicGLPrograms=std::make_unique<BasicGLPrograms>(&distortionManager);
     mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
     mGLProgramTextureExt=std::make_unique<GLProgramTextureExt>(&distortionManager);
+    mGLProgramTextureExt2=std::make_unique<GLProgramTextureExt>(&distortionManager,true);
     mVideoTexture=(GLuint)videoTexture;
     mGLProgramTexture=std::make_unique<GLProgramTexture>(false,&distortionManager);
     glGenTextures(1,&mTexture360Image);
@@ -164,7 +165,8 @@ void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, b
         mBasicGLPrograms->vc.drawX(viewM,projM,tmp);
     }
     if(M_SPHERE_MODE==SPHERE_MODE_GVR_EQUIRECTANGULAR){
-        mGLProgramTextureExt->drawX(mVideoTexture,viewM,projM,mGvrSphereB);
+        glm::mat4x4 modelMatrix=glm::rotate(glm::mat4(1.0F),glm::radians(90.0F), glm::vec3(0,0,-1));
+        mGLProgramTextureExt2->drawX(mVideoTexture,viewM*modelMatrix,projM,mGvrSphereB);
     }
     if(M_SPHERE_MODE==SPHERE_MODE_INSTA360_TEST){
         mGLProgramTextureExt->drawX(mVideoTexture,viewM,projM,mEquirecangularSphereB);

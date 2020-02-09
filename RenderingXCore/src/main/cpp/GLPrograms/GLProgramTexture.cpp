@@ -5,9 +5,9 @@
 constexpr auto TAG="GLRenderTexture(-External)";
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
-GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const DistortionManager* distortionManager,const bool use2dCoordinates)
-        :USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE),distortionManager(distortionManager) {
-    mProgram = GLHelper::createProgram(VS(distortionManager,use2dCoordinates),FS(USE_EXTERNAL_TEXTURE));
+GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const DistortionManager* distortionManager,const bool use2dCoordinates,const bool mapEquirectangularToInsta360)
+        :USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE),distortionManager(distortionManager),mapEquirectangularToInsta360(mapEquirectangularToInsta360) {
+    mProgram = GLHelper::createProgram(VS(distortionManager,use2dCoordinates),FS(USE_EXTERNAL_TEXTURE,mapEquirectangularToInsta360));
     mMVMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
     mPMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uPMatrix");
     mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
@@ -52,7 +52,7 @@ void GLProgramTexture::drawIndexed(GLuint indexBuffer, const glm::mat4x4 &ViewM,
     //
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 #ifndef WIREFRAME
-    glDrawElements(mode,numberIndices,GL_UNSIGNED_SHORT, (void*)(indicesOffset*sizeof(INDEX_DATA)));
+    glDrawElements(mode,numberIndices,GL_UNSIGNED_INT, (void*)(indicesOffset*sizeof(INDEX_DATA)));
 #else
     glLineWidth(4.0f);
     glDrawElements(GL_LINES,numberVertices,GL_UNSIGNED_SHORT, (void*)(verticesOffset*sizeof(GLushort)));

@@ -19,7 +19,7 @@ public:
     // Smaller values indicate a larger FOV and more overlap between the two sides.
     static constexpr const float radius_scale = 0.44f;
     // Larger number means more triangles
-    static constexpr const float triangle_density = 100;
+    static constexpr const float triangle_density = 1000;
 
     static void create_sphere(std::vector<GLfloat>& vertexData,std::vector<GLuint>& indexData,int surf_w,int surf_h){
         uint32_t cam1_cx = 1.0 * surf_w / 4;
@@ -121,7 +121,7 @@ public:
             v.v=tmpVertices[i+4];
             vertexData.push_back(v);
         }
-        for(unsigned int i=0;i<tmpIndices.size();i++){
+        for(auto i=0;i<tmpIndices.size();i++){
             indexData.push_back((GLProgramTexture::INDEX_DATA) tmpIndices.at(i));
         }
     }

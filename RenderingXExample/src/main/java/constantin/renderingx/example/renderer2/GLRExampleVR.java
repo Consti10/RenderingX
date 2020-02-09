@@ -62,10 +62,12 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
             //Switch between Android Media player and LiveVideo10ms Core Video player
             //First one plays mp4, second one plays .h264
             if(SPHERE_MODE==SPHERE_MODE_GVR_EQUIRECTANGULAR){
-                testVideoPlayer=new TestVideoPlayer(context,true,"360DegreeVideos/testRoom1_1920Mono.mp4");
+                //testVideoPlayer=new TestVideoPlayer(context,true,"360DegreeVideos/testRoom1_1920Mono.mp4");
                 //testVideoPlayer=new TestVideoPlayer(context,true,"360DegreeVideos/paris_by_diego.mp4");
+                testVideoPlayer=new TestVideoPlayer(context,false,"360DegreeVideos/video360.h264");
             }else{
-                testVideoPlayer=new TestVideoPlayer(context,false,"360DegreeVideos/360_test.h264");
+                //testVideoPlayer=new TestVideoPlayer(context,false,"360DegreeVideos/360_test.h264");
+                testVideoPlayer=new TestVideoPlayer(context,false,"360DegreeVideos/video360.h264");
             }
         }else{
             testVideoPlayer=null;
