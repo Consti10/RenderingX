@@ -44,12 +44,12 @@ private:
         std::vector<GLProgramTexture::INDEX_DATA> indices(6*tessellation*tessellation);
         for(int i=0;i<indicesX;i++){
             for(int j=0;j<indicesY;j++){
-                indices.at(count++)=(GLushort)(i*rowSize+j);
-                indices.at(count++)=(GLushort)((i+1)*rowSize+j);
-                indices.at(count++)=(GLushort)(i*rowSize+j+1);
-                indices.at(count++)=(GLushort)(i*rowSize+j+1);
-                indices.at(count++)=(GLushort)((i+1)*rowSize+j);
-                indices.at(count++)=(GLushort)((i+1)*rowSize+j+1);
+                indices.at(count++)=(GLProgramTexture::INDEX_DATA)(i*rowSize+j);
+                indices.at(count++)=(GLProgramTexture::INDEX_DATA)((i+1)*rowSize+j);
+                indices.at(count++)=(GLProgramTexture::INDEX_DATA)(i*rowSize+j+1);
+                indices.at(count++)=(GLProgramTexture::INDEX_DATA)(i*rowSize+j+1);
+                indices.at(count++)=(GLProgramTexture::INDEX_DATA)((i+1)*rowSize+j);
+                indices.at(count++)=(GLProgramTexture::INDEX_DATA)((i+1)*rowSize+j+1);
             }
         }
         return indices;
