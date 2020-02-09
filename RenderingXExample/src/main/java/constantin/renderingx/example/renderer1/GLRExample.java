@@ -9,7 +9,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 
-
+//See native code for documentation
 public class GLRExample implements GLSurfaceView.Renderer, MultiTouchGestureDetector.OnMultiTouchGestureListener{
     static {
         System.loadLibrary("example-renderer");

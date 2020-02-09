@@ -2,10 +2,7 @@ package constantin.renderingx.example.renderer2;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.AssetFileDescriptor;
 import android.graphics.SurfaceTexture;
-import android.media.MediaPlayer;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.view.Surface;
@@ -13,9 +10,6 @@ import android.view.Surface;
 import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.sdk.base.GvrView;
 import com.google.vr.sdk.base.GvrViewerParams;
-
-import java.io.IOException;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -24,6 +18,7 @@ import constantin.renderingx.example.TestVideoPlayer;
 // !
 // At the time, pausing / resuming the video is not implemented and will result in an app crash !
 // !
+//See native code for documentation
 
 public class GLRExampleVR implements GLSurfaceView.Renderer{
     public static final int SPHERE_MODE_NONE=0;

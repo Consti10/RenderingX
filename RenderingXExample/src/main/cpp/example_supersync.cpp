@@ -55,9 +55,9 @@ void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext) {
         ColoredGeometry::makeColoredTriangle1(&coloredVertices[i*3],glm::vec3(-triangleWidth/2,0,0),triangleWidth,triangleWidth,Color::BLUE);
     }
     mVertexBufferVC.initializeAndUploadGL(coloredVertices);
-    const float cbs=3.0f;
-    solidRectangleRed.initializeAndUploadGL(
-            ColoredGeometry::makeTessellatedColoredRect(10,{-cbs/2,-cbs/2,0},cbs,cbs,Color::RED));
+    const float cbs=20.0f;
+    solidRectangleBlack.initializeAndUploadGL(
+            ColoredGeometry::makeTessellatedColoredRect(10,{-cbs/2,-cbs/2,0},cbs,cbs,Color::BLACK));
     solidRectangleYellow.initializeAndUploadGL(
             ColoredGeometry::makeTessellatedColoredRect(10,{-cbs/2,-cbs/2,0},cbs,cbs,Color::YELLOW));
 }
@@ -90,16 +90,6 @@ void GLRSuperSyncExample::renderNewEyeCallback(JNIEnv *env,const bool whichEye,c
     glClearColor(0.5F,0.5F,0.5F,0.0F);
     glEnable(GL_SCISSOR_TEST);
     glDisable(GL_DEPTH_TEST);
-    VertexBuffer& background=solidRectangleRed;
-    swapColor++;
-    if(swapColor>2){
-        //glClearColor(0.0f,0.0f,0.0f,0.0f);
-        background=solidRectangleYellow;
-        swapColor=0;
-    }else{
-        //glClearColor(1.0f,1.0f,0.0f,0.0f);
-        background=solidRectangleRed;
-    }
     VREyeDurations vrEyeTimeStamps{whichEye};
     mFBRManager->startDirectRendering(whichEye,ViewPortW,ViewPortH);
     if(mFBRManager->directRenderingMode==FBRManager::QCOM_TILED_RENDERING){
@@ -118,17 +108,23 @@ void GLRSuperSyncExample::renderNewEyeCallback(JNIEnv *env,const bool whichEye,c
 }
 
 void GLRSuperSyncExample::drawEye(JNIEnv *env, bool whichEye) {
+    //Draw the background, which alternates between black and yellow to make tearing observable
+    const int idx=whichEye==0 ? 0 : 1;
+    whichColor[idx]++;
+    if(whichColor[idx]>1){
+        whichColor[idx]=0;
+    }
+    if(whichColor[idx]==0){
+        glProgramVC->drawX(leftEyeView,projection,solidRectangleBlack);
+    }else{
+        glProgramVC->drawX(leftEyeView,projection,solidRectangleYellow);
+    }
     //A typical application has way more than 1 draw call only
-    for(int i=0;i<5;i++){
+    for(int i=0;i<20;i++){
         const glm::mat4 leftOrRightEyeView= whichEye==0 ? leftEyeView : rightEyeView;
         glProgramVC->beforeDraw(mVertexBufferVC.vertexB);
         glProgramVC->draw(leftOrRightEyeView,projection,0,mVertexBufferVC.nVertices,GL_TRIANGLES);
         glProgramVC->afterDraw();
-    }
-    if(whichEye){
-        glProgramVC->drawX(leftEyeView,projection,solidRectangleRed);
-    }else{
-        glProgramVC->drawX(leftEyeView,projection,solidRectangleYellow);
     }
 }
 

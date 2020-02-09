@@ -74,7 +74,6 @@ private:
     GLProgramVC* glProgramVC;
     std::unique_ptr<FBRManager> mFBRManager= nullptr;
     int ViewPortW=0,ViewPortH=0;
-    int swapColor=0;
     //
     //Camera/Projection matrix constants
     static constexpr float CAMERA_DISTANCE=-5.0f;
@@ -87,7 +86,8 @@ private:
     VertexBuffer mVertexBufferVC;
     //
     VertexBuffer solidRectangleYellow;
-    VertexBuffer solidRectangleRed;
+    VertexBuffer solidRectangleBlack;
+    std::array<int,2> whichColor;
     static constexpr int N_TRIANGLES=5;
     static constexpr int N_COLOR_VERTICES=3*N_TRIANGLES;
     //Create buffer(s) for

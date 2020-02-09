@@ -7,6 +7,7 @@ import com.google.vr.ndk.base.GvrApi;
 import constantin.renderingx.core.GLESInfo.GLESInfo;
 import constantin.renderingx.core.ViewSuperSync;
 
+//See native code for documentation
 public class GLRExampleSuperSync implements ViewSuperSync.IRendererSuperSync {
     static {
         System.loadLibrary("example-renderer");

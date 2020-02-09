@@ -51,6 +51,20 @@ public:
     void onSurfaceChanged(int width, int height);
     void onDrawFrame();
 private:
+    /*
+    * draws into gvr renderbuffer which is then distorted into framebuffer
+    */
+    void drawEyeGvrRenderbuffer(gvr::Eye eye);
+    /*
+     * draw into framebuffer applying undistortion to the vertices
+     * No intermediate renderbuffer needed
+     */
+    void drawEyeVDDC(gvr::Eye eye);
+    /*
+     * draw everything into what's currently bound (renderbuffer for gvr,framebuffer for vddc)
+     */
+    void drawEye(gvr::Eye eye,glm::mat4 viewM,glm::mat4 projM,bool meshColorGreen,bool vignette=false);
+private:
     std::unique_ptr<gvr::GvrApi> gvr_api_;
     gvr::BufferViewportList buffer_viewports;
     gvr::BufferViewportList recommended_buffer_viewports;
@@ -68,20 +82,6 @@ private:
     VertexIndexBuffer mEquirecangularSphereB;
     VertexBuffer mGvrSphereB;
     std::array<VertexBuffer,2> mOcclusionMesh;
-    /*
-     * draws into gvr renderbuffer which is then distorted into framebuffer
-     */
-    void drawEyeGvrRenderbuffer(gvr::Eye eye);
-    /*
-     * draw into framebuffer applying undistortion to the vertices
-     * No intermediate renderbuffer needed
-     */
-    void drawEyeVDDC(gvr::Eye eye);
-    /*
-     * draw everything into what's currently bound (renderbuffer for gvr,framebuffer for vddc)
-     */
-    void drawEye(gvr::Eye eye,glm::mat4 viewM,glm::mat4 projM,bool meshColorGreen,bool vignette=false);
-private:
     static constexpr int LINE_MESH_TESSELATION_FACTOR=12;
     VertexBuffer blueMeshB;
     VertexBuffer greenMeshB;

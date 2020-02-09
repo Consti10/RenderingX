@@ -10,9 +10,6 @@
 #define TAG "FrameCPUChronometer"
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
 
-//Defining MY_RELEASE disables all measurements
-//#define MY_RELEASE
-
 using namespace std::chrono;
 
 
