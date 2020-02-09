@@ -32,6 +32,28 @@ public:
                     triangle_size);
     }
 
+    static std::array<float,2> map_equirectangular(const float x,const float y){
+        float pi = 3.14159265359;
+        float pi_2 = 1.57079632679;
+        float xy;
+        if (y < 0.5){
+            xy = 2.0 * y;
+        } else {
+            xy = 2.0 * (1.0 - y);
+        }
+        float sectorAngle = 2.0 * pi * x;
+        float nx = xy * cos(sectorAngle);
+        float ny = xy * sin(sectorAngle);
+        float scale = 0.93;
+
+        float t = -ny * scale / 2.0 + 0.5;
+        float s = -nx * scale / 4.0 + 0.25;
+        if (y > 0.5) {
+            s = 1.0 - s;
+        }
+        return {s,t};
+    }
+
     static void create_rect(std::vector<GLfloat> &verts, std::vector<GLuint> &indexes,
                      uint32_t width, uint32_t height, uint32_t radius, // In pixels
                      uint32_t c1x, uint32_t c1y, uint32_t c2x, uint32_t c2y, // In pixels
