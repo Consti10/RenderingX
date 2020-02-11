@@ -42,7 +42,7 @@ public:
     //And here is the binding for GLProgramTexture::Vertex
     //
     static std::vector<GLProgramTexture::Vertex>
-    createSphereEquirectangularMonoscopic(float radius, int latitudes, int longitudes) {
+    createSphereEquirectangularMonoscopic(float radius=1.0f, int latitudes=72, int longitudes=18) {
         const auto vertexDataAsInGvr=GvrSphere::createUvSphere(radius,latitudes,longitudes,180,360,GvrSphere::MEDIA_MONOSCOPIC);
         std::vector<GLProgramTexture::Vertex> ret;
         for(const auto& vertex:vertexDataAsInGvr){
