@@ -72,8 +72,7 @@ public:
                                                 const float uRange){
         const auto vertices=createGridVertices(tessellation,point,width,height,uOffset,uRange);
         const auto indices=createIndicesPlane(tessellation);
-        return std::pair<std::vector<GLProgramTexture::Vertex>,std::vector<GLProgramTexture::INDEX_DATA>>{
-            vertices,indices};
+        return {vertices,indices};
     }
     //Sometimes we want no indices for simplicity over performance
     static const std::vector<GLProgramTexture::Vertex> makeTesselatedVideoCanvas2(const  glm::vec3& point,const float width,
