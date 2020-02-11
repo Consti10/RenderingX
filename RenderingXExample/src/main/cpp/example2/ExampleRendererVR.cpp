@@ -1,7 +1,7 @@
 //
 // Created by Consti10 on 15/05/2019.
 //
-#include "example_distortion.h"
+#include "ExampleRendererVR.h"
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
 #include "Helper/GLBufferHelper.hpp"
@@ -162,21 +162,22 @@ void ExampleRendererVR::drawEyeVDDC(gvr::Eye eye) {
     GLHelper::checkGlError("ExampleRenderer2::drawEyeVDDC2");
 }
 
-float la=0;
 
 void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen,bool occlusion) {
     if(ENABLE_SCENE_MESH_2D){
         const VertexBuffer& tmp=meshColorGreen ? greenMeshB : blueMeshB;
         mBasicGLPrograms->vc.drawX(viewM,projM,tmp);
     }
-    if(M_SPHERE_MODE==SPHERE_MODE_GVR_EQUIRECTANGULAR){
+    if(M_SPHERE_MODE==SPHERE_MODE_EQUIRECTANGULAR_TEST){
+        mGLProgramTextureExt->drawX(mVideoTexture,viewM,projM,mGvrSphereB);
+    }
+    if(M_SPHERE_MODE==SPHERE_MODE_INSTA360_TEST1){
         glm::mat4x4 modelMatrix=glm::rotate(glm::mat4(1.0F),glm::radians(90.0F), glm::vec3(0,0,-1));
         mGLProgramTextureExt2->drawX(mVideoTexture,viewM*modelMatrix,projM,mGvrSphereB);
     }
-    if(M_SPHERE_MODE==SPHERE_MODE_INSTA360_TEST){
+    if(M_SPHERE_MODE==SPHERE_MODE_INSTA360_TEST2){
         glm::mat4x4 modelMatrix=glm::rotate(glm::mat4(1.0F),glm::radians(90.0F), glm::vec3(0,0,-1));
         mGLProgramTextureExt->drawX(mVideoTexture,viewM*modelMatrix,projM,mGvrSphereMappedB);
-        //mGLProgramTextureExt->drawX(mVideoTexture,viewM,projM,mSphereDualFisheye2);
     }
     if(occlusion){
         mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);

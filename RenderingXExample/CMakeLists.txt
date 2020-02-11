@@ -71,7 +71,7 @@ target_link_libraries( example-renderer
 
 add_library( example-renderer2
         SHARED
-        src/main/cpp/example2/example_distortion.cpp
+        src/main/cpp/example2/ExampleRendererVR.cpp
         ${RX_CORE_DIR}/src/main/cpp/Other/gvr_util/util.cc
         )
 target_link_libraries( example-renderer2

@@ -17,33 +17,25 @@
 
 class GvrSphere{
 public:
+    enum MEDIA_FORMAT{
     /** Standard media where a single camera frame takes up the entire media frame. */
-    static constexpr int MEDIA_MONOSCOPIC = 0;
+   MEDIA_MONOSCOPIC = 0,
 /**
  * Stereo media where the left & right halves of the frame are rendered for the left & right eyes,
  * respectively. If the stereo media is rendered in a non-VR display, only the left half is used.
  */
-    static constexpr int MEDIA_STEREO_LEFT_RIGHT = 1;
+    MEDIA_STEREO_LEFT_RIGHT = 1,
 /**
  * Stereo media where the top & bottom halves of the frame are rendered for the left & right eyes,
  * respectively. If the stereo media is rendered in a non-VR display, only the top half is used.
  */
-    static constexpr int MEDIA_STEREO_TOP_BOTTOM = 2;
-
-// Constants related to vertex data.
-    static constexpr int POSITION_COORDS_PER_VERTEX = 3; // X, Y, Z.
+    MEDIA_STEREO_TOP_BOTTOM = 2,
+    };
 // The vertex contains texture coordinates for both the left & right eyes. If the scene is
 // rendered in VR, the appropriate part of the vertex will be selected at runtime. For a mono
 // scene, only the left eye's UV coordinates are used.
 // For mono media, the UV coordinates are duplicated in each. For stereo media, the UV coords
 // point to the appropriate part of the source media.
-    static constexpr int TEXTURE_COORDS_PER_VERTEX = 2 * 2;
-// COORDS_PER_VERTEX
-    static constexpr int CPV = POSITION_COORDS_PER_VERTEX + TEXTURE_COORDS_PER_VERTEX;
-// Data is tightly packed. Each vertex is [x, y, z, u_left, v_left, u_right, v_right].
-    static constexpr int VERTEX_STRIDE_BYTES = CPV * sizeof(float);//CPV * Utils.BYTES_PER_FLOAT;
-public:
-    //A struct better represents the internal data layout than a float array
     struct Vertex{
         float x,y,z;
         float u_left,v_left;
@@ -60,7 +52,7 @@ public:
   * @param horizontalFovDegrees Total longitudinal degrees that are covered by the sphere.Must be
   *    in (0, 360].
   * @param mediaFormat A MEDIA_* value.
-  * @return  std::vector of type GvrSphere::Vertex (initially a float array)
+  * @return  std::vector of type GvrSphere::Vertex
   */
     static std::vector<GvrSphere::Vertex> createUvSphere(
             float radius,
@@ -68,7 +60,7 @@ public:
             int longitudes,
             float verticalFovDegrees,
             float horizontalFovDegrees,
-            int mediaFormat);
+            MEDIA_FORMAT mediaFormat);
 };
 
 

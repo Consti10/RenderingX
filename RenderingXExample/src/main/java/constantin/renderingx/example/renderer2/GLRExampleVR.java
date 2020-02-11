@@ -13,6 +13,7 @@ import com.google.vr.sdk.base.GvrViewerParams;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import constantin.renderingx.core.MyVrHeadsetParams;
 import constantin.renderingx.example.TestVideoPlayer;
 
 // !
@@ -24,6 +25,7 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
     public static final int SPHERE_MODE_NONE=0;
     public static final int SPHERE_MODE_GVR_EQUIRECTANGULAR=1;
     public static final int SPHERE_MODE_INSTA360_TEST=2;
+    public static final int SPHERE_MODE_INSTA360_TEST2=3;
     static {
         System.loadLibrary("example-renderer2");
     }
@@ -60,11 +62,10 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
         PLAY_VIDEO=SPHERE_MODE!=SPHERE_MODE_NONE;
         if(PLAY_VIDEO){
             //Switch between Android Media player and LiveVideo10ms Core Video player
-            //First one plays mp4, second one plays .h264
             if(SPHERE_MODE==SPHERE_MODE_GVR_EQUIRECTANGULAR){
                 //testVideoPlayer=new TestVideoPlayer(context,true,"360DegreeVideos/testRoom1_1920Mono.mp4");
                 //testVideoPlayer=new TestVideoPlayer(context,true,"360DegreeVideos/paris_by_diego.mp4");
-                testVideoPlayer=new TestVideoPlayer(context,false,"360DegreeVideos/video360.h264");
+                testVideoPlayer=new TestVideoPlayer(context,true,"360DegreeVideos/testRoom1_1920Mono.mp4");
             }else{
                 //testVideoPlayer=new TestVideoPlayer(context,false,"360DegreeVideos/360_test.h264");
                 testVideoPlayer=new TestVideoPlayer(context,false,"360DegreeVideos/video360.h264");
@@ -73,23 +74,13 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
             testVideoPlayer=null;
         }
 
-        GvrView view=new GvrView(context);
-        final GvrViewerParams params=view.getGvrViewerParams();
-
         nativeRenderer=nativeConstruct(context,
                 gvrApi.getNativeGvrContext(),RENDER_SCENE_USING_GVR_RENDERBUFFER,RENDER_SCENE_USING_VERTEX_DISPLACEMENT,MESH,SPHERE_MODE);
 
-        float[] fov=new float[4];
-        fov[0]=params.getLeftEyeMaxFov().getLeft();
-        fov[1]=params.getLeftEyeMaxFov().getRight();
-        fov[2]=params.getLeftEyeMaxFov().getBottom();
-        fov[3]=params.getLeftEyeMaxFov().getTop();
-        float[] kN=params.getDistortion().getCoefficients();
-
-        nativeUpdateHeadsetParams(nativeRenderer,view.getScreenParams().getWidthMeters(),view.getScreenParams().getHeightMeters(),
-                params.getScreenToLensDistance(),params.getInterLensDistance(),params.getVerticalAlignment().ordinal(),params.getVerticalDistanceToLensCenter(),
-                fov,kN,view.getScreenParams().getWidth(),view.getScreenParams().getHeight());
-        view.shutdown();
+        final MyVrHeadsetParams params=new MyVrHeadsetParams(context);
+        nativeUpdateHeadsetParams(nativeRenderer,params.ScreenWidthMeters,params.ScreenHeightMeters,
+                params.ScreenToLensDistance,params.InterLensDistance,params.VerticalAlignment,params.VerticalDistanceToLensCenter,
+                params.fov,params.kN,params.ScreenWidthPixels,params.ScreenHeightPixels);
     }
 
 

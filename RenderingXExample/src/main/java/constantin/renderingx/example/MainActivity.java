@@ -13,6 +13,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -35,14 +37,20 @@ public class MainActivity extends AppCompatActivity {
     private final List<String> missingPermission = new ArrayList<>();
     private static final int REQUEST_PERMISSION_CODE = 12345;
 
-    private Switch mSwitch;
+    //private Switch mSwitch;
+    private Spinner mSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context=this;
         setContentView(R.layout.activity_main);
-        mSwitch=findViewById(R.id.switch1);
+        mSpinner=findViewById(R.id.spinner_360_video_type);
+
+        /*final ArrayAdapter adapter=ArrayAdapter.createFromResource(this,R.array.entries_360_video_modes,android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+        mSpinner.setAdapter(adapter);*/
+
         //This retreives any HW info needed for the app
         AWriteGLESInfo.writeGLESInfoIfNeeded(this);
 
@@ -74,11 +82,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final Intent intent=new Intent().setClass(context, AExampleVRRendering.class);
-                if(mSwitch.isChecked()){
-                    intent.putExtra(AExampleVRRendering.KEY_MODE,2);
-                }else{
-                    intent.putExtra(AExampleVRRendering.KEY_MODE,1);
-                }
+                final int position = mSpinner.getSelectedItemPosition()==Spinner.INVALID_POSITION ? 0 : mSpinner.getSelectedItemPosition();
+                //0 is the mesh test (e.g. VIDEO_360=_MODE_NONE)
+                final int video360mode=position+1;
+                intent.putExtra(AExampleVRRendering.KEY_MODE,video360mode);
                 startActivity(intent);
             }
         });

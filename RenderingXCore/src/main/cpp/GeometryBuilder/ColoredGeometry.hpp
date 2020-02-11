@@ -69,7 +69,6 @@ private:
     //Tessellation 1 : [ ]
     //Tessellation 2 : [ | ]
     //Tessellation 3 : [ | | ]
-    //Optionally: alternating color
     static std::vector<GLProgramVC::Vertex> createGridVertices(const unsigned int tessellation,const glm::vec3& point,float width,float height,const TrueColor color){
         const int tessellationX=tessellation;
         const int tessellationY=tessellation;
@@ -91,7 +90,7 @@ private:
         const int indicesX=tessellation;
         const int indicesY=tessellation;
         const int rowSize=tessellation+1;
-        int count=0;
+        unsigned int count=0;
         std::vector<unsigned int> indices(6*tessellation*tessellation);
         for(int i=0;i<indicesX;i++){
             for(int j=0;j<indicesY;j++){
@@ -158,7 +157,7 @@ public:
     //Create a tesselated wireframe mesh that spawns exactly the viewport
     //e.q [-1,1] in x and y direction
     static const std::vector<GLProgramVC::Vertex> makeTessellatedColoredRectLinesNDC(
-            const int tessellation, const TrueColor color){
+            const unsigned int tessellation, const TrueColor color){
         return makeTessellatedColoredRectWireframe(tessellation,{-1.0f,-1.0f,0},2.0f,2.0f,color);
     }
     static const void makeOutlineQuadWithLines(GLProgramVC::Vertex array[],const float mX,const float mY,const float mZ,const float quadWith,const float quadHeight,
@@ -184,7 +183,7 @@ public:
         makeColoredTriangle(array,2*3,p5,p2,p3,color1,color2,color2);
         makeColoredTriangle(array,3*3,p5,p4,p3,color1,color2,color2);
     };
-    static std::vector<GLProgramVC::Vertex> makeDebugCoordinateSystemLines(const int tessellation=1){
+    static std::vector<GLProgramVC::Vertex> makeDebugCoordinateSystemLines(const unsigned int tessellation=1){
         std::vector<GLProgramVC::Vertex> ret;
         ret.reserve(((tessellation+1)*(tessellation+1)));
         const float size=10.0f;

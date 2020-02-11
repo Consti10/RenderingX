@@ -46,12 +46,9 @@ public class AExampleVRRendering extends AppCompatActivity {
         if(MODE==0){
             renderer=new GLRExampleVR(this, gvrApi,true,
                     true,true,GLRExampleVR.SPHERE_MODE_NONE);
-        }else if(MODE==1){
-            renderer=new GLRExampleVR(this, gvrApi,false,
-                    true,false,GLRExampleVR.SPHERE_MODE_GVR_EQUIRECTANGULAR);
         }else{
             renderer=new GLRExampleVR(this, gvrApi,false,
-                    true,false,GLRExampleVR.SPHERE_MODE_INSTA360_TEST);
+                    true,false,MODE);
         }
         gLView.setRenderer(renderer);
         gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);

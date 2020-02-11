@@ -9,4 +9,11 @@
         <item>Textured Geometry</item>
     </string-array>
 
+
+    <string-array name="entries_360_video_modes">
+        <item>Equirect test</item>
+        <item>DualFisheye Insta360 1</item>
+        <item>DualFisheye Insta360 2</item>
+    </string-array>
+
 </resources>

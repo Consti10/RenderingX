@@ -24,7 +24,7 @@ std::vector<GvrSphere::Vertex> GvrSphere::createUvSphere(
         int longitudes,
         float verticalFovDegrees,
         float horizontalFovDegrees,
-        int mediaFormat) {
+        const MEDIA_FORMAT mediaFormat) {
     if (radius <= 0
         || latitudes < 1 || longitudes < 1
         || verticalFovDegrees <= 0 || verticalFovDegrees > 180
@@ -41,9 +41,6 @@ std::vector<GvrSphere::Vertex> GvrSphere::createUvSphere(
     // Each latitude strip has 2 * (longitudes quads + extra edge) vertices + 2 degenerate vertices.
     int vertexCount = (2 * (longitudes + 1) + 2) * latitudes;
     // Buffer to return.
-    //const int vertexDataSize=vertexCount * CPV;
-    //float[] vertexData = new float[vertexCount * CPV];
-    //std::vector<float> vertexData(vertexDataSize);
     std::vector<GvrSphere::Vertex> vertexData(vertexCount);
 
     // Generate the data for the sphere which is a set of triangle strips representing each

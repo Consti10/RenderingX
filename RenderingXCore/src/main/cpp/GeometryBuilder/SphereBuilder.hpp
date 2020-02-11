@@ -14,8 +14,8 @@ public:
     //map equirect to insta360, same function as in fragment shader of GLProgramTexture with mapping enabled
     //
     static std::array<float,2> equirect_to_insta360(const float u_in, const float v_in){
-        float pi = 3.14159265359;
-        float pi_2 = 1.57079632679;
+        float pi = 3.14159265359f;
+        float pi_2 = 1.57079632679f;
         float y2;
         if (v_in < 0.5){
             y2 = 2.0 * v_in;
@@ -33,8 +33,8 @@ public:
         if (v_in > 0.5) {
             u = 1.0 - u;
         }
-        u=std::clamp(u,0.0f,1.0f);
-        v=std::clamp(v,0.0f,1.0f);
+        //u=std::clamp(u,0.0f,1.0f);
+        //v=std::clamp(v,0.0f,1.0f);
         return {u,v};
     }
 
