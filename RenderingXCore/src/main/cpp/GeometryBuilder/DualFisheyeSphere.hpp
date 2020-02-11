@@ -3,8 +3,8 @@
 // Copied from Brian Webb's original source code in ogl.cc ( OpenHD )
 //
 
-#ifndef RENDERINGX_EQUIRECTANGULARSPHERE_H
-#define RENDERINGX_EQUIRECTANGULARSPHERE_H
+#ifndef RENDERINGX_DUAL_FISHEYE_SPHERE
+#define RENDERINGX_DUAL_FISHEYE_SPHERE
 
 #include <array>
 #include <vector>
@@ -13,13 +13,13 @@
 #include <GLBufferHelper.hpp>
 #include <GLProgramTexture.h>
 
-class EquirectangularSphere {
+class DualFisheyeSphere {
 public:
     // Adjust this to fit the FOV of the lens on the 360 camera.
     // Smaller values indicate a larger FOV and more overlap between the two sides.
     static constexpr const float radius_scale = 0.44f;
     // Larger number means more triangles
-    static constexpr const float triangle_density = 1000;
+    static constexpr const float triangle_density = 100;
 
     static void create_sphere(std::vector<GLfloat>& vertexData,std::vector<GLuint>& indexData,int surf_w,int surf_h){
         uint32_t cam1_cx = 1.0 * surf_w / 4;
@@ -152,7 +152,7 @@ public:
     static void uploadSphereGL(VertexIndexBuffer& data,int surf_w,int surf_h){
         std::vector<GLProgramTexture::Vertex> vertices;
         std::vector<GLProgramTexture::INDEX_DATA > indices;
-        EquirectangularSphere::create_sphere(vertices,indices,surf_w,surf_h);
+        DualFisheyeSphere::create_sphere(vertices,indices,surf_w,surf_h);
         /*LOGD("N vertices %d N indices %d",vertices.size(),indices.size());
         for(unsigned int i=0;i<indices.size();i++){
             const int value=indices.at(i);
@@ -167,4 +167,4 @@ public:
 };
 
 
-#endif //RENDERINGX_EQUIRECTANGULARSPHERE_H
+#endif //RENDERINGX_DUAL_FISHEYE_SPHERE

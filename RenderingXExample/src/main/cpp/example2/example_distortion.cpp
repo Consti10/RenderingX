@@ -7,9 +7,10 @@
 #include "Helper/GLBufferHelper.hpp"
 #include <MatrixHelper.h>
 #include <array>
-#include <GeometryBuilder/EquirectangularSphere.hpp>
+#include <GeometryBuilder/DualFisheyeSphere.hpp>
 #include <GeometryBuilder/GvrSphere.h>
 #include <GeometryBuilder/CardboardViewportOcclusion.h>
+#include <SphereBuilder.hpp>
 
 constexpr auto TAG="DistortionExample";
 
@@ -50,8 +51,15 @@ void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context,int videoT
     GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
     GLProgramTexture::loadTexture(mTexture360ImageInsta360,env,context,"360DegreeImages/insta_360_equirectangular.png");
     //create the insta360 sphere
-    mEquirecangularSphereB.initializeGL();
-    EquirectangularSphere::uploadSphereGL(mEquirecangularSphereB,2560,1280);
+    mGvrSphereMappedB.initializeGL();
+    mGvrSphereMappedB.initializeAndUploadGL(
+            SphereBuilder::createSphereDualFisheyeInsta360(),GL_TRIANGLE_STRIP);
+    //second insta360
+    mSphereDualFisheye2.initializeGL();
+    DualFisheyeSphere::uploadSphereGL(mSphereDualFisheye2,2560,1280);
+    //create the gvr sphere
+    mGvrSphereB.initializeAndUploadGL(
+            SphereBuilder::createSphereEquirectangularMonoscopic(1.0,72,18),GL_TRIANGLE_STRIP);
     //create the green and blue mesh
     float tesselatedRectSize=2.5; //6.2f
     const float offsetY=0.0f;
@@ -61,9 +69,6 @@ void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context,int videoT
     greenMeshB.initializeAndUploadGL(
             ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR,{-tesselatedRectSize/2.0f,-tesselatedRectSize/2.0f+offsetY,-2},tesselatedRectSize,tesselatedRectSize,
                     Color::GREEN),GL_LINES);
-    //create the gvr sphere
-    mGvrSphereB.initializeAndUploadGL(
-            GvrSphere::createSphereEquirectangularMonoscopic(1.0,72,36),GL_TRIANGLE_STRIP);
     //create the occlusion mesh, left and right viewport
     //use a slightly different color than clear color to make mesh visible
     const TrueColor color=Color::fromRGBA(0.1,0.1,0.1,1.0);
@@ -169,7 +174,9 @@ void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, b
         mGLProgramTextureExt2->drawX(mVideoTexture,viewM*modelMatrix,projM,mGvrSphereB);
     }
     if(M_SPHERE_MODE==SPHERE_MODE_INSTA360_TEST){
-        mGLProgramTextureExt->drawX(mVideoTexture,viewM,projM,mEquirecangularSphereB);
+        glm::mat4x4 modelMatrix=glm::rotate(glm::mat4(1.0F),glm::radians(90.0F), glm::vec3(0,0,-1));
+        mGLProgramTextureExt->drawX(mVideoTexture,viewM*modelMatrix,projM,mGvrSphereMappedB);
+        //mGLProgramTextureExt->drawX(mVideoTexture,viewM,projM,mSphereDualFisheye2);
     }
     if(occlusion){
         mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);

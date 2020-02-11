@@ -77,12 +77,12 @@ private:
     std::unique_ptr<GLProgramTexture> mGLProgramTexture=nullptr;
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt=nullptr;
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt2=nullptr;
-
     GLuint mTexture360Image;
     GLuint mTexture360ImageInsta360;
     GLuint mVideoTexture;
-    VertexIndexBuffer mEquirecangularSphereB;
+    VertexBuffer mGvrSphereMappedB;
     VertexBuffer mGvrSphereB;
+    VertexIndexBuffer mSphereDualFisheye2;
     std::array<VertexBuffer,2> mOcclusionMesh;
     static constexpr int LINE_MESH_TESSELATION_FACTOR=12;
     VertexBuffer blueMeshB;

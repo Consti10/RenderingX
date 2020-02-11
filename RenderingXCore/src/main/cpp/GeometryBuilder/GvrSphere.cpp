@@ -66,6 +66,8 @@ std::vector<GvrSphere::Vertex> GvrSphere::createUvSphere(
                 vertexData[v].x = -(float) (radius * sin(theta) * cos(phi));
                 vertexData[v].y =  (float) (radius * sin(phi));
                 vertexData[v].z =  (float) (radius * cos(theta) * cos(phi));
+                //vertexData[v].y =  (float) (radius * sin(theta) * sin(phi));
+                //vertexData[v].z =  (float) (radius * cos(theta));
 
                 // Set vertex texture.x data.
                 if (mediaFormat == MEDIA_STEREO_LEFT_RIGHT) {
@@ -76,7 +78,7 @@ std::vector<GvrSphere::Vertex> GvrSphere::createUvSphere(
                 } else {
                     // For top-bottom or monoscopic media, the eye's x spans the full width of the texture.
                     vertexData[v].u_left = i * quadWidthRads / horizontalFovRads;
-                    vertexData[v].u_right = i * quadWidthRads / horizontalFovRads;
+                    vertexData[v].u_right = vertexData[v].u_left;
                 }
 
                 // Set vertex texture.y data. The "1 - ..." is due to Canvas vs GL coords.
@@ -88,8 +90,9 @@ std::vector<GvrSphere::Vertex> GvrSphere::createUvSphere(
                 } else {
                     // For left-right or monoscopic media, the eye's y spans the full height of the texture.
                     vertexData[v].v_left = 1 - (j + k) * quadHeightRads / verticalFovRads;
-                    vertexData[v].v_right = 1 - (j + k) * quadHeightRads / verticalFovRads;
+                    vertexData[v].v_right = vertexData[v].v_left;
                 }
+
                 v++;
 
                 // Break up the triangle strip with degenerate vertices by copying first and last points.

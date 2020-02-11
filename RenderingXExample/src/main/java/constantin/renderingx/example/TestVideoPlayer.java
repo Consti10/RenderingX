@@ -12,7 +12,7 @@ import constantin.video.core.VideoNative.VideoNative;
 import constantin.video.core.VideoPlayer;
 
 //Enables switching between Android Media Player and LiveVideo10ms VideoPlayer
-//First one plays mp4, second one plays .h264
+//Second one is used for testing LiveVideo10ms implementation
 
 public class TestVideoPlayer {
     private final MediaPlayer mediaPlayer;

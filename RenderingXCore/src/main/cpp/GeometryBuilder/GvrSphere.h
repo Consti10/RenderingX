@@ -6,15 +6,12 @@
 #define FPV_VR_2018_GVRSPHERE_H
 
 #include <vector>
-#include <GLPrograms/GLProgramTexture.h>
 
+//Only depends on standard libraries
 //Inside th gvr 360° video example source code, there is a function to create
 //The geometry with texture data for a 360° video sphere
-//This class is the .cpp equivalent to the following class:
+//This .cpp class is inspired by the following .java class:
 // https://github.com/googlevr/gvr-android-sdk/blob/master/samples/sdk-video360/src/main/java/com/google/vr/sdk/samples/video360/rendering/Mesh.java
-//As less modifcations have been made as possible
-//Only the functions Math.toRadians and System.arraycopy() did not exist in .cpp
-//Also std::vector<float> instead of dynamic java float array
 //U,Vs map to an Equirectangular image
 //https://en.wikipedia.org/wiki/Equirectangular_projection
 
@@ -72,22 +69,6 @@ public:
             float verticalFovDegrees,
             float horizontalFovDegrees,
             int mediaFormat);
-public:
-    //
-    //And here is the binding for GLProgramTexture::Vertex
-    //
-    static std::vector<GLProgramTexture::Vertex>
-    createSphereEquirectangularMonoscopic(float radius, int latitudes, int longitudes) {
-        const auto vertexDataAsInGvr=GvrSphere::createUvSphere(radius,latitudes,longitudes,180,360,GvrSphere::MEDIA_MONOSCOPIC);
-        std::vector<GLProgramTexture::Vertex> ret;
-        for(const auto& vertex:vertexDataAsInGvr){
-            GLProgramTexture::Vertex v{
-                    vertex.x,vertex.y,vertex.z,vertex.u_left,vertex.v_left
-            };
-            ret.push_back(v);
-        }
-        return ret;
-    }
 };
 
 
