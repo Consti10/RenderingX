@@ -40,7 +40,7 @@ private:
         const int indicesX=tessellation;
         const int indicesY=tessellation;
         const int rowSize=tessellation+1;
-        int count=0;
+        unsigned int count=0;
         std::vector<GLProgramTexture::INDEX_DATA> indices(6*tessellation*tessellation);
         for(int i=0;i<indicesX;i++){
             for(int j=0;j<indicesY;j++){
