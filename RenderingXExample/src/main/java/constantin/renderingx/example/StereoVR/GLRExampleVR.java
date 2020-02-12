@@ -1,4 +1,4 @@
-package constantin.renderingx.example.renderer2;
+package constantin.renderingx.example.StereoVR;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -8,17 +8,12 @@ import android.opengl.GLSurfaceView;
 import android.view.Surface;
 
 import com.google.vr.ndk.base.GvrApi;
-import com.google.vr.sdk.base.GvrView;
-import com.google.vr.sdk.base.GvrViewerParams;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
 import constantin.renderingx.core.MyVrHeadsetParams;
-import constantin.renderingx.example.TestVideoPlayer;
+import constantin.renderingx.example.MVideoPlayer;
 
-// !
-// At the time, pausing / resuming the video is not implemented and will result in an app crash !
-// !
+
 //See native code for documentation
 
 public class GLRExampleVR implements GLSurfaceView.Renderer{
@@ -49,29 +44,24 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
     private final long nativeRenderer;
     //initialized when Surface ready
     private SurfaceTexture displayTexture=null;
-    private Surface videoSurface;
-    //Disable video playback completely
-    private final boolean PLAY_VIDEO;
-    private final TestVideoPlayer testVideoPlayer;
+    //Disable video playback completely by setting videoFilename to null
+    private final String videoFilename;
+    //private final TestVideoPlayer testVideoPlayer;
+    private MVideoPlayer mVideoPlayer;
 
     @SuppressLint("ApplySharedPref")
     public GLRExampleVR(final Context context, final GvrApi gvrApi, boolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
                         boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT, boolean MESH,int SPHERE_MODE){
         mContext=context;
         //Only create video surface/ start video Player if rendering one of both spheres
-        PLAY_VIDEO=SPHERE_MODE!=SPHERE_MODE_NONE;
-        if(PLAY_VIDEO){
-            //Switch between Android Media player and LiveVideo10ms Core Video player
+        if(SPHERE_MODE!=SPHERE_MODE_NONE){
             if(SPHERE_MODE==SPHERE_MODE_GVR_EQUIRECTANGULAR){
-                //testVideoPlayer=new TestVideoPlayer(context,true,"360DegreeVideos/testRoom1_1920Mono.mp4");
-                //testVideoPlayer=new TestVideoPlayer(context,true,"360DegreeVideos/paris_by_diego.mp4");
-                testVideoPlayer=new TestVideoPlayer(context,true,"360DegreeVideos/testRoom1_1920Mono.mp4");
+                videoFilename="360DegreeVideos/testRoom1_1920Mono.mp4";
             }else{
-                //testVideoPlayer=new TestVideoPlayer(context,false,"360DegreeVideos/360_test.h264");
-                testVideoPlayer=new TestVideoPlayer(context,false,"360DegreeVideos/video360.h264");
+                videoFilename="360DegreeVideos/video360.h264";
             }
         }else{
-            testVideoPlayer=null;
+            videoFilename=null;
         }
 
         nativeRenderer=nativeConstruct(context,
@@ -87,13 +77,11 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         int mGLTextureVideo=0;
-        if(PLAY_VIDEO){
+        if(videoFilename!=null){
             int[] videoTexture=new int[1];
             GLES20.glGenTextures(1, videoTexture, 0);
             mGLTextureVideo = videoTexture[0];
             displayTexture=new SurfaceTexture(mGLTextureVideo,false);
-            videoSurface=new Surface(displayTexture);
-            testVideoPlayer.setSurfaceAndStart(videoSurface);
         }
         nativeOnSurfaceCreated(nativeRenderer,mContext,mGLTextureVideo);
     }
@@ -105,20 +93,26 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        if(PLAY_VIDEO)displayTexture.updateTexImage();
+        startVideoPlayerIfNotAlreadyRunning();
+        if(displayTexture!=null)displayTexture.updateTexImage();
         nativeOnDrawFrame(nativeRenderer);
     }
 
-    public void onPause(){
 
+    public synchronized void onPause(){
+        System.out.println("onPause()");
+        if(mVideoPlayer!=null){
+            mVideoPlayer.stop();
+            mVideoPlayer=null;
+        }
     }
 
-    public void onResume(){
-
-    }
-
-    public void end(){
-        if(PLAY_VIDEO)testVideoPlayer.end();
+    private synchronized void startVideoPlayerIfNotAlreadyRunning(){
+        if(videoFilename!=null && mVideoPlayer==null){
+            Surface mVideoSurface=new Surface(displayTexture);
+            mVideoPlayer=new MVideoPlayer(mContext,videoFilename,mVideoSurface,null);
+            mVideoPlayer.start();
+        }
     }
 
     @Override

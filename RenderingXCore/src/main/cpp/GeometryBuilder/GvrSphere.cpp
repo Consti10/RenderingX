@@ -4,10 +4,7 @@
 
 #include "GvrSphere.h"
 
-#include <iostream>
-#include <iomanip>
 #include <cmath>
-#include <sstream>
 
 constexpr auto TAG="GvrSphere";
 
@@ -50,19 +47,19 @@ std::vector<GvrSphere::Vertex> GvrSphere::createUvSphere(
     for (int j = 0; j < latitudes; ++j) { // For each horizontal triangle strip.
         // Each latitude band lies between the two phi values. Each vertical edge on a band lies on
         // a theta value.
-        float phiLow = (quadHeightRads * j - verticalFovRads / 2);
-        float phiHigh = (quadHeightRads * (j + 1) - verticalFovRads / 2);
+        const float phiLow = (quadHeightRads * j - verticalFovRads / 2);
+        const float phiHigh = (quadHeightRads * (j + 1) - verticalFovRads / 2);
 
         for (int i = 0; i < longitudes + 1; ++i) { // For each vertical edge in the band.
             for (int k = 0; k < 2; ++k) { // For low and high points on an edge.
                 // For each point, determine it's position in polar coordinates.
-                float phi = (k == 0) ? phiLow : phiHigh;
-                float theta = quadWidthRads * i + (float) PI - horizontalFovRads / 2;
+                const float phi = (k == 0) ? phiLow : phiHigh;
+                const float theta = quadWidthRads * i + (float) PI - horizontalFovRads / 2;
 
                 // Set vertex position data as Cartesian coordinates.
-                vertexData[v].x = -(float) (radius * sin(theta) * cos(phi));
-                vertexData[v].y =  (float) (radius * sin(phi));
-                vertexData[v].z =  (float) (radius * cos(theta) * cos(phi));
+                vertexData[v].x = -(float) (radius * std::sin(theta) * std::cos(phi));
+                vertexData[v].y =  (float) (radius * std::sin(phi));
+                vertexData[v].z =  (float) (radius * std::cos(theta) * std::cos(phi));
                 //vertexData[v].y =  (float) (radius * sin(theta) * sin(phi));
                 //vertexData[v].z =  (float) (radius * cos(theta));
 

@@ -188,7 +188,7 @@ void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, b
 
 #define JNI_METHOD(return_type, method_name) \
   JNIEXPORT return_type JNICALL              \
-      Java_constantin_renderingx_example_renderer2_GLRExampleVR_##method_name
+      Java_constantin_renderingx_example_StereoVR_GLRExampleVR_##method_name
 
 inline jlong jptr(ExampleRendererVR *p) {
     return reinterpret_cast<intptr_t>(p);

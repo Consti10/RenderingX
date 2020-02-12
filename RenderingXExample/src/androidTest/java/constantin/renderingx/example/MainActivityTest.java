@@ -11,8 +11,8 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import constantin.renderingx.core.GLESInfo.AWriteGLESInfo;
-import constantin.renderingx.example.renderer1.AExampleRendering;
-import constantin.renderingx.example.renderer2.AExampleVRRendering;
+import constantin.renderingx.example.Mono.AExampleRendering;
+import constantin.renderingx.example.StereoVR.AExampleVRRendering;
 import constantin.renderingx.example.supersync.AExampleSuperSync;
 
 //Launch Main Activity

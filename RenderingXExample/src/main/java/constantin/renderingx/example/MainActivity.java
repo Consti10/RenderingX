@@ -13,9 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -24,8 +22,8 @@ import java.util.List;
 
 import constantin.renderingx.core.GLESInfo.AWriteGLESInfo;
 import constantin.renderingx.core.GLESInfo.GLESInfo;
-import constantin.renderingx.example.renderer1.AExampleRendering;
-import constantin.renderingx.example.renderer2.AExampleVRRendering;
+import constantin.renderingx.example.Mono.AExampleRendering;
+import constantin.renderingx.example.StereoVR.AExampleVRRendering;
 import constantin.renderingx.example.supersync.AExampleSuperSync;
 
 public class MainActivity extends AppCompatActivity {

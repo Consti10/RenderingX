@@ -1,4 +1,4 @@
-package constantin.renderingx.example.renderer2;
+package constantin.renderingx.example.StereoVR;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -75,7 +75,7 @@ public class AExampleVRRendering extends AppCompatActivity {
         super.onPause();
         if(gvrLayout!=null)gvrLayout.onPause();
         if(myVRLayout!=null)myVRLayout.onPauseX();
-        renderer.end();
+        renderer.onPause();
     }
 
     @Override

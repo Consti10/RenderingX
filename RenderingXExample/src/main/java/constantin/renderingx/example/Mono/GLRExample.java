@@ -1,4 +1,4 @@
-package constantin.renderingx.example.renderer1;
+package constantin.renderingx.example.Mono;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;

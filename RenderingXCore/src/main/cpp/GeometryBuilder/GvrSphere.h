@@ -18,7 +18,7 @@
 class GvrSphere{
 public:
     enum MEDIA_FORMAT{
-    /** Standard media where a single camera frame takes up the entire media frame. */
+/** Standard media where a single camera frame takes up the entire media frame. */
    MEDIA_MONOSCOPIC = 0,
 /**
  * Stereo media where the left & right halves of the frame are rendered for the left & right eyes,

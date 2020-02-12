@@ -54,7 +54,7 @@ target_link_libraries( GLPrograms ${log-lib} android GLESv2 gvr-lib)
 ##########################################################################################################
 add_library( example-renderer
         SHARED
-        src/main/cpp/example1/example_renderer1.cpp
+        src/main/cpp/mono/example_renderer1.cpp
         src/main/cpp/example_supersync.cpp
         )
 target_link_libraries( example-renderer
@@ -71,7 +71,7 @@ target_link_libraries( example-renderer
 
 add_library( example-renderer2
         SHARED
-        src/main/cpp/example2/ExampleRendererVR.cpp
+        src/main/cpp/stereoVR/ExampleRendererVR.cpp
         ${RX_CORE_DIR}/src/main/cpp/Other/gvr_util/util.cc
         )
 target_link_libraries( example-renderer2

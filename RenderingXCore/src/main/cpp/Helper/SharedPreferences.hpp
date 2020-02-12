@@ -11,7 +11,7 @@
 
 ///Example reading values
 ///SharedPreferences sharedPref(env,context,"pref_telemetry");
-///T_Protocol=sharedPref.getInt(IDT::T_Protocol);
+///T_Protocol=sharedPref.getInt("T_Protocol");
 ///Example writing values
 ///SharedPreferences_Editor editor=sharedPref.edit();
 ///editor.putString("MY_KEY","HELLO");

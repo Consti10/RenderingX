@@ -29,9 +29,9 @@
             android:screenOrientation="landscape"
             android:theme="@style/MyStyleFullscreen" />
         <activity
-            android:name="constantin.renderingx.example.renderer1.AExampleRendering"
+            android:name="constantin.renderingx.example.Mono.AExampleRendering"
             android:theme="@style/MyStyleNoActionBar" />
-        <activity android:name="constantin.renderingx.example.renderer2.AExampleVRRendering"
+        <activity android:name="constantin.renderingx.example.StereoVR.AExampleVRRendering"
             android:theme="@style/MyStyleFullscreen"
             android:screenOrientation="landscape">
         </activity>
