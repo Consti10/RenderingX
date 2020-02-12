@@ -30,6 +30,8 @@ public:
  * respectively. If the stereo media is rendered in a non-VR display, only the top half is used.
  */
     MEDIA_STEREO_TOP_BOTTOM = 2,
+    //TODO
+    MEDIA_DUAL_FISHEYE=3
     };
 // The vertex contains texture coordinates for both the left & right eyes. If the scene is
 // rendered in VR, the appropriate part of the vertex will be selected at runtime. For a mono

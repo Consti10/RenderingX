@@ -70,6 +70,18 @@ public:
             ret.push_back(v);
         }
         return ret;
+        /*float radius=1.0f;
+        float latitudes=128;
+        float longitudes=36;
+        const auto vertexDataAsInGvr=UvSphere::createUvSphere(radius,latitudes,longitudes,180,360,UvSphere::MEDIA_DUAL_FISHEYE);
+        std::vector<GLProgramTexture::Vertex> ret;
+        for(const auto& vertex:vertexDataAsInGvr){
+            GLProgramTexture::Vertex v{
+                    vertex.x,vertex.y,vertex.z,vertex.u_left,vertex.v_left
+            };
+            ret.push_back(v);
+        }
+        return ret;*/
     }
 };
 

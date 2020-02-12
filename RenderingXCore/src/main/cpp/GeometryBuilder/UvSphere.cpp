@@ -86,6 +86,10 @@ std::vector<UvSphere::Vertex> UvSphere::createUvSphere(
                     vertexData[v].v_left = 1 - (j + k) * quadHeightRads / verticalFovRads;
                     vertexData[v].v_right = vertexData[v].v_left;
                 }
+                if(mediaFormat==MEDIA_DUAL_FISHEYE){
+                    vertexData[v].u_left=i * quadWidthRads / horizontalFovRads;
+                    vertexData[v].v_left=1 - (j + k) * quadHeightRads / verticalFovRads;
+                }
 
                 v++;
 
