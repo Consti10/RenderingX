@@ -58,8 +58,8 @@ public:
     static std::vector<GLProgramTexture::Vertex>
     createSphereDualFisheyeInsta360() {
         float radius=1.0f;
-        float latitudes=100;
-        float longitudes=18;
+        float latitudes=128;
+        float longitudes=36;
         const auto vertexDataAsInGvr=GvrSphere::createUvSphere(radius,latitudes,longitudes,180,360,GvrSphere::MEDIA_MONOSCOPIC);
         std::vector<GLProgramTexture::Vertex> ret;
         for(const auto& vertex:vertexDataAsInGvr){

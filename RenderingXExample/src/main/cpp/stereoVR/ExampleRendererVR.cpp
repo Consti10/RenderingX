@@ -59,7 +59,7 @@ void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context,int videoT
     DualFisheyeSphere::uploadSphereGL(mSphereDualFisheye2,2560,1280);
     //create the gvr sphere
     mGvrSphereB.initializeAndUploadGL(
-            SphereBuilder::createSphereEquirectangularMonoscopic(1.0,72,18),GL_TRIANGLE_STRIP);
+            SphereBuilder::createSphereEquirectangularMonoscopic(1.0,72,36),GL_TRIANGLE_STRIP);
     //create the green and blue mesh
     float tesselatedRectSize=2.5; //6.2f
     const float offsetY=0.0f;
