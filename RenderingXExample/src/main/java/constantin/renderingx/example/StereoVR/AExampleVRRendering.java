@@ -8,8 +8,10 @@ import android.os.Environment;
 
 import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrLayout;
+import com.google.vr.sdk.base.GvrView;
 
 import constantin.renderingx.core.FullscreenHelper;
+import constantin.renderingx.core.MyEGLConfigChooser;
 import constantin.renderingx.core.MyVRLayout;
 
 public class AExampleVRRendering extends AppCompatActivity {
@@ -68,14 +70,17 @@ public class AExampleVRRendering extends AppCompatActivity {
         super.onResume();
         if(gvrLayout!=null)gvrLayout.onResume();
         if(myVRLayout!=null)myVRLayout.onResumeX();
+        gLView.onResume();
+        renderer.onActivityResumed();
     }
 
     @Override
     protected void onPause(){
         super.onPause();
+        gLView.onPause();
         if(gvrLayout!=null)gvrLayout.onPause();
         if(myVRLayout!=null)myVRLayout.onPauseX();
-        renderer.onPause();
+        renderer.onActivityPaused();
     }
 
     @Override

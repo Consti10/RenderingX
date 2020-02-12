@@ -37,7 +37,7 @@ class ExampleRendererVR{
 public:
     //Since blending is enabled, when selecting both rendering modes simultaneously the visual difference between them
     //can be observed when only rendering the 2D Mesh (the mesh is rendered with a smaller line width the second time)
-    //When rendering any sphere you should only use one of the two rendering methods since the first one will be overwritten
+    //When rendering any 360 sphere you should only use one of the two rendering methods since the first one will be overwritten
     const bool RENDER_SCENE_USING_GVR_RENDERBUFFER;
     const bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT;
     const bool ENABLE_SCENE_MESH_2D;
@@ -74,11 +74,10 @@ private:
     void updateBufferViewports();
     FPSCalculator mFPSCalculator;
     std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
-    std::unique_ptr<GLProgramTexture> mGLProgramTexture=nullptr;
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt=nullptr;
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt2=nullptr;
-    GLuint mTexture360Image;
-    GLuint mTexture360ImageInsta360;
+    //GLuint mTexture360Image;
+    //GLuint mTexture360ImageInsta360;
     GLuint mVideoTexture;
     VertexBuffer mGvrSphereMappedB;
     VertexBuffer mGvrSphereB;

@@ -15,7 +15,7 @@
 //U,Vs map to an Equirectangular image
 //https://en.wikipedia.org/wiki/Equirectangular_projection
 
-class GvrSphere{
+class UvSphere{
 public:
     enum MEDIA_FORMAT{
 /** Standard media where a single camera frame takes up the entire media frame. */
@@ -54,7 +54,7 @@ public:
   * @param mediaFormat A MEDIA_* value.
   * @return  std::vector of type GvrSphere::Vertex
   */
-    static std::vector<GvrSphere::Vertex> createUvSphere(
+    static std::vector<UvSphere::Vertex> createUvSphere(
             float radius,
             int latitudes,
             int longitudes,

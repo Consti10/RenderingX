@@ -10,12 +10,14 @@
 #include "Color/Color.hpp"
 #include <array>
 
+//Create vertex/index buffers for drawing colored geometry
 class ColoredGeometry {
 public:
-    static const void makeColoredLine(GLProgramVC::Vertex array[],const int arrayOffset,const glm::vec3& point1,const glm::vec3& point2,
-                                      const TrueColor color1,const TrueColor color2){
-        auto& p0=array[arrayOffset];
-        auto& p1=array[arrayOffset+1];
+    //Needs at least space for 2 more vertices at array*
+    static const void makeColoredLine(GLProgramVC::Vertex* array,const glm::vec3& point1,const glm::vec3& point2,
+            const TrueColor color1,const TrueColor color2){
+        auto& p0=array[0];
+        auto& p1=array[1];
         p0.x=point1[0];
         p0.y=point1[1];
         p0.z=point1[2];
@@ -25,12 +27,12 @@ public:
         p1.z=point2[2];
         p1.colorRGBA=color2;
     };
-    static const void makeColoredTriangle(GLProgramVC::Vertex array[],const int arrayOffset,
-                                              const glm::vec3& point1,const glm::vec3& point2,const glm::vec3& point3,
+    //Needs at least space for 3 more vertices at array*
+    static const void makeColoredTriangle(GLProgramVC::Vertex array[],const glm::vec3& point1,const glm::vec3& point2,const glm::vec3& point3,
                                           const TrueColor color1,const TrueColor color2,const TrueColor color3) {
-        auto& p0=array[arrayOffset];
-        auto& p1=array[arrayOffset+1];
-        auto& p2=array[arrayOffset+2];
+        auto& p0=array[0];
+        auto& p1=array[1];
+        auto& p2=array[2];
         p0.x = point1[0];
         p0.y = point1[1];
         p0.z = point1[2];
@@ -44,24 +46,13 @@ public:
         p2.z = point3[2];
         p2.colorRGBA = color3;
     };
-    static const void makeColoredRect(GLProgramVC::Vertex array[],const glm::vec3& point,const glm::vec3& width,const glm::vec3& height,const TrueColor color){
-        glm::vec3 p1=glm::vec3(point[0],point[1],point[2]);
-        glm::vec3 p2=glm::vec3(point[0]+height[0],point[1]+height[1],point[2]+height[2]);
-        glm::vec3 p3=glm::vec3(point[0]+height[0]+width[0],point[1]+height[1]+width[1],point[2]+height[2]+width[2]);
-        glm::vec3 p4=glm::vec3(point[0],point[1],point[2]);
-        glm::vec3 p5=glm::vec3(point[0]+height[0]+width[0],point[1]+height[1]+width[1],point[2]+height[2]+width[2]);
-        glm::vec3 p6=glm::vec3(point[0]+width[0],point[1]+width[1],point[2]+width[2]);
-        makeColoredTriangle(array,0,p1,p2,p3,color,color,color);
-        makeColoredTriangle(array,3,p4,p5,p6,color,color,color);
-    };
-
+    //Needs at least space for 3 more vertices at array*
     static const void makeColoredTriangle1(GLProgramVC::Vertex array[],const glm::vec3& point,const float width,const float height,const TrueColor color) {
         glm::vec3 p1=glm::vec3(point[0],point[1],point[2]);
         glm::vec3 p2=glm::vec3(point[0]+width,point[1],point[2]);
         glm::vec3 p3=glm::vec3(point[0]+width/2.0f,point[1]+height,point[2]);
-        makeColoredTriangle(array,0,p1,p2,p3,color,color,color);
+        makeColoredTriangle(array,p1,p2,p3,color,color,color);
     }
-
 private:
     //Creates the vertices forming a Grid with
     //N row(s)==tessellation and N column(s)==tessellation. Example:
@@ -163,11 +154,11 @@ public:
     static const void makeOutlineQuadWithLines(GLProgramVC::Vertex array[],const float mX,const float mY,const float mZ,const float quadWith,const float quadHeight,
                                                const TrueColor color){
         //left and right
-        makeColoredLine(array, 0 * 2, glm::vec3(mX, mY, mZ), glm::vec3(mX, mY + quadHeight, mZ),color, color);
-        makeColoredLine(array, 1 * 2, glm::vec3(mX + quadWith, mY, mZ),glm::vec3(mX + quadWith, mY + quadHeight, mZ), color, color);
+        makeColoredLine(&array[0 * 2], glm::vec3(mX, mY, mZ), glm::vec3(mX, mY + quadHeight, mZ),color, color);
+        makeColoredLine(&array[1 * 2], glm::vec3(mX + quadWith, mY, mZ),glm::vec3(mX + quadWith, mY + quadHeight, mZ), color, color);
         //top and bottom
-        makeColoredLine(array, 2 * 2, glm::vec3(mX, mY + quadHeight, mZ),glm::vec3(mX + quadWith, mY + quadHeight, mZ), color, color);
-        makeColoredLine(array, 3 * 2, glm::vec3(mX, mY, mZ), glm::vec3(mX + quadWith, mY, mZ),color, color);
+        makeColoredLine(&array[2 * 2], glm::vec3(mX, mY + quadHeight, mZ),glm::vec3(mX + quadWith, mY + quadHeight, mZ), color, color);
+        makeColoredLine(&array[3 * 2], glm::vec3(mX, mY, mZ), glm::vec3(mX + quadWith, mY, mZ),color, color);
     }
     static const void makeBackgroundRect(GLProgramVC::Vertex array[],const glm::vec3& point,const float width,const float height,const TrueColor color1,const TrueColor color2){
         //p4    p1
@@ -178,10 +169,10 @@ public:
         glm::vec3 p3=glm::vec3(point.x,point.y,point.z);
         glm::vec3 p4=glm::vec3(point.x,point.y+height,point.z);
         glm::vec3 p5=glm::vec3(point.x+width/2.0f,point.y+height/2.0f,point.z);
-        makeColoredTriangle(array,0*3,p5,p1,p4,color1,color2,color2);
-        makeColoredTriangle(array,1*3,p5,p1,p2,color1,color2,color2);
-        makeColoredTriangle(array,2*3,p5,p2,p3,color1,color2,color2);
-        makeColoredTriangle(array,3*3,p5,p4,p3,color1,color2,color2);
+        makeColoredTriangle(&array[0*3],p5,p1,p4,color1,color2,color2);
+        makeColoredTriangle(&array[1*3],p5,p1,p2,color1,color2,color2);
+        makeColoredTriangle(&array[2*3],p5,p2,p3,color1,color2,color2);
+        makeColoredTriangle(&array[3*3],p5,p4,p3,color1,color2,color2);
     };
     static std::vector<GLProgramVC::Vertex> makeDebugCoordinateSystemLines(const unsigned int tessellation=1){
         std::vector<GLProgramVC::Vertex> ret;
@@ -193,10 +184,10 @@ public:
             const float x=(-size/2.f)+i*stepSize;
             const float x2=(-size/2.f)+(i+1)*stepSize;
             GLProgramVC::Vertex line[2];
-            ColoredGeometry::makeColoredLine(line,0,glm::vec3(x,0,0),glm::vec3(x2,0,0),color,color);
+            ColoredGeometry::makeColoredLine(line,glm::vec3(x,0,0),glm::vec3(x2,0,0),color,color);
             ret.push_back(line[0]);
             ret.push_back(line[1]);
-            ColoredGeometry::makeColoredLine(line,0,glm::vec3(0,x,0),glm::vec3(0,x2,0),color,color);
+            ColoredGeometry::makeColoredLine(line,glm::vec3(0,x,0),glm::vec3(0,x2,0),color,color);
             ret.push_back(line[0]);
             ret.push_back(line[1]);
         }

@@ -10,6 +10,7 @@
 
 #include <utility>
 
+//Create vertex/index buffers for drawing textured geometry
 class TexturedGeometry {
 private:
     static std::vector<GLProgramTexture::Vertex> createGridVertices(const unsigned int tessellation,const glm::vec3& point,float width,float height,const float uOffset,

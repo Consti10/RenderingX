@@ -8,7 +8,7 @@
 #include <MatrixHelper.h>
 #include <array>
 #include <GeometryBuilder/DualFisheyeSphere.hpp>
-#include <GeometryBuilder/GvrSphere.h>
+#include <GeometryBuilder/UvSphere.h>
 #include <GeometryBuilder/CardboardViewportOcclusion.h>
 #include <SphereBuilder.hpp>
 
@@ -45,11 +45,10 @@ void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context,int videoT
     mGLProgramTextureExt=std::make_unique<GLProgramTextureExt>(&distortionManager);
     mGLProgramTextureExt2=std::make_unique<GLProgramTextureExt>(&distortionManager,true);
     mVideoTexture=(GLuint)videoTexture;
-    mGLProgramTexture=std::make_unique<GLProgramTexture>(false,&distortionManager);
-    glGenTextures(1,&mTexture360Image);
+    /*glGenTextures(1,&mTexture360Image);
     glGenTextures(1,&mTexture360ImageInsta360);
     GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
-    GLProgramTexture::loadTexture(mTexture360ImageInsta360,env,context,"360DegreeImages/insta_360_equirectangular.png");
+    GLProgramTexture::loadTexture(mTexture360ImageInsta360,env,context,"360DegreeImages/insta_360_equirectangular.png");*/
     //create the insta360 sphere
     mGvrSphereMappedB.initializeGL();
     mGvrSphereMappedB.initializeAndUploadGL(

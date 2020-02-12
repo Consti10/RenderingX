@@ -2,7 +2,7 @@
 // Created by Consti10 on 24/09/2019.
 //
 
-#include "GvrSphere.h"
+#include "UvSphere.h"
 
 #include <cmath>
 
@@ -15,7 +15,7 @@ static double Math_toRadians(double degrees){
     return (degrees * PI) / 180.0;
 }
 
-std::vector<GvrSphere::Vertex> GvrSphere::createUvSphere(
+std::vector<UvSphere::Vertex> UvSphere::createUvSphere(
         float radius,
         int latitudes,
         int longitudes,
@@ -38,7 +38,7 @@ std::vector<GvrSphere::Vertex> GvrSphere::createUvSphere(
     // Each latitude strip has 2 * (longitudes quads + extra edge) vertices + 2 degenerate vertices.
     int vertexCount = (2 * (longitudes + 1) + 2) * latitudes;
     // Buffer to return.
-    std::vector<GvrSphere::Vertex> vertexData(vertexCount);
+    std::vector<UvSphere::Vertex> vertexData(vertexCount);
 
     // Generate the data for the sphere which is a set of triangle strips representing each
     // latitude band.

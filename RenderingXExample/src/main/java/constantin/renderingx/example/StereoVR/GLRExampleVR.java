@@ -10,13 +10,16 @@ import android.view.Surface;
 import com.google.vr.ndk.base.GvrApi;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import constantin.renderingx.core.IActivityPauseResume;
+import constantin.renderingx.core.MyVRLayout;
 import constantin.renderingx.core.MyVrHeadsetParams;
 import constantin.renderingx.example.MVideoPlayer;
 
 
 //See native code for documentation
 
-public class GLRExampleVR implements GLSurfaceView.Renderer{
+public class GLRExampleVR implements GLSurfaceView.Renderer, IActivityPauseResume {
     public static final int SPHERE_MODE_NONE=0;
     public static final int SPHERE_MODE_GVR_EQUIRECTANGULAR=1;
     public static final int SPHERE_MODE_INSTA360_TEST=2;
@@ -76,12 +79,14 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        int mGLTextureVideo=0;
+        final int mGLTextureVideo;
         if(videoFilename!=null){
             int[] videoTexture=new int[1];
             GLES20.glGenTextures(1, videoTexture, 0);
             mGLTextureVideo = videoTexture[0];
             displayTexture=new SurfaceTexture(mGLTextureVideo,false);
+        }else{
+            mGLTextureVideo=0;
         }
         nativeOnSurfaceCreated(nativeRenderer,mContext,mGLTextureVideo);
     }
@@ -98,9 +103,12 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
         nativeOnDrawFrame(nativeRenderer);
     }
 
+    @Override
+    public void onActivityResumed() {
+    }
 
-    public synchronized void onPause(){
-        System.out.println("onPause()");
+    @Override
+    public void onActivityPaused() {
         if(mVideoPlayer!=null){
             mVideoPlayer.stop();
             mVideoPlayer=null;
@@ -108,6 +116,7 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
     }
 
     private synchronized void startVideoPlayerIfNotAlreadyRunning(){
+        //System.out.println("startVideoPlayerIfNotAlreadyRunning()");
         if(videoFilename!=null && mVideoPlayer==null){
             Surface mVideoSurface=new Surface(displayTexture);
             mVideoPlayer=new MVideoPlayer(mContext,videoFilename,mVideoSurface,null);
@@ -123,5 +132,4 @@ public class GLRExampleVR implements GLSurfaceView.Renderer{
             super.finalize();
         }
     }
-
 }

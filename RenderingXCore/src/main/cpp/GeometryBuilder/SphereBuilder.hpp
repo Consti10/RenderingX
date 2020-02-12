@@ -5,7 +5,7 @@
 #ifndef RENDERINGX_SPHEREBUILDER_H
 #define RENDERINGX_SPHEREBUILDER_H
 
-#include <GvrSphere.h>
+#include <UvSphere.h>
 #include "../GLPrograms/GLProgramTexture.h"
 
 class SphereBuilder{
@@ -43,7 +43,7 @@ public:
     //
     static std::vector<GLProgramTexture::Vertex>
     createSphereEquirectangularMonoscopic(float radius=1.0f, int latitudes=72, int longitudes=18) {
-        const auto vertexDataAsInGvr=GvrSphere::createUvSphere(radius,latitudes,longitudes,180,360,GvrSphere::MEDIA_MONOSCOPIC);
+        const auto vertexDataAsInGvr=UvSphere::createUvSphere(radius,latitudes,longitudes,180,360,UvSphere::MEDIA_MONOSCOPIC);
         std::vector<GLProgramTexture::Vertex> ret;
         for(const auto& vertex:vertexDataAsInGvr){
             GLProgramTexture::Vertex v{
@@ -60,7 +60,7 @@ public:
         float radius=1.0f;
         float latitudes=128;
         float longitudes=36;
-        const auto vertexDataAsInGvr=GvrSphere::createUvSphere(radius,latitudes,longitudes,180,360,GvrSphere::MEDIA_MONOSCOPIC);
+        const auto vertexDataAsInGvr=UvSphere::createUvSphere(radius,latitudes,longitudes,180,360,UvSphere::MEDIA_MONOSCOPIC);
         std::vector<GLProgramTexture::Vertex> ret;
         for(const auto& vertex:vertexDataAsInGvr){
             const auto d=equirect_to_insta360(vertex.u_left,vertex.v_left);
