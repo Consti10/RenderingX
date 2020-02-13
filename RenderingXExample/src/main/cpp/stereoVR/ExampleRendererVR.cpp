@@ -175,7 +175,7 @@ void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, b
         mGLProgramTextureExt2->drawX(mVideoTexture,viewM*modelMatrix,projM,mGvrSphereB);
     }
     if(M_SPHERE_MODE==SPHERE_MODE_INSTA360_TEST2){
-        glm::mat4x4 modelMatrix=glm::rotate(glm::mat4(1.0F),glm::radians(0.0F), glm::vec3(0,0,-1));
+        glm::mat4x4 modelMatrix=glm::rotate(glm::mat4(1.0F),glm::radians(90.0F), glm::vec3(0,0,-1));
         mGLProgramTextureExt->drawX(mVideoTexture,viewM*modelMatrix,projM,mGvrSphereMappedB);
     }
     if(occlusion){
