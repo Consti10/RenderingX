@@ -6,6 +6,7 @@ import android.graphics.SurfaceTexture;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Surface;
 
 import com.google.vr.ndk.base.GvrApi;
@@ -19,6 +20,11 @@ import constantin.renderingx.core.MyVRLayout;
 import constantin.renderingx.example.MVideoPlayer;
 
 public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTextureAvailable {
+    private static final String TAG="AExampleVRRendering";
+    public static final int SPHERE_MODE_NONE=0;
+    public static final int SPHERE_MODE_GVR_EQUIRECTANGULAR=1;
+    public static final int SPHERE_MODE_INSTA360_TEST=2;
+    public static final int SPHERE_MODE_INSTA360_TEST2=3;
     private GLSurfaceView gLView;
     private GLRExampleVR renderer;
     //Use one of both
@@ -33,10 +39,7 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
     private String videoFilename=null;
     //private final TestVideoPlayer testVideoPlayer;
     private MVideoPlayer mVideoPlayer;
-    public static final int SPHERE_MODE_NONE=0;
-    public static final int SPHERE_MODE_GVR_EQUIRECTANGULAR=1;
-    public static final int SPHERE_MODE_INSTA360_TEST=2;
-    public static final int SPHERE_MODE_INSTA360_TEST2=3;
+    private SurfaceTexture surfaceTexture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +94,11 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
         if(gvrLayout!=null)gvrLayout.onResume();
         if(myVRLayout!=null)myVRLayout.onResumeX();
         gLView.onResume();
+        if(videoFilename!=null && surfaceTexture!=null && mVideoPlayer==null){
+            Surface mVideoSurface=new Surface(surfaceTexture);
+            mVideoPlayer=new MVideoPlayer(this,videoFilename,mVideoSurface,null);
+            mVideoPlayer.start();
+        }
     }
 
     @Override
@@ -122,10 +130,15 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture) {
+        if(this.surfaceTexture!=null){
+            Log.d(TAG,"Error onSurfaceTextureAvailable called multiple times");
+            throw new RuntimeException("Error onSurfaceTextureAvailable called multiple times");
+        }
         if(videoFilename!=null && mVideoPlayer==null){
             Surface mVideoSurface=new Surface(surfaceTexture);
             mVideoPlayer=new MVideoPlayer(this,videoFilename,mVideoSurface,null);
             mVideoPlayer.start();
         }
+        this.surfaceTexture=surfaceTexture;
     }
 }
