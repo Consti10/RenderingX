@@ -26,7 +26,6 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
     public static final int SPHERE_MODE_INSTA360_TEST=2;
     public static final int SPHERE_MODE_INSTA360_TEST2=3;
     private GLSurfaceView gLView;
-    private GLRExampleVR renderer;
     //Use one of both
     private static final boolean USE_GVR_LAYOUT=false;
     private GvrLayout gvrLayout;
@@ -61,12 +60,13 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
 
         gLView = new GLSurfaceView(this);
         gLView.setEGLContextClientVersion(2);
+        final GLRExampleVR renderer;
         if(MODE==0){
-            renderer=new GLRExampleVR(this, this,gvrApi,true,
+            renderer =new GLRExampleVR(this, this,gvrApi,true,
                     true,true,SPHERE_MODE_NONE);
             videoFilename=null;
         }else{
-            renderer=new GLRExampleVR(this,this, gvrApi,false,
+            renderer =new GLRExampleVR(this,this, gvrApi,false,
                     true,false,MODE);
             //Only create video surface/ start video Player if rendering one of both spheres
             if(MODE==SPHERE_MODE_GVR_EQUIRECTANGULAR){
@@ -77,6 +77,7 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
         }
         gLView.setRenderer(renderer);
         gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+        gLView.setPreserveEGLContextOnPause(true);
 
         if(USE_GVR_LAYOUT){
             setContentView(gvrLayout);
@@ -131,7 +132,6 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture) {
         if(this.surfaceTexture!=null){
-            Log.d(TAG,"Error onSurfaceTextureAvailable called multiple times");
             throw new RuntimeException("Error onSurfaceTextureAvailable called multiple times");
         }
         if(videoFilename!=null && mVideoPlayer==null){

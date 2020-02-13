@@ -43,7 +43,8 @@ public class GLRExampleVR implements GLSurfaceView.Renderer {
 
     private final Context mContext;
     private final long nativeRenderer;
-    //When iSurfacetextureAvailable!= nullptr create a video surface texture and call the interface
+    //When iSurfaceTextureAvailable!= null create a video surface texture and then call the interface
+    //Else, no video surface texture is created and the callback is not called
     private final @Nullable ISurfaceTextureAvailable iSurfaceTextureAvailable;
     private @Nullable SurfaceTexture displayTexture=null;
 
