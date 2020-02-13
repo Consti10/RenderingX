@@ -113,7 +113,7 @@ private:
             s<<"gl_FragColor = texture2D(sTexture,vTexCoord);\n";
         }
         //s<<"if(invisibleFragment>=0.9){";
-        //s<<"gl_FragColor=vec4(1.0,0.0,0.0,1.0);";
+        //s<<"gl_FragColor=vec4(1.0,0.0,0.0,1.0);\n";
         //s<<"}";
 #ifdef WIREFRAME
         s<<"gl_FragColor.rgb=vec3(1.0,1.0,1.0);\n";

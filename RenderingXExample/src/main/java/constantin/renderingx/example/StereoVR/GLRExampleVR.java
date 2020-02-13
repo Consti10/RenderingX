@@ -7,22 +7,21 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.view.Surface;
 
+import androidx.annotation.Nullable;
+
 import com.google.vr.ndk.base.GvrApi;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import constantin.renderingx.core.IActivityPauseResume;
+import constantin.renderingx.core.ISurfaceTextureAvailable;
 import constantin.renderingx.core.MyVrHeadsetParams;
 import constantin.renderingx.example.MVideoPlayer;
 
 
 //See native code for documentation
 
-public class GLRExampleVR implements GLSurfaceView.Renderer, IActivityPauseResume {
-    public static final int SPHERE_MODE_NONE=0;
-    public static final int SPHERE_MODE_GVR_EQUIRECTANGULAR=1;
-    public static final int SPHERE_MODE_INSTA360_TEST=2;
-    public static final int SPHERE_MODE_INSTA360_TEST2=3;
+public class GLRExampleVR implements GLSurfaceView.Renderer {
     static {
         System.loadLibrary("example-renderer2");
     }
@@ -44,28 +43,15 @@ public class GLRExampleVR implements GLSurfaceView.Renderer, IActivityPauseResum
 
     private final Context mContext;
     private final long nativeRenderer;
-    //initialized when Surface ready
-    private SurfaceTexture displayTexture=null;
-    //Disable video playback completely by setting videoFilename to null
-    private final String videoFilename;
-    //private final TestVideoPlayer testVideoPlayer;
-    private MVideoPlayer mVideoPlayer;
+    //When iSurfacetextureAvailable!= nullptr create a video surface texture and call the interface
+    private final @Nullable ISurfaceTextureAvailable iSurfaceTextureAvailable;
+    private @Nullable SurfaceTexture displayTexture=null;
 
     @SuppressLint("ApplySharedPref")
-    public GLRExampleVR(final Context context, final GvrApi gvrApi, boolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
+    public GLRExampleVR(final Context context,@Nullable final ISurfaceTextureAvailable iSurfaceTextureAvailable, final GvrApi gvrApi, boolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
                         boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT, boolean MESH,int SPHERE_MODE){
         mContext=context;
-        //Only create video surface/ start video Player if rendering one of both spheres
-        if(SPHERE_MODE!=SPHERE_MODE_NONE){
-            if(SPHERE_MODE==SPHERE_MODE_GVR_EQUIRECTANGULAR){
-                videoFilename="360DegreeVideos/testRoom1_1920Mono.mp4";
-            }else{
-                videoFilename="360DegreeVideos/video360.h264";
-                //videoFilename="360DegreeVideos/testRoom1_1920Mono.mp4";
-            }
-        }else{
-            videoFilename=null;
-        }
+        this.iSurfaceTextureAvailable=iSurfaceTextureAvailable;
 
         nativeRenderer=nativeConstruct(context,
                 gvrApi.getNativeGvrContext(),RENDER_SCENE_USING_GVR_RENDERBUFFER,RENDER_SCENE_USING_VERTEX_DISPLACEMENT,MESH,SPHERE_MODE);
@@ -80,11 +66,12 @@ public class GLRExampleVR implements GLSurfaceView.Renderer, IActivityPauseResum
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         final int mGLTextureVideo;
-        if(videoFilename!=null){
+        if(iSurfaceTextureAvailable!=null){
             int[] videoTexture=new int[1];
             GLES20.glGenTextures(1, videoTexture, 0);
             mGLTextureVideo = videoTexture[0];
             displayTexture=new SurfaceTexture(mGLTextureVideo,false);
+            iSurfaceTextureAvailable.onSurfaceTextureAvailable(displayTexture);
         }else{
             mGLTextureVideo=0;
         }
@@ -98,30 +85,8 @@ public class GLRExampleVR implements GLSurfaceView.Renderer, IActivityPauseResum
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        startVideoPlayerIfNotAlreadyRunning();
         if(displayTexture!=null)displayTexture.updateTexImage();
         nativeOnDrawFrame(nativeRenderer);
-    }
-
-    @Override
-    public void onActivityResumed() {
-    }
-
-    @Override
-    public void onActivityPaused() {
-        if(mVideoPlayer!=null){
-            mVideoPlayer.stop();
-            mVideoPlayer=null;
-        }
-    }
-
-    private synchronized void startVideoPlayerIfNotAlreadyRunning(){
-        //System.out.println("startVideoPlayerIfNotAlreadyRunning()");
-        if(videoFilename!=null && mVideoPlayer==null){
-            Surface mVideoSurface=new Surface(displayTexture);
-            mVideoPlayer=new MVideoPlayer(mContext,videoFilename,mVideoSurface,null);
-            mVideoPlayer.start();
-        }
     }
 
     @Override

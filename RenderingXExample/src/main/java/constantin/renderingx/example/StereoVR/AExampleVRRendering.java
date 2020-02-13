@@ -2,19 +2,23 @@ package constantin.renderingx.example.StereoVR;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.SurfaceTexture;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.Surface;
 
 import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrLayout;
 import com.google.vr.sdk.base.GvrView;
 
 import constantin.renderingx.core.FullscreenHelper;
+import constantin.renderingx.core.ISurfaceTextureAvailable;
 import constantin.renderingx.core.MyEGLConfigChooser;
 import constantin.renderingx.core.MyVRLayout;
+import constantin.renderingx.example.MVideoPlayer;
 
-public class AExampleVRRendering extends AppCompatActivity {
+public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTextureAvailable {
     private GLSurfaceView gLView;
     private GLRExampleVR renderer;
     //Use one of both
@@ -24,6 +28,15 @@ public class AExampleVRRendering extends AppCompatActivity {
 
     public static final String KEY_MODE="KEY_MODE";
     //Default mode is 0 (test VDDC)
+
+    //Disable video playback completely by setting videoFilename to null
+    private String videoFilename=null;
+    //private final TestVideoPlayer testVideoPlayer;
+    private MVideoPlayer mVideoPlayer;
+    public static final int SPHERE_MODE_NONE=0;
+    public static final int SPHERE_MODE_GVR_EQUIRECTANGULAR=1;
+    public static final int SPHERE_MODE_INSTA360_TEST=2;
+    public static final int SPHERE_MODE_INSTA360_TEST2=3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,11 +59,18 @@ public class AExampleVRRendering extends AppCompatActivity {
         gLView = new GLSurfaceView(this);
         gLView.setEGLContextClientVersion(2);
         if(MODE==0){
-            renderer=new GLRExampleVR(this, gvrApi,true,
-                    true,true,GLRExampleVR.SPHERE_MODE_NONE);
+            renderer=new GLRExampleVR(this, this,gvrApi,true,
+                    true,true,SPHERE_MODE_NONE);
+            videoFilename=null;
         }else{
-            renderer=new GLRExampleVR(this, gvrApi,false,
+            renderer=new GLRExampleVR(this,this, gvrApi,false,
                     true,false,MODE);
+            //Only create video surface/ start video Player if rendering one of both spheres
+            if(MODE==SPHERE_MODE_GVR_EQUIRECTANGULAR){
+                videoFilename="360DegreeVideos/testRoom1_1920Mono.mp4";
+            }else{
+                videoFilename="360DegreeVideos/video360.h264";
+            }
         }
         gLView.setRenderer(renderer);
         gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
@@ -71,7 +91,6 @@ public class AExampleVRRendering extends AppCompatActivity {
         if(gvrLayout!=null)gvrLayout.onResume();
         if(myVRLayout!=null)myVRLayout.onResumeX();
         gLView.onResume();
-        renderer.onActivityResumed();
     }
 
     @Override
@@ -80,7 +99,10 @@ public class AExampleVRRendering extends AppCompatActivity {
         gLView.onPause();
         if(gvrLayout!=null)gvrLayout.onPause();
         if(myVRLayout!=null)myVRLayout.onPauseX();
-        renderer.onActivityPaused();
+        if(mVideoPlayer!=null){
+            mVideoPlayer.stop();
+            mVideoPlayer=null;
+        }
     }
 
     @Override
@@ -98,4 +120,12 @@ public class AExampleVRRendering extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture) {
+        if(videoFilename!=null && mVideoPlayer==null){
+            Surface mVideoSurface=new Surface(surfaceTexture);
+            mVideoPlayer=new MVideoPlayer(this,videoFilename,mVideoSurface,null);
+            mVideoPlayer.start();
+        }
+    }
 }
