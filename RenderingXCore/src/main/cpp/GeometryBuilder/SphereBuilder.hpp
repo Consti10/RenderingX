@@ -42,8 +42,8 @@ public:
     //And here is the binding for GLProgramTexture::Vertex
     //
     static std::vector<GLProgramTexture::Vertex>
-    createSphereEquirectangularMonoscopic(float radius=1.0f, int latitudes=72, int longitudes=18) {
-        const auto vertexDataAsInGvr=UvSphere::createUvSphere(radius,latitudes,longitudes,180,360,UvSphere::MEDIA_MONOSCOPIC);
+    createSphereEquirectangularMonoscopic(float radius=1.0f, int latitudes=72, int longitudes=32) {
+        const auto vertexDataAsInGvr=UvSphere::createUvSphere(radius,latitudes,longitudes,180,360,UvSphere::MEDIA_EQUIRECT_MONOSCOPIC);
         std::vector<GLProgramTexture::Vertex> ret;
         for(const auto& vertex:vertexDataAsInGvr){
             GLProgramTexture::Vertex v{
@@ -60,7 +60,7 @@ public:
         float radius=1.0f;
         float latitudes=128;
         float longitudes=36;
-        const auto vertexDataAsInGvr=UvSphere::createUvSphere(radius,latitudes,longitudes,180,360,UvSphere::MEDIA_MONOSCOPIC);
+        const auto vertexDataAsInGvr=UvSphere::createUvSphere(radius,latitudes,longitudes,180,360,UvSphere::MEDIA_EQUIRECT_MONOSCOPIC);
         std::vector<GLProgramTexture::Vertex> ret;
         for(const auto& vertex:vertexDataAsInGvr){
             const auto d=equirect_to_insta360(vertex.u_left,vertex.v_left);
@@ -70,18 +70,6 @@ public:
             ret.push_back(v);
         }
         return ret;
-        /*float radius=1.0f;
-        float latitudes=128;
-        float longitudes=36;
-        const auto vertexDataAsInGvr=UvSphere::createUvSphere(radius,latitudes,longitudes,180,360,UvSphere::MEDIA_DUAL_FISHEYE);
-        std::vector<GLProgramTexture::Vertex> ret;
-        for(const auto& vertex:vertexDataAsInGvr){
-            GLProgramTexture::Vertex v{
-                    vertex.x,vertex.y,vertex.z,vertex.u_left,vertex.v_left
-            };
-            ret.push_back(v);
-        }
-        return ret;*/
     }
 };
 

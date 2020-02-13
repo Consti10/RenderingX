@@ -64,7 +64,7 @@ std::vector<UvSphere::Vertex> UvSphere::createUvSphere(
                 //vertexData[v].z =  (float) (radius * cos(theta));
 
                 // Set vertex texture.x data.
-                if (mediaFormat == MEDIA_STEREO_LEFT_RIGHT) {
+                if (mediaFormat == MEDIA_EQUIRECT_STEREO_LEFT_RIGHT) {
                     // For left-right media, each eye's x coordinate points to the left or right half of the
                     // texture.
                     vertexData[v].u_left = (i * quadWidthRads / horizontalFovRads) / 2;
@@ -76,7 +76,7 @@ std::vector<UvSphere::Vertex> UvSphere::createUvSphere(
                 }
 
                 // Set vertex texture.y data. The "1 - ..." is due to Canvas vs GL coords.
-                if (mediaFormat == MEDIA_STEREO_TOP_BOTTOM) {
+                if (mediaFormat == MEDIA_EQUIRECT_STEREO_TOP_BOTTOM) {
                     // For top-bottom media, each eye's y coordinate points to the top or bottom half of the
                     // texture.
                     vertexData[v].v_left = 1 - (((j + k) * quadHeightRads / verticalFovRads) / 2 + .5f);
@@ -85,10 +85,6 @@ std::vector<UvSphere::Vertex> UvSphere::createUvSphere(
                     // For left-right or monoscopic media, the eye's y spans the full height of the texture.
                     vertexData[v].v_left = 1 - (j + k) * quadHeightRads / verticalFovRads;
                     vertexData[v].v_right = vertexData[v].v_left;
-                }
-                if(mediaFormat==MEDIA_DUAL_FISHEYE){
-                    vertexData[v].u_left=i * quadWidthRads / horizontalFovRads;
-                    vertexData[v].v_left=1 - (j + k) * quadHeightRads / verticalFovRads;
                 }
 
                 v++;

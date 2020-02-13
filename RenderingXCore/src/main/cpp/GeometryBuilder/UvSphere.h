@@ -17,21 +17,20 @@
 
 class UvSphere{
 public:
+    //EQUIRECT stands for Equirectangular projection
     enum MEDIA_FORMAT{
 /** Standard media where a single camera frame takes up the entire media frame. */
-   MEDIA_MONOSCOPIC = 0,
+   MEDIA_EQUIRECT_MONOSCOPIC = 0,
 /**
  * Stereo media where the left & right halves of the frame are rendered for the left & right eyes,
  * respectively. If the stereo media is rendered in a non-VR display, only the left half is used.
  */
-    MEDIA_STEREO_LEFT_RIGHT = 1,
+    MEDIA_EQUIRECT_STEREO_LEFT_RIGHT = 1,
 /**
  * Stereo media where the top & bottom halves of the frame are rendered for the left & right eyes,
  * respectively. If the stereo media is rendered in a non-VR display, only the top half is used.
  */
-    MEDIA_STEREO_TOP_BOTTOM = 2,
-    //TODO
-    MEDIA_DUAL_FISHEYE=3
+    MEDIA_EQUIRECT_STEREO_TOP_BOTTOM = 2,
     };
 // The vertex contains texture coordinates for both the left & right eyes. If the scene is
 // rendered in VR, the appropriate part of the vertex will be selected at runtime. For a mono
