@@ -12,7 +12,6 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import constantin.renderingx.core.IActivityPauseResume;
-import constantin.renderingx.core.MyVRLayout;
 import constantin.renderingx.core.MyVrHeadsetParams;
 import constantin.renderingx.example.MVideoPlayer;
 
