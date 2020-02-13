@@ -62,6 +62,7 @@ public class GLRExampleVR implements GLSurfaceView.Renderer, IActivityPauseResum
                 videoFilename="360DegreeVideos/testRoom1_1920Mono.mp4";
             }else{
                 videoFilename="360DegreeVideos/video360.h264";
+                //videoFilename="360DegreeVideos/testRoom1_1920Mono.mp4";
             }
         }else{
             videoFilename=null;
