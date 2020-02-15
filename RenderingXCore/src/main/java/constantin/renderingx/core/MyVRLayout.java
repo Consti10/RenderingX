@@ -26,6 +26,7 @@ import static android.content.Context.POWER_SERVICE;
 //The GvrLayout does not allow users to create a 'normal' context when selected headset==Daydream
 //Simple workaround, you can use this as a drop-in replacement of GvrLayout when using your own presentationView anyway
 //(E.g. using GLSurfaceView and custom renderer)
+//TODO what is the problem with DisplaySynchronizer ? It runs okay on FPV_VR_OS, but not in RenderingXExample
 
 public class MyVRLayout extends FrameLayout {
     private static final String TAG="MyVRLayout";
@@ -94,19 +95,19 @@ public class MyVRLayout extends FrameLayout {
 
     public void onResumeX(){
         gvrApi.resumeTracking();
-        //displaySynchronizer.onResume();
+        if(displaySynchronizer!=null)displaySynchronizer.onResume();
         enableSustainedPerformanceIfPossible((Activity)getContext());
     }
 
     public void onPauseX(){
         gvrApi.pauseTracking();
-        //displaySynchronizer.onPause();
+        if(displaySynchronizer!=null)displaySynchronizer.onPause();
         disableSustainedPerformanceIfEnabled((Activity)getContext());
     }
 
     public void shutdown(){
         gvrApi.shutdown();
-        //displaySynchronizer.shutdown();
+        if(displaySynchronizer!=null)displaySynchronizer.shutdown();
     }
 
     public static void enableSustainedPerformanceIfPossible(Activity c){

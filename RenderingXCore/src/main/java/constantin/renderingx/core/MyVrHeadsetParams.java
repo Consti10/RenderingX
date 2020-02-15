@@ -44,6 +44,10 @@ public class MyVrHeadsetParams {
         ScreenWidthPixels=view.getScreenParams().getWidth();
         ScreenHeightPixels=view.getScreenParams().getHeight();
 
+        for(int i=0;i<kN.length;i++){
+            System.out.println("Keoficients "+i+" is "+kN[i]);
+        }
+
         view.shutdown();
     }
 }
