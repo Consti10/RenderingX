@@ -26,25 +26,22 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
     public static final int SPHERE_MODE_INSTA360_TEST=2;
     public static final int SPHERE_MODE_INSTA360_TEST2=3;
     private GLSurfaceView gLView;
-    //Use one of both
+    //Use one of both, either GvrLayout or MyVRLayout
     private static final boolean USE_GVR_LAYOUT=false;
     private GvrLayout gvrLayout;
     private MyVRLayout myVRLayout;
-
-    public static final String KEY_MODE="KEY_MODE";
     //Default mode is 0 (test VDDC)
-
+    public static final String KEY_MODE="KEY_MODE";
     //Disable video playback completely by setting videoFilename to null
     private String videoFilename=null;
-    //private final TestVideoPlayer testVideoPlayer;
     private MVideoPlayer mVideoPlayer;
     private SurfaceTexture surfaceTexture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        GvrApi gvrApi;
+        surfaceTexture=null;
+        final GvrApi gvrApi;
         if(USE_GVR_LAYOUT){
             gvrLayout=new GvrLayout(this);
             gvrApi =gvrLayout.getGvrApi();
@@ -54,10 +51,8 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
             myVRLayout=new MyVRLayout(this);
             gvrApi=myVRLayout.getGvrApi();
         }
-
         final Bundle bundle=getIntent().getExtras();
         final int MODE=bundle==null ? 0 : bundle.getInt(KEY_MODE,0);
-
         gLView = new GLSurfaceView(this);
         gLView.setEGLContextClientVersion(2);
         final GLRExampleVR renderer;
@@ -72,7 +67,7 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
             if(MODE==SPHERE_MODE_GVR_EQUIRECTANGULAR){
                 videoFilename="360DegreeVideos/testRoom1_1920Mono.mp4";
             }else{
-                videoFilename="360DegreeVideos/video360.h264";
+                videoFilename="360DegreeVideos/insta_webbn_1_shortened.h264";
             }
         }
         gLView.setRenderer(renderer);
@@ -130,15 +125,21 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
     }
 
     @Override
-    public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture) {
+    public void onSurfaceTextureAvailable(final SurfaceTexture surfaceTexture) {
         if(this.surfaceTexture!=null){
             throw new RuntimeException("Error onSurfaceTextureAvailable called multiple times");
         }
-        if(videoFilename!=null && mVideoPlayer==null){
-            Surface mVideoSurface=new Surface(surfaceTexture);
-            mVideoPlayer=new MVideoPlayer(this,videoFilename,mVideoSurface,null);
-            mVideoPlayer.start();
-        }
-        this.surfaceTexture=surfaceTexture;
+        final AExampleVRRendering reference=this;
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(videoFilename!=null){
+                    Surface mVideoSurface=new Surface(surfaceTexture);
+                    mVideoPlayer=new MVideoPlayer(reference,videoFilename,mVideoSurface,null);
+                    mVideoPlayer.start();
+                }
+                reference.surfaceTexture=surfaceTexture;
+            }
+        });
     }
 }
