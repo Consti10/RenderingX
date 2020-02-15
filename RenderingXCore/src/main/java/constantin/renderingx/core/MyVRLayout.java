@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.lifecycle.Lifecycle;
 
+import com.google.vr.cardboard.DisplaySynchronizer;
 import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrUiLayout;
 import com.google.vr.sdk.base.AndroidCompat;
@@ -23,13 +25,13 @@ import static android.content.Context.POWER_SERVICE;
 
 //The GvrLayout does not allow users to create a 'normal' context when selected headset==Daydream
 //Simple workaround, you can use this as a drop-in replacement of GvrLayout when using your own presentationView anyway
-//TODO do we need DisplaySynchronizer ? Its implementation seems to be broken
+//(E.g. using GLSurfaceView and custom renderer)
 
 public class MyVRLayout extends FrameLayout {
     private static final String TAG="MyVRLayout";
 
     private GvrApi gvrApi;
-    //private DisplaySynchronizer displaySynchronizer;
+    private DisplaySynchronizer displaySynchronizer;
 
     public MyVRLayout(final Context context) {
         super(context);
@@ -44,8 +46,11 @@ public class MyVRLayout extends FrameLayout {
     private void init(){
         LayoutInflater.from(getContext()).inflate(R.layout.my_vr_layout, this, true);
         //displaySynchronizer=new DisplaySynchronizer(getContext(),getDisplay());
-        gvrApi=new GvrApi(getContext(),null);
         final Activity activity=(Activity)getContext();
+        final Display display=activity.getWindowManager().getDefaultDisplay();
+        //displaySynchronizer=new DisplaySynchronizer(activity,display);
+        displaySynchronizer=null;
+        gvrApi=new GvrApi(getContext(),displaySynchronizer);
         findViewById(R.id.vr_overlay_settings_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,6 +76,14 @@ public class MyVRLayout extends FrameLayout {
         FullscreenHelper.enableImmersiveSticky(activity);
     }
 
+    //Disable / enable the UI overlay with settings button and seperator line
+    public void setVrOverlayEnabled(boolean enabled){
+        final int wantedVisibility=enabled ? VISIBLE : INVISIBLE;
+        findViewById(R.id.vr_overlay_seperator).setVisibility(wantedVisibility);
+        findViewById(R.id.vr_overlay_back_button).setVisibility(wantedVisibility);
+        findViewById(R.id.vr_overlay_settings_button).setVisibility(wantedVisibility);
+    }
+
     public GvrApi getGvrApi(){
         return gvrApi;
     }
@@ -81,16 +94,19 @@ public class MyVRLayout extends FrameLayout {
 
     public void onResumeX(){
         gvrApi.resumeTracking();
+        //displaySynchronizer.onResume();
         enableSustainedPerformanceIfPossible((Activity)getContext());
     }
 
     public void onPauseX(){
         gvrApi.pauseTracking();
+        //displaySynchronizer.onPause();
         disableSustainedPerformanceIfEnabled((Activity)getContext());
     }
 
     public void shutdown(){
         gvrApi.shutdown();
+        //displaySynchronizer.shutdown();
     }
 
     public static void enableSustainedPerformanceIfPossible(Activity c){
