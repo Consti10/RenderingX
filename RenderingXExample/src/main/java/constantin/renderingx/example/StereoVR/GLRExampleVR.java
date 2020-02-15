@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.view.Surface;
 
 import androidx.annotation.Nullable;
 
@@ -13,10 +12,8 @@ import com.google.vr.ndk.base.GvrApi;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import constantin.renderingx.core.IActivityPauseResume;
 import constantin.renderingx.core.ISurfaceTextureAvailable;
 import constantin.renderingx.core.MyVrHeadsetParams;
-import constantin.renderingx.example.MVideoPlayer;
 
 
 //See native code for documentation

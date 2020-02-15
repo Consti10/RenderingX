@@ -20,13 +20,7 @@ void VRHeadsetParams::updateHeadsetParams(const MDeviceParams &mDP,int screenWid
     this->screenHeightP=screenHeightP;
     LOGD("%s",MLensDistortion::MDeviceParamsAsString(mDP).c_str());
     mDistortion=PolynomialRadialDistortion(mDP.radial_distortion_params);
-    //Workaround for bug
-    const std::array<float,2> daydreamV2{0.4331F,-0.0856F};
-    if(mDP.radial_distortion_params.at(0)==daydreamV2[0] && mDP.radial_distortion_params.at(1)==daydreamV2[1]){
-        std::vector<float> daydreamV1{0.385F,0.593F};
-        mDistortion=PolynomialRadialDistortion(daydreamV1);
-        LOGD("Daydream v2 distortion params detected. Using v1 instead");
-    }
+    
     const auto GetYEyeOffsetMeters= MLensDistortion::GetYEyeOffsetMeters(mDP.vertical_alignment,
                                                                          mDP.tray_to_lens_distance,
                                                                          mDP.screen_height_meters);

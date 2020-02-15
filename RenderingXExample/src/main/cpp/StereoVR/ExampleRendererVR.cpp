@@ -237,13 +237,14 @@ JNI_METHOD(void, nativeUpdateHeadsetParams)
  jint screenWidthP,jint screenHeightP
 ) {
     std::array<float,4> device_fov_left1{};
-    std::vector<float> radial_distortion_params1(2);
-
     jfloat *arrayP=env->GetFloatArrayElements(device_fov_left, nullptr);
     std::memcpy(device_fov_left1.data(),&arrayP[0],4*sizeof(float));
     env->ReleaseFloatArrayElements(device_fov_left,arrayP,0);
+
+    const size_t radial_distortion_params_size=(size_t)env->GetArrayLength(radial_distortion_params);
+    std::vector<float> radial_distortion_params1(radial_distortion_params_size);
     arrayP=env->GetFloatArrayElements(radial_distortion_params, nullptr);
-    std::memcpy(radial_distortion_params1.data(),&arrayP[0],2*sizeof(float));
+    std::memcpy(radial_distortion_params1.data(),&arrayP[0],radial_distortion_params_size*sizeof(float));
     env->ReleaseFloatArrayElements(radial_distortion_params,arrayP,0);
 
     const MDeviceParams deviceParams{screen_width_meters,screen_height_meters,screen_to_lens_distance,inter_lens_distance,vertical_alignment,tray_to_lens_distance,
