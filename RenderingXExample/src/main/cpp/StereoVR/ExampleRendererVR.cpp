@@ -161,6 +161,58 @@ void ExampleRendererVR::drawEyeVDDC(gvr::Eye eye) {
     GLHelper::checkGlError("ExampleRenderer2::drawEyeVDDC2");
 }
 
+// Loads a png file from assets folder and then assigns it to the OpenGL target.
+// This method must be called from the renderer thread since it will result in
+// OpenGL calls to assign the image to the texture target.
+//
+// @param env The JNIEnv to use.
+// @param androidContext The context to obtain an AssetManager instance from
+// @param target, openGL texture target to load the image into.
+// @param path, path to the file, relative to the assets folder.
+// @return true if png is loaded correctly, otherwise false.
+/*static bool LoadPngFromAssetManager(JNIEnv* env, jobject androidContext, int target,const char* path) {
+    //Get a handle to all the needed java classes
+    jclass context_class =
+            env->FindClass("android/content/Context");
+    jclass bitmap_factory_class =
+            env->FindClass("android/graphics/BitmapFactory");
+    jclass asset_manager_class =
+            env->FindClass("android/content/res/AssetManager");
+    jclass gl_utils_class = env->FindClass("android/opengl/GLUtils");
+    //Get a handle to all the needed java methods
+    jmethodID get_asset_manager_method = env->GetMethodID(
+            context_class, "getAssets", "()Landroid/content/res/AssetManager;");
+    jmethodID decode_stream_method = env->GetStaticMethodID(
+            bitmap_factory_class, "decodeStream",
+            "(Ljava/io/InputStream;)Landroid/graphics/Bitmap;");
+    jmethodID open_method = env->GetMethodID(
+            asset_manager_class, "open", "(Ljava/lang/String;)Ljava/io/InputStream;");
+    jmethodID tex_image_2d_method = env->GetStaticMethodID(
+            gl_utils_class, "texImage2D", "(IILandroid/graphics/Bitmap;I)V");
+    //Create all the needed instance(s)
+    jobject java_asset_mgr=env->CallObjectMethod(androidContext,get_asset_manager_method);
+    jstring j_path = env->NewStringUTF(path);
+    jobject image_stream =
+            env->CallObjectMethod(java_asset_mgr, open_method, j_path);
+    jobject image_obj = env->CallStaticObjectMethod(
+            bitmap_factory_class, decode_stream_method, image_stream);
+    if (env->ExceptionOccurred() != nullptr) {
+        LOGD("Java exception while loading image");
+        env->ExceptionClear();
+        image_obj = nullptr;
+        if (j_path) {
+            env->DeleteLocalRef(j_path);
+        }
+        return false;
+    }
+    env->CallStaticVoidMethod(gl_utils_class, tex_image_2d_method, target, 0,
+                              image_obj, 0);
+    if (j_path) {
+        env->DeleteLocalRef(j_path);
+    }
+    return true;
+}*/
+
 
 void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen,bool occlusion) {
     if(ENABLE_SCENE_MESH_2D){
@@ -236,17 +288,8 @@ JNI_METHOD(void, nativeUpdateHeadsetParams)
  jfloatArray radial_distortion_params,
  jint screenWidthP,jint screenHeightP
 ) {
-    std::array<float,4> device_fov_left1{};
-    jfloat *arrayP=env->GetFloatArrayElements(device_fov_left, nullptr);
-    std::memcpy(device_fov_left1.data(),&arrayP[0],4*sizeof(float));
-    env->ReleaseFloatArrayElements(device_fov_left,arrayP,0);
-
-    const size_t radial_distortion_params_size=(size_t)env->GetArrayLength(radial_distortion_params);
-    std::vector<float> radial_distortion_params1(radial_distortion_params_size);
-    arrayP=env->GetFloatArrayElements(radial_distortion_params, nullptr);
-    std::memcpy(radial_distortion_params1.data(),&arrayP[0],radial_distortion_params_size*sizeof(float));
-    env->ReleaseFloatArrayElements(radial_distortion_params,arrayP,0);
-
+    const auto device_fov_left1=NDKHelper::javaArrayToCPP2<4>(env,device_fov_left);
+    const auto radial_distortion_params1=NDKHelper::javaArrayToVector(env,radial_distortion_params);
     const MDeviceParams deviceParams{screen_width_meters,screen_height_meters,screen_to_lens_distance,inter_lens_distance,vertical_alignment,tray_to_lens_distance,
                                      device_fov_left1,radial_distortion_params1};
     native(instancePointer)->vrHeadsetParams.updateHeadsetParams(deviceParams,screenWidthP,screenHeightP);

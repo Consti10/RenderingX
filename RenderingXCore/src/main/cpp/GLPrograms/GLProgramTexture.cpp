@@ -1,5 +1,5 @@
 
-#include <Helper/NDKHelper.h>
+#include <Helper/NDKHelper.hpp>
 #include "GLProgramTexture.h"
 
 constexpr auto TAG="GLRenderTexture(-External)";
@@ -74,7 +74,7 @@ void GLProgramTexture::loadTexture(GLuint texture,JNIEnv *env, jobject androidCo
     }*/
     //Load texture, generate mipmaps, set sampling parameters
     glBindTexture(GL_TEXTURE_2D,texture);
-    NDKHelper::uploadAssetImageToGPU(env,androidContext,name,false);
+    NDKHelper::LoadPngFromAssetManager2(env,androidContext,GL_TEXTURE_2D,name);
     glHint(GL_GENERATE_MIPMAP_HINT,GL_NICEST);
     glGenerateMipmap(GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);

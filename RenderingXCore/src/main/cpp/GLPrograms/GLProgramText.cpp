@@ -1,7 +1,7 @@
 #include "GLProgramText.h"
 #include "TextAssetsHelper.hpp"
 #include "Color/Color.hpp"
-#include "Helper/NDKHelper.h"
+#include "Helper/NDKHelper.hpp"
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #include <vector>
@@ -201,9 +201,11 @@ void  GLProgramText::loadTextRenderingData(JNIEnv *env, jobject androidContext,
     glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maxTextureSize);
 
     //upload the right signed distance field texture atlas into gpu memory
-    NDKHelper::uploadAssetImageToGPU(env,androidContext,TextAssetsHelper::getDistanceFieldNameByStyle(textStyle).c_str(),true);
+    NDKHelper::LoadPngFromAssetManager2(env,androidContext,GL_TEXTURE_2D,TextAssetsHelper::getDistanceFieldNameByStyle(textStyle),true);
+
     //load the text widths into cpu memory, as a float array
-    NDKHelper::getFloatArrayFromAssets(env,androidContext,TextAssetsHelper::getOtherDataNameByStyle(textStyle).c_str(),FONTS_WIDTHS_U,CHAR_CNT);
+    const auto tmp=NDKHelper::getFloatArrayFromAssets2<CHAR_CNT>(env,androidContext,TextAssetsHelper::getOtherDataNameByStyle(textStyle).c_str());
+    memcpy(FONTS_WIDTHS_U,tmp.data(),CHAR_CNT*sizeof(float));
 
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);

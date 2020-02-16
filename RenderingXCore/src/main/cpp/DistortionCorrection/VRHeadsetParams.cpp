@@ -20,7 +20,7 @@ void VRHeadsetParams::updateHeadsetParams(const MDeviceParams &mDP,int screenWid
     this->screenHeightP=screenHeightP;
     LOGD("%s",MLensDistortion::MDeviceParamsAsString(mDP).c_str());
     mDistortion=PolynomialRadialDistortion(mDP.radial_distortion_params);
-    
+
     const auto GetYEyeOffsetMeters= MLensDistortion::GetYEyeOffsetMeters(mDP.vertical_alignment,
                                                                          mDP.tray_to_lens_distance,
                                                                          mDP.screen_height_meters);
