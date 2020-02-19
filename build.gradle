@@ -35,6 +35,9 @@ allprojects {
         constraintlayoutVersion='1.1.3'
         androidxpreferenceVersion='1.1.0'
         mGvrVersion = '1.180.0'
+        //use same version codes for core and example
+        versionCode=3
+        versionName="3.0"
     }
 }
 
