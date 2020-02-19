@@ -65,7 +65,7 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.3.0-alpha04'
 
     implementation 'com.github.Consti10:LiveVideo10ms:v5.1'
-    //implementation project(path: ':VideoCore')
+    //old implementation project(path: ':VideoCore')
 
     implementation "com.google.vr:sdk-base:$mGvrVersion"
 }
