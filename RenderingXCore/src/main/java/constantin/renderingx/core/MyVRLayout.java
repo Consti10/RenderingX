@@ -14,7 +14,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
 
 import com.google.vr.cardboard.DisplaySynchronizer;
 import com.google.vr.ndk.base.GvrApi;
@@ -28,25 +31,31 @@ import static android.content.Context.POWER_SERVICE;
 //(E.g. using GLSurfaceView and custom renderer)
 //TODO what is the problem with DisplaySynchronizer ? It runs okay on FPV_VR_OS, but not in RenderingXExample
 
-public class MyVRLayout extends FrameLayout {
+//Uses LifecycleObserver to handle resume, pause and destroy
+//(On GvrLayout you had to call them manually from your activity)
+
+public class MyVRLayout extends FrameLayout implements LifecycleObserver {
     private static final String TAG="MyVRLayout";
 
     private GvrApi gvrApi;
     private DisplaySynchronizer displaySynchronizer;
 
+    //Context has to come from AppCompatActivity
+    //for the lifecycle observer
     public MyVRLayout(final Context context) {
         super(context);
         init();
+        ((AppCompatActivity)context).getLifecycle().addObserver(this);
     }
 
     public MyVRLayout(final Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
+        ((AppCompatActivity)context).getLifecycle().addObserver(this);
     }
 
     private void init(){
         LayoutInflater.from(getContext()).inflate(R.layout.my_vr_layout, this, true);
-        //displaySynchronizer=new DisplaySynchronizer(getContext(),getDisplay());
         final Activity activity=(Activity)getContext();
         final Display display=activity.getWindowManager().getDefaultDisplay();
         //displaySynchronizer=new DisplaySynchronizer(activity,display);
@@ -93,19 +102,22 @@ public class MyVRLayout extends FrameLayout {
         addView(presentationView,0);
     }
 
-    public void onResumeX(){
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    protected void resumeX() {
         gvrApi.resumeTracking();
         if(displaySynchronizer!=null)displaySynchronizer.onResume();
         enableSustainedPerformanceIfPossible((Activity)getContext());
     }
 
-    public void onPauseX(){
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    protected void pauseX(){
         gvrApi.pauseTracking();
         if(displaySynchronizer!=null)displaySynchronizer.onPause();
         disableSustainedPerformanceIfEnabled((Activity)getContext());
     }
 
-    public void shutdown(){
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    protected void destroyX(){
         gvrApi.shutdown();
         if(displaySynchronizer!=null)displaySynchronizer.shutdown();
     }

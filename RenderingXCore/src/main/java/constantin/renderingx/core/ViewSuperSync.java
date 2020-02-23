@@ -12,6 +12,9 @@ import android.view.Choreographer;
 import android.view.Display;
 import android.view.WindowManager;
 
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.OnLifecycleEvent;
+
 import com.google.vr.sdk.base.AndroidCompat;
 
 import java.util.Objects;
@@ -63,11 +66,12 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
     }
 
 
-    public void onResume(){
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    private void onResume(){
         //FullscreenHelper.setImmersiveSticky(this);
         //FullscreenHelper.enableAndroidVRModeIfPossible(this);
         //FullscreenHelper.enableSustainedPerformanceIfPossible(this);
-        onResumeX();
+        resumeX();
         mGLSurfaceView.onResume();
         mGLSurfaceView.queueEvent(new Runnable() {
             @Override
@@ -81,18 +85,19 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
         Choreographer.getInstance().postFrameCallback(this);
     }
 
-
-    public void onPause(){
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    private void onPause(){
         mRenderer.requestExitSuperSyncLoop();
         Choreographer.getInstance().removeFrameCallback(this);
         mGLSurfaceView.onPause();
-        onPauseX();
+        pauseX();
         //FullscreenHelper.disableSustainedPerformanceIfEnabled(this);
         //FullscreenHelper.disableAndroidVRModeIfEnabled(this);
     }
 
-    public void destroy(){
-        shutdown();
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    private void onDestroy(){
+        destroyX();
     }
 
 

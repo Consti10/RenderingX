@@ -1,6 +1,7 @@
 package constantin.renderingx.example.StereoVR;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Lifecycle;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.GLSurfaceView;
@@ -88,7 +89,7 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
     protected void onResume() {
         super.onResume();
         if(gvrLayout!=null)gvrLayout.onResume();
-        if(myVRLayout!=null)myVRLayout.onResumeX();
+        //if(myVRLayout!=null)myVRLayout.onResumeX();
         gLView.onResume();
         if(videoFilename!=null && surfaceTexture!=null && mVideoPlayer==null){
             Surface mVideoSurface=new Surface(surfaceTexture);
@@ -102,7 +103,7 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
         super.onPause();
         gLView.onPause();
         if(gvrLayout!=null)gvrLayout.onPause();
-        if(myVRLayout!=null)myVRLayout.onPauseX();
+        //if(myVRLayout!=null)myVRLayout.onPauseX();
         if(mVideoPlayer!=null){
             mVideoPlayer.stop();
             mVideoPlayer=null;
@@ -113,7 +114,6 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
     protected void onDestroy(){
         super.onDestroy();
         if(gvrLayout!=null)gvrLayout.shutdown();
-        if(myVRLayout!=null)myVRLayout.shutdown();
     }
 
     @Override
@@ -134,9 +134,11 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
             @Override
             public void run() {
                 if(videoFilename!=null){
-                    Surface mVideoSurface=new Surface(surfaceTexture);
-                    mVideoPlayer=new MVideoPlayer(reference,videoFilename,mVideoSurface,null);
-                    mVideoPlayer.start();
+                    if(getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)){
+                        Surface mVideoSurface=new Surface(surfaceTexture);
+                        mVideoPlayer=new MVideoPlayer(reference,videoFilename,mVideoSurface,null);
+                        mVideoPlayer.start();
+                    }
                 }
                 reference.surfaceTexture=surfaceTexture;
             }

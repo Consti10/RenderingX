@@ -23,20 +23,17 @@ public class AExampleSuperSync extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         System.out.println("YYY onResumeX()");
-        mViewSuperSync.onResume();
     }
 
     @Override
     protected void onPause(){
         super.onPause();
         System.out.println("YYY onPauseX()");
-        mViewSuperSync.onPause();
     }
 
     @Override
     protected void onDestroy(){
         super.onDestroy();
-        mViewSuperSync.destroy();
         mViewSuperSync=null;
         mGLRStereoSuperSync=null;
     }
