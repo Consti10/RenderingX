@@ -20,7 +20,7 @@ import constantin.renderingx.core.MyEGLConfigChooser;
 import constantin.renderingx.core.MyVRLayout;
 import constantin.renderingx.example.MVideoPlayer;
 
-public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTextureAvailable {
+public class AExampleVRRendering extends AppCompatActivity {
     private static final String TAG="AExampleVRRendering";
     public static final int SPHERE_MODE_NONE=0;
     public static final int SPHERE_MODE_GVR_EQUIRECTANGULAR=1;
@@ -33,15 +33,13 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
     private MyVRLayout myVRLayout;
     //Default mode is 0 (test VDDC)
     public static final String KEY_MODE="KEY_MODE";
-    //Disable video playback completely by setting videoFilename to null
-    private String videoFilename=null;
+    //Disable video playback completely by leaving MVideoPlayer uninitialized and
+    //passing null to the ISurfaceTextureCreated
     private MVideoPlayer mVideoPlayer;
-    private SurfaceTexture surfaceTexture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        surfaceTexture=null;
         final GvrApi gvrApi;
         if(USE_GVR_LAYOUT){
             gvrLayout=new GvrLayout(this);
@@ -58,18 +56,19 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
         gLView.setEGLContextClientVersion(2);
         final GLRExampleVR renderer;
         if(MODE==0){
-            renderer =new GLRExampleVR(this, this,gvrApi,true,
+            renderer =new GLRExampleVR(this, null,gvrApi,true,
                     true,true,SPHERE_MODE_NONE);
-            videoFilename=null;
         }else{
-            renderer =new GLRExampleVR(this,this, gvrApi,false,
-                    true,false,MODE);
-            //Only create video surface/ start video Player if rendering one of both spheres
+            final String videoFilename;
             if(MODE==SPHERE_MODE_GVR_EQUIRECTANGULAR){
                 videoFilename="360DegreeVideos/testRoom1_1920Mono.mp4";
             }else{
                 videoFilename="360DegreeVideos/insta_webbn_1_shortened.h264";
             }
+            //Only create video surface/ start video Player if rendering one of both spheres
+            mVideoPlayer=new MVideoPlayer(this,this,videoFilename,null);
+            renderer =new GLRExampleVR(this,mVideoPlayer, gvrApi,false,
+                    true,false,MODE);
         }
         gLView.setRenderer(renderer);
         gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
@@ -89,13 +88,7 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
     protected void onResume() {
         super.onResume();
         if(gvrLayout!=null)gvrLayout.onResume();
-        //if(myVRLayout!=null)myVRLayout.onResumeX();
         gLView.onResume();
-        if(videoFilename!=null && surfaceTexture!=null && mVideoPlayer==null){
-            Surface mVideoSurface=new Surface(surfaceTexture);
-            mVideoPlayer=new MVideoPlayer(this,videoFilename,mVideoSurface,null);
-            mVideoPlayer.start();
-        }
     }
 
     @Override
@@ -103,11 +96,6 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
         super.onPause();
         gLView.onPause();
         if(gvrLayout!=null)gvrLayout.onPause();
-        //if(myVRLayout!=null)myVRLayout.onPauseX();
-        if(mVideoPlayer!=null){
-            mVideoPlayer.stop();
-            mVideoPlayer=null;
-        }
     }
 
     @Override
@@ -124,24 +112,4 @@ public class AExampleVRRendering extends AppCompatActivity implements ISurfaceTe
         }
     }
 
-    @Override
-    public void onSurfaceTextureAvailable(final SurfaceTexture surfaceTexture) {
-        if(this.surfaceTexture!=null){
-            throw new RuntimeException("Error onSurfaceTextureAvailable called multiple times");
-        }
-        final AExampleVRRendering reference=this;
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(videoFilename!=null){
-                    if(getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)){
-                        Surface mVideoSurface=new Surface(surfaceTexture);
-                        mVideoPlayer=new MVideoPlayer(reference,videoFilename,mVideoSurface,null);
-                        mVideoPlayer.start();
-                    }
-                }
-                reference.surfaceTexture=surfaceTexture;
-            }
-        });
-    }
 }
