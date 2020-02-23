@@ -66,13 +66,13 @@ std::array<float,2> PolynomialRadialDistortion::DistortInverse(const std::array<
     return std::array<float, 2>{(inverseRadius/radius) * p[0], (inverseRadius/radius) * p[1]};
 }
 
-std::vector<float> PolynomialRadialDistortion::getCoeficients()const {
+std::vector<float> PolynomialRadialDistortion::getCoefficients()const {
     return coefficients_;
 }
 
 std::string PolynomialRadialDistortion::toString()const {
     std::stringstream ss;
-    ss<<"PolynomialRadialDistortion:: k1..kn(";
+    ss<<"PolynomialRadialDistortion:: k1..k"<<((int)coefficients_.size())<<"(";
     for(const float coefficient : coefficients_){
         ss<<coefficient<<",";
     }
@@ -85,7 +85,7 @@ std::string PolynomialRadialDistortion::toString()const {
 std::string PolynomialRadialInverse::toStringX()const {
     std::stringstream ss;
     ss<<"PolynomialRadialInverse MaxRadSq "<<maxRadSq<<" k1..kn(";
-    for(const float coefficient : getCoeficients()){
+    for(const float coefficient : getCoefficients()){
         ss<<coefficient<<",";
     }
     ss<<")";

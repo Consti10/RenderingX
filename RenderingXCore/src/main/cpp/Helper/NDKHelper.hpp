@@ -12,14 +12,6 @@
 #include <MDebug.hpp>
 
 
-class RunAtEndOfScope {
-public:
-    RunAtEndOfScope(std::function<void()> function) : function_(function) {}
-    ~RunAtEndOfScope() { function_(); }
-private:
-    std::function<void()> function_;
-};
-
 class NDKHelper {
 public:
     //Returns a std::vector whose size depends on the size of the java array
@@ -67,28 +59,25 @@ public:
         jmethodID open_method = env->GetMethodID(
                 asset_manager_class, "open", "(Ljava/lang/String;)Ljava/io/InputStream;");
         jstring j_path = env->NewStringUTF(path.c_str());
-        RunAtEndOfScope cleanup_j_path([&] {
-            if (j_path) {
-                env->DeleteLocalRef(j_path);
-            }
-        });
         jobject input_stream =env->CallObjectMethod(java_asset_mgr, open_method, j_path);
         if (env->ExceptionOccurred() != nullptr) {
             MDebug::log("Java exception in createInputStreamFromAsset for file:"+path);
             env->ExceptionClear();
+            env->DeleteLocalRef(j_path);
             return nullptr;
         }
+        env->DeleteLocalRef(j_path);
         return input_stream;
     }
 
 
-    // Taken from gvr_util/util.cc
+    // Inspired by gvr_util/util.cc
     // Loads a png file from assets folder and then assigns it to the OpenGL target.
     // This method must be called from the renderer thread since it will result in
     // OpenGL calls to assign the image to the texture target.
     //
     // @param env The JNIEnv to use.
-    // @param target, openGL texture target to load the image into.
+    // @param target, OpenGL texture target to load the image into.
     // @param path, path to the file, relative to the assets folder.
     // @param extractAlpha, upload texture as alpha only (needed for text)
     // @return true if png is loaded correctly, otherwise false.

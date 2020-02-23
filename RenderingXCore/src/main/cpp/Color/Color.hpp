@@ -11,8 +11,10 @@
 #include <string>
 #include <sstream>
 
-//since OpenGL uses RGBA,we also use RGBA for TrueColor. Make sure to convert when using ColorPreference
+//since OpenGL uses RGBA,we also use RGBA for TrueColor. Make sure to convert when using android ColorPreference (which uses ARGB)
+//True color is 8 bit per channel ,e.g 8*4 = 32 bit in total
 using TrueColor=uint32_t;
+
 
 class Color {
 public:

@@ -62,7 +62,7 @@ public:
 
     //Vertex displacement distortion correction needs to obtain the coefficients since it uses
     //them in the vertex shader. Immutability of coefficients is untouched
-    std::vector<float> getCoeficients()const;
+    std::vector<float> getCoefficients()const;
 private:
     //Immutable except trough constructor
     std::vector<float> coefficients_;
@@ -81,7 +81,7 @@ public:
     PolynomialRadialInverse(const int NUM_COEFFICIENTS=2):PolynomialRadialDistortion(std::vector<float>((unsigned)NUM_COEFFICIENTS,0)),maxRadSq(100000){
     };
 public:
-    using PolynomialRadialDistortion::getCoeficients;
+    using PolynomialRadialDistortion::getCoefficients;
 public:
     using PolynomialRadialDistortion::Distort;
     /*float DistortionFactor(float r_squared) const{

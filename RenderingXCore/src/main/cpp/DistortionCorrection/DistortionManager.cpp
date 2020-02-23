@@ -122,8 +122,8 @@ std::string DistortionManager::writeGLPosition(const DistortionManager* distorti
 }
 
 void DistortionManager::updateDistortion(const PolynomialRadialInverse &inverseDistortion) {
-    for(int i=0;i<inverseDistortion.getCoeficients().size();i++){
-        radialDistortionCoefficients.kN[i]=inverseDistortion.getCoeficients()[i];
+    for(int i=0;i<inverseDistortion.getCoefficients().size();i++){
+        radialDistortionCoefficients.kN[i]=inverseDistortion.getCoefficients()[i];
     }
     radialDistortionCoefficients.maxRadSquared=inverseDistortion.getMaxRadSq();
     //MDebug::log(inverseDistortion.toString());
