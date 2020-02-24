@@ -1,25 +1,22 @@
 package constantin.renderingx.example.StereoVR;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Lifecycle;
 
-import android.graphics.SurfaceTexture;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
-import android.view.Surface;
 
 import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrLayout;
-import com.google.vr.sdk.base.GvrView;
 
 import constantin.renderingx.core.FullscreenHelper;
-import constantin.renderingx.core.ISurfaceTextureAvailable;
-import constantin.renderingx.core.MyEGLConfigChooser;
 import constantin.renderingx.core.MyVRLayout;
-import constantin.renderingx.example.MVideoPlayer;
+import constantin.video.core.VideoPlayerSurfaceTexture;
 
+//Uses the LiveVideo10ms VideoCore lib which is intended for live streaming, not file playback.
+//I recommend using android MediaPlayer if only playback from file is needed
+
+//See native code (renderer) for documentation
 public class AExampleVRRendering extends AppCompatActivity {
     private static final String TAG="AExampleVRRendering";
     public static final int SPHERE_MODE_NONE=0;
@@ -33,9 +30,9 @@ public class AExampleVRRendering extends AppCompatActivity {
     private MyVRLayout myVRLayout;
     //Default mode is 0 (test VDDC)
     public static final String KEY_MODE="KEY_MODE";
-    //Disable video playback completely by leaving MVideoPlayer uninitialized and
+    //Disable video playback completely by leaving VideoPlayerSurfaceTexture uninitialized and
     //passing null to the ISurfaceTextureCreated
-    private MVideoPlayer mVideoPlayer;
+    private VideoPlayerSurfaceTexture mVideoPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +60,11 @@ public class AExampleVRRendering extends AppCompatActivity {
             if(MODE==SPHERE_MODE_GVR_EQUIRECTANGULAR){
                 videoFilename="360DegreeVideos/testRoom1_1920Mono.mp4";
             }else{
-                videoFilename="360DegreeVideos/insta_webbn_1_shortened.h264";
+                videoFilename="360DegreeVideos/mjpeg_test.h264";
+                //videoFilename="360DegreeVideos/insta_webbn_1_shortened.h264";
             }
             //Only create video surface/ start video Player if rendering one of both spheres
-            mVideoPlayer=new MVideoPlayer(this,this,videoFilename,null);
+            mVideoPlayer=new VideoPlayerSurfaceTexture(this,null,videoFilename);
             renderer =new GLRExampleVR(this,mVideoPlayer, gvrApi,false,
                     true,false,MODE);
         }

@@ -12,8 +12,8 @@ import com.google.vr.ndk.base.GvrApi;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import constantin.renderingx.core.ISurfaceTextureAvailable;
 import constantin.renderingx.core.MyVrHeadsetParams;
+import constantin.video.core.ISurfaceTextureAvailable;
 
 
 //See native code for documentation
