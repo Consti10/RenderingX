@@ -54,12 +54,11 @@ public class AExampleVRRendering extends AppCompatActivity {
         gLView.setEGLContextClientVersion(2);
         final GLRExampleVR renderer;
         if(SPHERE_MODE==SPHERE_MODE_NONE){
-            //When SPHERE_MODE==SPHERE_MODE_NONE it meas we do the VDDC test mesh
+            //When SPHERE_MODE==SPHERE_MODE_NONE it means we do the VDDC test mesh
             renderer =new GLRExampleVR(this, null,gvrApi,true,
                     true,true,SPHERE_MODE_NONE);
         }else{
-
-            final String VIDEO_FILENAME=bundle.getString(KEY_VIDEO_FILENAME)==null ? "360DegreeVideos/testRoom1_1920Mono.mp4" :bundle.getString(KEY_VIDEO_FILENAME);
+            final String VIDEO_FILENAME=bundle.getString(KEY_VIDEO_FILENAME);
             //Only create video surface/ start video Player if rendering one of both spheres
             mVideoPlayer=new VideoPlayerSurfaceTexture(this,null,VIDEO_FILENAME);
             renderer =new GLRExampleVR(this,mVideoPlayer, gvrApi,false,
