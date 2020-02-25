@@ -110,6 +110,7 @@ public class AExampleVRRendering extends AppCompatActivity {
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         //Some VR headsets use a clamp to hold the phone in place. This clamp may press against the volume up/down buttons.
+        //Here we effectively disable these 2 buttons
         if(event.getKeyCode()==KeyEvent.KEYCODE_VOLUME_DOWN || event.getKeyCode()==KeyEvent.KEYCODE_VOLUME_UP){
             return true;
         }
