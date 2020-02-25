@@ -2,22 +2,17 @@ package constantin.renderingx.core;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.ColorMatrixColorFilter;
-import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.PowerManager;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -27,8 +22,6 @@ import com.google.vr.cardboard.DisplaySynchronizer;
 import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrUiLayout;
 import com.google.vr.sdk.base.AndroidCompat;
-import com.google.vr.sdk.base.GvrActivity;
-import com.google.vr.sdk.base.GvrView;
 
 import static android.content.Context.POWER_SERVICE;
 

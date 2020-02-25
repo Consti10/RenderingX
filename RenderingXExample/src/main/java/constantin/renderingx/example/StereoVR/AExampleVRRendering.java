@@ -49,8 +49,6 @@ public class AExampleVRRendering extends AppCompatActivity {
             gvrLayout=new GvrLayout(this);
             gvrApi =gvrLayout.getGvrApi();
         }else{
-            //displaySynchronizer=new DisplaySynchronizer(this,getWindowManager().getDefaultDisplay());
-            //gvrApi=new GvrApi(this,null);
             myVRLayout=new MyVRLayout(this);
             gvrApi=myVRLayout.getGvrApi();
         }
@@ -81,8 +79,6 @@ public class AExampleVRRendering extends AppCompatActivity {
             setContentView(myVRLayout);
             myVRLayout.setPresentationView(gLView);
         }
-        System.out.println("Path is:"+ Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS));
-
     }
 
     @Override
