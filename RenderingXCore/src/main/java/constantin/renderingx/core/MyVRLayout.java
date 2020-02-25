@@ -20,6 +20,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.OnLifecycleEvent;
 
 import com.google.vr.cardboard.DisplaySynchronizer;
@@ -39,31 +40,26 @@ import static android.content.Context.POWER_SERVICE;
 //Uses LifecycleObserver to handle resume, pause and destroy
 //(On GvrLayout you had to call them manually from your activity)
 
+//No default constructor because we explicitly need the LifecycleOwner !
+@SuppressLint("ViewConstructor")
 public class MyVRLayout extends FrameLayout implements LifecycleObserver {
     private static final String TAG="MyVRLayout";
 
     private GvrApi gvrApi;
     private DisplaySynchronizer displaySynchronizer;
 
-    //Context has to come from AppCompatActivity
-    //for the lifecycle observer
-    public MyVRLayout(final Context context) {
-        super(context);
+    public <T extends Activity & LifecycleOwner> MyVRLayout(final T parent) {
+        super(parent);
         init(false);
-        ((AppCompatActivity)context).getLifecycle().addObserver(this);
+        parent.getLifecycle().addObserver(this);
     }
 
-    public MyVRLayout(final Context context,final boolean createDisplaySynchronizer) {
-        super(context);
+    public <T extends Activity & LifecycleOwner> MyVRLayout(final T parent,final boolean createDisplaySynchronizer) {
+        super(parent);
         init(createDisplaySynchronizer);
-        ((AppCompatActivity)context).getLifecycle().addObserver(this);
+        parent.getLifecycle().addObserver(this);
     }
 
-    public MyVRLayout(final Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init(false);
-        ((AppCompatActivity)context).getLifecycle().addObserver(this);
-    }
 
     private void init(final boolean createDisplaySynchronizer){
         LayoutInflater.from(getContext()).inflate(R.layout.my_vr_layout, this, true);

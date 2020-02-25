@@ -13,6 +13,7 @@ import com.google.vr.ndk.base.GvrLayout;
 import com.google.vr.sdk.base.GvrView;
 
 import constantin.renderingx.core.FullscreenHelper;
+import constantin.renderingx.core.MyGLSurfaceView;
 import constantin.renderingx.core.MyVRLayout;
 import constantin.video.core.VideoPlayerSurfaceTexture;
 
@@ -26,7 +27,8 @@ public class AExampleVRRendering extends AppCompatActivity {
     public static final int SPHERE_MODE_GVR_EQUIRECTANGULAR=1;
     public static final int SPHERE_MODE_INSTA360_TEST=2;
     public static final int SPHERE_MODE_INSTA360_TEST2=3;
-    private GLSurfaceView gLView;
+    //private GLSurfaceView gLView;
+    private MyGLSurfaceView gLView;
     //Use one of both, either GvrLayout or MyVRLayout
     private static final boolean USE_GVR_LAYOUT=false;
     private GvrLayout gvrLayout;
@@ -54,7 +56,7 @@ public class AExampleVRRendering extends AppCompatActivity {
         }
         final Bundle bundle=getIntent().getExtras();
         final int SPHERE_MODE=bundle==null ? 0 : bundle.getInt(KEY_SPHERE_MODE,0);
-        gLView = new GLSurfaceView(this);
+        gLView = new MyGLSurfaceView(this,this);
         gLView.setEGLContextClientVersion(2);
         final GLRExampleVR renderer;
         if(SPHERE_MODE==SPHERE_MODE_NONE){
@@ -80,19 +82,18 @@ public class AExampleVRRendering extends AppCompatActivity {
             myVRLayout.setPresentationView(gLView);
         }
         System.out.println("Path is:"+ Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS));
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         if(gvrLayout!=null)gvrLayout.onResume();
-        gLView.onResume();
     }
 
     @Override
     protected void onPause(){
         super.onPause();
-        gLView.onPause();
         if(gvrLayout!=null)gvrLayout.onPause();
     }
 
@@ -116,9 +117,9 @@ public class AExampleVRRendering extends AppCompatActivity {
         if(event.getKeyCode()==KeyEvent.KEYCODE_VOLUME_DOWN || event.getKeyCode()==KeyEvent.KEYCODE_VOLUME_UP){
             return true;
         }
-        if(event.getKeyCode()==KeyEvent.KEYCODE_BACK){
-            return true;
-        }
+        //if(event.getKeyCode()==KeyEvent.KEYCODE_BACK){
+        //    return true;
+        //}
         return super.dispatchKeyEvent(event);
     }
 

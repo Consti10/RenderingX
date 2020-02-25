@@ -13,6 +13,7 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.OnLifecycleEvent;
 
 import com.google.vr.sdk.base.AndroidCompat;
@@ -43,8 +44,9 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
 
     private final long choreographerVsyncOffsetNS;
 
-    public ViewSuperSync(final Context context,final boolean createDisplaySynchronizer){
-        super(context,createDisplaySynchronizer);
+    public <T extends Activity & LifecycleOwner>ViewSuperSync(final T parent, final boolean createDisplaySynchronizer){
+        super(parent,createDisplaySynchronizer);
+        final Context context=parent;
         //getUiLayout().setTransitionViewEnabled(false);
         //setAsyncReprojectionEnabled(false);
         mGLSurfaceView =new GLSurfaceView(context);
