@@ -57,7 +57,7 @@ public class MainActivityTest {
 
     private void testVRRendering(int mode){
         Intent i = new Intent();
-        i.putExtra(AExampleVRRendering.KEY_MODE,mode);
+        i.putExtra(AExampleVRRendering.KEY_SPHERE_MODE,mode);
         mExampleVRRenderingRule.launchActivity(i);
         try { Thread.sleep(WAIT_TIME); } catch (InterruptedException e) { e.printStackTrace(); }
         mExampleVRRenderingRule.finishActivity();

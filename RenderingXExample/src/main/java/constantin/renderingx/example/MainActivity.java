@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final Intent intent=new Intent().setClass(context, AExampleVRRendering.class);
-                intent.putExtra(AExampleVRRendering.KEY_MODE,0);
+                intent.putExtra(AExampleVRRendering.KEY_SPHERE_MODE,0);
                 startActivity(intent);
             }
         });
@@ -81,9 +81,23 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final Intent intent=new Intent().setClass(context, AExampleVRRendering.class);
                 final int position = mSpinner.getSelectedItemPosition()==Spinner.INVALID_POSITION ? 0 : mSpinner.getSelectedItemPosition();
-                //0 is the mesh test (e.g. VIDEO_360=_MODE_NONE)
-                final int video360mode=position+1;
-                intent.putExtra(AExampleVRRendering.KEY_MODE,video360mode);
+                final int SPHERE_MODE;
+                final String VIDEO_FILENAME;
+                if(position==0){
+                    SPHERE_MODE=AExampleVRRendering.SPHERE_MODE_GVR_EQUIRECTANGULAR;
+                    VIDEO_FILENAME="360DegreeVideos/testRoom1_1920Mono.mp4";
+                }else if(position==1){
+                    SPHERE_MODE=AExampleVRRendering.SPHERE_MODE_GVR_EQUIRECTANGULAR;
+                    VIDEO_FILENAME="360DegreeVideos/paris_by_diego.mp4";
+                } else if(position==2){
+                    SPHERE_MODE=AExampleVRRendering.SPHERE_MODE_INSTA360_TEST;
+                    VIDEO_FILENAME="360DegreeVideos/insta_webbn_1_shortened.h264";
+                }else{
+                    SPHERE_MODE=AExampleVRRendering.SPHERE_MODE_INSTA360_TEST;
+                    VIDEO_FILENAME="360DegreeVideos/insta_webbn_1_shortened.h264";
+                }
+                intent.putExtra(AExampleVRRendering.KEY_SPHERE_MODE,SPHERE_MODE);
+                intent.putExtra(AExampleVRRendering.KEY_VIDEO_FILENAME,VIDEO_FILENAME);
                 startActivity(intent);
             }
         });

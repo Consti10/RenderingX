@@ -29,7 +29,8 @@ public class AExampleVRRendering extends AppCompatActivity {
     private GvrLayout gvrLayout;
     private MyVRLayout myVRLayout;
     //Default mode is 0 (test VDDC)
-    public static final String KEY_MODE="KEY_MODE";
+    public static final String KEY_SPHERE_MODE ="KEY_SPHERE_MODE";
+    public static final String KEY_VIDEO_FILENAME="KEY_VIDEO_FILENAME";
     //Disable video playback completely by leaving VideoPlayerSurfaceTexture uninitialized and
     //passing null to the ISurfaceTextureCreated
     private VideoPlayerSurfaceTexture mVideoPlayer;
@@ -48,25 +49,21 @@ public class AExampleVRRendering extends AppCompatActivity {
             gvrApi=myVRLayout.getGvrApi();
         }
         final Bundle bundle=getIntent().getExtras();
-        final int MODE=bundle==null ? 0 : bundle.getInt(KEY_MODE,0);
+        final int SPHERE_MODE=bundle==null ? 0 : bundle.getInt(KEY_SPHERE_MODE,0);
         gLView = new GLSurfaceView(this);
         gLView.setEGLContextClientVersion(2);
         final GLRExampleVR renderer;
-        if(MODE==0){
+        if(SPHERE_MODE==SPHERE_MODE_NONE){
+            //When SPHERE_MODE==SPHERE_MODE_NONE it meas we do the VDDC test mesh
             renderer =new GLRExampleVR(this, null,gvrApi,true,
                     true,true,SPHERE_MODE_NONE);
         }else{
-            final String videoFilename;
-            if(MODE==SPHERE_MODE_GVR_EQUIRECTANGULAR){
-                videoFilename="360DegreeVideos/testRoom1_1920Mono.mp4";
-            }else{
-                videoFilename="360DegreeVideos/mjpeg_test.h264";
-                //videoFilename="360DegreeVideos/insta_webbn_1_shortened.h264";
-            }
+
+            final String VIDEO_FILENAME=bundle.getString(KEY_VIDEO_FILENAME)==null ? "360DegreeVideos/testRoom1_1920Mono.mp4" :bundle.getString(KEY_VIDEO_FILENAME);
             //Only create video surface/ start video Player if rendering one of both spheres
-            mVideoPlayer=new VideoPlayerSurfaceTexture(this,null,videoFilename);
+            mVideoPlayer=new VideoPlayerSurfaceTexture(this,null,VIDEO_FILENAME);
             renderer =new GLRExampleVR(this,mVideoPlayer, gvrApi,false,
-                    true,false,MODE);
+                    true,false,SPHERE_MODE);
         }
         gLView.setRenderer(renderer);
         gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);

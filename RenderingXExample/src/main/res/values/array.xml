@@ -12,6 +12,7 @@
 
     <string-array name="entries_360_video_modes">
         <item>Equirect test</item>
+        <item>Equirect example</item>
         <item>DualFisheye Insta360 1</item>
         <item>DualFisheye Insta360 2</item>
     </string-array>
