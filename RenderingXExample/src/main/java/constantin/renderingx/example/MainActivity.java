@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         context=this;
         setContentView(R.layout.activity_main);
         mSpinner=findViewById(R.id.spinner_360_video_type);
-        
+
         //This retreives any HW info needed for the app
         AWriteGLESInfo.writeGLESInfoIfNeeded(this);
 
