@@ -3,15 +3,18 @@ package constantin.renderingx.core;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.ColorMatrixColorFilter;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.PowerManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +26,8 @@ import com.google.vr.cardboard.DisplaySynchronizer;
 import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrUiLayout;
 import com.google.vr.sdk.base.AndroidCompat;
+import com.google.vr.sdk.base.GvrActivity;
+import com.google.vr.sdk.base.GvrView;
 
 import static android.content.Context.POWER_SERVICE;
 
@@ -44,22 +49,30 @@ public class MyVRLayout extends FrameLayout implements LifecycleObserver {
     //for the lifecycle observer
     public MyVRLayout(final Context context) {
         super(context);
-        init();
+        init(false);
+        ((AppCompatActivity)context).getLifecycle().addObserver(this);
+    }
+
+    public MyVRLayout(final Context context,final boolean createDisplaySynchronizer) {
+        super(context);
+        init(createDisplaySynchronizer);
         ((AppCompatActivity)context).getLifecycle().addObserver(this);
     }
 
     public MyVRLayout(final Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init();
+        init(false);
         ((AppCompatActivity)context).getLifecycle().addObserver(this);
     }
 
-    private void init(){
+    private void init(final boolean createDisplaySynchronizer){
         LayoutInflater.from(getContext()).inflate(R.layout.my_vr_layout, this, true);
         final Activity activity=(Activity)getContext();
         final Display display=activity.getWindowManager().getDefaultDisplay();
-        //displaySynchronizer=new DisplaySynchronizer(activity,display);
         displaySynchronizer=null;
+        if(createDisplaySynchronizer){
+            displaySynchronizer=new DisplaySynchronizer(activity,display);
+        }
         gvrApi=new GvrApi(getContext(),displaySynchronizer);
         findViewById(R.id.vr_overlay_settings_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +97,22 @@ public class MyVRLayout extends FrameLayout implements LifecycleObserver {
         //Dim the screen to n percent TODO
         //Enable Immersive mode
         FullscreenHelper.enableImmersiveSticky(activity);
+        //Invert color of drawable
+       final float[] NEGATIVE = {
+                -1.0f,     0,     0,    0, 255, // red
+                0, -1.0f,     0,    0, 255, // green
+                0,     0, -1.0f,    0, 255, // blue
+                0,     0,     0, 1.0f,   0  // alpha
+        };
+       //This button allows re-centering of head tracking
+       final ImageButton recenter_button=((ImageButton)findViewById(R.id.vr_overlay_recenter_button));
+       recenter_button.getDrawable().setColorFilter(new ColorMatrixColorFilter(NEGATIVE));
+       recenter_button.setOnClickListener(new OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               gvrApi.recenterTracking();
+           }
+       });
     }
 
     //Disable / enable the UI overlay with settings button and seperator line
@@ -92,6 +121,7 @@ public class MyVRLayout extends FrameLayout implements LifecycleObserver {
         findViewById(R.id.vr_overlay_seperator).setVisibility(wantedVisibility);
         findViewById(R.id.vr_overlay_back_button).setVisibility(wantedVisibility);
         findViewById(R.id.vr_overlay_settings_button).setVisibility(wantedVisibility);
+        findViewById(R.id.vr_overlay_recenter_button).setVisibility(wantedVisibility);
     }
 
     public GvrApi getGvrApi(){

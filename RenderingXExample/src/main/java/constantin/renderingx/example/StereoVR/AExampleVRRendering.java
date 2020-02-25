@@ -5,9 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 
 import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrLayout;
+import com.google.vr.sdk.base.GvrView;
 
 import constantin.renderingx.core.FullscreenHelper;
 import constantin.renderingx.core.MyVRLayout;
@@ -38,6 +41,7 @@ public class AExampleVRRendering extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         final GvrApi gvrApi;
         if(USE_GVR_LAYOUT){
             gvrLayout=new GvrLayout(this);
@@ -104,6 +108,18 @@ public class AExampleVRRendering extends AppCompatActivity {
         if (hasFocus) {
             FullscreenHelper.setImmersiveSticky(this);
         }
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        //Some VR headsets use a clamp to hold the phone in place. This clamp may press against the volume up/down buttons.
+        if(event.getKeyCode()==KeyEvent.KEYCODE_VOLUME_DOWN || event.getKeyCode()==KeyEvent.KEYCODE_VOLUME_UP){
+            return true;
+        }
+        if(event.getKeyCode()==KeyEvent.KEYCODE_BACK){
+            return true;
+        }
+        return super.dispatchKeyEvent(event);
     }
 
 }

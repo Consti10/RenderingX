@@ -42,4 +42,17 @@
             android:layout_gravity="end|top" />
     </FrameLayout>
 
+    <FrameLayout
+        android:id="@+id/ui_recenter_button_holder"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_width="42dp"
+        android:layout_height="42dp">
+        <ImageButton
+            style="@style/UiButton"
+            android:id="@+id/vr_overlay_recenter_button"
+            android:contentDescription="settings"
+            android:src="@drawable/center_focus_strong"
+            android:layout_gravity="center_horizontal|bottom" />
+    </FrameLayout>
+
 </merge>

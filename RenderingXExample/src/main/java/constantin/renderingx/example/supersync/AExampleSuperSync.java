@@ -13,7 +13,7 @@ public class AExampleSuperSync extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewSuperSync=new ViewSuperSync(this);
+        mViewSuperSync=new ViewSuperSync(this,false);
         mGLRStereoSuperSync = new GLRExampleSuperSync(this,mViewSuperSync.getGvrApi());
         mViewSuperSync.setRenderer(mGLRStereoSuperSync);
         setContentView(mViewSuperSync);

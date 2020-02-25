@@ -161,59 +161,6 @@ void ExampleRendererVR::drawEyeVDDC(gvr::Eye eye) {
     GLHelper::checkGlError("ExampleRenderer2::drawEyeVDDC2");
 }
 
-// Loads a png file from assets folder and then assigns it to the OpenGL target.
-// This method must be called from the renderer thread since it will result in
-// OpenGL calls to assign the image to the texture target.
-//
-// @param env The JNIEnv to use.
-// @param androidContext The context to obtain an AssetManager instance from
-// @param target, openGL texture target to load the image into.
-// @param path, path to the file, relative to the assets folder.
-// @return true if png is loaded correctly, otherwise false.
-/*static bool LoadPngFromAssetManager(JNIEnv* env, jobject androidContext, int target,const char* path) {
-    //Get a handle to all the needed java classes
-    jclass context_class =
-            env->FindClass("android/content/Context");
-    jclass bitmap_factory_class =
-            env->FindClass("android/graphics/BitmapFactory");
-    jclass asset_manager_class =
-            env->FindClass("android/content/res/AssetManager");
-    jclass gl_utils_class = env->FindClass("android/opengl/GLUtils");
-    //Get a handle to all the needed java methods
-    jmethodID get_asset_manager_method = env->GetMethodID(
-            context_class, "getAssets", "()Landroid/content/res/AssetManager;");
-    jmethodID decode_stream_method = env->GetStaticMethodID(
-            bitmap_factory_class, "decodeStream",
-            "(Ljava/io/InputStream;)Landroid/graphics/Bitmap;");
-    jmethodID open_method = env->GetMethodID(
-            asset_manager_class, "open", "(Ljava/lang/String;)Ljava/io/InputStream;");
-    jmethodID tex_image_2d_method = env->GetStaticMethodID(
-            gl_utils_class, "texImage2D", "(IILandroid/graphics/Bitmap;I)V");
-    //Create all the needed instance(s)
-    jobject java_asset_mgr=env->CallObjectMethod(androidContext,get_asset_manager_method);
-    jstring j_path = env->NewStringUTF(path);
-    jobject image_stream =
-            env->CallObjectMethod(java_asset_mgr, open_method, j_path);
-    jobject image_obj = env->CallStaticObjectMethod(
-            bitmap_factory_class, decode_stream_method, image_stream);
-    if (env->ExceptionOccurred() != nullptr) {
-        LOGD("Java exception while loading image");
-        env->ExceptionClear();
-        image_obj = nullptr;
-        if (j_path) {
-            env->DeleteLocalRef(j_path);
-        }
-        return false;
-    }
-    env->CallStaticVoidMethod(gl_utils_class, tex_image_2d_method, target, 0,
-                              image_obj, 0);
-    if (j_path) {
-        env->DeleteLocalRef(j_path);
-    }
-    return true;
-}*/
-
-
 void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen,bool occlusion) {
     if(ENABLE_SCENE_MESH_2D){
         const VertexBuffer& tmp=meshColorGreen ? greenMeshB : blueMeshB;

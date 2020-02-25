@@ -43,8 +43,8 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
 
     private final long choreographerVsyncOffsetNS;
 
-    public ViewSuperSync(final Context context){
-        super(context);
+    public ViewSuperSync(final Context context,final boolean createDisplaySynchronizer){
+        super(context,createDisplaySynchronizer);
         //getUiLayout().setTransitionViewEnabled(false);
         //setAsyncReprojectionEnabled(false);
         mGLSurfaceView =new GLSurfaceView(context);
