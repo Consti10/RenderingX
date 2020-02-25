@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
     private final List<String> missingPermission = new ArrayList<>();
     private static final int REQUEST_PERMISSION_CODE = 12345;
 
-    //private Switch mSwitch;
     private Spinner mSpinner;
 
     @Override
@@ -44,11 +43,7 @@ public class MainActivity extends AppCompatActivity {
         context=this;
         setContentView(R.layout.activity_main);
         mSpinner=findViewById(R.id.spinner_360_video_type);
-
-        /*final ArrayAdapter adapter=ArrayAdapter.createFromResource(this,R.array.entries_360_video_modes,android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
-        mSpinner.setAdapter(adapter);*/
-
+        
         //This retreives any HW info needed for the app
         AWriteGLESInfo.writeGLESInfoIfNeeded(this);
 
