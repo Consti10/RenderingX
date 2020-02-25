@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -86,6 +87,9 @@ public class MyVRLayout extends FrameLayout implements LifecycleObserver {
         //Dim the screen to n percent TODO
         //Enable Immersive mode
         FullscreenHelper.enableImmersiveSticky(activity);
+        //Keep screen on
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         //Invert color of drawable
        final float[] NEGATIVE = {
                 -1.0f,     0,     0,    0, 255, // red

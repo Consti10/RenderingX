@@ -14,6 +14,7 @@ import androidx.lifecycle.OnLifecycleEvent;
  * same as android GLSurfaceView with 1 improvement:
  * Uses Android lifecycle to handle onPause / onResume()
  * It is easy to forget to call the GLSurfaceView's onPause() / onResume() functions
+ * It also reduces code complexity of the implementation(s) significantly !
  */
 
 //No default constructor because we explicitly need the LifecycleOwner !
@@ -44,6 +45,5 @@ public class MyGLSurfaceView extends GLSurfaceView implements LifecycleObserver 
     public void onPause() {
         throw new IllegalStateException("Illegal access to oPause");
     }
-
 
 }
