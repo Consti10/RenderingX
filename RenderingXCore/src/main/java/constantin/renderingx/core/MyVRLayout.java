@@ -2,6 +2,7 @@ package constantin.renderingx.core;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Build;
 import android.os.PowerManager;
@@ -61,6 +62,7 @@ public class MyVRLayout extends FrameLayout implements LifecycleObserver {
         final Display display=activity.getWindowManager().getDefaultDisplay();
         displaySynchronizer=null;
         if(createDisplaySynchronizer){
+            final Context context=activity;
             displaySynchronizer=new DisplaySynchronizer(activity,display);
         }
         gvrApi=new GvrApi(getContext(),displaySynchronizer);
