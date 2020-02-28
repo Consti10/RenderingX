@@ -26,7 +26,6 @@
 #include "VRFrameCPUChronometer.h"
 #include "example_supersync.h"
 
-//TODO: alternate color of rendered geometry instead of clear color
 //TODO: use better geometry
 
 GLRSuperSyncExample::GLRSuperSyncExample(JNIEnv *env, jobject androidContext,
