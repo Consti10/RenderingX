@@ -35,7 +35,7 @@ public:
         }
         //u=std::clamp(u,0.0f,1.0f);
         //v=std::clamp(v,0.0f,1.0f);
-        return {u,v};
+        return {1.0f -u,v};
     }
 
     //

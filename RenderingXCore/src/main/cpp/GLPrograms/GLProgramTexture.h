@@ -102,7 +102,7 @@ private:
                 "        if (y > 0.5) {\n"
                 "            s = 1.0 - s;\n"
                 "        }\n"
-                "        return vec2(s,t);"
+                "        return vec2(1.0-s,t);"
                 "    }";
         }
         s<<"void main() {\n";
