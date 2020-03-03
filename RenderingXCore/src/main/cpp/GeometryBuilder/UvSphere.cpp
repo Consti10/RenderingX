@@ -36,7 +36,7 @@ std::vector<UvSphere::Vertex> UvSphere::createUvSphere(
     const float quadWidthRads = horizontalFovRads / longitudes;
 
     // Each latitude strip has 2 * (longitudes quads + extra edge) vertices + 2 degenerate vertices.
-    int vertexCount = (2 * (longitudes + 1) + 2) * latitudes;
+    const unsigned int vertexCount = (unsigned)((2 * (longitudes + 1) + 2) * latitudes);
     // Buffer to return.
     std::vector<UvSphere::Vertex> vertexData(vertexCount);
 
