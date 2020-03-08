@@ -21,7 +21,8 @@ std::vector<UvSphere::Vertex> UvSphere::createUvSphere(
         int longitudes,
         float verticalFovDegrees,
         float horizontalFovDegrees,
-        const MEDIA_FORMAT mediaFormat) {
+        const MEDIA_FORMAT mediaFormat,
+	const ROTATION rotation) {
     if (radius <= 0
         || latitudes < 1 || longitudes < 1
         || verticalFovDegrees <= 0 || verticalFovDegrees > 180
@@ -57,9 +58,33 @@ std::vector<UvSphere::Vertex> UvSphere::createUvSphere(
                 const float theta = quadWidthRads * i + (float) PI - horizontalFovRads / 2;
 
                 // Set vertex position data as Cartesian coordinates.
-                vertexData[v].x = -(float) (radius * std::sin(theta) * std::cos(phi));
-                vertexData[v].y =  (float) (radius * std::sin(phi));
-                vertexData[v].z =  (float) (radius * std::cos(theta) * std::cos(phi));
+		switch (rotation) {
+		case ROTATE_0:
+		    vertexData[v].x = -(float) (radius * std::cos(theta) * std::cos(phi));
+		    vertexData[v].y = (float) (radius * std::sin(theta) * std::cos(phi));
+		    vertexData[v].z = -(float) (radius * std::sin(phi));
+		    break;
+		case ROTATE_90:
+		    vertexData[v].x = -(float) (radius * std::sin(theta) * std::cos(phi));
+		    vertexData[v].y = -(float) (radius * std::cos(theta) * std::cos(phi));
+		    vertexData[v].z = -(float) (radius * std::sin(phi));
+		    break;
+		case ROTATE_180:
+		    vertexData[v].x = (float) (radius * std::cos(theta) * std::cos(phi));
+		    vertexData[v].y = -(float) (radius * std::sin(theta) * std::cos(phi));
+		    vertexData[v].z = -(float) (radius * std::sin(phi));
+		    break;
+		case ROTATE_270:
+		    vertexData[v].x = -(float) (radius * std::sin(theta) * std::cos(phi));
+		    vertexData[v].y = (float) (radius * std::cos(theta) * std::cos(phi));
+		    vertexData[v].z = -(float) (radius * std::sin(phi));
+		    break;
+		default: // No rotation
+		    vertexData[v].x = (float) (radius * std::cos(theta) * std::cos(phi));
+		    vertexData[v].y = (float) (radius * std::sin(theta) * std::cos(phi));
+		    vertexData[v].z = -(float) (radius * std::sin(phi));
+		    break;
+		}
                 //vertexData[v].y =  (float) (radius * sin(theta) * sin(phi));
                 //vertexData[v].z =  (float) (radius * cos(theta));
 
