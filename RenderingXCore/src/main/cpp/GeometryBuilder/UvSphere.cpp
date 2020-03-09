@@ -58,33 +58,35 @@ std::vector<UvSphere::Vertex> UvSphere::createUvSphere(
                 const float theta = quadWidthRads * i + (float) PI - horizontalFovRads / 2;
 
                 // Set vertex position data as Cartesian coordinates.
-		switch (rotation) {
-		case ROTATE_0:
-		    vertexData[v].x = -(float) (radius * std::cos(theta) * std::cos(phi));
-		    vertexData[v].y = (float) (radius * std::sin(theta) * std::cos(phi));
-		    vertexData[v].z = -(float) (radius * std::sin(phi));
-		    break;
-		case ROTATE_90:
-		    vertexData[v].x = -(float) (radius * std::sin(theta) * std::cos(phi));
-		    vertexData[v].y = -(float) (radius * std::cos(theta) * std::cos(phi));
-		    vertexData[v].z = -(float) (radius * std::sin(phi));
-		    break;
-		case ROTATE_180:
-		    vertexData[v].x = (float) (radius * std::cos(theta) * std::cos(phi));
-		    vertexData[v].y = -(float) (radius * std::sin(theta) * std::cos(phi));
-		    vertexData[v].z = -(float) (radius * std::sin(phi));
-		    break;
-		case ROTATE_270:
-		    vertexData[v].x = -(float) (radius * std::sin(theta) * std::cos(phi));
-		    vertexData[v].y = (float) (radius * std::cos(theta) * std::cos(phi));
-		    vertexData[v].z = -(float) (radius * std::sin(phi));
-		    break;
-		default: // No rotation
-		    vertexData[v].x = (float) (radius * std::cos(theta) * std::cos(phi));
-		    vertexData[v].y = (float) (radius * std::sin(theta) * std::cos(phi));
-		    vertexData[v].z = -(float) (radius * std::sin(phi));
-		    break;
-		}
+                switch (rotation) {
+                    case ROTATE_0:
+                        vertexData[v].x = (float) (radius * std::cos(theta) * std::cos(phi));
+                        vertexData[v].y = (float) (radius * std::sin(theta) * std::cos(phi));
+                        vertexData[v].z = -(float) (radius * std::sin(phi));
+                        break;
+                    case ROTATE_90:
+                        vertexData[v].x = -(float) (radius * std::sin(theta) * std::cos(phi));
+                        vertexData[v].y = -(float) (radius * std::cos(theta) * std::cos(phi));
+                        vertexData[v].z = -(float) (radius * std::sin(phi));
+                        break;
+                    case ROTATE_180:
+                        vertexData[v].x = (float) (radius * std::cos(theta) * std::cos(phi));
+                        vertexData[v].y = -(float) (radius * std::sin(theta) * std::cos(phi));
+                        vertexData[v].z = -(float) (radius * std::sin(phi));
+                        break;
+                    case ROTATE_270:
+                        vertexData[v].x = -(float) (radius * std::sin(theta) * std::cos(phi));
+                        vertexData[v].y = (float) (radius * std::cos(theta) * std::cos(phi));
+                        vertexData[v].z = -(float) (radius * std::sin(phi));
+                        break;
+                    default:
+                        //This is what the original source code of GvrSphere uses.
+                        //Not sure what rotation, but needed for the Gvr test video
+                        vertexData[v].x = -(float) (radius * std::sin(theta) * std::cos(phi));
+                        vertexData[v].y =  (float) (radius * std::sin(phi));
+                        vertexData[v].z =  (float) (radius * std::cos(theta) * std::cos(phi));
+                        break;
+                }
                 //vertexData[v].y =  (float) (radius * sin(theta) * sin(phi));
                 //vertexData[v].z =  (float) (radius * cos(theta));
 

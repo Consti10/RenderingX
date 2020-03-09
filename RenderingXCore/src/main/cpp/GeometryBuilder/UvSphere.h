@@ -33,7 +33,7 @@ public:
     MEDIA_EQUIRECT_STEREO_TOP_BOTTOM = 2,
     };
     // Clockwise rotation
-    enum ROTATION { ROTATE_0, ROTATE_90, ROTATE_180, ROTATE_270 };
+    enum ROTATION { ROTATE_0, ROTATE_90, ROTATE_180, ROTATE_270,ROTATE_UNKNOWN};
 // The vertex contains texture coordinates for both the left & right eyes. If the scene is
 // rendered in VR, the appropriate part of the vertex will be selected at runtime. For a mono
 // scene, only the left eye's UV coordinates are used.

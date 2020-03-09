@@ -75,8 +75,8 @@ public:
     //And here is the binding for GLProgramTexture::Vertex
     //
     static std::vector<GLProgramTexture::Vertex>
-    createSphereEquirectangularMonoscopic(UvSphere::ROTATION rot, float radius=1.0f, int latitudes=64, int longitudes=32) {
-        const auto vertexDataAsInGvr=UvSphere::createUvSphere(radius,latitudes,longitudes,180,360,UvSphere::MEDIA_EQUIRECT_MONOSCOPIC,rot);
+    createSphereEquirectangularMonoscopic(float radius=1.0f, int latitudes=64, int longitudes=32) {
+        const auto vertexDataAsInGvr=UvSphere::createUvSphere(radius,latitudes,longitudes,180,360,UvSphere::MEDIA_EQUIRECT_MONOSCOPIC,UvSphere::ROTATE_UNKNOWN);
         std::vector<GLProgramTexture::Vertex> ret;
         for(const auto& vertex:vertexDataAsInGvr){
             GLProgramTexture::Vertex v{
@@ -89,7 +89,7 @@ public:
 
     //Use the map function to convert from equirect to dual fisheye insta360 - TODO fix 'black line'
     static std::vector<GLProgramTexture::Vertex>
-    createSphereDualFisheyeInsta360(UvSphere::ROTATION rot) {
+    createSphereDualFisheyeInsta360(UvSphere::ROTATION rot=UvSphere::ROTATION::ROTATE_0) {
         float radius=1.0f;
         float latitudes=128;
         float longitudes=36;
