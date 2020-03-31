@@ -5,7 +5,7 @@
 //
 
 #include <string>
-#include <Helper/MDebug.hpp>
+#include <MDebug.hpp>
 #include <MatrixHelper.h>
 #include "VRHeadsetParams.h"
 #include "DistortionManager.h"

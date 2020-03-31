@@ -12,7 +12,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <array>
-#include <DistortionCorrection/DistortionManager.h>
+#include <DistortionManager.h>
 #include <GLBufferHelper.hpp>
 
 //#define WIREFRAME

@@ -1,7 +1,7 @@
 #include "GLProgramText.h"
 #include "TextAssetsHelper.hpp"
-#include "Color/Color.hpp"
-#include "Helper/NDKHelper.hpp"
+#include <Color.hpp>
+#include <NDKHelper.hpp>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #include <vector>

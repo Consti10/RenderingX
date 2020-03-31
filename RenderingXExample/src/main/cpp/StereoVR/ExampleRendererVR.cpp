@@ -4,12 +4,12 @@
 #include "ExampleRendererVR.h"
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
-#include "Helper/GLBufferHelper.hpp"
+#include <GLBufferHelper.hpp>
 #include <MatrixHelper.h>
 #include <array>
-#include <GeometryBuilder/DualFisheyeSphere.hpp>
-#include <GeometryBuilder/UvSphere.h>
-#include <GeometryBuilder/CardboardViewportOcclusion.h>
+#include <DualFisheyeSphere.hpp>
+#include <UvSphere.h>
+#include <CardboardViewportOcclusion.h>
 #include <SphereBuilder.hpp>
 
 constexpr auto TAG="DistortionExample";

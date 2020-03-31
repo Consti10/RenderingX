@@ -12,8 +12,8 @@
 #include "android/log.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <Color/Color.hpp>
-#include <DistortionCorrection/DistortionManager.h>
+#include <Color.hpp>
+#include <DistortionManager.h>
 #include <GLBufferHelper.hpp>
 
 class GLProgramLine {

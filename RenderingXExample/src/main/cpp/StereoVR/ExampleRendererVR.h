@@ -26,10 +26,10 @@
 #include <GLProgramLine.h>
 #include <Chronometer.h>
 #include <FPSCalculator.h>
-#include <Helper/BasicGLPrograms.hpp>
-#include <DistortionCorrection/VRHeadsetParams.h>
+#include <BasicGLPrograms.hpp>
+#include <VRHeadsetParams.h>
 #include <gvr_util/util.h>
-#include <Helper/GLBufferHelper.hpp>
+#include <GLBufferHelper.hpp>
 
 //Example that uses VDDC to render VR content
 

@@ -16,7 +16,7 @@
 #include <ColoredGeometry.hpp>
 #include <TexturedGeometry.hpp>
 #include <TextAssetsHelper.hpp>
-#include "Helper/GLBufferHelper.hpp"
+#include <GLBufferHelper.hpp>
 #include <GLProgramLine.h>
 #include <GLProgramTexture.h>
 #include <Chronometer.h>

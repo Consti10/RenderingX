@@ -7,7 +7,7 @@
 
 
 #include "GLProgramVC.h"
-#include "Color/Color.hpp"
+#include <Color.hpp>
 #include <array>
 
 //Create vertex/index buffers for drawing colored geometry

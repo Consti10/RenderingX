@@ -15,8 +15,8 @@
 #include <GLProgramText.h>
 #include <ColoredGeometry.hpp>
 #include <TextAssetsHelper.hpp>
-#include <Helper/BasicGLPrograms.hpp>
-#include "Helper/GLBufferHelper.hpp"
+#include <BasicGLPrograms.hpp>
+#include <GLBufferHelper.hpp>
 #include <FBRManager.h>
 #include <Extensions.hpp>
 

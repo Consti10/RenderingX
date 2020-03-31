@@ -8,15 +8,15 @@
 #include <array>
 #include <string>
 #include <sstream>
-#include <Helper/MDebug.hpp>
+#include <MDebug.hpp>
 #include <vector>
 #include <sys/stat.h>
-#include "Helper/GLHelper.hpp"
+#include <GLHelper.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <Helper/NDKHelper.hpp>
+#include <NDKHelper.hpp>
 #include "android/log.h"
 #include "MLensDistortion.h"
 

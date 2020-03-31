@@ -26,8 +26,8 @@
 #include "TextAssetsHelper.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <Color/Color.hpp>
-#include <DistortionCorrection/DistortionManager.h>
+#include <Color.hpp>
+#include <DistortionManager.h>
 
 class GLProgramText {
 private:

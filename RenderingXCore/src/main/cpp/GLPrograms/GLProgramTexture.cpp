@@ -1,5 +1,5 @@
 
-#include <Helper/NDKHelper.hpp>
+#include <NDKHelper.hpp>
 #include "GLProgramTexture.h"
 
 constexpr auto TAG="GLRenderTexture(-External)";

@@ -8,7 +8,7 @@
 #include <glm/mat4x4.hpp>
 #include "MLensDistortion.h"
 #include "DistortionManager.h"
-#include "../Helper/MatrixHelper.h"
+#include "MatrixHelper.h"
 
 class VRHeadsetParams {
 public:
