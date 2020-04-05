@@ -5,8 +5,8 @@
 #ifndef RENDERINGX_SPHEREBUILDER_H
 #define RENDERINGX_SPHEREBUILDER_H
 
-#include <UvSphere.hpp>
-#include "../GLPrograms/GLProgramTexture.h"
+#include <Sphere/UvSphere.hpp>
+#include "GLProgramTexture.h"
 
 class SphereBuilder{
 public:

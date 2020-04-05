@@ -7,10 +7,10 @@
 #include <GLBufferHelper.hpp>
 #include <MatrixHelper.h>
 #include <array>
-#include <DualFisheyeSphere.hpp>
-#include <UvSphere.hpp>
+#include <Sphere/DualFisheyeSphere.hpp>
+#include <Sphere/UvSphere.hpp>
 #include <CardboardViewportOcclusion.hpp>
-#include <SphereBuilder.hpp>
+#include <Sphere/SphereBuilder.hpp>
 
 constexpr auto TAG="DistortionExample";
 

@@ -56,6 +56,7 @@ public:
   * @param horizontalFovDegrees Total longitudinal degrees that are covered by the sphere.Must be
   *    in (0, 360].
   * @param mediaFormat A MEDIA_* value.
+  * @param rotation rotation in 90° steps
   * @return  std::vector of type GvrSphere::Vertex
   */
     static std::vector<UvSphere::Vertex> createUvSphere(
@@ -172,7 +173,6 @@ public:
         return vertexData;
     }
 private:
-//equivalent of (java) Math.toRadians()
     static double Math_toRadians(double degrees){
         return (degrees * M_PI) / 180.0;
     }
