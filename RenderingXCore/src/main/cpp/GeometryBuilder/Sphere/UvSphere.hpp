@@ -1,21 +1,19 @@
-//
-// Created by Consti10 on 24/09/2019.
-//
-
 #ifndef FPV_VR_2018_GVRSPHERE_H
 #define FPV_VR_2018_GVRSPHERE_H
 
 #include <vector>
 #include <cmath>
 
-//Only depends on standard libraries
-//Inside th gvr 360° video example source code, there is a function to create
-//The geometry with texture data for a 360° video sphere
-//This .cpp class is inspired by the following .java class:
-// https://github.com/googlevr/gvr-android-sdk/blob/master/samples/sdk-video360/src/main/java/com/google/vr/sdk/samples/video360/rendering/Mesh.java
-//U,Vs map to an Equirectangular image
-//https://en.wikipedia.org/wiki/Equirectangular_projection
-
+/**
+ * Only depends on standard libraries
+ * Inside th gvr 360° video example source code, there is a function to create
+ * The geometry with texture data for a 360° video sphere
+ * This .cpp class is inspired by the following .java class:
+ * https://github.com/googlevr/gvr-android-sdk/blob/master/samples/sdk-video360/src/main/java/com/google/vr/sdk/samples/video360/rendering/Mesh.java
+ * U,Vs map to an Equirectangular image
+ * https://en.wikipedia.org/wiki/Equirectangular_projection
+ */
+ 
 class UvSphere{
 public:
     //EQUIRECT stands for Equirectangular projection
