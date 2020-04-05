@@ -5,10 +5,11 @@ find_library( log-lib
 
 set(RX_CORE_DIR ${CMAKE_SOURCE_DIR}/../RenderingXCore)
 
-include(${RX_CORE_DIR}/CMakeLists.txt)
+#include the cmake fle that builds the lib
+include(${RX_CORE_DIR}/RenderingXCore.cmake)
 
 ##########################################################################################################
-#Example Renderer
+# build the example renderer
 ##########################################################################################################
 add_library( example-renderer
         SHARED
