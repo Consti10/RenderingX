@@ -1,51 +1,57 @@
-#This file is included in RenderingXExampe//CMakeLists.txt and
-#includes & builds the cpp RenderingXCore lib
-
-#It needs the path RX_CORE_DIR to be set to the root of the RenderingXCore module
-
 ##########################################################################################################
-#Time & SuperSync
+# This file is included in RenderingXExampe/CMakeLists.txt and
+# includes & builds the cpp RenderingXCore lib
 ##########################################################################################################
-include_directories(${RX_CORE_DIR}/src/main/cpp/Time)
-add_library(Time SHARED
-        ${RX_CORE_DIR}/src/main/cpp/Time/Chronometer.cpp
-        ${RX_CORE_DIR}/src/main/cpp/Time/VRFrameCPUChronometer.cpp
-        ${RX_CORE_DIR}/src/main/cpp/Time/FPSCalculator.cpp)
-target_link_libraries( Time ${log-lib} android)
-include_directories(${RX_CORE_DIR}/src/main/cpp/SuperSync)
-add_library( SuperSync SHARED
-        ${RX_CORE_DIR}/src/main/cpp/SuperSync/FBRManager.cpp)
-target_link_libraries( SuperSync ${log-lib} android Time log EGL GLESv2)
+
+#Set the path where all the native (cpp) code is
+set(RX_CORE_CPP ${CMAKE_CURRENT_LIST_DIR}/src/main/cpp)
+#set the path where external libs are stored (google vr and glm)
+set(RX_CORE_EXTERNAL_LIBS ${CMAKE_CURRENT_LIST_DIR}/libs)
 
 ##########################################################################################################
-#gvr is a shared,imported library
+# First include all external libraries
 ##########################################################################################################
-set(GVR_DIR ${RX_CORE_DIR}/libs/google/gvr)
+# gvr is a shared,imported library
+set(GVR_DIR ${RX_CORE_EXTERNAL_LIBS}/google/gvr)
 include_directories(${GVR_DIR}/headers)
 add_library( gvr-lib SHARED IMPORTED )
 set_target_properties(gvr-lib PROPERTIES IMPORTED_LOCATION
         ${GVR_DIR}/jni/${ANDROID_ABI}/libgvr.so )
+# glm is header-only
+include_directories(${RX_CORE_EXTERNAL_LIBS}/glm)
+
+##########################################################################################################
+#Time & SuperSync
+##########################################################################################################
+include_directories(${RX_CORE_CPP}/Time)
+add_library(Time SHARED
+        ${RX_CORE_CPP}/Time/Chronometer.cpp
+        ${RX_CORE_CPP}/Time/VRFrameCPUChronometer.cpp
+        ${RX_CORE_CPP}/Time/FPSCalculator.cpp)
+target_link_libraries( Time ${log-lib} android)
+include_directories(${RX_CORE_CPP}/SuperSync)
+add_library( SuperSync SHARED
+        ${RX_CORE_CPP}/SuperSync/FBRManager.cpp)
+target_link_libraries( SuperSync ${log-lib} android Time log EGL GLESv2)
 
 ##########################################################################################################
 #GLPrograms
 ##########################################################################################################
-include_directories(${RX_CORE_DIR}/libs/glm)
-include_directories(${RX_CORE_DIR}/src/main/cpp/Color)
-include_directories(${RX_CORE_DIR}/src/main/cpp/DistortionCorrection)
-include_directories(${RX_CORE_DIR}/src/main/cpp/GeometryBuilder)
-include_directories(${RX_CORE_DIR}/src/main/cpp/GLHelper)
-include_directories(${RX_CORE_DIR}/src/main/cpp/GLPrograms)
-include_directories(${RX_CORE_DIR}/src/main/cpp/Helper)
-include_directories(${RX_CORE_DIR}/src/main/cpp/Other)
-set(RX_CORE_CPP_SPURCE_ROOT ${RX_CORE_DIR}/src/main/cpp)
+include_directories(${RX_CORE_CPP}/Color)
+include_directories(${RX_CORE_CPP}/DistortionCorrection)
+include_directories(${RX_CORE_CPP}/GeometryBuilder)
+include_directories(${RX_CORE_CPP}/GLHelper)
+include_directories(${RX_CORE_CPP}/GLPrograms)
+include_directories(${RX_CORE_CPP}/Helper)
+include_directories(${RX_CORE_CPP}/Other)
 add_library( GLPrograms SHARED
-        ${RX_CORE_CPP_SPURCE_ROOT}/DistortionCorrection/DistortionManager.cpp
-        ${RX_CORE_CPP_SPURCE_ROOT}/DistortionCorrection/PolynomialRadialDistortion.cpp
-        ${RX_CORE_CPP_SPURCE_ROOT}/DistortionCorrection/VRHeadsetParams.cpp
-        ${RX_CORE_CPP_SPURCE_ROOT}/DistortionCorrection/MLensDistortion.cpp
-        ${RX_CORE_CPP_SPURCE_ROOT}/GLPrograms/GLProgramVC.cpp
-        ${RX_CORE_CPP_SPURCE_ROOT}/GLPrograms/GLProgramText.cpp
-        ${RX_CORE_CPP_SPURCE_ROOT}/GLPrograms/GLProgramTexture.cpp
-        ${RX_CORE_CPP_SPURCE_ROOT}/GLPrograms/GLProgramLine.cpp
-        ${RX_CORE_CPP_SPURCE_ROOT}/GeometryBuilder/UvSphere.cpp)
+        ${RX_CORE_CPP}/DistortionCorrection/DistortionManager.cpp
+        ${RX_CORE_CPP}/DistortionCorrection/PolynomialRadialDistortion.cpp
+        ${RX_CORE_CPP}/DistortionCorrection/VRHeadsetParams.cpp
+        ${RX_CORE_CPP}/DistortionCorrection/MLensDistortion.cpp
+        ${RX_CORE_CPP}/GLPrograms/GLProgramVC.cpp
+        ${RX_CORE_CPP}/GLPrograms/GLProgramText.cpp
+        ${RX_CORE_CPP}/GLPrograms/GLProgramTexture.cpp
+        ${RX_CORE_CPP}/GLPrograms/GLProgramLine.cpp
+        ${RX_CORE_CPP}/GeometryBuilder/UvSphere.cpp)
 target_link_libraries( GLPrograms ${log-lib} android GLESv2 gvr-lib)
