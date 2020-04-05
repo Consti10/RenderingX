@@ -1,12 +1,9 @@
 cmake_minimum_required(VERSION 3.6)
 
-find_library( log-lib
-              log )
-
-set(RX_CORE_DIR ${CMAKE_SOURCE_DIR}/../RenderingXCore)
-
-#include the cmake fle that builds the lib
-include(${RX_CORE_DIR}/RenderingXCore.cmake)
+##########################################################################################################
+# include the cmake fle that builds the lib
+##########################################################################################################
+include(${CMAKE_SOURCE_DIR}/../RenderingXCore/RenderingXCore.cmake)
 
 ##########################################################################################################
 # build the example renderer
@@ -31,7 +28,7 @@ target_link_libraries( example-renderer
 add_library( example-renderer2
         SHARED
         src/main/cpp/StereoVR/ExampleRendererVR.cpp
-        ${RX_CORE_DIR}/src/main/cpp/Other/gvr_util/util.cc
+        ${CMAKE_SOURCE_DIR}/../RenderingXCore/src/main/cpp/Other/gvr_util/util.cc
         )
 target_link_libraries( example-renderer2
         GLPrograms

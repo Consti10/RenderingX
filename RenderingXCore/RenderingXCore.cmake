@@ -3,6 +3,9 @@
 # includes & builds the cpp RenderingXCore lib
 ##########################################################################################################
 
+find_library( log-lib
+        log )
+
 #Set the path where all the native (cpp) code is
 set(RX_CORE_CPP ${CMAKE_CURRENT_LIST_DIR}/src/main/cpp)
 #set the path where external libs are stored (google vr and glm)
