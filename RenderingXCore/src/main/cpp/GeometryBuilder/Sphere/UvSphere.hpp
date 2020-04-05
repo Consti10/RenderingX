@@ -13,7 +13,7 @@
  * U,Vs map to an Equirectangular image
  * https://en.wikipedia.org/wiki/Equirectangular_projection
  */
- 
+
 class UvSphere{
 public:
     //EQUIRECT stands for Equirectangular projection
@@ -33,11 +33,13 @@ public:
     };
     // Clockwise rotation
     enum ROTATION { ROTATE_0, ROTATE_90, ROTATE_180, ROTATE_270,ROTATE_UNKNOWN};
-// The vertex contains texture coordinates for both the left & right eyes. If the scene is
-// rendered in VR, the appropriate part of the vertex will be selected at runtime. For a mono
-// scene, only the left eye's UV coordinates are used.
-// For mono media, the UV coordinates are duplicated in each. For stereo media, the UV coords
-// point to the appropriate part of the source media.
+ /**
+  * The vertex contains texture coordinates for both the left & right eyes. If the scene is
+  * rendered in VR, the appropriate part of the vertex will be selected at runtime. For a mono
+  * scene, only the left eye's UV coordinates are used.
+  * For mono media, the UV coordinates are duplicated in each. For stereo media, the UV coords
+  * point to the appropriate part of the source media.
+  */
     struct Vertex{
         float x,y,z;
         float u_left,v_left;
