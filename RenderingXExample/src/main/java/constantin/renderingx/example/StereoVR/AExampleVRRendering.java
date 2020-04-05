@@ -71,7 +71,6 @@ public class AExampleVRRendering extends AppCompatActivity {
         gLView.setRenderer(renderer);
         gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         gLView.setPreserveEGLContextOnPause(true);
-
         if(USE_GVR_LAYOUT){
             setContentView(gvrLayout);
             gvrLayout.setPresentationView(gLView);
