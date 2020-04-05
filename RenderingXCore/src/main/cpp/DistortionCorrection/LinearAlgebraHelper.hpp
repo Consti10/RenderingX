@@ -10,8 +10,7 @@
 //based on @java Distortion from gvr (google vr) btw. cardboard library
 //Used by PolynomialRadialDistortion to create inverse distortion
 
-class LinearAlgebraHelper{
-public:
+namespace LinearAlgebraHelper{
     //see @java Distortion.solveLeastSquares()
     static std::vector<double> solveLeastSquares(const std::vector<std::vector<double>>& matA,const std::vector<double>& vecY){
         const auto numSamples = matA.size();

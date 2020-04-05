@@ -12,10 +12,8 @@
 // Check GL error(s)
 // compile shader program from vertex and fragment shader string
 
-class GLHelper{
-private:
+namespace GLHelper{
     inline static const std::string TAG="GLHelper";
-public:
     static const char *GlErrorString(GLenum error ){
         switch ( error ){
             case GL_NO_ERROR:						return "GL_NO_ERROR";
