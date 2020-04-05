@@ -8,7 +8,7 @@
 #include <MatrixHelper.h>
 #include <array>
 #include <DualFisheyeSphere.hpp>
-#include <UvSphere.h>
+#include <UvSphere.hpp>
 #include <CardboardViewportOcclusion.hpp>
 #include <SphereBuilder.hpp>
 
@@ -50,8 +50,7 @@ void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context,int videoT
     GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
     GLProgramTexture::loadTexture(mTexture360ImageInsta360,env,context,"360DegreeImages/insta_360_equirectangular.png");*/
     //create the insta360 sphere
-    mGvrSphereMappedB.initializeGL();
-    mGvrSphereMappedB.initializeAndUploadGL(
+    mSphereDualFisheye1.initializeAndUploadGL(
             SphereBuilder::createSphereDualFisheyeInsta360(),GL_TRIANGLE_STRIP);
     //second insta360
     mSphereDualFisheye2.initializeGL();
@@ -175,7 +174,7 @@ void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, b
     }
     if(M_SPHERE_MODE==SPHERE_MODE_INSTA360_TEST2){
         glm::mat4x4 modelMatrix=glm::rotate(glm::mat4(1.0F),glm::radians(90.0F), glm::vec3(0,0,-1));
-        mGLProgramTextureExt->drawX(mVideoTexture,viewM*modelMatrix,projM,mGvrSphereMappedB);
+        mGLProgramTextureExt->drawX(mVideoTexture,viewM*modelMatrix, projM, mSphereDualFisheye2);
     }
     if(occlusion){
         mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);

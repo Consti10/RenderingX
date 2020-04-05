@@ -79,8 +79,8 @@ private:
     //GLuint mTexture360Image;
     //GLuint mTexture360ImageInsta360;
     GLuint mVideoTexture;
-    VertexBuffer mGvrSphereMappedB;
     VertexBuffer mGvrSphereB;
+    VertexBuffer mSphereDualFisheye1;
     VertexIndexBuffer mSphereDualFisheye2;
     std::array<VertexBuffer,2> mOcclusionMesh;
     static constexpr int LINE_MESH_TESSELATION_FACTOR=12;

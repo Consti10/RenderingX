@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                     SPHERE_MODE=AExampleVRRendering.SPHERE_MODE_INSTA360_TEST;
                     VIDEO_FILENAME="360DegreeVideos/insta_webbn_1_shortened.h264";
                 }else{
-                    SPHERE_MODE=AExampleVRRendering.SPHERE_MODE_INSTA360_TEST;
+                    SPHERE_MODE=AExampleVRRendering.SPHERE_MODE_INSTA360_TEST2;
                     VIDEO_FILENAME="360DegreeVideos/insta_webbn_1_shortened.h264";
                 }
                 intent.putExtra(AExampleVRRendering.KEY_SPHERE_MODE,SPHERE_MODE);

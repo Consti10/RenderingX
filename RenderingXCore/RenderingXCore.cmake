@@ -55,6 +55,5 @@ add_library( GLPrograms SHARED
         ${RX_CORE_CPP}/GLPrograms/GLProgramVC.cpp
         ${RX_CORE_CPP}/GLPrograms/GLProgramText.cpp
         ${RX_CORE_CPP}/GLPrograms/GLProgramTexture.cpp
-        ${RX_CORE_CPP}/GLPrograms/GLProgramLine.cpp
-        ${RX_CORE_CPP}/GeometryBuilder/UvSphere.cpp)
+        ${RX_CORE_CPP}/GLPrograms/GLProgramLine.cpp)
 target_link_libraries( GLPrograms ${log-lib} android GLESv2 gvr-lib)
