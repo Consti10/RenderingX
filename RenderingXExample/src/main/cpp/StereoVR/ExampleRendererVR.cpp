@@ -9,7 +9,7 @@
 #include <array>
 #include <DualFisheyeSphere.hpp>
 #include <UvSphere.h>
-#include <CardboardViewportOcclusion.h>
+#include <CardboardViewportOcclusion.hpp>
 #include <SphereBuilder.hpp>
 
 constexpr auto TAG="DistortionExample";

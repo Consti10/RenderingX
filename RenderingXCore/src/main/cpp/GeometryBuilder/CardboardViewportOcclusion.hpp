@@ -2,16 +2,51 @@
 // Created by Constantin on 1/14/2020.
 //
 
-#ifndef RENDERINGX_CARDBOARDVIEWPORTOCCLUSION_H
-#define RENDERINGX_CARDBOARDVIEWPORTOCCLUSION_H
+#ifndef RENDERINGX_CARDBOARDVIEWPORTOCCLUSION_HPP
+#define RENDERINGX_CARDBOARDVIEWPORTOCCLUSION_HPP
 
 #import "../DistortionCorrection/VRHeadsetParams.h"
 #include <array>
 #include <vector>
 
 
-class CardboardViewportOcclusion{
-public:
+namespace CardboardViewportOcclusion{
+    // V1--V3--V5-- .... VN
+    //  |  |   |          |
+    // V2--V4--V6-- ...  VN+1
+    //Tesselation has to be 8 or 16 or 32 ..
+    //Creates a construct like drawn above that can be rendered using GL_TRIANGLE_STRIP
+    //However, V1==V2 and V3==V4 .. VN==VN+1 or in other words
+    //The V2,V4,V6..VN+1 values are not distorted yet
+    static const std::vector<GLProgramVC::Vertex> makeSomething(const glm::vec2 start,const float size,const bool horizontal,const TrueColor color,
+                                                                const int tessellation){
+        //create a strip in the form of
+        //1   | 0 1
+        //0.5 | 2 3
+        //0   | 4 5
+        //-0.5| 6 7
+        //-1  | 8 9
+        //0.5 0.25 0.125 ...
+        const float stepSize=size/tessellation;
+        std::vector<GLProgramVC::Vertex> ret;
+        for(float i=0;i<=size;i+=stepSize){
+            if(horizontal){
+                GLProgramVC::Vertex v{
+                        start.x+i,start.y,0,color
+                };
+                ret.push_back(v);
+                ret.push_back(v);
+            }else{
+                GLProgramVC::Vertex v{
+                        start.x,start.y+i,0,color
+                };
+                ret.push_back(v);
+                ret.push_back(v);
+            }
+        }
+        return ret;
+    }
+
     //Values that are not in range [-1,..,1] before un-distortion are not visible through the headset lenses anyway (FOV)
     //Values not in the range [-0.9,...,0.9] are 'just barely visible at the edge of the max fov of the headset' and to emulate the gvr-android-sdk behaviour
     //TODO: create a transition between +-(0.9..1) of alpha==1.0 to alpha==0.0
@@ -62,42 +97,6 @@ public:
         return ret;
     }
 
-    // V1--V3--V5-- .... VN
-    //  |  |   |          |
-    // V2--V4--V6-- ...  VN+1
-    //Tesselation has to be 8 or 16 or 32 ..
-    //Creates a construct like drawn above that can be rendered using GL_TRIANGLE_STRIP
-    //However, V1==V2 and V3==V4 .. VN==VN+1 or in other words
-    //The V2,V4,V6..VN+1 values are not distorted yet
-    static const std::vector<GLProgramVC::Vertex> makeSomething(const glm::vec2 start,const float size,const bool horizontal,const TrueColor color,
-            const int tessellation){
-        //create a strip in the form of
-        //1   | 0 1
-        //0.5 | 2 3
-        //0   | 4 5
-        //-0.5| 6 7
-        //-1  | 8 9
-        //0.5 0.25 0.125 ...
-        const float stepSize=size/tessellation;
-        std::vector<GLProgramVC::Vertex> ret;
-        for(float i=0;i<=size;i+=stepSize){
-            if(horizontal){
-                GLProgramVC::Vertex v{
-                        start.x+i,start.y,0,color
-                };
-                ret.push_back(v);
-                ret.push_back(v);
-            }else{
-                GLProgramVC::Vertex v{
-                        start.x,start.y+i,0,color
-                };
-                ret.push_back(v);
-                ret.push_back(v);
-            }
-        }
-        return ret;
-    }
-
     static const void uploadOcclusionMeshLeftRight(const VRHeadsetParams& params,TrueColor color,std::array<VertexBuffer,2>& vb){
         vb[0].uploadGL(makeMesh(params,0,color),GL_TRIANGLE_STRIP);
         vb[1].uploadGL(makeMesh(params,1,color),GL_TRIANGLE_STRIP);
@@ -105,4 +104,4 @@ public:
 };
 
 
-#endif //RENDERINGX_CARDBOARDVIEWPORTOCCLUSION_H
+#endif //RENDERINGX_CARDBOARDVIEWPORTOCCLUSION_HPP
