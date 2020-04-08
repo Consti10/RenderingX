@@ -18,9 +18,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-        <android.opengl.GLSurfaceView
-            android:id="@+id/GLSurfaceView"
+        <constantin.renderingx.core.MyGLSurfaceView
+            android:id="@+id/MyGLSurfaceView"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
 

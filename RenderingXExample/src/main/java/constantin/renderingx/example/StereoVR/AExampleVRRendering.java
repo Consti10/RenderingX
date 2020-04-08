@@ -54,7 +54,7 @@ public class AExampleVRRendering extends AppCompatActivity {
         }
         final Bundle bundle=getIntent().getExtras();
         final int SPHERE_MODE=bundle==null ? 0 : bundle.getInt(KEY_SPHERE_MODE,0);
-        gLView = new MyGLSurfaceView(this,this);
+        gLView = new MyGLSurfaceView(this);
         gLView.setEGLContextClientVersion(2);
         final GLRExampleVR renderer;
         if(SPHERE_MODE==SPHERE_MODE_NONE){

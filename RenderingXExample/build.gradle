@@ -39,6 +39,9 @@ android {
             jniLibs.srcDirs = ['libs/google/gvr']
         }
     }
+    viewBinding {
+        enabled = true
+    }
 }
 
 dependencies {

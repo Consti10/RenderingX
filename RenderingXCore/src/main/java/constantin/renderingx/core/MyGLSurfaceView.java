@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.util.AttributeSet;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -18,12 +20,22 @@ import androidx.lifecycle.OnLifecycleEvent;
  */
 
 //No default constructor because we explicitly need the LifecycleOwner !
-@SuppressLint("ViewConstructor")
 public class MyGLSurfaceView extends GLSurfaceView implements LifecycleObserver {
+
+    public MyGLSurfaceView(Context context) {
+        super(context);
+        ((AppCompatActivity)context).getLifecycle().addObserver(this);
+    }
+
+    public MyGLSurfaceView(Context context, AttributeSet attrs) {
+        super(context,attrs);
+        ((AppCompatActivity)context).getLifecycle().addObserver(this);
+    }
 
     public MyGLSurfaceView(Context context,LifecycleOwner lifecycleOwner) {
         super(context);
-        lifecycleOwner.getLifecycle().addObserver(this);
+        ((AppCompatActivity)context).getLifecycle().addObserver(this);
+        //lifecycleOwner.getLifecycle().addObserver(this);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
