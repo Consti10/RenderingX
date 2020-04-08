@@ -21,6 +21,8 @@ import androidx.lifecycle.OnLifecycleEvent;
 
 //No default constructor because we explicitly need the LifecycleOwner !
 public class MyGLSurfaceView extends GLSurfaceView implements LifecycleObserver {
+    //Do not pause / resume if no renderer is set (e.g. the view exists but was not properly configured in onCreate() )
+    private boolean rendererSet=false;
 
     public MyGLSurfaceView(Context context) {
         super(context);
@@ -34,17 +36,24 @@ public class MyGLSurfaceView extends GLSurfaceView implements LifecycleObserver 
 
     public MyGLSurfaceView(Context context,LifecycleOwner lifecycleOwner) {
         super(context);
-        ((AppCompatActivity)context).getLifecycle().addObserver(this);
-        //lifecycleOwner.getLifecycle().addObserver(this);
+        lifecycleOwner.getLifecycle().addObserver(this);
+    }
+
+    @Override
+    public void setRenderer(Renderer renderer){
+        rendererSet=true;
+        super.setRenderer(renderer);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private void resume(){
+        if(!rendererSet)return;
         super.onResume();
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     private void pause(){
+        if(!rendererSet)return;
         super.onPause();
     }
 
