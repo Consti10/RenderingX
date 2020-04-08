@@ -29,6 +29,7 @@ namespace GLHelper{
         GLenum error;
         std::stringstream ss;
         ss<<"GLError:"<<caller.c_str();
+        //ss<<__FILE__<<__LINE__;
         bool anyError=false;
         while ((error = glGetError()) != GL_NO_ERROR) {
             ss<<" |"<<GlErrorString(error);
