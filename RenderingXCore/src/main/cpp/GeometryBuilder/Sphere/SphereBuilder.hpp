@@ -89,7 +89,7 @@ public:
 
     //Use the map function to convert from equirect to dual fisheye insta360 - TODO fix 'black line'
     static std::vector<GLProgramTexture::Vertex>
-    createSphereDualFisheyeInsta360(UvSphere::ROTATION rot=UvSphere::ROTATION::ROTATE_0) {
+    createSphereDualFisheyeInsta360(UvSphere::ROTATION rot=UvSphere::ROTATION::ROTATE_UNKNOWN) {
         float radius=1.0f;
         float latitudes=128;
         float longitudes=36;
