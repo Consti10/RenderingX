@@ -72,7 +72,7 @@ public:
         nVertices = GLBufferHelper::uploadGLBuffer(vertexB, vertices);
         mMode=mode;
         GLHelper::checkGlError("VertexBuffer::uploadGL");
-        MDebug::log("N vertices is "+std::to_string(nVertices));
+        //MDebug::log("N vertices is "+std::to_string(nVertices));
     }
 
     template<typename T,size_t s>

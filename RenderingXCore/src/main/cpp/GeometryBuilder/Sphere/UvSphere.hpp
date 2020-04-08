@@ -104,7 +104,7 @@ public:
                     // Set vertex position data as Cartesian coordinates.
                     switch (rotation) {
                         case ROTATE_0:
-                            vertexData[v].x = (float) (radius * std::cos(theta) * std::cos(phi));
+                            vertexData[v].x = -(float) (radius * std::cos(theta) * std::cos(phi));
                             vertexData[v].y = (float) (radius * std::sin(theta) * std::cos(phi));
                             vertexData[v].z = -(float) (radius * std::sin(phi));
                             break;
