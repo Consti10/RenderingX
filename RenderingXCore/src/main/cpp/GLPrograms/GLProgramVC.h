@@ -14,7 +14,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <array>
 #include <Color.hpp>
-#include <DistortionManager.h>
+#include <VDDCManager.h>
 #include <GLBufferHelper.hpp>
 
 //#define WIREFRAME
@@ -26,15 +26,15 @@ private:
     GLuint mProgram;
     GLuint mPositionHandle,mColorHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
-    const DistortionManager* distortionManager;
-    DistortionManager::UndistortionHandles* mUndistortionHandles;
+    const VDDCManager* distortionManager;
+    VDDCManager::UndistortionHandles* mUndistortionHandles;
 public:
     struct Vertex{
         float x,y,z;
         TrueColor colorRGBA;
     };
     using INDEX_DATA=GLushort;
-    explicit GLProgramVC(const DistortionManager* distortionManager=nullptr,bool coordinates2D=false);
+    explicit GLProgramVC(const VDDCManager* distortionManager=nullptr, bool coordinates2D=false);
     void beforeDraw(GLuint buffer) const;
     void draw(Mat4x4 ViewM, Mat4x4 ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
     void draw(const glm::mat4& ViewM,const glm::mat4& ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
@@ -46,7 +46,7 @@ public:
     void drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const VertexBuffer& vb)const;
     void drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const VertexIndexBuffer& vib)const;
 private:
-    static const std::string VS(const DistortionManager* distortionManager1,bool coordinates2D){
+    static const std::string VS(const VDDCManager* distortionManager1, bool coordinates2D){
         std::stringstream s;
         //s<<"#version 100\n";
         s<<"uniform mat4 uMVMatrix;\n";
@@ -55,13 +55,13 @@ private:
         s<<"attribute vec4 aColor;\n";
         s<<"varying vec4 vColor;\n";
         if(!coordinates2D){
-            s<< DistortionManager::writeDistortionParams(distortionManager1);
+            s << VDDCManager::writeDistortionParams(distortionManager1);
         }
         s<<"void main(){\n";
         if(coordinates2D){
             s<<"gl_Position=vec4(aPosition.xy,0,1);\n";
         }else{
-            s<<DistortionManager::writeGLPosition(distortionManager1);
+            s << VDDCManager::writeGLPosition(distortionManager1);
         }
         //s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition";
         s<<"vColor = aColor;\n";

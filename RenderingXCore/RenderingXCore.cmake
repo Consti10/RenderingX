@@ -49,9 +49,9 @@ include_directories(${RX_CORE_CPP}/GLPrograms)
 include_directories(${RX_CORE_CPP}/Helper)
 include_directories(${RX_CORE_CPP}/Other)
 add_library( GLPrograms SHARED
-        ${RX_CORE_CPP}/DistortionCorrection/DistortionManager.cpp
+        ${RX_CORE_CPP}/DistortionCorrection/VDDCManager.cpp
         ${RX_CORE_CPP}/DistortionCorrection/PolynomialRadialDistortion.cpp
-        ${RX_CORE_CPP}/DistortionCorrection/VRHeadsetParams.cpp
+        ${RX_CORE_CPP}/DistortionCorrection/DistortionEngine.cpp
         ${RX_CORE_CPP}/DistortionCorrection/MLensDistortion.cpp
         ${RX_CORE_CPP}/GLPrograms/GLProgramVC.cpp
         ${RX_CORE_CPP}/GLPrograms/GLProgramText.cpp

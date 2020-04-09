@@ -2,14 +2,14 @@
 #include "GLProgramVC.h"
 
 
-GLProgramVC::GLProgramVC(const DistortionManager* distortionManager,bool coordinates2D):
+GLProgramVC::GLProgramVC(const VDDCManager* distortionManager, bool coordinates2D):
     distortionManager(distortionManager){
     mProgram = GLHelper::createProgram(VS(distortionManager,coordinates2D),FS());
     mMVMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
     mPMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uPMatrix");
     mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
     mColorHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aColor");
-    mUndistortionHandles=DistortionManager::getUndistortionUniformHandles(distortionManager,mProgram);
+    mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
     GLHelper::checkGlError("glGetAttribLocation OGProgramColor");
 }
 

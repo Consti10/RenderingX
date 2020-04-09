@@ -10,7 +10,7 @@ import constantin.renderingx.core.ViewSuperSync;
 //See native code for documentation
 public class GLRExampleSuperSync implements ViewSuperSync.IRendererSuperSync {
     static {
-        System.loadLibrary("example-renderer");
+        System.loadLibrary("example-supersync");
     }
     private native long nativeConstruct(Context context,boolean qcomTiledRenderingAvailable, boolean reusableSyncAvailable);
     private native void nativeDelete(long glRendererStereoP);

@@ -23,7 +23,8 @@ import java.util.List;
 import constantin.renderingx.core.GLESInfo.AWriteGLESInfo;
 import constantin.renderingx.core.GLESInfo.GLESInfo;
 import constantin.renderingx.example.Mono.AExampleRendering;
-import constantin.renderingx.example.StereoVR.AExampleVRRendering;
+import constantin.renderingx.example.StereoVR.DistortionTest.AExampleDistortion;
+import constantin.renderingx.example.StereoVR.Example360Video.AExample360Video;
 import constantin.renderingx.example.supersync.AExampleSuperSync;
 
 public class MainActivity extends AppCompatActivity {
@@ -66,33 +67,32 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent intent=new Intent().setClass(context, AExampleVRRendering.class);
-                intent.putExtra(AExampleVRRendering.KEY_SPHERE_MODE,0);
+                final Intent intent=new Intent().setClass(context, AExampleDistortion.class);
                 startActivity(intent);
             }
         });
         findViewById(R.id.button4).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent intent=new Intent().setClass(context, AExampleVRRendering.class);
+                final Intent intent=new Intent().setClass(context, AExample360Video.class);
                 final int position = mSpinner.getSelectedItemPosition()==Spinner.INVALID_POSITION ? 0 : mSpinner.getSelectedItemPosition();
                 final int SPHERE_MODE;
                 final String VIDEO_FILENAME;
                 if(position==0){
-                    SPHERE_MODE=AExampleVRRendering.SPHERE_MODE_GVR_EQUIRECTANGULAR;
+                    SPHERE_MODE= AExample360Video.SPHERE_MODE_GVR_EQUIRECTANGULAR;
                     VIDEO_FILENAME="360DegreeVideos/testRoom1_1920Mono.mp4";
                 }else if(position==1){
-                    SPHERE_MODE=AExampleVRRendering.SPHERE_MODE_GVR_EQUIRECTANGULAR;
+                    SPHERE_MODE= AExample360Video.SPHERE_MODE_GVR_EQUIRECTANGULAR;
                     VIDEO_FILENAME="360DegreeVideos/paris_by_diego.mp4";
                 } else if(position==2){
-                    SPHERE_MODE=AExampleVRRendering.SPHERE_MODE_INSTA360_TEST;
+                    SPHERE_MODE= AExample360Video.SPHERE_MODE_INSTA360_TEST;
                     VIDEO_FILENAME="360DegreeVideos/insta_webbn_1_shortened.h264";
                 }else{
-                    SPHERE_MODE=AExampleVRRendering.SPHERE_MODE_INSTA360_TEST2;
+                    SPHERE_MODE= AExample360Video.SPHERE_MODE_INSTA360_TEST2;
                     VIDEO_FILENAME="360DegreeVideos/insta_webbn_1_shortened.h264";
                 }
-                intent.putExtra(AExampleVRRendering.KEY_SPHERE_MODE,SPHERE_MODE);
-                intent.putExtra(AExampleVRRendering.KEY_VIDEO_FILENAME,VIDEO_FILENAME);
+                intent.putExtra(AExample360Video.KEY_SPHERE_MODE,SPHERE_MODE);
+                intent.putExtra(AExample360Video.KEY_VIDEO_FILENAME,VIDEO_FILENAME);
                 startActivity(intent);
             }
         });

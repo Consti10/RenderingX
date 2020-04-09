@@ -1,5 +1,4 @@
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "cert-flp30-c"
+
 //
 // Created by Constantin on 1/9/2020.
 //
@@ -7,18 +6,18 @@
 #include <string>
 #include <MDebug.hpp>
 #include <MatrixHelper.h>
-#include "VRHeadsetParams.h"
-#include "DistortionManager.h"
+#include "DistortionEngine.h"
+#include "VDDCManager.h"
 #include "XTestDistortion.h"
 
-void VRHeadsetParams::setGvrApi(gvr::GvrApi *gvrApi) {
+void DistortionEngine::setGvrApi(gvr::GvrApi *gvrApi) {
     this->gvr_api=gvrApi;
 }
 
-void VRHeadsetParams::updateHeadsetParams(const MDeviceParams &mDP,int screenWidthP,int screenHeightP) {
-    this->screenWidthP=screenWidthP;
-    this->screenHeightP=screenHeightP;
-    LOGD("%s",MLensDistortion::MDeviceParamsAsString(mDP).c_str());
+void DistortionEngine::updateHeadsetParams(const MyVrHeadsetParams &mDP) {
+    this->screenWidthP=mDP.screen_width_pixels;
+    this->screenHeightP=mDP.screen_height_pixels;
+    LOGD("%s",MyVrHeadsetParamsAsString(mDP).c_str());
     mDistortion=PolynomialRadialDistortion(mDP.radial_distortion_params);
 
     const auto GetYEyeOffsetMeters= MLensDistortion::GetYEyeOffsetMeters(mDP.vertical_alignment,
@@ -29,7 +28,7 @@ void VRHeadsetParams::updateHeadsetParams(const MDeviceParams &mDP,int screenWid
                                                       mDP.inter_lens_distance,
                                                       mDistortion,
                                                       mDP.screen_width_meters, mDP.screen_height_meters);
-    const auto fovRight=VRHeadsetParams::reverseFOV(fovLeft);
+    const auto fovRight=DistortionEngine::reverseFOV(fovLeft);
 
     MLensDistortion::CalculateViewportParameters_NDC(0, GetYEyeOffsetMeters,
                                                      mDP.screen_to_lens_distance,
@@ -57,14 +56,14 @@ void VRHeadsetParams::updateHeadsetParams(const MDeviceParams &mDP,int screenWid
     //never has a deviation higher from x in the range [0..maxRangeInverse]
     float maxRangeInverse=1.0f;
     for(float i=1.0f;i<=2.0f;i+=0.01f){
-        const auto inverse=PolynomialRadialInverse(mDistortion,maxRangeInverse,DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
+        const auto inverse=PolynomialRadialInverse(mDistortion, maxRangeInverse, VDDCManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
         const float maxDeviation=PolynomialRadialInverse::calculateMaxDeviation(mDistortion,inverse,maxRangeInverse);
         if(maxDeviation<=0.001f){
             maxRangeInverse=i;
         }
     }
     LOGD("Max value used for getApproximateInverseDistortion() %f",maxRangeInverse);
-    mInverse=PolynomialRadialInverse(mDistortion,maxRangeInverse,DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
+    mInverse=PolynomialRadialInverse(mDistortion, maxRangeInverse, VDDCManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
     MDebug::log("Inverse is:"+mInverse.toStringX());
 
     //as long as the function is still strict monotonic increasing we can increase the value that will be used for
@@ -97,32 +96,32 @@ void VRHeadsetParams::updateHeadsetParams(const MDeviceParams &mDP,int screenWid
 }
 
 
-void VRHeadsetParams::updateDistortionManager(DistortionManager &distortionManager)const {
+void DistortionEngine::updateDistortionManager(VDDCManager &distortionManager)const {
     distortionManager.updateDistortion(mInverse,screen_params,texture_params);
 }
 
-void VRHeadsetParams::updateLatestHeadSpaceFromStartSpaceRotation() {
+void DistortionEngine::updateLatestHeadSpaceFromStartSpaceRotation() {
     latestHeadSpaceFromStartSpaceRotation_=gvr_api->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
     latestHeadSpaceFromStartSpaceRotation=toGLM(latestHeadSpaceFromStartSpaceRotation_);
 }
 
-glm::mat4 VRHeadsetParams::GetLatestHeadSpaceFromStartSpaceRotation()const{
+glm::mat4 DistortionEngine::GetLatestHeadSpaceFromStartSpaceRotation()const{
     return latestHeadSpaceFromStartSpaceRotation;
 }
 
-gvr::Mat4f VRHeadsetParams::GetLatestHeadSpaceFromStartSpaceRotation_()const {
+gvr::Mat4f DistortionEngine::GetLatestHeadSpaceFromStartSpaceRotation_()const {
     return latestHeadSpaceFromStartSpaceRotation_;
 }
 
-glm::mat4 VRHeadsetParams::GetEyeFromHeadMatrix(gvr::Eye eye)const{
+glm::mat4 DistortionEngine::GetEyeFromHeadMatrix(gvr::Eye eye)const{
     return eyeFromHead[eye];
 }
 
-glm::mat4 VRHeadsetParams::GetProjectionMatrix(gvr::Eye eye)const{
+glm::mat4 DistortionEngine::GetProjectionMatrix(gvr::Eye eye)const{
     return mProjectionM[eye];
 }
 
-void VRHeadsetParams::setOpenGLViewport(gvr::Eye eye) {
+void DistortionEngine::setOpenGLViewport(gvr::Eye eye) {
     const int ViewPortW=(int)(screenWidthP/2.0f);
     const int ViewPortH=screenHeightP;
     if(eye==0){
@@ -131,5 +130,3 @@ void VRHeadsetParams::setOpenGLViewport(gvr::Eye eye) {
         glViewport(ViewPortW,0,ViewPortW,ViewPortH);
     }
 }
-
-#pragma clang diagnostic pop

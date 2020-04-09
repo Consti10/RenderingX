@@ -8,6 +8,8 @@
 #include <array>
 #include <memory>
 #include <math.h>
+#include <jni.h>
+#include <NDKHelper.hpp>
 
 #include "PolynomialRadialDistortion.h"
 
@@ -16,16 +18,7 @@
 
 constexpr float kDefaultBorderSizeMeters = 0.003f;
 
-struct MDeviceParams{
-    const float screen_width_meters;
-    const float screen_height_meters;
-    const float screen_to_lens_distance;
-    const float inter_lens_distance;
-    const int vertical_alignment;
-    const float tray_to_lens_distance;
-    const std::array<float,4> device_fov_left;
-    const std::vector<float> radial_distortion_params;
-};
+#include "MyVrHeadsetParams.h"
 
 // All values in tanangle units.
 class MLensDistortion {
@@ -92,8 +85,6 @@ public:
             const PolynomialRadialDistortion &inverseDistortion,
             const ViewportParams &screen_params, const ViewportParams &texture_params,
             const std::array<float, 2> &in,const bool isInverse=true);
-
-    static std::string MDeviceParamsAsString(const MDeviceParams& dp);
 
     static std::string ViewportParamsAsString(const ViewportParams& screen_params,const ViewportParams& texture_params);
     static std::string ViewportParamsNDCAsString(const ViewportParamsNDC& screen_params,const ViewportParamsNDC& texture_params);

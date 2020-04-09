@@ -10,22 +10,30 @@ include(${CMAKE_SOURCE_DIR}/../RenderingXCore/RenderingXCore.cmake)
 ##########################################################################################################
 set(BASIC_DEPENDENCIES GLPrograms Time ${log-lib} android log EGL GLESv2)
 
-add_library( example-renderer
+add_library( example-mono
         SHARED
         src/main/cpp/Mono/example_renderer1.cpp
         )
-target_link_libraries( example-renderer ${BASIC_DEPENDENCIES})
+target_link_libraries( example-mono ${BASIC_DEPENDENCIES})
 
-add_library( example-renderer2
+add_library( example-1
         SHARED
-        src/main/cpp/StereoVR/ExampleRendererVR.cpp
+        src/main/cpp/StereoVR/DistortionTest/RendererDistortion.cpp
         ${CMAKE_SOURCE_DIR}/../RenderingXCore/src/main/cpp/Other/gvr_util/util.cc
         )
-target_link_libraries( example-renderer2 ${BASIC_DEPENDENCIES} gvr-lib)
+target_link_libraries( example-1 ${BASIC_DEPENDENCIES} gvr-lib)
 
-add_library( example-renderer3
+add_library( example-2
+        SHARED
+        src/main/cpp/StereoVR/Example360Video/Renderer360Video.cpp
+        ${CMAKE_SOURCE_DIR}/../RenderingXCore/src/main/cpp/Other/gvr_util/util.cc
+        )
+target_link_libraries( example-2 ${BASIC_DEPENDENCIES} gvr-lib)
+
+
+add_library( example-supersync
         SHARED
         src/main/cpp/SuperSync/example_supersync.cpp
         )
-target_link_libraries( example-renderer3 ${BASIC_DEPENDENCIES} SuperSync)
+target_link_libraries( example-supersync ${BASIC_DEPENDENCIES} SuperSync)
 

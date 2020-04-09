@@ -19,7 +19,7 @@ static float FONTS_WIDTHS_U[CHAR_CNT];
 
 //#define WIREFRAME
 
-GLProgramText::GLProgramText(const DistortionManager* distortionManager):
+GLProgramText::GLProgramText(const VDDCManager* distortionManager):
     distortionManager(distortionManager)
     {
     mProgram = GLHelper::createProgram(VS(distortionManager),FS2());
@@ -37,7 +37,7 @@ GLProgramText::GLProgramText(const DistortionManager* distortionManager):
     mOutlineStrengthHandle=(GLuint)glGetUniformLocation(mProgram,"uOutlineStrength");
     uEdge=(GLuint)glGetUniformLocation(mProgram,"uEdge");
     uBorderEdge=(GLuint)glGetUniformLocation(mProgram,"uBorderEdge");
-    mUndistortionHandles=DistortionManager::getUndistortionUniformHandles(distortionManager,mProgram);
+    mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
     GLHelper::checkGlError("GLProgramText() uniforms3");
 
 #ifdef WIREFRAME

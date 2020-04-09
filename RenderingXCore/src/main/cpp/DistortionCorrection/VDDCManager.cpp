@@ -2,10 +2,10 @@
 // Created by Consti10 on 31/10/2019.
 //
 
-#include "DistortionManager.h"
+#include "VDDCManager.h"
 
-DistortionManager::UndistortionHandles*
-DistortionManager::getUndistortionUniformHandles(const DistortionManager* dm,const GLuint program){
+VDDCManager::UndistortionHandles*
+VDDCManager::getUndistortionUniformHandles(const VDDCManager* dm, const GLuint program){
     if(isNullOrDisabled(dm)){
         return nullptr;
     }
@@ -28,8 +28,8 @@ DistortionManager::getUndistortionUniformHandles(const DistortionManager* dm,con
     return ret;
 }
 
-void DistortionManager::beforeDraw(
-        const DistortionManager::UndistortionHandles* uh) const {
+void VDDCManager::beforeDraw(
+        const VDDCManager::UndistortionHandles* uh) const {
     if(distortionMode==NONE){
         return;
     }else if(distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
@@ -53,17 +53,17 @@ void DistortionManager::beforeDraw(
     }
 }
 
-void DistortionManager::afterDraw() const {
+void VDDCManager::afterDraw() const {
     //glBindTexture(GL_TEXTURE_2D,0);
 }
 
-std::string DistortionManager::writeDistortionParams(
-        const DistortionManager* distortionManager) {
+std::string VDDCManager::writeDistortionParams(
+        const VDDCManager* distortionManager) {
     if(isNullOrDisabled(distortionManager))
         return "";
     std::stringstream s;
     //Write all shader function(s) needed for VDDC
-    const int N_COEFICIENTS=DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS;
+    const int N_COEFICIENTS=VDDCManager::N_RADIAL_UNDISTORTION_COEFICIENTS;
     s<< glsl_struct_PolynomialRadialInverse(N_COEFICIENTS);
     s<<glsl_PolynomialDistortionFactor(N_COEFICIENTS);
     s<<glsl_PolynomialDistort();
@@ -80,11 +80,11 @@ std::string DistortionManager::writeDistortionParams(
     return s.str();
 }
 
-std::string DistortionManager::writeGLPosition(const DistortionManager* distortionManager1,
-                                                     const std::string &positionAttribute) {
+std::string VDDCManager::writeGLPosition(const VDDCManager* distortionManager1,
+                                         const std::string &positionAttribute) {
     if(isNullOrDisabled(distortionManager1))
         return "gl_Position = (uPMatrix*uMVMatrix)* "+positionAttribute+";\n";;
-    const DistortionManager& distortionManager=*distortionManager1;
+    const VDDCManager& distortionManager=*distortionManager1;
     std::stringstream s;
     if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
         s<<"vec4 pos=uMVMatrix*"+positionAttribute+";\n";
@@ -121,7 +121,7 @@ std::string DistortionManager::writeGLPosition(const DistortionManager* distorti
     return s.str();
 }
 
-void DistortionManager::updateDistortion(const PolynomialRadialInverse &inverseDistortion) {
+void VDDCManager::updateDistortion(const PolynomialRadialInverse &inverseDistortion) {
     for(int i=0;i<inverseDistortion.getCoefficients().size();i++){
         radialDistortionCoefficients.kN[i]=inverseDistortion.getCoefficients()[i];
     }
@@ -129,16 +129,16 @@ void DistortionManager::updateDistortion(const PolynomialRadialInverse &inverseD
     //MDebug::log(inverseDistortion.toString());
 }
 
-void DistortionManager::updateDistortion(const PolynomialRadialInverse &inverseDistortion,
-                                    const std::array<MLensDistortion::ViewportParams, 2> screen_params,
-                                    const std::array<MLensDistortion::ViewportParams, 2> texture_params) {
+void VDDCManager::updateDistortion(const PolynomialRadialInverse &inverseDistortion,
+                                   const std::array<MLensDistortion::ViewportParams, 2> screen_params,
+                                   const std::array<MLensDistortion::ViewportParams, 2> texture_params) {
     this->screen_params=screen_params;
     this->texture_params=texture_params;
     updateDistortion(inverseDistortion);
 }
 
-void DistortionManager::updateDistortionWithIdentity() {
-    PolynomialRadialInverse identity(DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
+void VDDCManager::updateDistortionWithIdentity() {
+    PolynomialRadialInverse identity(VDDCManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
     const MLensDistortion::ViewportParams identityParams{1,1,0,0};
     updateDistortion(identity,{identityParams,identityParams},{identityParams,identityParams});
 }

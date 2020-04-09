@@ -88,7 +88,7 @@ void test3(){
     MAX_RAD_SQ=1.0f;
     bool done=false;
     while(MAX_RAD_SQ<2.0f && !done){
-        const auto& inverse=polynomialRadialDistortion.getApproximateInverseDistortion(MAX_RAD_SQ,DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
+        const auto& inverse=polynomialRadialDistortion.getApproximateInverseDistortion(MAX_RAD_SQ,VDDCManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
         const float maxDeviation=calculateMaxDeviation(polynomialRadialDistortion,inverse,MAX_RAD_SQ);
         LOGD("Max Rad Sq%f has max. deviation of %f",MAX_RAD_SQ,maxDeviation);
         if(maxDeviation>0.001f){
@@ -102,7 +102,7 @@ void test3(){
 //In the range of [1 ... 2] calculate the inverse distortion and the max
 //deviation value for
 /*for(int j=0;j<=11;j++){
-    const int N=DistortionManager::N_RADIAL_UNDISTORTION_COEFICIENTS-11+j;
+    const int N=VDDCManager::N_RADIAL_UNDISTORTION_COEFICIENTS-11+j;
     MAX_RAD_SQ=1.0f;
     for(float i=1.0f;i<=2.0f;i+=0.01f){
         const auto& inverse=polynomialRadialDistortion.getApproximateInverseDistortion(MAX_RAD_SQ,N);

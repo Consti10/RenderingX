@@ -7,10 +7,10 @@
 
 #include <glm/mat4x4.hpp>
 #include "MLensDistortion.h"
-#include "DistortionManager.h"
+#include "VDDCManager.h"
 #include "MatrixHelper.h"
 
-class VRHeadsetParams {
+class DistortionEngine {
 public:
     void setGvrApi(gvr::GvrApi* gvrApi);
 private:
@@ -34,10 +34,10 @@ public:
     PolynomialRadialInverse mInverse{};
 public:
     //update with vr headset params
-    void updateHeadsetParams(const MDeviceParams& mDP,int screenWidthP,int screenHeightP);
+    void updateHeadsetParams(const MyVrHeadsetParams& mDP);
 
     //Set uniforms of Distortion manager (passed by reference)
-    void updateDistortionManager(DistortionManager& distortionManager)const;
+    void updateDistortionManager(VDDCManager& distortionManager)const;
 
     //we do not want the view (rotation) to change during rendering of one frame/eye
     //else we could end up with multiple elements rendered in different perspectives

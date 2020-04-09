@@ -5,7 +5,7 @@
 constexpr auto TAG="GLRenderTexture(-External)";
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
-GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const DistortionManager* distortionManager,const bool use2dCoordinates,const bool mapEquirectangularToInsta360)
+GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const VDDCManager* distortionManager, const bool use2dCoordinates, const bool mapEquirectangularToInsta360)
         :USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE),distortionManager(distortionManager),mapEquirectangularToInsta360(mapEquirectangularToInsta360) {
     mProgram = GLHelper::createProgram(VS(distortionManager,use2dCoordinates),FS(USE_EXTERNAL_TEXTURE,mapEquirectangularToInsta360));
     mMVMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
@@ -13,7 +13,7 @@ GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const Distort
     mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
     mTextureHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aTexCoord");
     mSamplerHandle = glGetUniformLocation (mProgram, "sTexture" );
-    mUndistortionHandles=DistortionManager::getUndistortionUniformHandles(distortionManager,mProgram);
+    mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
     GLHelper::checkGlError(TAG);
 }
 

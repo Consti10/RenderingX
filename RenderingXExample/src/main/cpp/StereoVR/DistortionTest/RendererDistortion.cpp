@@ -1,7 +1,7 @@
 //
 // Created by Consti10 on 15/05/2019.
 //
-#include "ExampleRendererVR.h"
+#include "RendererDistortion.h"
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
 #include <GLBufferHelper.hpp>
@@ -14,13 +14,8 @@
 
 constexpr auto TAG="DistortionExample";
 
-ExampleRendererVR::ExampleRendererVR(JNIEnv *env, jobject androidContext,gvr_context *gvr_context,bool RENDER_SCENE_USING_GVR_RENDERBUFFER,
-        bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT,bool MESH,const int vSPHERE_MODE):
-        RENDER_SCENE_USING_GVR_RENDERBUFFER(RENDER_SCENE_USING_GVR_RENDERBUFFER),
-        RENDER_SCENE_USING_VERTEX_DISPLACEMENT(RENDER_SCENE_USING_VERTEX_DISPLACEMENT),
-        ENABLE_SCENE_MESH_2D(MESH),
-        M_SPHERE_MODE(static_cast<SPHERE_MODE>(vSPHERE_MODE)),
-        distortionManager(DistortionManager::RADIAL_CARDBOARD),mFPSCalculator("OpenGL FPS",2000){
+RendererDistortion::RendererDistortion(JNIEnv *env, jobject androidContext, gvr_context *gvr_context):
+        distortionManager(VDDCManager::RADIAL_CARDBOARD), mFPSCalculator("OpenGL FPS", 2000){
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
     vrHeadsetParams.setGvrApi(gvr_api_.get());
     buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();
@@ -29,7 +24,7 @@ ExampleRendererVR::ExampleRendererVR(JNIEnv *env, jobject androidContext,gvr_con
 }
 
 
-void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context,int videoTexture) {
+void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
 //Instantiate all our OpenGL rendering 'Programs'
     gvr_api_->InitializeGl();
     std::vector<gvr::BufferSpec> specs;
@@ -42,22 +37,6 @@ void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context,int videoT
 
     mBasicGLPrograms=std::make_unique<BasicGLPrograms>(&distortionManager);
     mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
-    mGLProgramTextureExt=std::make_unique<GLProgramTextureExt>(&distortionManager);
-    mGLProgramTextureExt2=std::make_unique<GLProgramTextureExt>(&distortionManager,true);
-    mVideoTexture=(GLuint)videoTexture;
-    /*glGenTextures(1,&mTexture360Image);
-    glGenTextures(1,&mTexture360ImageInsta360);
-    GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
-    GLProgramTexture::loadTexture(mTexture360ImageInsta360,env,context,"360DegreeImages/insta_360_equirectangular.png");*/
-    //create the insta360 sphere
-    mSphereDualFisheye1.initializeAndUploadGL(
-            SphereBuilder::createSphereDualFisheyeInsta360(),GL_TRIANGLE_STRIP);
-    //second insta360
-    mSphereDualFisheye2.initializeGL();
-    DualFisheyeSphere::uploadSphereGL(mSphereDualFisheye2,2560,1280);
-    //create the gvr sphere
-    mGvrSphereB.initializeAndUploadGL(
-            SphereBuilder::createSphereEquirectangularMonoscopic(1.0,72,36),GL_TRIANGLE_STRIP);
     //create the green and blue mesh
     float tesselatedRectSize=2.5; //6.2f
     const float offsetY=0.0f;
@@ -76,11 +55,7 @@ void ExampleRendererVR::onSurfaceCreated(JNIEnv *env, jobject context,int videoT
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
-void ExampleRendererVR::onSurfaceChanged(int width, int height) {
-    //Nothing
-}
-
-void ExampleRendererVR::updateBufferViewports() {
+void RendererDistortion::updateBufferViewports() {
     recommended_buffer_viewports.SetToRecommendedBufferViewports();
     for(size_t eye=0;eye<2;eye++){
         recommended_buffer_viewports.GetBufferViewport(eye, &scratch_viewport);
@@ -89,7 +64,7 @@ void ExampleRendererVR::updateBufferViewports() {
     }
 }
 
-void ExampleRendererVR::onDrawFrame() {
+void RendererDistortion::onDrawFrame() {
     mFPSCalculator.tick();
     //LOGD("FPS: %f",mFPSCalculator.getCurrentFPS());
 
@@ -124,10 +99,10 @@ void ExampleRendererVR::onDrawFrame() {
             drawEyeVDDC(static_cast<gvr::Eye>(eye));
         }
     }
-    GLHelper::checkGlError("ExampleRenderer2::onDrawFrame");
+    GLHelper::checkGlError("RendererDistortion::onDrawFrame");
 }
 
-void ExampleRendererVR::drawEyeGvrRenderbuffer(gvr::Eye eye) {
+void RendererDistortion::drawEyeGvrRenderbuffer(gvr::Eye eye) {
     buffer_viewports.GetBufferViewport(eye, &scratch_viewport);
 
     const gvr::Rectf& rect = scratch_viewport.GetSourceUv();
@@ -146,10 +121,10 @@ void ExampleRendererVR::drawEyeGvrRenderbuffer(gvr::Eye eye) {
     const auto projectionM=toGLM(perspective);
     glLineWidth(6.0f);
     drawEye(eye,viewM,projectionM,false);
-    GLHelper::checkGlError("ExampleRenderer2::drawEyeGvr");
+    GLHelper::checkGlError("RendererDistortion::drawEyeGvr");
 }
 
-void ExampleRendererVR::drawEyeVDDC(gvr::Eye eye) {
+void RendererDistortion::drawEyeVDDC(gvr::Eye eye) {
     vrHeadsetParams.setOpenGLViewport(eye);
     distortionManager.setEye(eye==0);
     const auto rotM=vrHeadsetParams.GetLatestHeadSpaceFromStartSpaceRotation();
@@ -157,50 +132,36 @@ void ExampleRendererVR::drawEyeVDDC(gvr::Eye eye) {
     auto projM=vrHeadsetParams.GetProjectionMatrix(eye);
     glLineWidth(3.0f);
     drawEye(eye,viewM,projM,true,true);
-    GLHelper::checkGlError("ExampleRenderer2::drawEyeVDDC2");
+    GLHelper::checkGlError("RendererDistortion::drawEyeVDDC2");
 }
 
-void ExampleRendererVR::drawEye(gvr::Eye eye,glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen,bool occlusion) {
-    if(ENABLE_SCENE_MESH_2D){
-        const VertexBuffer& tmp=meshColorGreen ? greenMeshB : blueMeshB;
-        mBasicGLPrograms->vc.drawX(viewM,projM,tmp);
-    }
-    if(M_SPHERE_MODE==SPHERE_MODE_EQUIRECTANGULAR_TEST){
-        mGLProgramTextureExt->drawX(mVideoTexture,viewM,projM,mGvrSphereB);
-    }
-    if(M_SPHERE_MODE==SPHERE_MODE_INSTA360_TEST1){
-        glm::mat4x4 modelMatrix=glm::rotate(glm::mat4(1.0F),glm::radians(90.0F), glm::vec3(0,0,-1));
-        mGLProgramTextureExt2->drawX(mVideoTexture,viewM*modelMatrix,projM,mGvrSphereB);
-    }
-    if(M_SPHERE_MODE==SPHERE_MODE_INSTA360_TEST2){
-        glm::mat4x4 modelMatrix=glm::rotate(glm::mat4(1.0F),glm::radians(90.0F), glm::vec3(0,0,-1));
-        mGLProgramTextureExt->drawX(mVideoTexture,viewM*modelMatrix, projM, mSphereDualFisheye2);
-    }
+void RendererDistortion::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen, bool occlusion) {
+    const VertexBuffer& tmp=meshColorGreen ? greenMeshB : blueMeshB;
+    mBasicGLPrograms->vc.drawX(viewM,projM,tmp);
+
     if(occlusion){
         mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);
     }
-    GLHelper::checkGlError("ExampleRenderer2::drawEye");
+    GLHelper::checkGlError("RendererDistortion::drawEye");
 }
 
 
 #define JNI_METHOD(return_type, method_name) \
   JNIEXPORT return_type JNICALL              \
-      Java_constantin_renderingx_example_StereoVR_GLRExampleVR_##method_name
+      Java_constantin_renderingx_example_StereoVR_DistortionTest_RendererDistortion_##method_name
 
-inline jlong jptr(ExampleRendererVR *p) {
+inline jlong jptr(RendererDistortion *p) {
     return reinterpret_cast<intptr_t>(p);
 }
-inline ExampleRendererVR *native(jlong ptr) {
-    return reinterpret_cast<ExampleRendererVR*>(ptr);
+inline RendererDistortion *native(jlong ptr) {
+    return reinterpret_cast<RendererDistortion*>(ptr);
 }
 
 extern "C" {
 
 JNI_METHOD(jlong, nativeConstruct)
-(JNIEnv *env, jobject obj,jobject androidContext,jlong native_gvr_api,jboolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
- jboolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,jboolean MESH,jint SPHERE_MODE) {
-    return jptr(new ExampleRendererVR(env,androidContext,reinterpret_cast<gvr_context *>(native_gvr_api),RENDER_SCENE_USING_GVR_RENDERBUFFER,
-            RENDER_SCENE_USING_VERTEX_DISPLACEMENT,MESH,SPHERE_MODE));
+(JNIEnv *env, jobject obj,jobject androidContext,jlong native_gvr_api) {
+    return jptr(new RendererDistortion(env, androidContext, reinterpret_cast<gvr_context *>(native_gvr_api)));
 }
 JNI_METHOD(void, nativeDelete)
 (JNIEnv *env, jobject obj, jlong p) {
@@ -208,13 +169,8 @@ JNI_METHOD(void, nativeDelete)
 }
 
 JNI_METHOD(void, nativeOnSurfaceCreated)
-(JNIEnv *env, jobject obj,jlong p,jobject androidContext,jint videoTexture) {
-    native(p)->onSurfaceCreated(env,androidContext,videoTexture);
-}
-
-JNI_METHOD(void, nativeOnSurfaceChanged)
-(JNIEnv *env, jobject obj,jlong p,jint width,jint height) {
-    native(p)->onSurfaceChanged((int)width,(int)height);
+(JNIEnv *env, jobject obj,jlong p,jobject androidContext) {
+    native(p)->onSurfaceCreated(env,androidContext);
 }
 
 JNI_METHOD(void, nativeOnDrawFrame)
@@ -223,22 +179,9 @@ JNI_METHOD(void, nativeOnDrawFrame)
 }
 
 JNI_METHOD(void, nativeUpdateHeadsetParams)
-(JNIEnv *env, jobject obj, jlong instancePointer,
- jfloat screen_width_meters,
- jfloat screen_height_meters,
- jfloat screen_to_lens_distance,
- jfloat inter_lens_distance,
- jint vertical_alignment,
- jfloat tray_to_lens_distance,
- jfloatArray device_fov_left,
- jfloatArray radial_distortion_params,
- jint screenWidthP,jint screenHeightP
-) {
-    const auto device_fov_left1=NDKHelper::javaArrayToCPP2<4>(env,device_fov_left);
-    const auto radial_distortion_params1=NDKHelper::javaArrayToVector(env,radial_distortion_params);
-    const MDeviceParams deviceParams{screen_width_meters,screen_height_meters,screen_to_lens_distance,inter_lens_distance,vertical_alignment,tray_to_lens_distance,
-                                     device_fov_left1,radial_distortion_params1};
-    native(instancePointer)->vrHeadsetParams.updateHeadsetParams(deviceParams,screenWidthP,screenHeightP);
+(JNIEnv *env, jobject obj, jlong instancePointer,jobject instanceMyVrHeadsetParams) {
+    const MyVrHeadsetParams deviceParams=createFromJava(env, instanceMyVrHeadsetParams);
+    native(instancePointer)->vrHeadsetParams.updateHeadsetParams(deviceParams);
 }
 
 }

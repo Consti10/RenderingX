@@ -27,28 +27,23 @@
 #include <Chronometer.h>
 #include <FPSCalculator.h>
 #include <BasicGLPrograms.hpp>
-#include <VRHeadsetParams.h>
+#include <DistortionEngine.h>
 #include <gvr_util/util.h>
 #include <GLBufferHelper.hpp>
 
-//Example that uses VDDC to render VR content
-
-class ExampleRendererVR{
+// Example that renders 360° video - depending on the selected mode
+// It uses either VDDC (Vertex displacement distortion correction) or the gvr lib
+class Renderer360Video{
 public:
-    //Since blending is enabled, when selecting both rendering modes simultaneously the visual difference between them
-    //can be observed when only rendering the 2D Mesh (the mesh is rendered with a smaller line width the second time)
     //When rendering any 360 sphere you should only use one of the two rendering methods since the first one will be overwritten
     const bool RENDER_SCENE_USING_GVR_RENDERBUFFER;
     const bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT;
-    const bool ENABLE_SCENE_MESH_2D;
-    enum SPHERE_MODE{SPHERE_MODE_NONE,SPHERE_MODE_EQUIRECTANGULAR_TEST,SPHERE_MODE_INSTA360_TEST1,SPHERE_MODE_INSTA360_TEST2};
+    enum SPHERE_MODE{SPHERE_MODE_EQUIRECTANGULAR_TEST,SPHERE_MODE_INSTA360_TEST1,SPHERE_MODE_INSTA360_TEST2};
     const SPHERE_MODE M_SPHERE_MODE;
 public:
-    ExampleRendererVR(JNIEnv* env,jobject androidContext,gvr_context *gvr_context,
-            bool RENDER_SCENE_USING_GVR_RENDERBUFFER=true,bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT=true,
-            bool ENABLE_SCENE_MESH_2D=true,const int SPHERE_MODE=0);
+    Renderer360Video(JNIEnv* env, jobject androidContext, gvr_context *gvr_context,
+                       bool RENDER_SCENE_USING_GVR_RENDERBUFFER=true, bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT=true,const int SPHERE_MODE=0);
     void onSurfaceCreated(JNIEnv* env,jobject context,int videoTexture);
-    void onSurfaceChanged(int width, int height);
     void onDrawFrame();
 private:
     /*
@@ -63,7 +58,7 @@ private:
     /*
      * draw everything into what's currently bound (renderbuffer for gvr,framebuffer for vddc)
      */
-    void drawEye(gvr::Eye eye,glm::mat4 viewM,glm::mat4 projM,bool meshColorGreen,bool vignette=false);
+    void drawEye(gvr::Eye eye,glm::mat4 viewM,glm::mat4 projM,bool vignette=false);
 private:
     std::unique_ptr<gvr::GvrApi> gvr_api_;
     gvr::BufferViewportList buffer_viewports;
@@ -76,19 +71,14 @@ private:
     std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt=nullptr;
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt2=nullptr;
-    //GLuint mTexture360Image;
-    //GLuint mTexture360ImageInsta360;
     GLuint mVideoTexture;
     VertexBuffer mGvrSphereB;
     VertexBuffer mSphereDualFisheye1;
     VertexIndexBuffer mSphereDualFisheye2;
     std::array<VertexBuffer,2> mOcclusionMesh;
-    static constexpr int LINE_MESH_TESSELATION_FACTOR=12;
-    VertexBuffer blueMeshB;
-    VertexBuffer greenMeshB;
-    DistortionManager distortionManager;
+    VDDCManager distortionManager;
 public:
-    VRHeadsetParams vrHeadsetParams;
+    DistortionEngine vrHeadsetParams;
 };
 
 #endif //RENDERINGX_EXAMPLE_DISTORTION_H

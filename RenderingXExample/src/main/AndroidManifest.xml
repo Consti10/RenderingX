@@ -27,14 +27,19 @@
         <activity
             android:name="constantin.renderingx.example.supersync.AExampleSuperSync"
             android:screenOrientation="landscape"
-            android:theme="@style/MyStyleFullscreen" />
+            android:theme="@style/MyStyleFullscreen"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name="constantin.renderingx.example.Mono.AExampleRendering"
             android:theme="@style/MyStyleNoActionBar" />
-        <activity android:name="constantin.renderingx.example.StereoVR.AExampleVRRendering"
+        <activity android:name="constantin.renderingx.example.StereoVR.DistortionTest.AExampleDistortion"
             android:theme="@style/MyStyleFullscreen"
-            android:screenOrientation="landscape">
-        </activity>
+            android:screenOrientation="landscape"
+            tools:ignore="LockedOrientationActivity" />
+        <activity android:name="constantin.renderingx.example.StereoVR.Example360Video.AExample360Video"
+            android:theme="@style/MyStyleFullscreen"
+            android:screenOrientation="landscape"
+            tools:ignore="LockedOrientationActivity" />
 
         <activity android:name="constantin.renderingx.core.GLESInfo.AWriteGLESInfo" />
 

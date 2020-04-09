@@ -11,11 +11,13 @@
 #include <array>
 #include <MDebug.hpp>
 
+#include <type_traits>
 
-class NDKHelper {
-public:
-    //Returns a std::vector whose size depends on the size of the java array
-    //and which owns the underlying memory. Not most efficient, but most generic and memory safe
+namespace NDKHelper {
+    /**
+     * Returns a std::vector whose size depends on the size of the java array
+     * and who owns the underlying memory. Not most efficient, but most generic and memory safe
+     */
     static std::vector<float> javaArrayToVector(JNIEnv *env, jfloatArray array){
         const size_t size=(size_t)env->GetArrayLength(array);
         std::vector<float> ret(size);
@@ -24,20 +26,32 @@ public:
         env->ReleaseFloatArrayElements(array,arrayP,0);
         return ret;
     }
-
-    //Same as javaArrayToCPP, but size is already known at compile time
-    //Logs a warning if size!=array size
-    template<std::size_t S>
-    static std::array<float,S> javaArrayToCPP2(JNIEnv* env,jfloatArray array){
+    /**
+     * Same as above but for int
+     */
+    static std::vector<int> javaArrayToVector(JNIEnv *env, jintArray array){
         const size_t size=(size_t)env->GetArrayLength(array);
-        if(size!=S)LOGD("Error javaArrayToCPP2 : size!=size");
-        std::array<float,S> ret;
-        const auto arrayP=env->GetFloatArrayElements(array, nullptr);
-        std::memcpy(ret.data(),&arrayP[0],S*sizeof(float));
-        env->ReleaseFloatArrayElements(array,arrayP,0);
+        std::vector<int> ret(size);
+        const auto arrayP=env->GetIntArrayElements(array, nullptr);
+        std::memcpy(ret.data(),&arrayP[0],size*sizeof(int));
+        env->ReleaseIntArrayElements(array,arrayP,0);
         return ret;
     }
-
+    /**
+     *  Same as javaArrayToVector, but size is already known at compile time
+     * Logs a warning if size!=array size
+     */
+    template<std::size_t S>
+    static std::array<float,S> javaArrayToFixedArray(JNIEnv* env,jfloatArray array){
+        const auto data=javaArrayToVector(env,array);
+        std::array<float,S> ret;
+        if(data.size()!=S){
+            LOGD("Error javaArrayToCPP2 : size!=size");
+        }else{
+            std::memcpy(ret.data(),data.data(),data.size()*sizeof(float));
+        }
+        return ret;
+    }
     //Obtain the asset manager instance from the provided android context object
     static jobject getAssetManagerFromContext(JNIEnv* env,jobject android_context){
         jclass context_class =
@@ -138,7 +152,57 @@ public:
         //read its underlying instance (float array in our case) then cast
         jobject object_float_array=env->CallObjectMethod(object_input_stream,read_object_method);
         jfloatArray array=(jfloatArray)object_float_array;
-        return javaArrayToCPP2<S>(env,array);
+        return javaArrayToFixedArray<S>(env,array);
+    }
+    // return the java name for a simple cpp primitive
+    // e.g. float -> F, int -> I
+    template<class T>
+    static const char* getJavaNameForPrimitive(){
+        if(std::is_same<float,T>::value) return "F";
+        if (std::is_same<int ,T>::value) return "I";
+        //if (std::is_same<std::vector<int> ,T>::value) return "[I";
+        //if (std::is_same<std::vector<float> ,T>::value) return "[F";
+        return "X";
+    }
+    /**
+     * If a class member with the name @param name is found AND
+     * Its type can be translated into a generic cpp type
+     * (e.g. java int == cpp int but a special java 'Car' class cannot be translated into cpp)
+     * @return the value of the java class member as generic cpp type or 0 when not found
+     * Works with all values from @above getJavaNameForPrimitive
+     */
+    template<class T>
+    static T getClassMemberValue(JNIEnv *env,jclass jclass1,jobject instance,const char* name){
+        jfieldID field=env->GetFieldID(jclass1,name,getJavaNameForPrimitive<T>());
+        if(field==nullptr){
+            LOGD("cannot find member %s of type %s",name,getJavaNameForPrimitive<T>());
+            env->ExceptionClear();
+            return 0;
+        }
+        if(std::is_same<float,T>::value) return env->GetFloatField(instance,field);
+        if (std::is_same<int ,T>::value) return env->GetIntField(instance,field);
+        return 0;
+    }
+    static std::vector<float> getClassMemberValueVector(JNIEnv *env,jclass jclass1,jobject instance,const char* name){
+        jfieldID field=env->GetFieldID(jclass1,name,"[F");
+        if(field== nullptr){
+            LOGD("cannot find member %s",name);
+            env->ExceptionClear();
+            return std::vector<float>();
+        }
+        jfloatArray array=(jfloatArray)env->GetObjectField(instance,field);
+        return NDKHelper::javaArrayToVector(env,array);
+    }
+    template<std::size_t S>
+    static std::array<float,S> getClassMemberValueArray(JNIEnv *env,jclass jclass1,jobject instance,const char* name){
+        jfieldID field=env->GetFieldID(jclass1,name,"[F");
+        if(field== nullptr){
+            LOGD("cannot find member %s",name);
+            env->ExceptionClear();
+            return std::array<float,S>();
+        }
+        jfloatArray array=(jfloatArray)env->GetObjectField(instance,field);
+        return NDKHelper::javaArrayToFixedArray<S>(env,array);
     }
 };
 

@@ -12,7 +12,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <array>
-#include <DistortionManager.h>
+#include <VDDCManager.h>
 #include <GLBufferHelper.hpp>
 
 //#define WIREFRAME
@@ -23,8 +23,8 @@ private:
     GLuint mProgram;
     GLint mPositionHandle,mTextureHandle,mSamplerHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
-    const DistortionManager* distortionManager;
-    DistortionManager::UndistortionHandles* mUndistortionHandles;
+    const VDDCManager* distortionManager;
+    VDDCManager::UndistortionHandles* mUndistortionHandles;
     static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
     static constexpr auto MY_SAMPLER_UNIT=1;
     const bool mapEquirectangularToInsta360=true;
@@ -34,7 +34,7 @@ public:
         float u,v;
     };
     using INDEX_DATA=GLuint;
-    explicit GLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const DistortionManager* distortionManager=nullptr,const bool use2dCoordinates=false,const bool mapEquirectangularToInsta360=false);
+    explicit GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const VDDCManager* distortionManager=nullptr, const bool use2dCoordinates=false, const bool mapEquirectangularToInsta360=false);
     void beforeDraw(GLuint buffer,GLuint texture) const;
     void draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLenum mode=GL_TRIANGLES) const;
     void drawIndexed(GLuint indexBuffer,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int indicesOffset, int numberIndices,GLenum mode) const;
@@ -44,7 +44,7 @@ public:
     void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const VertexBuffer& vb)const;
     void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const VertexIndexBuffer& vib)const;
 private:
-    static const std::string VS(const DistortionManager* distortionManager1,const bool use2dCoordinates){
+    static const std::string VS(const VDDCManager* distortionManager1, const bool use2dCoordinates){
         std::stringstream s;
         s<<"uniform mat4 uMVMatrix;\n";
         s<<"uniform mat4 uPMatrix;\n";
@@ -52,12 +52,12 @@ private:
         s<<"attribute vec2 aTexCoord;\n";
         s<<"varying vec2 vTexCoord;\n";
         //s<<"varying float overwrite;";
-        s<< DistortionManager::writeDistortionParams(distortionManager1);
+        s << VDDCManager::writeDistortionParams(distortionManager1);
         s<<"void main() {\n";
         if(use2dCoordinates){
             s<<"gl_Position = vec4(aPosition.xy*2.0,0,1);";
         }else{
-            s<<DistortionManager::writeGLPosition(distortionManager1);
+            s << VDDCManager::writeGLPosition(distortionManager1);
         }
         s<<"vTexCoord = aTexCoord;\n";
         /*s<<"vec4 lul = (uMVMatrix * vec4(aTexCoord, 0.0,1.0));";
@@ -125,7 +125,7 @@ private:
 
 class GLProgramTextureExt: public GLProgramTexture{
 public:
-    GLProgramTextureExt(const DistortionManager* dm=nullptr,const bool mapEquirectangularToInsta360=false):GLProgramTexture(true,dm,false,mapEquirectangularToInsta360){
+    GLProgramTextureExt(const VDDCManager* dm=nullptr, const bool mapEquirectangularToInsta360=false): GLProgramTexture(true, dm, false, mapEquirectangularToInsta360){
     }
 };
 

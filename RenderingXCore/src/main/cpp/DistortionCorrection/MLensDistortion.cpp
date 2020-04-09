@@ -180,19 +180,6 @@ std::array<float, 2> MLensDistortion::UndistortedNDCForDistortedNDC(
     return ret;
 }
 
-std::string MLensDistortion::MDeviceParamsAsString(const MDeviceParams& dp) {
-    std::stringstream ss;
-    ss<<"DeviceParams:\n";
-    ss<<"screen_width_meters "<<dp.screen_width_meters<<" ";
-    ss<<"screen_height_meters "<<dp.screen_height_meters<<"\n";
-    ss<<"screen_to_lens_distance "<<dp.screen_to_lens_distance<<" ";
-    ss<<"inter_lens_distance "<<dp.inter_lens_distance<<"\n";
-    ss<<"vertical_alignment "<<dp.vertical_alignment<<"";
-    ss<<"tray_to_lens_distance "<<dp.tray_to_lens_distance<<"\n";
-    ss<<"device_fov_left ["<<dp.device_fov_left[0]<<","<<dp.device_fov_left[0]<<","<<dp.device_fov_left[0]<<","<<dp.device_fov_left[0]<<")\n";
-    ss<<"radial_distortion_params"<<PolynomialRadialDistortion(dp.radial_distortion_params).toString()<<"";
-    return ss.str();
-}
 
 std::string
 MLensDistortion::ViewportParamsAsString(const MLensDistortion::ViewportParams &screen_params,

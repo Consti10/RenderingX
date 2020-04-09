@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import constantin.renderingx.core.GLESInfo.AWriteGLESInfo;
 import constantin.renderingx.example.Mono.AExampleRendering;
-import constantin.renderingx.example.StereoVR.AExampleVRRendering;
+import constantin.renderingx.example.StereoVR.DistortionTest.AExampleDistortion;
 import constantin.renderingx.example.supersync.AExampleSuperSync;
 
 //Launch Main Activity
@@ -32,7 +32,7 @@ public class MainActivityTest {
     @Rule
     public ActivityTestRule<AExampleRendering> mExampleRenderingRule = new ActivityTestRule<>(AExampleRendering.class,false,false);
     @Rule
-    public ActivityTestRule<AExampleVRRendering> mExampleVRRenderingRule = new ActivityTestRule<>(AExampleVRRendering.class,false,false);
+    public ActivityTestRule<AExampleDistortion> mExampleVRRenderingRule = new ActivityTestRule<>(AExampleDistortion.class,false,false);
 
 
     @Rule
@@ -57,7 +57,7 @@ public class MainActivityTest {
 
     private void testVRRendering(int mode){
         Intent i = new Intent();
-        i.putExtra(AExampleVRRendering.KEY_SPHERE_MODE,mode);
+        i.putExtra(AExampleDistortion.KEY_SPHERE_MODE,mode);
         mExampleVRRenderingRule.launchActivity(i);
         try { Thread.sleep(WAIT_TIME); } catch (InterruptedException e) { e.printStackTrace(); }
         mExampleVRRenderingRule.finishActivity();

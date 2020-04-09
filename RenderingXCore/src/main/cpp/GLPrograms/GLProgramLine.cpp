@@ -4,7 +4,7 @@
 
 #include "GLProgramLine.h"
 
-GLProgramLine::GLProgramLine(const DistortionManager* distortionManager):
+GLProgramLine::GLProgramLine(const VDDCManager* distortionManager):
 distortionManager(distortionManager) {
     mProgram = GLHelper::createProgram(VS(distortionManager),FS());
     mMVMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
@@ -17,7 +17,7 @@ distortionManager(distortionManager) {
     uEdge=(GLuint)glGetUniformLocation(mProgram,"uEdge");
     uBorderEdge=(GLuint)glGetUniformLocation(mProgram,"uBorderEdge");
     uOutlineStrength=(GLuint)glGetUniformLocation(mProgram,"uOutlineStrength");
-    mUndistortionHandles=DistortionManager::getUndistortionUniformHandles(distortionManager,mProgram);
+    mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
     glUseProgram(mProgram);
     setOtherUniforms();
     glUseProgram(0);

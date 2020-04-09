@@ -27,7 +27,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <Color.hpp>
-#include <DistortionManager.h>
+#include <VDDCManager.h>
 
 class GLProgramText {
 private:
@@ -51,8 +51,8 @@ private:
     };
     GLuint mLOLHandle;
     GLuint mSamplerDistCorrectionHandle;
-    const DistortionManager* distortionManager;
-    DistortionManager::UndistortionHandles* mUndistortionHandles;
+    const VDDCManager* distortionManager;
+    VDDCManager::UndistortionHandles* mUndistortionHandles;
 public:
     //Characters are indexed squares
     struct Character{
@@ -64,7 +64,7 @@ public:
     static constexpr const int VERTICES_PER_CHARACTER=4; //2 quads
     static constexpr const int INDICES_PER_CHARACTER=6;
 public:
-    explicit GLProgramText(const DistortionManager* distortionManager=nullptr);
+    explicit GLProgramText(const VDDCManager* distortionManager=nullptr);
     void loadTextRenderingData(JNIEnv *env, jobject androidContext,const TextAssetsHelper::TEXT_STYLE& textStyle)const;
     void beforeDraw(GLuint buffer) const;
     //Outline with: 0==no outline, 0.2==default outline size
@@ -87,7 +87,7 @@ public:
     static constexpr const wchar_t ICON_SPACING=(wchar_t)ICONS_OFFSET+6;
     static constexpr const wchar_t ICON_ARTIFICIAL_HORIZON=(wchar_t)ICONS_OFFSET+7;
 private:
-    static const std::string VS(const DistortionManager* distortionManager1){
+    static const std::string VS(const VDDCManager* distortionManager1){
         std::stringstream s;
         s<<"uniform mat4 uMVMatrix;\n";
         s<<"uniform mat4 uPMatrix;\n";
@@ -96,9 +96,9 @@ private:
         s<<"varying vec2 vTexCoord;\n";
         s<<"attribute vec4 aVertexColor;\n";
         s<<"varying vec4 vVertexColor;\n";
-        s<<DistortionManager::writeDistortionParams(distortionManager1);
+        s << VDDCManager::writeDistortionParams(distortionManager1);
         s<<"void main() {\n";
-        s<<DistortionManager::writeGLPosition(distortionManager1);
+        s << VDDCManager::writeGLPosition(distortionManager1);
         s<<"  vTexCoord = aTexCoord;\n";
         s<<"  vVertexColor = aVertexColor;\n";
 #ifdef WIREFRAME

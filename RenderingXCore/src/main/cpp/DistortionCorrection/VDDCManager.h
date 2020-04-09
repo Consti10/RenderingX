@@ -2,8 +2,8 @@
 // Created by Consti10 on 31/10/2019.
 //
 
-#ifndef RENDERINGX_DISTORTIONMANAGER_H
-#define RENDERINGX_DISTORTIONMANAGER_H
+#ifndef RENDERINGX_VDDCMANAGER_H
+#define RENDERINGX_VDDCMANAGER_H
 
 #include <array>
 #include <string>
@@ -22,19 +22,20 @@
 
 
 /*
- * Handles Vertex Displacement Distortion Correction. See GLPrograms for some example OpenGL Shader
- * with V.D.D.C
+ * VDDC stands for Vertex Displacement Distortion Correction.
+ * See GLPrograms for some example OpenGL Shader using V.D.D.C
+ * For technical details,see https://www.youtube.com/watch?v=yJVkdsZc9YA
  */
 
-class DistortionManager {
+class VDDCManager {
 public:
     //NONE: Nothing is distorted,use a normal gl_Position=MVP*pos; multiplication
     //RADIAL: Distortion in view space as done in cardboard design lab. Deprecated.
     //CARDBOARD: Distortion in ?tan-angle? space, creates exact same distorted position(s) as in google cardboard https://github.com/googlevr/cardboard
     enum DISTORTION_MODE{NONE,RADIAL_VIEW_SPACE,RADIAL_CARDBOARD};
     //Default: no distortion whatsoever
-    DistortionManager():distortionMode(DISTORTION_MODE::NONE){};
-    DistortionManager(const DISTORTION_MODE& distortionMode1):distortionMode(distortionMode1){updateDistortionWithIdentity();}
+    VDDCManager(): distortionMode(DISTORTION_MODE::NONE){};
+    VDDCManager(const DISTORTION_MODE& distortionMode1): distortionMode(distortionMode1){updateDistortionWithIdentity();}
     //Number of coefficients for the inverse distortion. This value needs to be present at compile time
     static constexpr const int N_RADIAL_UNDISTORTION_COEFICIENTS=8;
     //These make up a Polynomial radial distortion with input inside interval [0..maxRadSq].
@@ -43,7 +44,7 @@ public:
         float maxRadSquared;
         std::array<float,N_RADIAL_UNDISTORTION_COEFICIENTS> kN;
     };
-    //Each GLSL shader programs needs these uniform handles. See DistortionManager::getUnDistortionUniformHandles
+    //Each GLSL shader programs needs these uniform handles. See VDDCManager::getUnDistortionUniformHandles
     struct UndistortionHandles{
         GLuint uPolynomialRadialInverse_maxRadSq;
         GLuint uPolynomialRadialInverse_coefficients;
@@ -59,26 +60,26 @@ public:
     };
     //Each GLSL program needs to bind its own distortion parameter uniforms
     //TODO when using OpenGL ES 3.0 use uniform buffers for that
-    //Returns null if DistortionManager is null or disabled
-    static UndistortionHandles* getUndistortionUniformHandles(const DistortionManager* distortionManager,const GLuint program);
+    //Returns null if VDDCManager is null or disabled
+    static UndistortionHandles* getUndistortionUniformHandles(const VDDCManager* distortionManager, const GLuint program);
     void beforeDraw(const UndistortionHandles* undistortionHandles)const;
     void afterDraw()const;
 
     //Add this string to your GLSL vertex shader if enabled
-    static std::string writeDistortionParams(const DistortionManager* distortionManager);
+    static std::string writeDistortionParams(const VDDCManager* distortionManager);
     //Write "gl_Position"  with or without Distortion
-    static std::string writeGLPosition(const DistortionManager* distortionManager,const std::string &positionAttribute="aPosition");
-    //successive calls to DistortionManager::beforeDraw will upload the new un-distortion parameters
+    static std::string writeGLPosition(const VDDCManager* distortionManager, const std::string &positionAttribute="aPosition");
+    //successive calls to VDDCManager::beforeDraw will upload the new un-distortion parameters
     void updateDistortion(const PolynomialRadialInverse& distortion);
     void updateDistortion(const PolynomialRadialInverse& inverseDistortion,const std::array<MLensDistortion::ViewportParams,2> screen_params,const std::array<MLensDistortion::ViewportParams,2> texture_params);
     //Identity leaves x,y values untouched (as if no V.D.D.C was enabled in the shader)
     void updateDistortionWithIdentity();
-    //Successive calls to DistortionManager::beforeDraw apply left or right eye distortion
+    //Successive calls to VDDCManager::beforeDraw apply left or right eye distortion
     void setEye(bool leftEye){
         this->leftEye=leftEye;
     }
     //returns true if dm==nullptr or mode==NONE
-    static bool isNullOrDisabled(const DistortionManager* dm){
+    static bool isNullOrDisabled(const VDDCManager* dm){
         return dm==nullptr || dm->distortionMode==NONE;
     };
 private:
@@ -146,4 +147,4 @@ private:
 };
 
 
-#endif //RENDERINGX_DISTORTIONMANAGER_H
+#endif //RENDERINGX_VDDCMANAGER_H
