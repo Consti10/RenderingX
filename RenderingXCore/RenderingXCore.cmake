@@ -42,6 +42,7 @@ target_link_libraries( SuperSync ${log-lib} android Time log EGL GLESv2)
 ##########################################################################################################
 include_directories(${RX_CORE_CPP}/Color)
 include_directories(${RX_CORE_CPP}/DistortionCorrection)
+include_directories(${RX_CORE_CPP}/DistortionCorrection/PolynomialRadialDistortion)
 include_directories(${RX_CORE_CPP}/GeometryBuilder)
 include_directories(${RX_CORE_CPP}/GeometryBuilder/Sphere)
 include_directories(${RX_CORE_CPP}/GLHelper)
@@ -50,7 +51,7 @@ include_directories(${RX_CORE_CPP}/Helper)
 include_directories(${RX_CORE_CPP}/Other)
 add_library( GLPrograms SHARED
         ${RX_CORE_CPP}/DistortionCorrection/VDDCManager.cpp
-        ${RX_CORE_CPP}/DistortionCorrection/PolynomialRadialDistortion.cpp
+        ${RX_CORE_CPP}/DistortionCorrection/PolynomialRadialDistortion/PolynomialRadialDistortion.cpp
         ${RX_CORE_CPP}/DistortionCorrection/DistortionEngine.cpp
         ${RX_CORE_CPP}/DistortionCorrection/MLensDistortion.cpp
         ${RX_CORE_CPP}/GLPrograms/GLProgramVC.cpp

@@ -14,7 +14,7 @@ void DistortionEngine::setGvrApi(gvr::GvrApi *gvrApi) {
     this->gvr_api=gvrApi;
 }
 
-void DistortionEngine::updateHeadsetParams(const MyVrHeadsetParams &mDP) {
+void DistortionEngine::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     this->screenWidthP=mDP.screen_width_pixels;
     this->screenHeightP=mDP.screen_height_pixels;
     LOGD("%s",MyVrHeadsetParamsAsString(mDP).c_str());

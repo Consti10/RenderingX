@@ -11,14 +11,14 @@
 #include <jni.h>
 #include <NDKHelper.hpp>
 
-#include "PolynomialRadialDistortion.h"
+#include "PolynomialRadialDistortion/PolynomialRadialDistortion.h"
 
 //Based on @cardboard/LensDistortion
 //CardboardLensDistortion
 
 constexpr float kDefaultBorderSizeMeters = 0.003f;
 
-#include "MyVrHeadsetParams.h"
+#include "MVrHeadsetParams.hpp"
 
 // All values in tanangle units.
 class MLensDistortion {

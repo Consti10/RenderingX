@@ -10,6 +10,8 @@
 #include "VDDCManager.h"
 #include "MatrixHelper.h"
 
+//TODO find better name ?
+
 class DistortionEngine {
 public:
     void setGvrApi(gvr::GvrApi* gvrApi);
@@ -34,7 +36,7 @@ public:
     PolynomialRadialInverse mInverse{};
 public:
     //update with vr headset params
-    void updateHeadsetParams(const MyVrHeadsetParams& mDP);
+    void updateHeadsetParams(const MVrHeadsetParams& mDP);
 
     //Set uniforms of Distortion manager (passed by reference)
     void updateDistortionManager(VDDCManager& distortionManager)const;

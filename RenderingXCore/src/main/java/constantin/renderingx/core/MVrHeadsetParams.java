@@ -7,8 +7,9 @@ import com.google.vr.sdk.base.GvrView;
 import com.google.vr.sdk.base.GvrViewerParams;
 
 //Unfortunately, to obtain all the distortion params, we have to create and delete a GvrView object
+//links to the .cpp class with same name
 
-public class MyVrHeadsetParams {
+public class MVrHeadsetParams {
     public final float ScreenWidthMeters;
     public final float ScreenHeightMeters;
     //
@@ -24,7 +25,7 @@ public class MyVrHeadsetParams {
     public final int ScreenWidthPixels;
     public final int ScreenHeightPixels;
 
-    public MyVrHeadsetParams(final Context context){
+    public MVrHeadsetParams(final Context context){
 
         GvrView view=new GvrView(context);
         final GvrViewerParams gvrViewerParams=view.getGvrViewerParams();

@@ -13,7 +13,7 @@ import com.google.vr.ndk.base.GvrApi;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import constantin.renderingx.core.MyVrHeadsetParams;
+import constantin.renderingx.core.MVrHeadsetParams;
 import constantin.video.core.ISurfaceTextureAvailable;
 
 
@@ -28,7 +28,7 @@ public class Renderer360Video implements GLSurfaceView.Renderer {
     private native void nativeDelete(long p);
     private native void nativeOnSurfaceCreated(long p,final Context context,int videoTexture);
     private native void nativeOnDrawFrame(long p);
-    private native void nativeUpdateHeadsetParams(long nativePointer,final MyVrHeadsetParams p);
+    private native void nativeUpdateHeadsetParams(long nativePointer,final MVrHeadsetParams p);
 
     private final Context mContext;
     private final long nativeRenderer;
@@ -42,7 +42,7 @@ public class Renderer360Video implements GLSurfaceView.Renderer {
         this.iSurfaceTextureAvailable=iSurfaceTextureAvailable;
         nativeRenderer=nativeConstruct(context,
                 gvrApi.getNativeGvrContext(),RENDER_SCENE_USING_GVR_RENDERBUFFER,RENDER_SCENE_USING_VERTEX_DISPLACEMENT,SPHERE_MODE);
-        final MyVrHeadsetParams params=new MyVrHeadsetParams(context);
+        final MVrHeadsetParams params=new MVrHeadsetParams(context);
         nativeUpdateHeadsetParams(nativeRenderer,params);
     }
 

@@ -5,7 +5,7 @@
 #ifndef RENDERINGX_XTESTDISTORTION_H
 #define RENDERINGX_XTESTDISTORTION_H
 
-#include "PolynomialRadialDistortion.h"
+#include "PolynomialRadialDistortion/PolynomialRadialDistortion.h"
 #include <vector>
 #include <array>
 #include "../Helper/MDebug.hpp"

@@ -2,18 +2,13 @@ package constantin.renderingx.example.StereoVR.DistortionTest;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.SurfaceTexture;
-import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-
-import androidx.annotation.Nullable;
 
 import com.google.vr.ndk.base.GvrApi;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import constantin.renderingx.core.MyVrHeadsetParams;
-import constantin.video.core.ISurfaceTextureAvailable;
+import constantin.renderingx.core.MVrHeadsetParams;
 
 
 //See native code for documentation
@@ -26,7 +21,7 @@ public class RendererDistortion implements GLSurfaceView.Renderer {
     private native void nativeDelete(long p);
     private native void nativeOnSurfaceCreated(long p,final Context context);
     private native void nativeOnDrawFrame(long p);
-    private native void nativeUpdateHeadsetParams(long nativePointer,final MyVrHeadsetParams p);
+    private native void nativeUpdateHeadsetParams(long nativePointer,final MVrHeadsetParams p);
 
     private final Context mContext;
     private final long nativeRenderer;
@@ -36,7 +31,7 @@ public class RendererDistortion implements GLSurfaceView.Renderer {
         mContext=context;
         nativeRenderer=nativeConstruct(context,
                 gvrApi.getNativeGvrContext());
-        final MyVrHeadsetParams params=new MyVrHeadsetParams(context);
+        final MVrHeadsetParams params=new MVrHeadsetParams(context);
         nativeUpdateHeadsetParams(nativeRenderer,params);
     }
 

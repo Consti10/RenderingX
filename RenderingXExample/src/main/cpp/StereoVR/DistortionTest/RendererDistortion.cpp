@@ -180,7 +180,7 @@ JNI_METHOD(void, nativeOnDrawFrame)
 
 JNI_METHOD(void, nativeUpdateHeadsetParams)
 (JNIEnv *env, jobject obj, jlong instancePointer,jobject instanceMyVrHeadsetParams) {
-    const MyVrHeadsetParams deviceParams=createFromJava(env, instanceMyVrHeadsetParams);
+    const MVrHeadsetParams deviceParams=createFromJava(env, instanceMyVrHeadsetParams);
     native(instancePointer)->vrHeadsetParams.updateHeadsetParams(deviceParams);
 }
 
