@@ -154,16 +154,14 @@ namespace NDKHelper {
         jfloatArray array=(jfloatArray)object_float_array;
         return javaArrayToFixedArray<S>(env,array);
     }
+
     // return the java name for a simple cpp primitive
     // e.g. float -> F, int -> I
-    template<class T>
-    static const char* getJavaNameForPrimitive(){
-        if(std::is_same<float,T>::value) return "F";
-        if (std::is_same<int ,T>::value) return "I";
-        //if (std::is_same<std::vector<int> ,T>::value) return "[I";
-        //if (std::is_same<std::vector<float> ,T>::value) return "[F";
-        return "X";
-    }
+    template <class T> struct cppTypeToNdkName { static const char * const value; };
+    template <> constexpr const char *cppTypeToNdkName<int>::value = "I";
+    template <> constexpr const char *cppTypeToNdkName<float>::value = "F";
+    template <> constexpr const char *cppTypeToNdkName<std::vector<int>>::value = "[I";
+    template <> constexpr const char *cppTypeToNdkName<std::vector<float>>::value = "[F";
     /**
      * If a class member with the name @param name is found AND
      * Its type can be translated into a generic cpp type
@@ -173,9 +171,9 @@ namespace NDKHelper {
      */
     template<class T>
     static T getClassMemberValue(JNIEnv *env,jclass jclass1,jobject instance,const char* name){
-        jfieldID field=env->GetFieldID(jclass1,name,getJavaNameForPrimitive<T>());
+        jfieldID field=env->GetFieldID(jclass1,name,cppTypeToNdkName<T>::value);
         if(field==nullptr){
-            LOGD("cannot find member %s of type %s",name,getJavaNameForPrimitive<T>());
+            LOGD("cannot find member %s of type %s",name,cppTypeToNdkName<T>::value);
             env->ExceptionClear();
             return 0;
         }

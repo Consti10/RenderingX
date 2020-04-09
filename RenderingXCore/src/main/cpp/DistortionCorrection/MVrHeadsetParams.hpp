@@ -25,7 +25,6 @@ struct MVrHeadsetParams{
 };
 
 static MVrHeadsetParams createFromJava(JNIEnv *env, jobject iMVrHeadsetParams){
-    LOGD("Test %s",NDKHelper::getJavaNameForPrimitive<float>());
     jclass c =env->GetObjectClass(iMVrHeadsetParams);
     return {
             NDKHelper::getClassMemberValue<float>(env, c, iMVrHeadsetParams, "ScreenWidthMeters"),
