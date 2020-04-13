@@ -20,7 +20,8 @@ SuperSync
 
 
 **Setup Dependencies** \
-**Forking the repo and including sources manually:** \
+This project uses both .java and .cpp code. I recommend forking the whole project (Example and Core) and modifying Example to your need.
+But If you want to include RenderingXCore in your own project, you can add the java code via gradle and cpp code via CMake:
 * To your top level settings.gradle file, add
 ```
 include ':RenderingXCore'
