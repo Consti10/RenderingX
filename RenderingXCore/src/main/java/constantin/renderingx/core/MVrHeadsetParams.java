@@ -6,8 +6,8 @@ import android.content.Context;
 import com.google.vr.sdk.base.GvrView;
 import com.google.vr.sdk.base.GvrViewerParams;
 
-//Unfortunately, to obtain all the distortion params, we have to create and delete a GvrView object
-//links to the .cpp class with same name
+// Unfortunately, to obtain all the distortion params, we have to create and delete a GvrView object
+// links to the .cpp class with same name
 
 public class MVrHeadsetParams {
     public final float ScreenWidthMeters;

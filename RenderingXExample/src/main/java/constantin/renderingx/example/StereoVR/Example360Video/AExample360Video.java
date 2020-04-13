@@ -23,8 +23,6 @@ public class AExample360Video extends AppCompatActivity {
     public static final int SPHERE_MODE_GVR_EQUIRECTANGULAR=0;
     public static final int SPHERE_MODE_INSTA360_TEST=1;
     public static final int SPHERE_MODE_INSTA360_TEST2=2;
-    //private GLSurfaceView gLView;
-    private MyGLSurfaceView gLView;
     //Use one of both, either GvrLayout or MyVRLayout
     private static final boolean USE_GVR_LAYOUT=false;
     private GvrLayout gvrLayout;
@@ -32,14 +30,10 @@ public class AExample360Video extends AppCompatActivity {
     //Default mode is 0 (test VDDC)
     public static final String KEY_SPHERE_MODE ="KEY_SPHERE_MODE";
     public static final String KEY_VIDEO_FILENAME="KEY_VIDEO_FILENAME";
-    //Disable video playback completely by leaving VideoPlayerSurfaceTexture uninitialized and
-    //passing null to the ISurfaceTextureCreated
-    private VideoPlayerSurfaceTexture mVideoPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         final GvrApi gvrApi;
         if(USE_GVR_LAYOUT){
             gvrLayout=new GvrLayout(this);
@@ -51,9 +45,10 @@ public class AExample360Video extends AppCompatActivity {
         final Bundle bundle=getIntent().getExtras();
         final int SPHERE_MODE=bundle==null ? 0 : bundle.getInt(KEY_SPHERE_MODE,0);
         final String VIDEO_FILENAME=bundle.getString(KEY_VIDEO_FILENAME);
-        gLView = new MyGLSurfaceView(this);
+        //start initialization
+        final MyGLSurfaceView gLView = new MyGLSurfaceView(this);
         gLView.setEGLContextClientVersion(2);
-        mVideoPlayer=new VideoPlayerSurfaceTexture(this,null,VIDEO_FILENAME);
+        final VideoPlayerSurfaceTexture mVideoPlayer=new VideoPlayerSurfaceTexture(this,null,VIDEO_FILENAME);
         final Renderer360Video renderer =new Renderer360Video(this,mVideoPlayer, gvrApi,false,
                 true,SPHERE_MODE);
         gLView.setRenderer(renderer);
