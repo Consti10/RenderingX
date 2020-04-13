@@ -162,7 +162,6 @@ void Renderer360Video::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM, b
         default:
             LOGD("Unknown sphere mode");
     }
-    LOGD("Sphere mode %d",M_SPHERE_MODE);
     if(occlusion){
         mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);
     }

@@ -42,6 +42,10 @@ android {
     viewBinding {
         enabled = true
     }
+    //Do not compress mp4 assets for MediaPlayer !
+    aaptOptions {
+        noCompress 'mp4'
+    }
 }
 
 dependencies {

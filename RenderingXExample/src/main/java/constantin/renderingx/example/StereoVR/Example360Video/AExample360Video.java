@@ -12,6 +12,7 @@ import com.google.vr.ndk.base.GvrLayout;
 import constantin.renderingx.core.FullscreenHelper;
 import constantin.renderingx.core.MyGLSurfaceView;
 import constantin.renderingx.core.MyVRLayout;
+import constantin.renderingx.example.XVideoPlayerSurfaceTexture;
 import constantin.video.core.VideoPlayerSurfaceTexture;
 
 //Uses the LiveVideo10ms VideoCore lib which is intended for live streaming, not file playback.
@@ -43,14 +44,17 @@ public class AExample360Video extends AppCompatActivity {
             gvrApi=myVRLayout.getGvrApi();
         }
         final Bundle bundle=getIntent().getExtras();
-        final int SPHERE_MODE=bundle==null ? 0 : bundle.getInt(KEY_SPHERE_MODE,0);
+        final int SPHERE_MODE=bundle.getInt(KEY_SPHERE_MODE,0);
         final String VIDEO_FILENAME=bundle.getString(KEY_VIDEO_FILENAME);
         //start initialization
         final MyGLSurfaceView gLView = new MyGLSurfaceView(this);
         gLView.setEGLContextClientVersion(2);
+        //Use one of both ! Default to the player from VideoCore
         final VideoPlayerSurfaceTexture mVideoPlayer=new VideoPlayerSurfaceTexture(this,null,VIDEO_FILENAME);
+        //final XVideoPlayerSurfaceTexture mVideoPlayer=new XVideoPlayerSurfaceTexture(this,VIDEO_FILENAME);
         final Renderer360Video renderer =new Renderer360Video(this,mVideoPlayer, gvrApi,false,
                 true,SPHERE_MODE);
+
         gLView.setRenderer(renderer);
         gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         gLView.setPreserveEGLContextOnPause(true);
