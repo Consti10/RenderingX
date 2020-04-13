@@ -32,5 +32,10 @@ and modify the path according to your download file
 ```
 implementation project(':RenderingXCore')
 ```
+* To your CMakeLists.txt file add 
+```
+include(${CMAKE_SOURCE_DIR}/../RenderingXCore/RenderingXCore.cmake)
+```
+
 See [FPV-VR](https://github.com/Consti10/FPV_VR_2018) as an example how to add dependencies.
 
