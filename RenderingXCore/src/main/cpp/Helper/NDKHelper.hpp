@@ -162,46 +162,58 @@ namespace NDKHelper {
     template <> constexpr const char *cppTypeToNdkName<float>::value = "F";
     template <> constexpr const char *cppTypeToNdkName<std::vector<int>>::value = "[I";
     template <> constexpr const char *cppTypeToNdkName<std::vector<float>>::value = "[F";
-    /**
-     * If a class member with the name @param name is found AND
-     * Its type can be translated into a generic cpp type
-     * (e.g. java int == cpp int but a special java 'Car' class cannot be translated into cpp)
-     * @return the value of the java class member as generic cpp type or 0 when not found
-     * Works with all values from @above getJavaNameForPrimitive
-     */
-    template<class T>
-    static T getClassMemberValue(JNIEnv *env,jclass jclass1,jobject instance,const char* name){
-        jfieldID field=env->GetFieldID(jclass1,name,cppTypeToNdkName<T>::value);
-        if(field==nullptr){
-            LOGD("cannot find member %s of type %s",name,cppTypeToNdkName<T>::value);
-            env->ExceptionClear();
-            return 0;
+
+     // Helper to obtain member values of a java class instance
+    class ClassMemberFromJava {
+    private:
+        JNIEnv* env;
+        jclass jclass1;
+        jobject jobject1;
+        template <class T> jfieldID getFieldId(const char* name){
+            const char* ndkTypeName=cppTypeToNdkName<T>::value;
+            jfieldID field=env->GetFieldID(jclass1,name,ndkTypeName);
+            if(field==nullptr){
+                LOGD("cannot find member %s of type %s",name,ndkTypeName);
+                env->ExceptionClear();
+                return nullptr;
+            }
+            return field;
         }
-        if(std::is_same<float,T>::value) return env->GetFloatField(instance,field);
-        if (std::is_same<int ,T>::value) return env->GetIntField(instance,field);
-        return 0;
-    }
-    static std::vector<float> getClassMemberValueVector(JNIEnv *env,jclass jclass1,jobject instance,const char* name){
-        jfieldID field=env->GetFieldID(jclass1,name,"[F");
-        if(field== nullptr){
-            LOGD("cannot find member %s",name);
-            env->ExceptionClear();
-            return std::vector<float>();
+    public:
+        ClassMemberFromJava(JNIEnv* env,jobject jobject1){
+            this->env=env;
+            this->jclass1=env->GetObjectClass(jobject1);
+            this->jobject1=jobject1;
         }
-        jfloatArray array=(jfloatArray)env->GetObjectField(instance,field);
-        return NDKHelper::javaArrayToVector(env,array);
-    }
-    template<std::size_t S>
-    static std::array<float,S> getClassMemberValueArray(JNIEnv *env,jclass jclass1,jobject instance,const char* name){
-        jfieldID field=env->GetFieldID(jclass1,name,"[F");
-        if(field== nullptr){
-            LOGD("cannot find member %s",name);
-            env->ExceptionClear();
-            return std::array<float,S>();
+        /**
+         * If a class member with the name @param name is found AND
+         * Its type can be translated into a generic cpp type
+         * (e.g. java int == cpp int but a special java 'Car' class cannot be translated into cpp)
+         * @return the value of the java class member as generic cpp type or 0 when not found
+         */
+        float getFloat(const char *name) {
+            jfieldID field=ClassMemberFromJava::getFieldId<float>(name);
+            if(field== nullptr)return 0;
+            return env->GetFloatField(jobject1,field);
         }
-        jfloatArray array=(jfloatArray)env->GetObjectField(instance,field);
-        return NDKHelper::javaArrayToFixedArray<S>(env,array);
-    }
+        int getInt(const char *name) {
+            jfieldID field=ClassMemberFromJava::getFieldId<int>(name);
+            if(field== nullptr)return 0;
+            return env->GetIntField(jobject1,field);
+        }
+        std::vector<float> getFloatArray(const char *name) {
+            jfieldID field=ClassMemberFromJava::getFieldId<std::vector<float>>(name);
+            if(field== nullptr)return std::vector<float>();
+            jfloatArray array=(jfloatArray)env->GetObjectField(jobject1,field);
+            return NDKHelper::javaArrayToVector(env,array);
+        }
+        template<std::size_t S> std::array<float,S> getFloatArray2(const char *name) {
+            jfieldID field=ClassMemberFromJava::getFieldId<std::vector<float>>(name);
+            if(field== nullptr)return std::array<float,S>();
+            jfloatArray array=(jfloatArray)env->GetObjectField(jobject1,field);
+            return NDKHelper::javaArrayToFixedArray<S>(env,array);
+        }
+    };
 };
 
 

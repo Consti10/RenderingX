@@ -24,19 +24,19 @@ struct MVrHeadsetParams{
     const int screen_height_pixels;
 };
 
-static MVrHeadsetParams createFromJava(JNIEnv *env, jobject iMVrHeadsetParams){
-    jclass c =env->GetObjectClass(iMVrHeadsetParams);
+static MVrHeadsetParams createFromJava(JNIEnv *env, jobject instanceMVrHeadsetParams){
+    NDKHelper::ClassMemberFromJava helper(env, instanceMVrHeadsetParams);
     return {
-            NDKHelper::getClassMemberValue<float>(env, c, iMVrHeadsetParams, "ScreenWidthMeters"),
-            NDKHelper::getClassMemberValue<float>(env, c, iMVrHeadsetParams, "ScreenHeightMeters"),
-            NDKHelper::getClassMemberValue<float>(env, c, iMVrHeadsetParams, "ScreenToLensDistance"),
-            NDKHelper::getClassMemberValue<float>(env, c, iMVrHeadsetParams, "InterLensDistance"),
-            NDKHelper::getClassMemberValue<int>(env, c, iMVrHeadsetParams, "VerticalAlignment"),
-            NDKHelper::getClassMemberValue<float>(env, c, iMVrHeadsetParams, "VerticalDistanceToLensCenter"),
-            NDKHelper::getClassMemberValueArray<4>(env, c, iMVrHeadsetParams, "fov"),
-            NDKHelper::getClassMemberValueVector(env, c, iMVrHeadsetParams, "kN"),
-            NDKHelper::getClassMemberValue<int>(env, c, iMVrHeadsetParams, "ScreenWidthPixels"),
-            NDKHelper::getClassMemberValue<int>(env, c, iMVrHeadsetParams, "ScreenHeightPixels")
+            helper.getFloat("ScreenWidthMeters"),
+            helper.getFloat("ScreenHeightMeters"),
+            helper.getFloat("ScreenToLensDistance"),
+            helper.getFloat("InterLensDistance"),
+            helper.getInt("VerticalAlignment"),
+            helper.getFloat("VerticalDistanceToLensCenter"),
+            helper.getFloatArray2<4>("fov"),
+            helper.getFloatArray("kN"),
+            helper.getInt("ScreenWidthPixels"),
+            helper.getInt("ScreenHeightPixels")
     };
 }
 
