@@ -1,6 +1,5 @@
 package constantin.renderingx.core;
 
-import android.app.Activity;
 import android.content.Context;
 
 import com.google.vr.sdk.base.GvrView;

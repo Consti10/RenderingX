@@ -1,14 +1,7 @@
 package constantin.renderingx.core;
 
 import android.app.Activity;
-import android.os.Build;
-import android.os.PowerManager;
-import android.util.Log;
 import android.view.View;
-
-import com.google.vr.sdk.base.AndroidCompat;
-
-import static android.content.Context.POWER_SERVICE;
 
 
 //Use to enable 'true' android immersive sticky == FULLSCREEN

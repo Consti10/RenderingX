@@ -1,6 +1,5 @@
 package constantin.renderingx.core;
 
-import android.app.Activity;
 import android.content.Context;
 import android.opengl.EGL14;
 import android.opengl.GLES20;
@@ -13,10 +12,7 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.OnLifecycleEvent;
-
-import com.google.vr.sdk.base.AndroidCompat;
 
 import java.util.Objects;
 
