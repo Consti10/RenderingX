@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Build;
 import android.os.PowerManager;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -35,7 +37,7 @@ import static android.content.Context.POWER_SERVICE;
 //Uses LifecycleObserver to handle resume, pause and destroy
 //(On GvrLayout you had to call them manually from your activity)
 
-//No default constructor because we explicitly need the LifecycleOwner !
+// Warning: constructors will crash when context!=AppCompatActivity
 @SuppressLint("ViewConstructor")
 public class MyVRLayout extends FrameLayout implements LifecycleObserver {
     private static final String TAG="MyVRLayout";
@@ -43,18 +45,17 @@ public class MyVRLayout extends FrameLayout implements LifecycleObserver {
     private GvrApi gvrApi;
     private DisplaySynchronizer displaySynchronizer;
 
-    public <T extends Activity & LifecycleOwner> MyVRLayout(final T parent) {
-        super(parent);
+    public MyVRLayout(Context context) {
+        super(context);
         init(false);
-        parent.getLifecycle().addObserver(this);
+        ((AppCompatActivity)context).getLifecycle().addObserver(this);
     }
 
-    public <T extends Activity & LifecycleOwner> MyVRLayout(final T parent,final boolean createDisplaySynchronizer) {
-        super(parent);
-        init(createDisplaySynchronizer);
-        parent.getLifecycle().addObserver(this);
+    public MyVRLayout(Context context, AttributeSet attrs) {
+        super(context,attrs);
+        init(false);
+        ((AppCompatActivity)context).getLifecycle().addObserver(this);
     }
-
 
     private void init(final boolean createDisplaySynchronizer){
         LayoutInflater.from(getContext()).inflate(R.layout.my_vr_layout, this, true);

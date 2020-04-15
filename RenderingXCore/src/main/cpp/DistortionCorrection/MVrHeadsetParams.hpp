@@ -27,16 +27,16 @@ struct MVrHeadsetParams{
 static MVrHeadsetParams createFromJava(JNIEnv *env, jobject instanceMVrHeadsetParams){
     NDKHelper::ClassMemberFromJava helper(env, instanceMVrHeadsetParams);
     return {
-            helper.getFloat("ScreenWidthMeters"),
-            helper.getFloat("ScreenHeightMeters"),
-            helper.getFloat("ScreenToLensDistance"),
-            helper.getFloat("InterLensDistance"),
-            helper.getInt("VerticalAlignment"),
-            helper.getFloat("VerticalDistanceToLensCenter"),
-            helper.getFloatArray2<4>("fov"),
-            helper.getFloatArray("kN"),
-            helper.getInt("ScreenWidthPixels"),
-            helper.getInt("ScreenHeightPixels")
+            helper.get<float>("ScreenWidthMeters"),
+            helper.get<float>("ScreenHeightMeters"),
+            helper.get<float>("ScreenToLensDistance"),
+            helper.get<float>("InterLensDistance"),
+            helper.get<int>("VerticalAlignment"),
+            helper.get<float>("VerticalDistanceToLensCenter"),
+            helper.getFloatArrayFixed<4>("fov"),
+            helper.get<std::vector<float>>("kN"),
+            helper.get<int>("ScreenWidthPixels"),
+            helper.get<int>("ScreenHeightPixels")
     };
 }
 

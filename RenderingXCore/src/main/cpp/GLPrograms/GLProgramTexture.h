@@ -27,7 +27,7 @@ private:
     VDDCManager::UndistortionHandles* mUndistortionHandles;
     static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
     static constexpr auto MY_SAMPLER_UNIT=1;
-    const bool mapEquirectangularToInsta360=true;
+    const bool mapEquirectangularToInsta360;
 public:
     struct Vertex{
         float x,y,z;

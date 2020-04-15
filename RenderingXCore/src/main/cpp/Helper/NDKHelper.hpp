@@ -128,6 +128,7 @@ namespace NDKHelper {
                                   image_obj, 0);
         return true;
     }
+    // Only pass java context instead of asset manager
     static bool LoadPngFromAssetManager2(JNIEnv* env, jobject android_context, int target,
                                  const std::string& path,const bool extractAlpha=false) {
         jobject asset_mgr=getAssetManagerFromContext(env,android_context);
@@ -180,34 +181,42 @@ namespace NDKHelper {
             return field;
         }
     public:
+        /**
+         * We can obtain the java class (name) from the instance
+         * When @param env becomes invalid this instance mustn't be used anymore
+         * @param jobject1 instance of the jobject you want to obtain member values from
+         */
         ClassMemberFromJava(JNIEnv* env,jobject jobject1){
             this->env=env;
             this->jclass1=env->GetObjectClass(jobject1);
             this->jobject1=jobject1;
         }
+        template <typename T>
+        struct always_false : std::false_type {};
         /**
          * If a class member with the name @param name is found AND
          * Its type can be translated into a generic cpp type
          * (e.g. java int == cpp int but a special java 'Car' class cannot be translated into cpp)
          * @return the value of the java class member as generic cpp type or 0 when not found
          */
-        float getFloat(const char *name) {
-            jfieldID field=ClassMemberFromJava::getFieldId<float>(name);
-            if(field== nullptr)return 0;
-            return env->GetFloatField(jobject1,field);
+        template <typename T>
+        T get(const char *name) {
+            jfieldID field=ClassMemberFromJava::getFieldId<T>(name);
+            if(field== nullptr)return T();
+            //switch case for all supported cpp types
+            if constexpr (std::is_same_v<T, float>){
+                return env->GetFloatField(jobject1,field);
+            }else if constexpr (std::is_same_v<T, int>){
+                return env->GetIntField(jobject1,field);
+            }else if constexpr (std::is_same_v<T, std::vector<float>>){
+                jfloatArray array=(jfloatArray)env->GetObjectField(jobject1,field);
+                return NDKHelper::javaArrayToVector(env,array);
+            }else{
+                static_assert(always_false<T>::value, "Type wrong.");
+            }
+            return T();
         }
-        int getInt(const char *name) {
-            jfieldID field=ClassMemberFromJava::getFieldId<int>(name);
-            if(field== nullptr)return 0;
-            return env->GetIntField(jobject1,field);
-        }
-        std::vector<float> getFloatArray(const char *name) {
-            jfieldID field=ClassMemberFromJava::getFieldId<std::vector<float>>(name);
-            if(field== nullptr)return std::vector<float>();
-            jfloatArray array=(jfloatArray)env->GetObjectField(jobject1,field);
-            return NDKHelper::javaArrayToVector(env,array);
-        }
-        template<std::size_t S> std::array<float,S> getFloatArray2(const char *name) {
+        template<std::size_t S> std::array<float,S> getFloatArrayFixed(const char *name) {
             jfieldID field=ClassMemberFromJava::getFieldId<std::vector<float>>(name);
             if(field== nullptr)return std::array<float,S>();
             jfloatArray array=(jfloatArray)env->GetObjectField(jobject1,field);
