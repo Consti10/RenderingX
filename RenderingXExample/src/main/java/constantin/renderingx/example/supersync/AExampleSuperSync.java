@@ -1,8 +1,8 @@
 package constantin.renderingx.example.supersync;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import constantin.renderingx.core.ViewSuperSync;
 

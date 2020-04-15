@@ -1,10 +1,10 @@
 package constantin.renderingx.example.StereoVR.DistortionTest;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.KeyEvent;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrLayout;
@@ -12,7 +12,6 @@ import com.google.vr.ndk.base.GvrLayout;
 import constantin.renderingx.core.FullscreenHelper;
 import constantin.renderingx.core.MyGLSurfaceView;
 import constantin.renderingx.core.MyVRLayout;
-import constantin.video.core.VideoPlayerSurfaceTexture;
 
 //Uses the LiveVideo10ms VideoCore lib which is intended for live streaming, not file playback.
 //I recommend using android MediaPlayer if only playback from file is needed

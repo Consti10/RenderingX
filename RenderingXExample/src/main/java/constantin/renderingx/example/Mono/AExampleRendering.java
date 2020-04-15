@@ -1,7 +1,5 @@
 package constantin.renderingx.example.Mono;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -11,6 +9,8 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import constantin.renderingx.example.R;
 import constantin.renderingx.example.databinding.ActivityExampleRenderingBinding;
