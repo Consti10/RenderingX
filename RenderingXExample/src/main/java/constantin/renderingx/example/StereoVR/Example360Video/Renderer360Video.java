@@ -2,19 +2,18 @@ package constantin.renderingx.example.StereoVR.Example360Video;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.SurfaceTexture;
-import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.vr.ndk.base.GvrApi;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import constantin.renderingx.core.video.ISurfaceAvailable;
 import constantin.renderingx.core.MVrHeadsetParams;
-import constantin.video.core.ISurfaceTextureAvailable;
+import constantin.renderingx.core.video.VideoSurfaceHolder;
 
 
 //See native code for documentation
@@ -32,14 +31,13 @@ public class Renderer360Video implements GLSurfaceView.Renderer {
 
     private final Context mContext;
     private final long nativeRenderer;
-    private final ISurfaceTextureAvailable iSurfaceTextureAvailable;
-    private SurfaceTexture displayTexture=null;
+    private final VideoSurfaceHolder mVideoSurfaceHolder;
 
     @SuppressLint("ApplySharedPref")
-    public Renderer360Video(final Context context, @Nullable final ISurfaceTextureAvailable iSurfaceTextureAvailable, final GvrApi gvrApi, boolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
-                            boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,int SPHERE_MODE){
+    public Renderer360Video(final AppCompatActivity context, final ISurfaceAvailable iSurfaceAvailable, final GvrApi gvrApi, boolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
+                            boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT, int SPHERE_MODE){
         mContext=context;
-        this.iSurfaceTextureAvailable=iSurfaceTextureAvailable;
+        mVideoSurfaceHolder=new VideoSurfaceHolder(context,iSurfaceAvailable);
         nativeRenderer=nativeConstruct(context,
                 gvrApi.getNativeGvrContext(),RENDER_SCENE_USING_GVR_RENDERBUFFER,RENDER_SCENE_USING_VERTEX_DISPLACEMENT,SPHERE_MODE);
         final MVrHeadsetParams params=new MVrHeadsetParams(context);
@@ -48,12 +46,8 @@ public class Renderer360Video implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        int[] videoTexture=new int[1];
-        GLES20.glGenTextures(1, videoTexture, 0);
-        final int mGLTextureVideo = videoTexture[0];
-        displayTexture=new SurfaceTexture(mGLTextureVideo,false);
-        iSurfaceTextureAvailable.onSurfaceTextureAvailable(displayTexture);
-        nativeOnSurfaceCreated(nativeRenderer,mContext,mGLTextureVideo);
+        mVideoSurfaceHolder.createSurfaceTextureGL();
+        nativeOnSurfaceCreated(nativeRenderer,mContext,mVideoSurfaceHolder.getTextureId());
     }
 
     @Override
@@ -63,7 +57,7 @@ public class Renderer360Video implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        if(displayTexture!=null)displayTexture.updateTexImage();
+        mVideoSurfaceHolder.getSurfaceTexture().updateTexImage();
         nativeOnDrawFrame(nativeRenderer);
     }
 

@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import constantin.renderingx.core.GLESInfo.AWriteGLESInfo;
-import constantin.renderingx.core.GLESInfo.GLESInfo;
+import constantin.renderingx.core.gles_info.AWriteGLESInfo;
+import constantin.renderingx.core.gles_info.GLESInfo;
 import constantin.renderingx.example.Mono.AExampleRendering;
 import constantin.renderingx.example.StereoVR.DistortionTest.AExampleDistortion;
 import constantin.renderingx.example.StereoVR.Example360Video.AExample360Video;

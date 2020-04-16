@@ -1,8 +1,10 @@
 package constantin.renderingx.example.StereoVR.Example360Video;
 
+import android.graphics.SurfaceTexture;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.Surface;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,15 +12,17 @@ import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrLayout;
 
 import constantin.renderingx.core.FullscreenHelper;
-import constantin.renderingx.core.MyGLSurfaceView;
-import constantin.renderingx.core.MyVRLayout;
-import constantin.video.core.VideoPlayerSurfaceTexture;
+import constantin.renderingx.core.video.ISurfaceAvailable;
+import constantin.renderingx.core.views.MyGLSurfaceView;
+import constantin.renderingx.core.views.MyVRLayout;
+import constantin.video.core.VideoPlayer.VideoPlayer;
+import constantin.video.core.VideoPlayer.VideoSettings;
 
 //Uses the LiveVideo10ms VideoCore lib which is intended for live streaming, not file playback.
 //I recommend using android MediaPlayer if only playback from file is needed
 
 //See native code (renderer) for documentation
-public class AExample360Video extends AppCompatActivity {
+public class AExample360Video extends AppCompatActivity implements ISurfaceAvailable {
     private static final String TAG="AExampleVRRendering";
     public static final int SPHERE_MODE_GVR_EQUIRECTANGULAR=0;
     public static final int SPHERE_MODE_INSTA360_TEST=1;
@@ -30,10 +34,12 @@ public class AExample360Video extends AppCompatActivity {
     //Default mode is 0 (test VDDC)
     public static final String KEY_SPHERE_MODE ="KEY_SPHERE_MODE";
     public static final String KEY_VIDEO_FILENAME="KEY_VIDEO_FILENAME";
+    private VideoPlayer videoPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         final GvrApi gvrApi;
         if(USE_GVR_LAYOUT){
             gvrLayout=new GvrLayout(this);
@@ -48,10 +54,16 @@ public class AExample360Video extends AppCompatActivity {
         //start initialization
         final MyGLSurfaceView gLView = new MyGLSurfaceView(this);
         gLView.setEGLContextClientVersion(2);
+        //
+        VideoSettings.setVS_SOURCE(this, VideoSettings.VS_SOURCE.ASSETS);
+        VideoSettings.setVS_ASSETS_FILENAME_TEST_ONLY(this,VIDEO_FILENAME);
+        VideoSettings.setVS_FILE_ONLY_LIMIT_FPS(this,40);
+        videoPlayer=new VideoPlayer(this,null);
+
         //Use one of both ! Default to the player from VideoCore
-        final VideoPlayerSurfaceTexture mVideoPlayer=new VideoPlayerSurfaceTexture(this,null,VIDEO_FILENAME);
+        //final VideoPlayerSurfaceTexture mVideoPlayer=new VideoPlayerSurfaceTexture(this,null,VIDEO_FILENAME);
         //final XVideoPlayerSurfaceTexture mVideoPlayer=new XVideoPlayerSurfaceTexture(this,VIDEO_FILENAME);
-        final Renderer360Video renderer =new Renderer360Video(this,mVideoPlayer, gvrApi,false,
+        final Renderer360Video renderer =new Renderer360Video(this,this, gvrApi,false,
                 true,SPHERE_MODE);
 
         gLView.setRenderer(renderer);
@@ -105,4 +117,15 @@ public class AExample360Video extends AppCompatActivity {
         return super.dispatchKeyEvent(event);
     }
 
+
+    @Override
+    public void start(SurfaceTexture surfaceTexture, Surface surface) {
+        System.out.println("X Start");
+        videoPlayer.addAndStartDecoderReceiver(surface);
+    }
+
+    @Override
+    public void stop() {
+        videoPlayer.stopAndRemoveReceiverDecoder();
+    }
 }

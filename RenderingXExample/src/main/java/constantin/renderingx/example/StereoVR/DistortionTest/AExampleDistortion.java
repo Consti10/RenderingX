@@ -10,8 +10,8 @@ import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrLayout;
 
 import constantin.renderingx.core.FullscreenHelper;
-import constantin.renderingx.core.MyGLSurfaceView;
-import constantin.renderingx.core.MyVRLayout;
+import constantin.renderingx.core.views.MyGLSurfaceView;
+import constantin.renderingx.core.views.MyVRLayout;
 
 //Uses the LiveVideo10ms VideoCore lib which is intended for live streaming, not file playback.
 //I recommend using android MediaPlayer if only playback from file is needed

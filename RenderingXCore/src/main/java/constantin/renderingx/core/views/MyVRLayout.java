@@ -1,4 +1,4 @@
-package constantin.renderingx.core;
+package constantin.renderingx.core.views;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -25,6 +25,9 @@ import com.google.vr.cardboard.DisplaySynchronizer;
 import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrUiLayout;
 import com.google.vr.sdk.base.AndroidCompat;
+
+import constantin.renderingx.core.FullscreenHelper;
+import constantin.renderingx.core.R;
 
 import static android.content.Context.POWER_SERVICE;
 

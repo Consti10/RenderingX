@@ -1,4 +1,4 @@
-package constantin.renderingx.core;
+package constantin.renderingx.core.views;
 
 import android.opengl.EGL14;
 import android.opengl.GLSurfaceView;
