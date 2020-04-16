@@ -1,6 +1,7 @@
 package constantin.renderingx.example.StereoVR.Example360Video;
 
 import android.graphics.SurfaceTexture;
+import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -15,6 +16,7 @@ import constantin.renderingx.core.FullscreenHelper;
 import constantin.renderingx.core.video.ISurfaceAvailable;
 import constantin.renderingx.core.views.MyGLSurfaceView;
 import constantin.renderingx.core.views.MyVRLayout;
+import constantin.renderingx.example.R;
 import constantin.video.core.VideoPlayer.VideoPlayer;
 import constantin.video.core.VideoPlayer.VideoSettings;
 
@@ -35,6 +37,7 @@ public class AExample360Video extends AppCompatActivity implements ISurfaceAvail
     public static final String KEY_SPHERE_MODE ="KEY_SPHERE_MODE";
     public static final String KEY_VIDEO_FILENAME="KEY_VIDEO_FILENAME";
     private VideoPlayer videoPlayer;
+    private MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +58,14 @@ public class AExample360Video extends AppCompatActivity implements ISurfaceAvail
         final MyGLSurfaceView gLView = new MyGLSurfaceView(this);
         gLView.setEGLContextClientVersion(2);
         //
-        VideoSettings.setVS_SOURCE(this, VideoSettings.VS_SOURCE.ASSETS);
-        VideoSettings.setVS_ASSETS_FILENAME_TEST_ONLY(this,VIDEO_FILENAME);
-        VideoSettings.setVS_FILE_ONLY_LIMIT_FPS(this,40);
-        videoPlayer=new VideoPlayer(this,null);
+        if(true){
+            VideoSettings.setVS_SOURCE(this, VideoSettings.VS_SOURCE.ASSETS);
+            VideoSettings.setVS_ASSETS_FILENAME_TEST_ONLY(this,VIDEO_FILENAME);
+            VideoSettings.setVS_FILE_ONLY_LIMIT_FPS(this,40);
+            videoPlayer=new VideoPlayer(this,null);
+        }else{
+            mediaPlayer=MediaPlayer.create(this, R.raw.test_room1_1920mono);
+        }
 
         //Use one of both ! Default to the player from VideoCore
         //final VideoPlayerSurfaceTexture mVideoPlayer=new VideoPlayerSurfaceTexture(this,null,VIDEO_FILENAME);
