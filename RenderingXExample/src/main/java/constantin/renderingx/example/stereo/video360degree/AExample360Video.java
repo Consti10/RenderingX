@@ -29,15 +29,11 @@ public class AExample360Video extends AppCompatActivity implements ISurfaceAvail
     public static final int SPHERE_MODE_GVR_EQUIRECTANGULAR=0;
     public static final int SPHERE_MODE_INSTA360_TEST=1;
     public static final int SPHERE_MODE_INSTA360_TEST2=2;
-    //Use one of both, either GvrLayout or MyVRLayout
-    private static final boolean USE_GVR_LAYOUT=false;
-    private GvrLayout gvrLayout;
-    private MyVRLayout myVRLayout;
     //Default mode is 0 (test VDDC)
     public static final String KEY_SPHERE_MODE ="KEY_SPHERE_MODE";
     public static final String KEY_VIDEO_FILENAME="KEY_VIDEO_FILENAME";
     // Only one of these two is in use at the same time
-    private static final boolean USE_ANDROID_MEDIA_PLAYER=true;
+    private static final boolean USE_ANDROID_MEDIA_PLAYER=false;
     private VideoPlayer videoPlayer;
     private MediaPlayer mediaPlayer;
 
@@ -46,13 +42,9 @@ public class AExample360Video extends AppCompatActivity implements ISurfaceAvail
         super.onCreate(savedInstanceState);
 
         final GvrApi gvrApi;
-        if(USE_GVR_LAYOUT){
-            gvrLayout=new GvrLayout(this);
-            gvrApi =gvrLayout.getGvrApi();
-        }else{
-            myVRLayout=new MyVRLayout(this);
-            gvrApi=myVRLayout.getGvrApi();
-        }
+        final MyVRLayout myVRLayout = new MyVRLayout(this);
+        gvrApi= myVRLayout.getGvrApi();
+
         final Bundle bundle=getIntent().getExtras();
         final int SPHERE_MODE=bundle.getInt(KEY_SPHERE_MODE,0);
         final String VIDEO_FILENAME=bundle.getString(KEY_VIDEO_FILENAME);
@@ -71,36 +63,13 @@ public class AExample360Video extends AppCompatActivity implements ISurfaceAvail
         }
         final Renderer360Video renderer =new Renderer360Video(this,this, gvrApi,false,
                 true,SPHERE_MODE);
-
         gLView.setRenderer(renderer);
         gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         gLView.setPreserveEGLContextOnPause(true);
-        if(USE_GVR_LAYOUT){
-            setContentView(gvrLayout);
-            gvrLayout.setPresentationView(gLView);
-        }else{
-            setContentView(myVRLayout);
-            myVRLayout.setPresentationView(gLView);
-        }
+        setContentView(myVRLayout);
+        myVRLayout.setPresentationView(gLView);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(gvrLayout!=null)gvrLayout.onResume();
-    }
-
-    @Override
-    protected void onPause(){
-        super.onPause();
-        if(gvrLayout!=null)gvrLayout.onPause();
-    }
-
-    @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        if(gvrLayout!=null)gvrLayout.shutdown();
-    }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -123,7 +92,7 @@ public class AExample360Video extends AppCompatActivity implements ISurfaceAvail
         return super.dispatchKeyEvent(event);
     }
 
-
+    // Start or stop video
     @Override
     public void start(SurfaceTexture surfaceTexture, Surface surface) {
         if(USE_ANDROID_MEDIA_PLAYER){
