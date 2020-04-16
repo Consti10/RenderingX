@@ -13,6 +13,7 @@ import org.junit.Test;
 import constantin.renderingx.core.gles_info.AWriteGLESInfo;
 import constantin.renderingx.example.mono.AExampleRendering;
 import constantin.renderingx.example.stereo.distortion.AExampleDistortion;
+import constantin.renderingx.example.stereo.video360degree.AExample360Video;
 import constantin.renderingx.example.supersync.AExampleSuperSync;
 
 //Launch Main Activity
@@ -57,7 +58,7 @@ public class MainActivityTest {
 
     private void testVRRendering(int mode){
         Intent i = new Intent();
-        i.putExtra(AExampleDistortion.KEY_SPHERE_MODE,mode);
+        i.putExtra(AExample360Video.KEY_SPHERE_MODE,mode);
         mExampleVRRenderingRule.launchActivity(i);
         try { Thread.sleep(WAIT_TIME); } catch (InterruptedException e) { e.printStackTrace(); }
         mExampleVRRenderingRule.finishActivity();
