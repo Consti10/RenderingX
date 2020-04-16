@@ -4,8 +4,8 @@ import android.content.Context;
 
 import com.google.vr.ndk.base.GvrApi;
 
-import constantin.renderingx.core.views.ViewSuperSync;
 import constantin.renderingx.core.gles_info.GLESInfo;
+import constantin.renderingx.core.views.ViewSuperSync;
 
 //See native code for documentation
 public class GLRExampleSuperSync implements ViewSuperSync.IRendererSuperSync {
