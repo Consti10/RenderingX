@@ -12,7 +12,8 @@
 #include "cmath"
 #include <GLBufferHelper.hpp>
 #include <GLProgramTexture.h>
-
+#include <VertexBuffer.hpp>
+#include <VertexIndexBuffer.h>
 class DualFisheyeSphere {
 public:
     // Adjust this to fit the FOV of the lens on the 360 camera.

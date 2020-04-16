@@ -16,6 +16,8 @@
 #include <Color.hpp>
 #include <VDDCManager.h>
 #include <GLBufferHelper.hpp>
+#include <VertexBuffer.hpp>
+#include <VertexIndexBuffer.h>
 
 //#define WIREFRAME
 
