@@ -17,6 +17,7 @@
 #include <GLBufferHelper.hpp>
 #include <VertexBuffer.hpp>
 #include <VertexIndexBuffer.h>
+
 class GLProgramLine {
 private:
     GLuint mProgram;
