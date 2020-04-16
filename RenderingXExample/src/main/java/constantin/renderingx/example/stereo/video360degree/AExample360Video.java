@@ -36,6 +36,8 @@ public class AExample360Video extends AppCompatActivity implements ISurfaceAvail
     //Default mode is 0 (test VDDC)
     public static final String KEY_SPHERE_MODE ="KEY_SPHERE_MODE";
     public static final String KEY_VIDEO_FILENAME="KEY_VIDEO_FILENAME";
+    // Only one of these two is in use at the same time
+    private static final boolean USE_ANDROID_MEDIA_PLAYER=true;
     private VideoPlayer videoPlayer;
     private MediaPlayer mediaPlayer;
 
@@ -57,19 +59,16 @@ public class AExample360Video extends AppCompatActivity implements ISurfaceAvail
         //start initialization
         final MyGLSurfaceView gLView = new MyGLSurfaceView(this);
         gLView.setEGLContextClientVersion(2);
-        //
-        if(true){
+        // Use one of both ! Default to the player from VideoCore
+        if(USE_ANDROID_MEDIA_PLAYER){
+            //TODO doesnt work on mp4 assets because of compression
+            mediaPlayer=MediaPlayer.create(this, R.raw.test_room1_1920mono);
+        }else{
             VideoSettings.setVS_SOURCE(this, VideoSettings.VS_SOURCE.ASSETS);
             VideoSettings.setVS_ASSETS_FILENAME_TEST_ONLY(this,VIDEO_FILENAME);
             VideoSettings.setVS_FILE_ONLY_LIMIT_FPS(this,40);
             videoPlayer=new VideoPlayer(this,null);
-        }else{
-            mediaPlayer=MediaPlayer.create(this, R.raw.test_room1_1920mono);
         }
-
-        //Use one of both ! Default to the player from VideoCore
-        //final VideoPlayerSurfaceTexture mVideoPlayer=new VideoPlayerSurfaceTexture(this,null,VIDEO_FILENAME);
-        //final XVideoPlayerSurfaceTexture mVideoPlayer=new XVideoPlayerSurfaceTexture(this,VIDEO_FILENAME);
         final Renderer360Video renderer =new Renderer360Video(this,this, gvrApi,false,
                 true,SPHERE_MODE);
 
@@ -127,12 +126,20 @@ public class AExample360Video extends AppCompatActivity implements ISurfaceAvail
 
     @Override
     public void start(SurfaceTexture surfaceTexture, Surface surface) {
-        System.out.println("X Start");
-        videoPlayer.addAndStartDecoderReceiver(surface);
+        if(USE_ANDROID_MEDIA_PLAYER){
+            mediaPlayer.setSurface(surface);
+            mediaPlayer.start();
+        }else{
+            videoPlayer.addAndStartDecoderReceiver(surface);
+        }
     }
 
     @Override
     public void stop() {
-        videoPlayer.stopAndRemoveReceiverDecoder();
+        if(USE_ANDROID_MEDIA_PLAYER){
+            mediaPlayer.pause();
+        }else{
+            videoPlayer.stopAndRemoveReceiverDecoder();
+        }
     }
 }
