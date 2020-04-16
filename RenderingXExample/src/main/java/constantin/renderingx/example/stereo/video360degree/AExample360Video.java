@@ -1,4 +1,4 @@
-package constantin.renderingx.example.StereoVR.Example360Video;
+package constantin.renderingx.example.stereo.video360degree;
 
 import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;

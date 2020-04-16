@@ -22,9 +22,9 @@ import java.util.List;
 
 import constantin.renderingx.core.gles_info.AWriteGLESInfo;
 import constantin.renderingx.core.gles_info.GLESInfo;
-import constantin.renderingx.example.Mono.AExampleRendering;
-import constantin.renderingx.example.StereoVR.DistortionTest.AExampleDistortion;
-import constantin.renderingx.example.StereoVR.Example360Video.AExample360Video;
+import constantin.renderingx.example.mono.AExampleRendering;
+import constantin.renderingx.example.stereo.distortion.AExampleDistortion;
+import constantin.renderingx.example.stereo.video360degree.AExample360Video;
 import constantin.renderingx.example.supersync.AExampleSuperSync;
 
 public class MainActivity extends AppCompatActivity {

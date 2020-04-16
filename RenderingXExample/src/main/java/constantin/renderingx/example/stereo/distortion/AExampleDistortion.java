@@ -1,4 +1,4 @@
-package constantin.renderingx.example.StereoVR.DistortionTest;
+package constantin.renderingx.example.stereo.distortion;
 
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;

@@ -148,7 +148,7 @@ void RendererDistortion::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM,
 
 #define JNI_METHOD(return_type, method_name) \
   JNIEXPORT return_type JNICALL              \
-      Java_constantin_renderingx_example_StereoVR_DistortionTest_RendererDistortion_##method_name
+      Java_constantin_renderingx_example_stereo_distortion_RendererDistortion_##method_name
 
 inline jlong jptr(RendererDistortion *p) {
     return reinterpret_cast<intptr_t>(p);

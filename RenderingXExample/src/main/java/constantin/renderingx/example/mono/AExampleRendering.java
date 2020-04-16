@@ -1,4 +1,4 @@
-package constantin.renderingx.example.Mono;
+package constantin.renderingx.example.mono;
 
 import android.annotation.SuppressLint;
 import android.opengl.GLSurfaceView;

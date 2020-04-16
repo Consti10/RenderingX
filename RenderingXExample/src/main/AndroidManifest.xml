@@ -30,13 +30,13 @@
             android:theme="@style/MyStyleFullscreen"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name="constantin.renderingx.example.Mono.AExampleRendering"
+            android:name="constantin.renderingx.example.mono.AExampleRendering"
             android:theme="@style/MyStyleNoActionBar" />
-        <activity android:name="constantin.renderingx.example.StereoVR.DistortionTest.AExampleDistortion"
+        <activity android:name="constantin.renderingx.example.stereo.distortion.AExampleDistortion"
             android:theme="@style/MyStyleFullscreen"
             android:screenOrientation="landscape"
             tools:ignore="LockedOrientationActivity" />
-        <activity android:name="constantin.renderingx.example.StereoVR.Example360Video.AExample360Video"
+        <activity android:name="constantin.renderingx.example.stereo.video360degree.AExample360Video"
             android:theme="@style/MyStyleFullscreen"
             android:screenOrientation="landscape"
             tools:ignore="LockedOrientationActivity" />

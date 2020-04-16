@@ -1,4 +1,4 @@
-package constantin.renderingx.example.StereoVR.DistortionTest;
+package constantin.renderingx.example.stereo.distortion;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

@@ -10,9 +10,9 @@ import androidx.test.rule.GrantPermissionRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-import constantin.renderingx.core.GLESInfo.AWriteGLESInfo;
-import constantin.renderingx.example.Mono.AExampleRendering;
-import constantin.renderingx.example.StereoVR.DistortionTest.AExampleDistortion;
+import constantin.renderingx.core.gles_info.AWriteGLESInfo;
+import constantin.renderingx.example.mono.AExampleRendering;
+import constantin.renderingx.example.stereo.distortion.AExampleDistortion;
 import constantin.renderingx.example.supersync.AExampleSuperSync;
 
 //Launch Main Activity
