@@ -37,7 +37,8 @@ public class Renderer360Video implements GLSurfaceView.Renderer {
     public Renderer360Video(final AppCompatActivity context, final ISurfaceAvailable iSurfaceAvailable, final GvrApi gvrApi, boolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
                             boolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT, int SPHERE_MODE){
         mContext=context;
-        mVideoSurfaceHolder=new VideoSurfaceHolder(context,iSurfaceAvailable);
+        mVideoSurfaceHolder=new VideoSurfaceHolder(context);
+        mVideoSurfaceHolder.setCallBack(iSurfaceAvailable);
         nativeRenderer=nativeConstruct(context,
                 gvrApi.getNativeGvrContext(),RENDER_SCENE_USING_GVR_RENDERBUFFER,RENDER_SCENE_USING_VERTEX_DISPLACEMENT,SPHERE_MODE);
         final MVrHeadsetParams params=new MVrHeadsetParams(context);

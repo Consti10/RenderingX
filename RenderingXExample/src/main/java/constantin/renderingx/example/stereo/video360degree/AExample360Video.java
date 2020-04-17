@@ -94,7 +94,7 @@ public class AExample360Video extends AppCompatActivity implements ISurfaceAvail
 
     // Start or stop video
     @Override
-    public void start(SurfaceTexture surfaceTexture, Surface surface) {
+    public void XSurfaceCreated(SurfaceTexture surfaceTexture, Surface surface) {
         if(USE_ANDROID_MEDIA_PLAYER){
             mediaPlayer.setSurface(surface);
             mediaPlayer.start();
@@ -104,7 +104,7 @@ public class AExample360Video extends AppCompatActivity implements ISurfaceAvail
     }
 
     @Override
-    public void stop() {
+    public void XSurfaceDestroyed() {
         if(USE_ANDROID_MEDIA_PLAYER){
             mediaPlayer.pause();
         }else{
