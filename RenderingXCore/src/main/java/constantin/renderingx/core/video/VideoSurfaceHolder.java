@@ -64,6 +64,9 @@ public class VideoSurfaceHolder implements LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private void resume(){
+        if(iSurfaceAvailable==null){
+            throw new RuntimeException("iSurfaceAvailable==null");
+        }
         if(surface!=null){
             iSurfaceAvailable.XSurfaceCreated(surfaceTexture,surface);
         }

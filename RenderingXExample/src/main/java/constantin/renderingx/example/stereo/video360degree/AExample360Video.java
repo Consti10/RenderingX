@@ -10,7 +10,6 @@ import android.view.Surface;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.vr.ndk.base.GvrApi;
-import com.google.vr.ndk.base.GvrLayout;
 
 import constantin.renderingx.core.FullscreenHelper;
 import constantin.renderingx.core.video.ISurfaceAvailable;
