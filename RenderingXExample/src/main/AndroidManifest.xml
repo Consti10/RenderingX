@@ -41,8 +41,6 @@
             android:screenOrientation="landscape"
             tools:ignore="LockedOrientationActivity" />
 
-        <activity android:name="constantin.renderingx.core.gles_info.AWriteGLESInfo" />
-
     </application>
 
 </manifest>

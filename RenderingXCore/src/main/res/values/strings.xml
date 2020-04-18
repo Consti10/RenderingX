@@ -1,6 +1,3 @@
 <resources>
-    <string name="app_name">RenderingXExample</string>
-
     <string name="RX_VR_PERMISSION_ACTION_MANAGE_WRITE_SETTINGS_DO_NOT_ASK">RX_VR_PERMISSION_ACTION_MANAGE_WRITE_SETTINGS_DO_NOT_ASK</string>
-
 </resources>

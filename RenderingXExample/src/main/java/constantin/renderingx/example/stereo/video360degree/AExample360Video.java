@@ -4,14 +4,10 @@ import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.Surface;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.vr.ndk.base.GvrApi;
 
-import constantin.renderingx.core.FullscreenHelper;
 import constantin.renderingx.core.VrActivity;
 import constantin.renderingx.core.views.MyGLSurfaceView;
 import constantin.renderingx.core.views.MyVRLayout;
