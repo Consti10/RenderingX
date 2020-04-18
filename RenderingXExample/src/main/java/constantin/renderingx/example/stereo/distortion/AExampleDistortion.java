@@ -10,6 +10,7 @@ import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrLayout;
 
 import constantin.renderingx.core.FullscreenHelper;
+import constantin.renderingx.core.VrActivity;
 import constantin.renderingx.core.views.MyGLSurfaceView;
 import constantin.renderingx.core.views.MyVRLayout;
 
@@ -17,7 +18,7 @@ import constantin.renderingx.core.views.MyVRLayout;
 //I recommend using android MediaPlayer if only playback from file is needed
 
 //See native code (renderer) for documentation
-public class AExampleDistortion extends AppCompatActivity {
+public class AExampleDistortion extends VrActivity {
     private static final String TAG="AExampleDistortion";
     private MyGLSurfaceView gLView;
     //Use one of both, either GvrLayout or MyVRLayout

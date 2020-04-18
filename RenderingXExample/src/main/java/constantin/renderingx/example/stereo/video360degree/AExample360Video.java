@@ -12,10 +12,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.vr.ndk.base.GvrApi;
 
 import constantin.renderingx.core.FullscreenHelper;
-import constantin.renderingx.core.video.ISurfaceAvailable;
+import constantin.renderingx.core.VrActivity;
 import constantin.renderingx.core.views.MyGLSurfaceView;
 import constantin.renderingx.core.views.MyVRLayout;
 import constantin.renderingx.example.R;
+import constantin.video.core.gl.ISurfaceAvailable;
 import constantin.video.core.video_player.VideoPlayer;
 import constantin.video.core.video_player.VideoSettings;
 
@@ -23,7 +24,7 @@ import constantin.video.core.video_player.VideoSettings;
 //I recommend using android MediaPlayer if only playback from file is needed
 
 //See native code (renderer) for documentation
-public class AExample360Video extends AppCompatActivity implements ISurfaceAvailable {
+public class AExample360Video extends VrActivity {
     private static final String TAG="AExampleVRRendering";
     public static final int SPHERE_MODE_GVR_EQUIRECTANGULAR=0;
     public static final int SPHERE_MODE_INSTA360_TEST=1;
@@ -60,7 +61,21 @@ public class AExample360Video extends AppCompatActivity implements ISurfaceAvail
             VideoSettings.setVS_FILE_ONLY_LIMIT_FPS(this,40);
             videoPlayer=new VideoPlayer(this,null);
         }
-        final Renderer360Video renderer =new Renderer360Video(this,this, gvrApi,false,
+        // VideoCore provides a convenient callback to use with VideoSurfaceHolder
+        final ISurfaceAvailable iSurfaceAvailable=USE_ANDROID_MEDIA_PLAYER ?
+                new ISurfaceAvailable() {
+                    @Override
+                    public void XSurfaceCreated(SurfaceTexture surfaceTexture, Surface surface) {
+                        mediaPlayer.setSurface(surface);
+                        mediaPlayer.start();
+                    }
+                    @Override
+                    public void XSurfaceDestroyed() {
+                        mediaPlayer.pause();
+                    }
+                } :
+                videoPlayer.configure2();
+        final Renderer360Video renderer =new Renderer360Video(this,iSurfaceAvailable, gvrApi,false,
                 true,SPHERE_MODE);
         gLView.setRenderer(renderer);
         gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
@@ -69,45 +84,4 @@ public class AExample360Video extends AppCompatActivity implements ISurfaceAvail
         myVRLayout.setPresentationView(gLView);
     }
 
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            FullscreenHelper.setImmersiveSticky(this);
-        }
-    }
-
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        //Some VR headsets use a clamp to hold the phone in place. This clamp may press against the volume up/down buttons.
-        //Here we effectively disable these 2 buttons
-        if(event.getKeyCode()==KeyEvent.KEYCODE_VOLUME_DOWN || event.getKeyCode()==KeyEvent.KEYCODE_VOLUME_UP){
-            return true;
-        }
-        //if(event.getKeyCode()==KeyEvent.KEYCODE_BACK){
-        //    return true;
-        //}
-        return super.dispatchKeyEvent(event);
-    }
-
-    // Start or stop video
-    @Override
-    public void XSurfaceCreated(SurfaceTexture surfaceTexture, Surface surface) {
-        if(USE_ANDROID_MEDIA_PLAYER){
-            mediaPlayer.setSurface(surface);
-            mediaPlayer.start();
-        }else{
-            videoPlayer.addAndStartDecoderReceiver(surface);
-        }
-    }
-
-    @Override
-    public void XSurfaceDestroyed() {
-        if(USE_ANDROID_MEDIA_PLAYER){
-            mediaPlayer.pause();
-        }else{
-            videoPlayer.stopAndRemoveReceiverDecoder();
-        }
-    }
 }
