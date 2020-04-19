@@ -6,6 +6,24 @@
     <!-- Set screen brightness in VR mode -->
     <!--<uses-permission android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />-->
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.sensor.gyroscope"
+        android:required="false" />
+    <uses-feature
+        android:name="android.software.vr.mode"
+        android:required="false" />
+    <uses-feature
+        android:name="android.software.vr.high_performance"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.vr.headtracking"
+        android:required="false" />
 
     <application>
         <activity android:name="constantin.renderingx.core.gles_info.AWriteGLESInfo"

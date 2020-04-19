@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.google.vr.ndk.base.GvrApi;
 
-import constantin.renderingx.core.gles_info.GLESInfo;
+import constantin.renderingx.core.gles_info.Extensions;
 import constantin.renderingx.core.views.ViewSuperSync;
 
 //See native code for documentation
@@ -26,8 +26,8 @@ public class GLRExampleSuperSync implements ViewSuperSync.IRendererSuperSync {
 
     public GLRExampleSuperSync(final Context context, GvrApi gvrApi){
         mContext=context;
-        final boolean qcomTiledRenderingAvailable= GLESInfo.isExtensionAvailable(context, GLESInfo.GL_QCOM_tiled_rendering);
-        final boolean reusableSyncAvailable=GLESInfo.isExtensionAvailable(context,GLESInfo.EGL_KHR_reusable_sync);
+        final boolean qcomTiledRenderingAvailable= Extensions.available(context,Extensions.GL_QCOM_tiled_rendering);
+        final boolean reusableSyncAvailable= Extensions.available(context,Extensions.EGL_KHR_reusable_sync);
         nativeGLRSuperSync=nativeConstruct(context,qcomTiledRenderingAvailable,reusableSyncAvailable);
     }
 

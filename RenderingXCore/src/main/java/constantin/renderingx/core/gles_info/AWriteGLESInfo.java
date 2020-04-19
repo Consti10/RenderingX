@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.opengles.GL10;
 
+import constantin.renderingx.core.BuildConfig;
 import constantin.renderingx.core.views.MyEGLConfigChooser;
 
 import static constantin.renderingx.core.views.MyEGLConfigChooser.findConfigAttrib;
@@ -35,10 +37,25 @@ public class AWriteGLESInfo extends AppCompatActivity {
     private static final String TAG="AWriteGLESInfo";
     private Activity context;
     private GLSurfaceView mTestView;
+    //
+    public static final String PREFERENCES_TAG="pref_gl_info";
+    private static final String SAVED_VERSION_CODE="SAVED_VERSION_CODE";
+    private static final String SAVED_BUILD_VERSION="SAVED_BUILD_VERSION";
 
+    //write values when either a) the library was updated or b) the os (android) was updated
+    static boolean shouldWriteValues(final Context c){
+        //return true;
+        final SharedPreferences pref = c.getSharedPreferences(PREFERENCES_TAG, MODE_PRIVATE);
+        return pref.getInt(SAVED_VERSION_CODE, 0) != BuildConfig.VERSION_CODE ||
+                pref.getInt(SAVED_BUILD_VERSION, 0) != android.os.Build.VERSION.SDK_INT;
+    }
+    static void wroteValues(final Context c){
+        final SharedPreferences pref = c.getSharedPreferences(PREFERENCES_TAG, MODE_PRIVATE);
+        pref.edit().putInt(SAVED_VERSION_CODE, BuildConfig.VERSION_CODE).putInt(SAVED_BUILD_VERSION,android.os.Build.VERSION.SDK_INT).commit();
+    }
 
     public static void writeGLESInfoIfNeeded(final Context c){
-        if(GLESInfo.shouldWriteValues(c)){
+        if(shouldWriteValues(c)){
             Log.d(TAG,"onUpdate()");
             //Refresh the HW information
             final String text="FPV-VR needs to detect the CPU and GPU abilities of your phone to adjust power and performance settings.\n"+
@@ -62,7 +79,7 @@ public class AWriteGLESInfo extends AppCompatActivity {
 
 
     private void exitAfterSuccessfulTesting(){
-        GLESInfo.wroteValues(context);
+        wroteValues(context);
         final String text="CPU/GPU abilities successfully tested";
         context.runOnUiThread(new Runnable() {
             @Override
@@ -163,7 +180,7 @@ public class AWriteGLESInfo extends AppCompatActivity {
             //MALI GPUs support 4xMSAA and 16xMSAA
             Log.d(TAG,"Max MSAA Level:"+maxMSAALevel);
             Log.d(TAG,"All MSAA Levels:"+allMSAALevels);
-            GLESInfo.writeResultsMSAA(context,allMSAALevels.toString());
+            OpenGLESValues.writeResultsMSAA(context,allMSAALevels.toString());
         }
 
         @Override
@@ -208,7 +225,8 @@ public class AWriteGLESInfo extends AppCompatActivity {
                 }
             }
             if (nFrames == 2) {
-                GLESInfo.writeResultsWithGLESContextBound(context);
+                Extensions.storeInSharedPreference(context);
+                OpenGLESValues.storeInSharedPreference(context);
             }
             double MAX_TIME_MS = 0;
             if (nFrames > 2 && (System.currentTimeMillis()-lastTS> MAX_TIME_MS && !exitHasBeenCalled)) {
