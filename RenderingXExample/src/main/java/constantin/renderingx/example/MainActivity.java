@@ -26,16 +26,14 @@ import constantin.renderingx.example.mono.AExampleRendering;
 import constantin.renderingx.example.stereo.distortion.AExampleDistortion;
 import constantin.renderingx.example.stereo.video360degree.AExample360Video;
 import constantin.renderingx.example.supersync.AExampleSuperSync;
+import constantin.video.core.RequestPermissionHelper;
 
 public class MainActivity extends AppCompatActivity {
     private Context context;
-    private static final String[] REQUIRED_PERMISSION_LIST = new String[]{
+    private final RequestPermissionHelper requestPermissionHelper=new RequestPermissionHelper(new String[]{
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-    };
-    private final List<String> missingPermission = new ArrayList<>();
-    private static final int REQUEST_PERMISSION_CODE = 12345;
-
+            Manifest.permission.READ_EXTERNAL_STORAGE
+    });
     private Spinner mSpinner;
 
     @Override
@@ -96,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        checkAndRequestPermissions();
+        requestPermissionHelper.checkAndRequestPermissions(this);
     }
 
     @Override
@@ -105,38 +103,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void checkAndRequestPermissions(){
-        missingPermission.clear();
-        for (String eachPermission : REQUIRED_PERMISSION_LIST) {
-            if (ContextCompat.checkSelfPermission(this, eachPermission) != PackageManager.PERMISSION_GRANTED) {
-                missingPermission.add(eachPermission);
-            }
-        }
-        if (!missingPermission.isEmpty()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                final String[] asArray=missingPermission.toArray(new String[0]);
-                Log.d("PermissionManager","Request: "+ Arrays.toString(asArray));
-                ActivityCompat.requestPermissions(this, asArray, REQUEST_PERMISSION_CODE);
-            }
-        }
-    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        // Check for granted permission and remove from missing list
-        if (requestCode == REQUEST_PERMISSION_CODE) {
-            for (int i = grantResults.length - 1; i >= 0; i--) {
-                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                    missingPermission.remove(permissions[i]);
-                }
-            }
-        }
-        if (!missingPermission.isEmpty()) {
-            checkAndRequestPermissions();
-        }
-
+        requestPermissionHelper.onRequestPermissionsResult(requestCode,permissions,grantResults);
     }
 
     public boolean isSuperSyncSupported(){
