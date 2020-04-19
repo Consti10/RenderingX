@@ -3,7 +3,6 @@ package constantin.renderingx.core.gles_info;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.opengl.EGL14;
 import android.opengl.GLES20;
 
 import java.util.ArrayList;

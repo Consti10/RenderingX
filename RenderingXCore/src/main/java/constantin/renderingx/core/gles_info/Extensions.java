@@ -43,7 +43,7 @@ public class Extensions {
     // Returns true if the queried extension is available
     public static boolean available(final Context c, final String extension){
         final SharedPreferences pref = c.getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-        return sharedPreferences.getBoolean(extension,false);
+        return pref.getBoolean(extension,false);
     }
 
     private static boolean available(final SharedPreferences sharedPreferences, final String extension){
