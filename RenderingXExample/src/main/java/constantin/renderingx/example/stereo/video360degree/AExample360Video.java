@@ -55,7 +55,7 @@ public class AExample360Video extends VrActivity {
             VideoSettings.setVS_SOURCE(this, VideoSettings.VS_SOURCE.ASSETS);
             VideoSettings.setVS_ASSETS_FILENAME_TEST_ONLY(this,VIDEO_FILENAME);
             VideoSettings.setVS_FILE_ONLY_LIMIT_FPS(this,40);
-            videoPlayer=new VideoPlayer(this,null);
+            videoPlayer=new VideoPlayer(this);
         }
         // VideoCore provides a convenient callback to use with VideoSurfaceHolder
         final ISurfaceAvailable iSurfaceAvailable=USE_ANDROID_MEDIA_PLAYER ?
