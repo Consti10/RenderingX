@@ -21,10 +21,12 @@ class GLProgramTextureProj {
 private:
     GLuint mProgram;
     GLuint aPosition,aTexCoord,mSamplerHandle;
-    GLuint uMVMatrix,uPMatrix;
+    GLuint uModelMatrix,uViewMatrix,uProjMatrix;
     GLuint uTextureMatrix;
-    static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
-    static constexpr auto MY_SAMPLER_UNIT=1;
+    static constexpr auto MY_TEXTURE_UNIT1=GL_TEXTURE1;
+    static constexpr auto MY_SAMPLER_UNIT1=1;
+    static constexpr auto MY_TEXTURE_UNIT2=GL_TEXTURE2;
+    static constexpr auto MY_SAMPLER_UNIT2=2;
 public:
     struct Vertex{
         float x,y,z;
@@ -33,15 +35,15 @@ public:
     using INDEX_DATA=GLuint;
     explicit GLProgramTextureProj();
     void beforeDraw(GLuint buffer,GLuint texture) const;
-    void draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLenum mode=GL_TRIANGLES) const;
-    void drawIndexed(GLuint indexBuffer,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int indicesOffset, int numberIndices,GLenum mode) const;
+    void draw(const glm::mat4x4& ModelM,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLenum mode=GL_TRIANGLES) const;
     void afterDraw() const;
     void updateTexMatrix(const glm::mat4x4& texmatrix);
 private:
     static const std::string VS(){
         std::stringstream s;
-        s<<"uniform mat4 uMVMatrix;\n";
-        s<<"uniform mat4 uPMatrix;\n";
+        s<<"uniform mat4 uModelMatrix;";
+        s<<"uniform mat4 uViewMatrix;\n";
+        s<<"uniform mat4 uProjMatrix;\n";
         s<<"uniform mat4 uTextureMatrix;\n";
         s<<"attribute vec4 aPosition;\n";
         s<<"attribute vec2 aTexCoord;\n";
@@ -49,10 +51,11 @@ private:
         s<<"varying vec4 vTextureCoordProj;\n";
 
         s<<"void main() {\n";
-        s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition;\n";
+        s<<"gl_Position = (uProjMatrix*(uViewMatrix*uModelMatrix))* aPosition;\n";
         s<<"vTexCoord = aTexCoord;\n";
 
-        s<<"vTextureCoordProj = uTextureMatrix * aPosition;";
+        s<<"vTextureCoordProj = uTextureMatrix * uModelMatrix * aPosition;\n";
+        //s<<"vTextureCoordProj = uTextureMatrix * aPosition;";
         s<<"}\n";
         return s.str();
     }
@@ -65,11 +68,11 @@ private:
         s<<"uniform sampler2D sTexture;\n";
         s<<"void main() {\n";
 
-        s<<"vec4 textureColor=texture2D(sTexture,vTexCoord);\n";
-        //s<<"vec4 textureColor=vec4(1.0,0.0,0.0,1.0);\n";
+        //s<<"vec4 textureColor=texture2D(sTexture,vTexCoord);\n";
+        s<<"vec4 textureColor=vec4(1.0,0.0,0.0,1.0);\n";
         //s<<"vec4 textureColorProj = vec4(1.0,0.0,0.0,1.0);\n";
         s<<"vec4 textureColorProj =  texture2DProj(sTexture, vTextureCoordProj);\n";
-        s<<"gl_FragColor = mix(textureColor, textureColorProj, 0.5);\n";
+        s<<"gl_FragColor = mix(textureColor, textureColorProj, 0.95);\n";
 
         s<<"}\n";
         return s.str();

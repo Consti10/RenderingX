@@ -9,8 +9,9 @@ constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
 GLProgramTextureProj::GLProgramTextureProj(){
     mProgram = GLHelper::createProgram(VS(),FS());
-    uMVMatrix=_glGetUniformLocation(mProgram, "uMVMatrix");
-    uPMatrix=_glGetUniformLocation(mProgram, "uPMatrix");
+    uModelMatrix=_glGetUniformLocation(mProgram, "uModelMatrix");
+    uViewMatrix=_glGetUniformLocation(mProgram, "uViewMatrix");
+    uProjMatrix=_glGetUniformLocation(mProgram, "uProjMatrix");
     uTextureMatrix=_glGetUniformLocation(mProgram,"uTextureMatrix");
     aPosition = _glGetAttribLocation(mProgram, "aPosition");
     aTexCoord = _glGetAttribLocation(mProgram, "aTexCoord");
@@ -21,9 +22,9 @@ GLProgramTextureProj::GLProgramTextureProj(){
 void GLProgramTextureProj::beforeDraw(const GLuint buffer,GLuint texture) const{
     glUseProgram(mProgram);
 
-    glActiveTexture(MY_TEXTURE_UNIT);
+    glActiveTexture(MY_TEXTURE_UNIT1);
     glBindTexture(GL_TEXTURE_2D,texture);
-    glUniform1i(mSamplerHandle,MY_SAMPLER_UNIT);
+    glUniform1i(mSamplerHandle, MY_SAMPLER_UNIT1);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glEnableVertexAttribArray(aPosition);
@@ -33,21 +34,14 @@ void GLProgramTextureProj::beforeDraw(const GLuint buffer,GLuint texture) const{
     GLHelper::checkGlError("GLProgramTextureProj::beforeDraw");
 }
 
-void GLProgramTextureProj::draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, const int verticesOffset, const int numberVertices,GLenum mode) const{
-    glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(ViewM));
-    glUniformMatrix4fv(uPMatrix, 1, GL_FALSE, glm::value_ptr(ProjM));
+void GLProgramTextureProj::draw(const glm::mat4x4& ModelM,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, const int verticesOffset, const int numberVertices,GLenum mode) const{
+    glUniformMatrix4fv(uModelMatrix, 1, GL_FALSE, glm::value_ptr(ModelM));
+    glUniformMatrix4fv(uViewMatrix, 1, GL_FALSE, glm::value_ptr(ViewM));
+    glUniformMatrix4fv(uProjMatrix, 1, GL_FALSE, glm::value_ptr(ProjM));
     glDrawArrays(mode, verticesOffset, numberVertices);
     GLHelper::checkGlError("GLProgramTextureProj::draw");
 }
 
-void GLProgramTextureProj::drawIndexed(GLuint indexBuffer, const glm::mat4x4 &ViewM,
-                                   const glm::mat4x4 &ProjM, int indicesOffset, int numberIndices,
-                                   GLenum mode) const {
-    glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(ViewM));
-    glUniformMatrix4fv(uPMatrix, 1, GL_FALSE, glm::value_ptr(ProjM));
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glDrawElements(mode,numberIndices,GL_UNSIGNED_INT, (void*)(indicesOffset*sizeof(INDEX_DATA)));
-}
 
 void GLProgramTextureProj::afterDraw() const{
     glDisableVertexAttribArray(aPosition);

@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/ext.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
@@ -56,7 +57,8 @@ VertexBuffer glBufferIcons;
 VertexBuffer glBufferLine;
 //holds textured vertices
 VertexBuffer glBufferTextured;
-//VertexIndexBuffer glBufferTextured2;
+VertexBuffer glBufferPyramid;
+glm::mat4 modelM;
 
 //simplifies debugging/benchmarking
 Chronometer cpuFrameTime{"CPU frame time"};
@@ -137,6 +139,11 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     const float wh=5.0f;
     glBufferTextured.uploadGL(TexturedGeometry::makeTesselatedVideoCanvas2(glm::vec3(-wh*0.5f,-wh*0.5f,0),wh,wh,10,0.0f,1.0f));
 
+    glBufferPyramid.initializeAndUploadGL(TexturedGeometry::makePyramid(),GL_TRIANGLES);
+    //modelM=glm::mat4(1.0);
+    const float scale=4.0f;
+    modelM=glm::scale(glm::mat4(1.0f), glm::vec3(scale,scale,scale));
+
     //const auto lol=TexturedGeometry::makeTesselatedVideoCanvas(glm::vec3(-wh*0.5f,-wh*0.5f,0),wh,wh,10,0.0f,1.0f);
     //glBufferTextured2.initializeAndUploadGL(lol.first,lol.second);
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
@@ -154,9 +161,11 @@ static void placeCamera(float distance, float x, float y){
 static void onSurfaceChanged(int width, int height){
     projection=glm::perspective(glm::radians(45.0F), (float)width/height, MIN_Z_DISTANCE, MAX_Z_DISTANCE);
     placeCamera(0,0,0);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glViewport(0,0,width,height);
+    // P
+    glEnable(GL_DEPTH_TEST);
 }
 
 glm::mat4 buildProjectorMatrices() {
@@ -222,10 +231,15 @@ static void onDrawFrame(int mode){
     }else if(mode==3){
         glProgramVC->drawX(eyeView,projection,glBufferVC);
     }else if(mode==4){
-        glProgramTextureProj->beforeDraw(glBufferTextured.vertexB,mExampleTexture);
-        glProgramTextureProj->draw(eyeView,projection,0,glBufferTextured.nVertices,glBufferTextured.mMode);
+        /*glProgramTextureProj->beforeDraw(glBufferTextured.vertexB,mExampleTexture);
+        glProgramTextureProj->draw(glm::mat4(1.0f),eyeView,projection,0,glBufferTextured.nVertices,glBufferTextured.mMode);
+        glProgramTextureProj->updateTexMatrix(buildProjectorMatrices());
+        glProgramTextureProj->afterDraw();*/
+        glProgramTextureProj->beforeDraw(glBufferPyramid.vertexB,mExampleTexture);
+        glProgramTextureProj->draw(modelM,eyeView,projection,0,glBufferPyramid.nVertices,glBufferPyramid.mMode);
         glProgramTextureProj->updateTexMatrix(buildProjectorMatrices());
         glProgramTextureProj->afterDraw();
+        //modelM=glm::rotate(modelM, glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
          //glProgramTexture->drawX(mExampleTexture,eyeView,projection,glBufferTextured);
          //glProgramTexture->drawX(mExampleTexture,eyeView,projection,glBufferTextured2);
@@ -264,6 +278,7 @@ JNI_METHOD(void, nativeOnDrawFrame)
 JNI_METHOD(void, nativeMoveCamera)
 (JNIEnv *env, jobject obj,jfloat scale,jfloat x,jfloat y) {
     //placeCamera((float) scale, (float) x, (float) y);
+    modelM=glm::rotate(modelM,glm::radians(x), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 JNI_METHOD(void, nativeSetSeekBarValues)
