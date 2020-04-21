@@ -56,6 +56,7 @@ VertexBuffer glBufferIcons;
 VertexBuffer glBufferLine;
 //holds textured vertices
 VertexBuffer glBufferTextured;
+//VertexIndexBuffer glBufferTextured2;
 
 //simplifies debugging/benchmarking
 Chronometer cpuFrameTime{"CPU frame time"};
@@ -80,7 +81,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     glProgramLine=new GLProgramLine();
     glProgramText=new GLProgramText();
     glProgramText->loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
-    //glProgramTexture=new GLProgramTexture(false);
+    glProgramTexture=new GLProgramTexture(false);
     glProgramTextureProj=new GLProgramTextureProj();
     glGenTextures(1,&mExampleTexture);
     GLProgramTexture::loadTexture(mExampleTexture,env,context,"ExampleTexture/brick_wall_simple.png");
@@ -135,6 +136,9 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     //Textured geometry
     const float wh=5.0f;
     glBufferTextured.uploadGL(TexturedGeometry::makeTesselatedVideoCanvas2(glm::vec3(-wh*0.5f,-wh*0.5f,0),wh,wh,10,0.0f,1.0f));
+
+    //const auto lol=TexturedGeometry::makeTesselatedVideoCanvas(glm::vec3(-wh*0.5f,-wh*0.5f,0),wh,wh,10,0.0f,1.0f);
+    //glBufferTextured2.initializeAndUploadGL(lol.first,lol.second);
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
@@ -188,7 +192,8 @@ static void onDrawFrame(int mode){
         //glProgramTexture->updateTexMatrix(eyeView);
         glProgramTextureProj->afterDraw();
 
-        //glProgramTexture->drawX(mExampleTexture,eyeView,projection,glBufferTextured);
+         //glProgramTexture->drawX(mExampleTexture,eyeView,projection,glBufferTextured);
+         //glProgramTexture->drawX(mExampleTexture,eyeView,projection,glBufferTextured2);
     }
     GLHelper::checkGlError("example_renderer::onDrawFrame");
     cpuFrameTime.stop();

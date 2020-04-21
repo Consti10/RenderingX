@@ -12,7 +12,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <array>
-#include <VDDCManager.h>
 #include <GLBufferHelper.hpp>
 #include <VertexBuffer.hpp>
 #include <VertexIndexBuffer.h>
@@ -21,9 +20,9 @@
 class GLProgramTextureProj {
 private:
     GLuint mProgram;
-    GLint mPositionHandle,mTextureHandle,mSamplerHandle;
-    GLuint mMVMatrixHandle,mPMatrixHandle;
-    GLuint mTextureMatrixHandle;
+    GLuint aPosition,aTexCoord,mSamplerHandle;
+    GLuint uMVMatrix,uPMatrix;
+    GLuint uTextureMatrix;
     static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
     static constexpr auto MY_SAMPLER_UNIT=1;
 public:
@@ -50,11 +49,10 @@ private:
         s<<"varying vec4 vTextureCoordProj;\n";
 
         s<<"void main() {\n";
-
+        s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition;\n";
         s<<"vTexCoord = aTexCoord;\n";
 
-        s<<"vTextureCoordProj = uTextureMatrix * aPosition;\n";
-
+        s<<"vTextureCoordProj = uTextureMatrix * aPosition;";
         s<<"}\n";
         return s.str();
     }
@@ -63,18 +61,13 @@ private:
         s<<"precision mediump float;\n";
         s<<"varying vec2 vTexCoord;\n";
         s<<"varying vec4 vTextureCoordProj;\n";
-        s<<"varying float invisibleFragment;";
         s<<"uniform sampler2D sTexture;\n";
-
         s<<"void main() {\n";
 
-        //s<<"vec4 textureColorProj = textureProj(texProj, textureCoordProj);\n";
-        //s<<"vec4 textureColorProj = textureProj(sTexture,vTextureCoordProj);";
-        s<<"vec4 textureColorProj = vec4(1.0,0.0,0.0,1.0);\n";
         s<<"vec4 textureColor=texture2D(sTexture,vTexCoord);\n";
-        //s<<"vec4 textureColor=vec4(1.0,0.0,0.0,1.0);\n";
+        s<<"vec4 textureColorProj = vec4(1.0,0.0,0.0,1.0);\n";
+        //s<<"vec4 textureColorProj = textureProj(sTexture, vTextureCoordProj);\n";
         s<<"gl_FragColor = mix(textureColor, textureColorProj, 0.4);\n";
-        //s<<"gl_FragColor = texture2D(sTexture,vTexCoord);\n";
 
         s<<"}\n";
         return s.str();
@@ -82,5 +75,10 @@ private:
 };
 
 
-
+//s<<"vec4 textureColorProj = textureProj(texProj, textureCoordProj);\n";
+//s<<"vec4 textureColorProj = textureProj(sTexture,vTextureCoordProj);";
+//s<<"vec4 textureColorProj = vec4(1.0,0.0,0.0,1.0);\n";
+//s<<"vec4 textureColor=texture2D(sTexture,vTexCoord);\n";
+//s<<"vec4 textureColor=vec4(1.0,0.0,0.0,1.0);\n";
+//s<<"gl_FragColor = mix(textureColor, textureColorProj, 0.4);\n";
 #endif //GL_PROGRAM_TEXTURE_PROJECTIVE

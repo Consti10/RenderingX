@@ -1,17 +1,20 @@
 
 #include <NDKHelper.hpp>
 #include "GLProgramTexture.h"
+#include "Macros.h"
 
 constexpr auto TAG="GLRenderTexture(-External)";
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
+
+
 GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const VDDCManager* distortionManager, const bool use2dCoordinates, const bool mapEquirectangularToInsta360)
         :USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE),distortionManager(distortionManager),mapEquirectangularToInsta360(mapEquirectangularToInsta360) {
     mProgram = GLHelper::createProgram(VS(distortionManager,use2dCoordinates),FS(USE_EXTERNAL_TEXTURE,mapEquirectangularToInsta360));
-    mMVMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
-    mPMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uPMatrix");
-    mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
-    mTextureHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aTexCoord");
+    mMVMatrixHandle=_glGetUniformLocation(mProgram,"uMVMatrix");
+    mPMatrixHandle=_glGetUniformLocation(mProgram,"uPMatrix");
+    mPositionHandle = _glGetAttribLocation(mProgram, "aPosition");
+    mTextureHandle = _glGetAttribLocation(mProgram, "aTexCoord");
     mSamplerHandle = glGetUniformLocation (mProgram, "sTexture" );
     mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
     GLHelper::checkGlError(TAG);

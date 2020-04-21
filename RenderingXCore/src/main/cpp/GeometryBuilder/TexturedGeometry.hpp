@@ -57,7 +57,7 @@ private:
     }
     using VerticesIndices=std::pair<std::vector<GLProgramTexture::Vertex>,std::vector<GLProgramTexture::INDEX_DATA>>;
     static std::vector<GLProgramTexture::Vertex> mergeIndicesIntoVertices(const std::vector<GLProgramTexture::Vertex>& vertices,const std::vector<GLProgramTexture::INDEX_DATA>& indices){
-        std::vector<GLProgramTexture::Vertex> ret;
+        std::vector<GLProgramTexture::Vertex> ret={};
         ret.reserve(indices.size());
         for(unsigned int index:indices){
             if(index>=vertices.size()){

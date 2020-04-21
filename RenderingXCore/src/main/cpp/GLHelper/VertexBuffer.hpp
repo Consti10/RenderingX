@@ -5,6 +5,7 @@
 #ifndef RENDERINGX_VERTEXBUFFER_H
 #define RENDERINGX_VERTEXBUFFER_H
 
+#include <GLHelper.hpp>
 #include <GLBufferHelper.hpp>
 
 //Helps Generalizing the following re-occuring pattern:
