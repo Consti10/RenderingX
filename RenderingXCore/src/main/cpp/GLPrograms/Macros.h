@@ -8,6 +8,8 @@
 #include "../Helper/MDebug.hpp"
 #include <GLES2/gl2.h>
 
+//TODO uniform might just be optimized out
+// https://www.khronos.org/opengl/wiki/GLSL_:_common_mistakes ... will optimize your uniform out.
 
 static const GLuint _glGetUniformLocation(GLuint program, const GLchar *name){
     GLint location=glGetUniformLocation(program,name);

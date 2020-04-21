@@ -58,6 +58,7 @@ private:
     }
     static const std::string FS(){
         std::stringstream s;
+        //s<<"#version 300 es \n";
         s<<"precision mediump float;\n";
         s<<"varying vec2 vTexCoord;\n";
         s<<"varying vec4 vTextureCoordProj;\n";
@@ -65,9 +66,10 @@ private:
         s<<"void main() {\n";
 
         s<<"vec4 textureColor=texture2D(sTexture,vTexCoord);\n";
-        s<<"vec4 textureColorProj = vec4(1.0,0.0,0.0,1.0);\n";
-        //s<<"vec4 textureColorProj = textureProj(sTexture, vTextureCoordProj);\n";
-        s<<"gl_FragColor = mix(textureColor, textureColorProj, 0.4);\n";
+        //s<<"vec4 textureColor=vec4(1.0,0.0,0.0,1.0);\n";
+        //s<<"vec4 textureColorProj = vec4(1.0,0.0,0.0,1.0);\n";
+        s<<"vec4 textureColorProj =  texture2DProj(sTexture, vTextureCoordProj);\n";
+        s<<"gl_FragColor = mix(textureColor, textureColorProj, 0.5);\n";
 
         s<<"}\n";
         return s.str();

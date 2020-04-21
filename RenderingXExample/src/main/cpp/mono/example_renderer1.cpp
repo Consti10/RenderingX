@@ -159,6 +159,41 @@ static void onSurfaceChanged(int width, int height){
     glViewport(0,0,width,height);
 }
 
+glm::mat4 buildProjectorMatrices() {
+
+    // Construct a view-projection matrix as if the camera is placed at the projector.
+    // If we use this view-projection matrix to transform the object, the object will
+    // be projected from the projector to a 2D space, which is the texture space
+    // for the projector view. The texture coordinates in this 2D space are the
+    // texture coordinates for the projective texture.
+
+    glm::vec3 projectorPosition = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 projectorLookAtPosition = glm::vec3(0.5f, 0.0f, 0.0f);
+    glm::vec3 projectorUpVector = glm::vec3(0.0f, 0.0f, 1.0f);
+    float projectorFOV = 60.0f;
+
+    // The view matrix from the projector's viewpoint.
+    glm::mat4 projectorViewMatrix = glm::lookAt(projectorPosition,
+                                      projectorLookAtPosition, projectorUpVector);
+
+    // The projection matrix for the projector.
+    glm::mat4 projectorProjectionMatrix = glm::perspective(projectorFOV, 1.0f, 0.5f, 10.0f);
+    // mat4 projectorProjectionMatrix = ortho(0.3f, 0.3f, 0.3f, 0.0f, 0.5f, 10.0f);
+
+    // After the initial projection, the origin is at the center of the window.
+    // However, the origin of a texture image is at the lower left corner.
+    // The scale and bias matrix is used to transform the origin from the center
+    // to the corner.
+    glm::mat4 scaleBiasMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)), glm::vec3(0.5f));
+
+    // Construct the combined matrix to transform the vertex position to its projective
+    // texture coordiantes.
+    glm::mat4 projectorTransformMatrix = scaleBiasMatrix * projectorProjectionMatrix *
+                                    projectorViewMatrix;
+
+    return projectorTransformMatrix;
+}
+
 //draw a frame
 //mode selects which elements to draw
 static void onDrawFrame(int mode){
@@ -189,7 +224,7 @@ static void onDrawFrame(int mode){
     }else if(mode==4){
         glProgramTextureProj->beforeDraw(glBufferTextured.vertexB,mExampleTexture);
         glProgramTextureProj->draw(eyeView,projection,0,glBufferTextured.nVertices,glBufferTextured.mMode);
-        glProgramTextureProj->updateTexMatrix(eyeView);
+        glProgramTextureProj->updateTexMatrix(buildProjectorMatrices());
         glProgramTextureProj->afterDraw();
 
          //glProgramTexture->drawX(mExampleTexture,eyeView,projection,glBufferTextured);
