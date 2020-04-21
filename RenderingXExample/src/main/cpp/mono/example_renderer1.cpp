@@ -21,6 +21,7 @@
 #include <GLProgramTexture.h>
 #include <Chronometer.h>
 #include <FPSCalculator.h>
+#include <GLProgramTextureProj.h>
 
 //Render a simple scene consisting of a colored triangle, smooth lines and smooth text
 
@@ -43,6 +44,7 @@ GLProgramText* glProgramText;
 //Used to render textured geometry
 GLProgramTexture* glProgramTexture;
 GLuint mExampleTexture;
+GLProgramTextureProj* glProgramTextureProj;
 
 //holds colored geometry vertices
 VertexBuffer glBufferVC;
@@ -78,9 +80,11 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     glProgramLine=new GLProgramLine();
     glProgramText=new GLProgramText();
     glProgramText->loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
-    glProgramTexture=new GLProgramTexture(false);
+    //glProgramTexture=new GLProgramTexture(false);
+    glProgramTextureProj=new GLProgramTextureProj();
     glGenTextures(1,&mExampleTexture);
-    glProgramTexture->loadTexture(mExampleTexture,env,context,"ExampleTexture/brick_wall_simple.png");
+    GLProgramTexture::loadTexture(mExampleTexture,env,context,"ExampleTexture/brick_wall_simple.png");
+
 
     //create all the gl Buffer for later use
     glBufferVC.initializeGL();
@@ -179,7 +183,12 @@ static void onDrawFrame(int mode){
     }else if(mode==3){
         glProgramVC->drawX(eyeView,projection,glBufferVC);
     }else if(mode==4){
-        glProgramTexture->drawX(mExampleTexture,eyeView,projection,glBufferTextured);
+        glProgramTextureProj->beforeDraw(glBufferTextured.vertexB,mExampleTexture);
+        glProgramTextureProj->draw(eyeView,projection,0,glBufferTextured.nVertices,glBufferTextured.mMode);
+        //glProgramTexture->updateTexMatrix(eyeView);
+        glProgramTextureProj->afterDraw();
+
+        //glProgramTexture->drawX(mExampleTexture,eyeView,projection,glBufferTextured);
     }
     GLHelper::checkGlError("example_renderer::onDrawFrame");
     cpuFrameTime.stop();
