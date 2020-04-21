@@ -189,7 +189,7 @@ static void onDrawFrame(int mode){
     }else if(mode==4){
         glProgramTextureProj->beforeDraw(glBufferTextured.vertexB,mExampleTexture);
         glProgramTextureProj->draw(eyeView,projection,0,glBufferTextured.nVertices,glBufferTextured.mMode);
-        //glProgramTexture->updateTexMatrix(eyeView);
+        glProgramTextureProj->updateTexMatrix(eyeView);
         glProgramTextureProj->afterDraw();
 
          //glProgramTexture->drawX(mExampleTexture,eyeView,projection,glBufferTextured);
