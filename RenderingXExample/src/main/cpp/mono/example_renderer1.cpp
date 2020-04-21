@@ -161,11 +161,7 @@ static void placeCamera(float distance, float x, float y){
 static void onSurfaceChanged(int width, int height){
     projection=glm::perspective(glm::radians(45.0F), (float)width/height, MIN_Z_DISTANCE, MAX_Z_DISTANCE);
     placeCamera(0,0,0);
-    //glEnable(GL_BLEND);
-    //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glViewport(0,0,width,height);
-    // P
-    glEnable(GL_DEPTH_TEST);
 }
 
 glm::mat4 buildProjectorMatrices() {
@@ -210,6 +206,13 @@ static void onDrawFrame(int mode){
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     cpuFrameTime.start();
     //
+    if(mode==5){
+        glEnable(GL_DEPTH_TEST);
+    }else{
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    }
     //Drawing with the OpenGL Programs is easy - call beforeDraw() with the right OpenGL Buffer and then draw until done
     if(mode==0){ //Smooth text
         glProgramText->beforeDraw(glBufferText.vertexB);
@@ -231,6 +234,8 @@ static void onDrawFrame(int mode){
     }else if(mode==3){
         glProgramVC->drawX(eyeView,projection,glBufferVC);
     }else if(mode==4){
+         glProgramTexture->drawX(mExampleTexture,eyeView,projection,glBufferTextured);
+    }else if(mode==5){
         /*glProgramTextureProj->beforeDraw(glBufferTextured.vertexB,mExampleTexture);
         glProgramTextureProj->draw(glm::mat4(1.0f),eyeView,projection,0,glBufferTextured.nVertices,glBufferTextured.mMode);
         glProgramTextureProj->updateTexMatrix(buildProjectorMatrices());
@@ -240,9 +245,6 @@ static void onDrawFrame(int mode){
         glProgramTextureProj->updateTexMatrix(buildProjectorMatrices());
         glProgramTextureProj->afterDraw();
         //modelM=glm::rotate(modelM, glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-         //glProgramTexture->drawX(mExampleTexture,eyeView,projection,glBufferTextured);
-         //glProgramTexture->drawX(mExampleTexture,eyeView,projection,glBufferTextured2);
     }
     GLHelper::checkGlError("example_renderer::onDrawFrame");
     cpuFrameTime.stop();
@@ -279,6 +281,12 @@ JNI_METHOD(void, nativeMoveCamera)
 (JNIEnv *env, jobject obj,jfloat scale,jfloat x,jfloat y) {
     //placeCamera((float) scale, (float) x, (float) y);
     modelM=glm::rotate(modelM,glm::radians(x), glm::vec3(0.0f, 1.0f, 0.0f));
+}
+
+JNI_METHOD(void, nativeMoveModelMatrix)
+(JNIEnv *env, jobject obj,jfloat amount) {
+    //placeCamera((float) scale, (float) x, (float) y);
+    modelM=glm::rotate(modelM,glm::radians(amount), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 JNI_METHOD(void, nativeSetSeekBarValues)
