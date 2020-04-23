@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <MDebug.hpp>
+#include "GLES2/gl2.h"
 
 namespace Indices{
     // takes a mesh that uses indices and removes indices by duplicating/adding vertices

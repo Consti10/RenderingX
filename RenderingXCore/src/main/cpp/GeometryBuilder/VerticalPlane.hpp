@@ -6,9 +6,11 @@
 #define CONSTANTIN_RENDERINGX_CORE_VERTICAL_PLANE
 
 #include "GLProgramTexture.h"
-#include "VerticalPlane.hpp"
+#include "GLProgramVC.h"
 #include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
 
 namespace VerticalPlane{
     /**
@@ -38,7 +40,7 @@ namespace VerticalPlane{
                 v.y=pos2.y;
                 v.z=pos2.z;
                 v.u=texture2.x;
-                v.v=texture2.y;
+                v.v=1.0f-texture2.y;
                 count++;
             }
         }
