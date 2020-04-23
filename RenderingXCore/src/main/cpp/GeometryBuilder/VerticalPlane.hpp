@@ -32,7 +32,7 @@ namespace VerticalPlane{
         for(int i=0;i<tessellationX+1;i++){
             for(int j=0;j<tessellationY+1;j++){
                 const glm::vec4 pos={-0.5f+subW*j,-0.5f+subH*i,0.0f,1.0f};
-                const glm::vec4 texture={subURange*j,subVRange*i,0.0f,1.0f};
+                const glm::vec4 texture={subURange*j,1.0f-subVRange*i,0.0f,1.0f};
                 const glm::vec4 pos2=modelMatrix*pos;
                 const glm::vec4 texture2=textureMatrix*texture;
                 GLProgramTexture::Vertex& v=vertices.at(count);
@@ -40,7 +40,7 @@ namespace VerticalPlane{
                 v.y=pos2.y;
                 v.z=pos2.z;
                 v.u=texture2.x;
-                v.v=1.0f-texture2.y;
+                v.v=texture2.y;
                 count++;
             }
         }
