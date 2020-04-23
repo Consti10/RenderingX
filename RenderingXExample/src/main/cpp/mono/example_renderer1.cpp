@@ -32,6 +32,16 @@ constexpr float MIN_Z_DISTANCE=0.05f;
 constexpr float CAMERA_DISTANCE=5.0f;
 constexpr float TEXT_Y_OFFSET=-1.0f;
 
+constexpr float DEFAULT_CAMERA_Z=10.0f;
+constexpr auto DEFAULT_CAMERA_POSITION=glm::vec3(0,0,DEFAULT_CAMERA_Z);
+constexpr auto DEFAULT_CAMERA_LOOK_AT=glm::vec3(0,0,0);
+constexpr auto DEFAULT_CAMERA_UP=glm::vec3(0,1,0);
+const auto DEFAULT_EYE_VIEW=glm::lookAt(DEFAULT_CAMERA_POSITION,DEFAULT_CAMERA_LOOK_AT,DEFAULT_CAMERA_UP);
+float currentCameraScale=1.0f;
+glm::vec2 currentCameraMovement=glm::vec2(0.0f,0.0f);
+//
+int currentRenderingMode;
+
 //the projection matrix. Should be re calculated in each onSurfaceChanged with new width and height
 glm::mat4x4 projection;
 //the view matrix, without any IPD
@@ -44,7 +54,8 @@ GLProgramLine* glProgramLine;
 GLProgramText* glProgramText;
 //Used to render textured geometry
 GLProgramTexture* glProgramTexture;
-GLuint mExampleTexture;
+GLuint mTextureBrick;
+GLuint mTextureMonaLisa;
 GLProgramTextureProj* glProgramTextureProj;
 
 //holds colored geometry vertices
@@ -77,6 +88,7 @@ float seekBarValue1=20.0f;
 float seekBarValue2=10.0f;
 float seekBarValue3=10.0f;
 
+
 static void onSurfaceCreated(JNIEnv* env,jobject context){
     //Instantiate all our OpenGL rendering 'Programs'
     glProgramVC=new GLProgramVC();
@@ -85,9 +97,9 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     glProgramText->loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
     glProgramTexture=new GLProgramTexture(false);
     glProgramTextureProj=new GLProgramTextureProj();
-    glGenTextures(1,&mExampleTexture);
-    GLProgramTexture::loadTexture(mExampleTexture,env,context,"ExampleTexture/brick_wall_simple.png");
-
+    glGenTextures(1,&mTextureBrick);
+    GLProgramTexture::loadTexture(mTextureBrick,env,context,"ExampleTexture/brick_wall_simple.png");
+    GLProgramTexture::loadTexture(mTextureMonaLisa, env, context, "ExampleTexture/mona_lisa.jpg");
 
     //create all the gl Buffer for later use
     glBufferVC.initializeGL();
@@ -97,8 +109,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     glBufferTextured.initializeGL();
     //create the geometry for our simple test scene
     //some colored geometry
-    const float rectangleWidth=10.0F;
-    glBufferVC.uploadGL(ColoredGeometry::makeTessellatedColoredRect(12,glm::vec3(-rectangleWidth/2,-rectangleWidth/2,0),rectangleWidth,rectangleWidth,Color::RED)
+    glBufferVC.uploadGL(ColoredGeometry::makeTessellatedColoredRect(12,glm::vec3(0,0,0),{5.0,5.0},Color::RED)
             ,GL_TRIANGLES);
     //some smooth lines
     //create 5 lines of increasing stroke width
@@ -137,11 +148,21 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     glBufferIcons.uploadGL(iconsAsVertices);
     //Textured geometry
     const float wh=5.0f;
-    glBufferTextured.uploadGL(TexturedGeometry::makeTesselatedVideoCanvas2(glm::vec3(-wh*0.5f,-wh*0.5f,0),wh,wh,10,0.0f,1.0f));
-
-    glBufferPyramid.initializeAndUploadGL(TexturedGeometry::makePyramid(),GL_TRIANGLES);
+    glBufferTextured.uploadGL(TexturedGeometry::makeTesselatedVideoCanvas2(10,glm::vec3(0,0,0),{wh,wh},0.0f,1.0f));
+    {
+        const auto pyramid=TexturedGeometry::makePyramid();
+        const auto modelMatrix= glm::translate(glm::vec3(0,-1,0))*
+                glm::rotate(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f))*
+                glm::scale(glm::vec3(wh,wh,1));
+        const auto plane=TexturedGeometry::makeTesselatedVideoCanvas2(10,modelMatrix);
+        auto pyramidAndPlane=pyramid;
+        for(const auto v:plane){
+            pyramidAndPlane.push_back(v);
+        }
+        glBufferPyramid.initializeAndUploadGL(pyramidAndPlane,GL_TRIANGLES);
+    }
     //modelM=glm::mat4(1.0);
-    const float scale=4.0f;
+    const float scale=2.0f;
     modelM=glm::scale(glm::mat4(1.0f), glm::vec3(scale,scale,scale));
 
     //const auto lol=TexturedGeometry::makeTesselatedVideoCanvas(glm::vec3(-wh*0.5f,-wh*0.5f,0),wh,wh,10,0.0f,1.0f);
@@ -149,18 +170,18 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
-static void placeCamera(float distance, float x, float y){
-    glm::vec3 cameraPos   = glm::vec3(x,y,MAX_Z_DISTANCE-distance);
-    glm::vec3 cameraFront = glm::vec3(0.0F,0.0F,-1.0F);
-    eyeView=glm::lookAt(cameraPos,cameraPos+cameraFront,glm::vec3(0,1,0));
-    //LOGD("move %f %f %f",distance,x,y);
-    //eyeView=glm::translate(eyeView,glm::vec3(x,y,distance));
+static void updateCamera(){
+    eyeView=DEFAULT_EYE_VIEW;
+    eyeView=glm::scale(eyeView,glm::vec3(currentCameraScale,currentCameraScale,currentCameraScale));
+    eyeView=glm::translate(eyeView,{currentCameraMovement.x,currentCameraMovement.y,0.0f});
 }
 
 //recalculate matrices
 static void onSurfaceChanged(int width, int height){
     projection=glm::perspective(glm::radians(45.0F), (float)width/height, MIN_Z_DISTANCE, MAX_Z_DISTANCE);
-    placeCamera(0,0,0);
+    currentCameraScale=1.0f;
+    currentCameraMovement=glm::vec2(0,0);
+    updateCamera();
     glViewport(0,0,width,height);
 }
 
@@ -172,10 +193,10 @@ glm::mat4 buildProjectorMatrices() {
     // for the projector view. The texture coordinates in this 2D space are the
     // texture coordinates for the projective texture.
 
-    glm::vec3 projectorPosition = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 projectorLookAtPosition = glm::vec3(0.5f, 0.0f, 0.0f);
+    glm::vec3 projectorPosition = glm::vec3(0.0f, 2.0f, 0.0f);
+    glm::vec3 projectorLookAtPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 projectorUpVector = glm::vec3(0.0f, 0.0f, 1.0f);
-    float projectorFOV = 60.0f;
+    float projectorFOV = 20.0f;
 
     // The view matrix from the projector's viewpoint.
     glm::mat4 projectorViewMatrix = glm::lookAt(projectorPosition,
@@ -201,12 +222,13 @@ glm::mat4 buildProjectorMatrices() {
 
 //draw a frame
 //mode selects which elements to draw
-static void onDrawFrame(int mode){
+static void onDrawFrame(){
     glClearColor(0,0,0.2,0);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     cpuFrameTime.start();
     //
-    if(mode==5){
+    updateCamera();
+    if(currentRenderingMode==5){
         glEnable(GL_DEPTH_TEST);
     }else{
         glDisable(GL_DEPTH_TEST);
@@ -214,36 +236,36 @@ static void onDrawFrame(int mode){
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     }
     //Drawing with the OpenGL Programs is easy - call beforeDraw() with the right OpenGL Buffer and then draw until done
-    if(mode==0){ //Smooth text
+    if(currentRenderingMode==0){ //Smooth text
         glProgramText->beforeDraw(glBufferText.vertexB);
         glProgramText->updateOutline(Color::toRGBA(Color::RED),seekBarValue1/100.0f);
         glProgramText->setOtherUniforms(seekBarValue2/100.0f,seekBarValue3/100.0f);
         glProgramText->draw(eyeView,projection,0,glBufferText.nVertices*GLProgramText::INDICES_PER_CHARACTER);
         glProgramText->afterDraw();
-    } else if(mode==1){
+    } else if(currentRenderingMode==1){
         glProgramText->beforeDraw(glBufferIcons.vertexB);
         glProgramText->updateOutline(Color::toRGBA(Color::RED),seekBarValue1/100.0f);
         glProgramText->setOtherUniforms(seekBarValue2/100.0f,seekBarValue3/100.0f);
         glProgramText->draw(eyeView,projection,0,glBufferIcons.nVertices*GLProgramText::INDICES_PER_CHARACTER);
         glProgramText->afterDraw();
-    }else if(mode==2){
+    }else if(currentRenderingMode==2){
         glProgramLine->beforeDraw(glBufferLine.vertexB);
         glProgramLine->setOtherUniforms(seekBarValue1/100.0F,seekBarValue2/100.0F,seekBarValue3/100.0F);
         glProgramLine->draw(eyeView,projection,0,glBufferLine.nVertices);
         glProgramLine->afterDraw();
-    }else if(mode==3){
+    }else if(currentRenderingMode==3){
         glProgramVC->drawX(eyeView,projection,glBufferVC);
-    }else if(mode==4){
-         glProgramTexture->drawX(mExampleTexture,eyeView,projection,glBufferTextured);
-    }else if(mode==5){
-        /*glProgramTextureProj->beforeDraw(glBufferTextured.vertexB,mExampleTexture);
-        glProgramTextureProj->draw(glm::mat4(1.0f),eyeView,projection,0,glBufferTextured.nVertices,glBufferTextured.mMode);
-        glProgramTextureProj->updateTexMatrix(buildProjectorMatrices());
-        glProgramTextureProj->afterDraw();*/
-        glProgramTextureProj->beforeDraw(glBufferPyramid.vertexB,mExampleTexture);
+    }else if(currentRenderingMode==4){
+         glProgramTexture->drawX(mTextureBrick, eyeView, projection, glBufferTextured);
+    }else if(currentRenderingMode==5){
+        glProgramTextureProj->beforeDraw(glBufferPyramid.vertexB, mTextureMonaLisa);
         glProgramTextureProj->draw(modelM,eyeView,projection,0,glBufferPyramid.nVertices,glBufferPyramid.mMode);
         glProgramTextureProj->updateTexMatrix(buildProjectorMatrices());
         glProgramTextureProj->afterDraw();
+        /*glProgramTextureProj->beforeDraw(glBufferTextured.vertexB, mTextureMonaLisa);
+        glProgramTextureProj->draw(modelM,eyeView,projection,0,glBufferTextured.nVertices,glBufferTextured.mMode);
+        glProgramTextureProj->updateTexMatrix(buildProjectorMatrices());
+        glProgramTextureProj->afterDraw();*/
         //modelM=glm::rotate(modelM, glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     }
     GLHelper::checkGlError("example_renderer::onDrawFrame");
@@ -273,20 +295,28 @@ JNI_METHOD(void, nativeOnSurfaceChanged)
 }
 
 JNI_METHOD(void, nativeOnDrawFrame)
-(JNIEnv *env, jobject obj,jint mode) {
-    onDrawFrame((int)mode);
+(JNIEnv *env, jobject obj) {
+    onDrawFrame();
 }
 
-JNI_METHOD(void, nativeMoveCamera)
-(JNIEnv *env, jobject obj,jfloat scale,jfloat x,jfloat y) {
+// Scale is value between 0..1 for example scale=0.9f
+JNI_METHOD(void, nativeScale)
+(JNIEnv *env, jobject obj,jfloat scale) {
     //placeCamera((float) scale, (float) x, (float) y);
-    modelM=glm::rotate(modelM,glm::radians(x), glm::vec3(0.0f, 1.0f, 0.0f));
+    //modelM=glm::rotate(modelM,glm::radians(x), glm::vec3(0.0f, 1.0f, 0.0f));
+    currentCameraScale*=scale;
 }
-
-JNI_METHOD(void, nativeMoveModelMatrix)
-(JNIEnv *env, jobject obj,jfloat amount) {
+JNI_METHOD(void, nativeMove)
+(JNIEnv *env, jobject obj,jfloat moveX,float moveY) {
+    currentCameraMovement.x+=moveX*3;
+    currentCameraMovement.y+=-moveY*3;
     //placeCamera((float) scale, (float) x, (float) y);
-    modelM=glm::rotate(modelM,glm::radians(amount), glm::vec3(0.0f, 1.0f, 0.0f));
+    // modelM=glm::rotate(modelM,glm::radians(x), glm::vec3(0.0f, 1.0f, 0.0f));
+    //eyeView=glm::translate(eyeView,)
+}
+JNI_METHOD(void, nativeSetRenderingMode)
+(JNIEnv *env, jobject obj,int renderingMode) {
+    currentRenderingMode=renderingMode;
 }
 
 JNI_METHOD(void, nativeSetSeekBarValues)

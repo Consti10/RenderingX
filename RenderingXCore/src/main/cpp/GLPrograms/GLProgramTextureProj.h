@@ -54,8 +54,8 @@ private:
         s<<"gl_Position = (uProjMatrix*(uViewMatrix*uModelMatrix))* aPosition;\n";
         s<<"vTexCoord = aTexCoord;\n";
 
-        s<<"vTextureCoordProj = uTextureMatrix * uModelMatrix * aPosition;\n";
-        //s<<"vTextureCoordProj = uTextureMatrix * aPosition;";
+        //s<<"vTextureCoordProj = uTextureMatrix * uModelMatrix * aPosition;\n";
+        s<<"vTextureCoordProj = uTextureMatrix * aPosition;";
         s<<"}\n";
         return s.str();
     }
@@ -71,7 +71,7 @@ private:
         //s<<"vec4 textureColor=texture2D(sTexture,vTexCoord);\n";
         s<<"vec4 textureColor=vec4(1.0,0.0,0.0,1.0);\n";
         //s<<"vec4 textureColorProj = vec4(1.0,0.0,0.0,1.0);\n";
-        s<<"vec4 textureColorProj =  texture2DProj(sTexture, vTextureCoordProj);\n";
+        s<<"vec4 textureColorProj =  texture2DProj(sTexture, vTextureCoordProj.xyz);\n";
         s<<"gl_FragColor = mix(textureColor, textureColorProj, 0.95);\n";
 
         s<<"}\n";

@@ -58,9 +58,9 @@ void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext) {
     mVertexBufferVC.initializeAndUploadGL(coloredVertices);
     const float cbs=20.0f;
     solidRectangleBlack.initializeAndUploadGL(
-            ColoredGeometry::makeTessellatedColoredRect(10,{-cbs/2,-cbs/2,0},cbs,cbs,Color::BLACK));
+            ColoredGeometry::makeTessellatedColoredRect(10,{-cbs/2,-cbs/2,0},{cbs,cbs},Color::BLACK));
     solidRectangleYellow.initializeAndUploadGL(
-            ColoredGeometry::makeTessellatedColoredRect(10,{-cbs/2,-cbs/2,0},cbs,cbs,Color::YELLOW));
+            ColoredGeometry::makeTessellatedColoredRect(10,{-cbs/2,-cbs/2,0},{cbs,cbs},Color::YELLOW));
 }
 
 

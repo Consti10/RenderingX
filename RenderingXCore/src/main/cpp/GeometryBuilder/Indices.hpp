@@ -1,0 +1,28 @@
+//
+// Created by geier on 22/04/2020.
+//
+
+#ifndef RENDERINGX_INDICES_HPP
+#define RENDERINGX_INDICES_HPP
+
+#include <vector>
+#include <MDebug.hpp>
+
+namespace Indices{
+    // takes a mesh that uses indices and removes indices by duplicating/adding vertices
+    // less memory efficient, but easier to draw / debug
+    template<class T>
+    static T mergeIndicesIntoVertices(const T& vertices, const std::vector<GLuint>& indices){
+        T ret={};
+        ret.reserve(indices.size());
+        for(unsigned int index:indices){
+            if(index>=vertices.size()){
+                LOGD("Error wanted %d",index);
+            }
+            ret.push_back(vertices.at(index));
+        }
+        return ret;
+    }
+}
+
+#endif //RENDERINGX_INDICES_HPP
