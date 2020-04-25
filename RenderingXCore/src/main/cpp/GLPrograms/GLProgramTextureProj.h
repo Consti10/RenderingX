@@ -66,12 +66,22 @@ private:
         s<<"varying vec2 vTexCoord;\n";
         s<<"varying vec4 vTextureCoordProj;\n";
         s<<"uniform sampler2D sTexture;\n";
+        s<<"bool isInside(const in float inX){ return (inX>=0.0 && inX<=1.0);}";
+        s<<"bool isInside(const in vec2 inX){ return (isInside(inX.x) && isInside(inX.y));}";
         s<<"void main() {\n";
 
         //s<<"vec4 textureColor=texture2D(sTexture,vTexCoord);\n";
         s<<"vec4 textureColor=vec4(1.0,0.0,0.0,1.0);\n";
         //s<<"vec4 textureColorProj = vec4(1.0,0.0,0.0,1.0);\n";
-        s<<"vec4 textureColorProj =  texture2DProj(sTexture, vTextureCoordProj.xyz);\n";
+        //s<<"vec4 textureColorProj =  texture2DProj(sTexture, vTextureCoordProj);\n";
+        s<<"vec2 coord=vTextureCoordProj.xy / vTextureCoordProj.w;";
+        //s<<"bool front= vTextureCoordProj.z";
+        s<<"vec4 textureColorProj;";
+        s<<"if( isInside(coord) ){";
+        s<<"textureColorProj =  texture2D(sTexture,coord);";
+        s<<"}else{";
+        s<<"textureColorProj =  vec4(0.0,0.0,1.0,1.0);";
+        s<<"}";
         s<<"gl_FragColor = mix(textureColor, textureColorProj, 0.95);\n";
 
         s<<"}\n";

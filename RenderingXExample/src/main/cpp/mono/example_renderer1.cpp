@@ -69,6 +69,7 @@ VertexBuffer glBufferLine;
 //holds textured vertices
 VertexBuffer glBufferTextured;
 VertexBuffer glBufferPyramid;
+const glm::mat4 DEFAULT_MODEL_MATRIX=glm::scale(glm::mat4(1.0f), glm::vec3(2.0,2.0,2.0));
 glm::mat4 modelM;
 
 //simplifies debugging/benchmarking
@@ -161,9 +162,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
         }
         glBufferPyramid.initializeAndUploadGL(pyramidAndPlane,GL_TRIANGLES);
     }
-    //modelM=glm::mat4(1.0);
-    const float scale=2.0f;
-    modelM=glm::scale(glm::mat4(1.0f), glm::vec3(scale,scale,scale));
+    modelM=DEFAULT_MODEL_MATRIX;
 
     //const auto lol=TexturedGeometry::makeTesselatedVideoCanvas(glm::vec3(-wh*0.5f,-wh*0.5f,0),wh,wh,10,0.0f,1.0f);
     //glBufferTextured2.initializeAndUploadGL(lol.first,lol.second);
@@ -172,8 +171,11 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
 
 static void updateCamera(){
     eyeView=DEFAULT_EYE_VIEW;
+    eyeView=glm::rotate(eyeView,glm::radians(60.0f),glm::vec3(1,0,0));
     eyeView=glm::scale(eyeView,glm::vec3(currentCameraScale,currentCameraScale,currentCameraScale));
     eyeView=glm::translate(eyeView,{currentCameraMovement.x,currentCameraMovement.y,0.0f});
+
+    modelM=glm::rotate(modelM,glm::radians(1.0f),glm::vec3(1,0,0));
 }
 
 //recalculate matrices
