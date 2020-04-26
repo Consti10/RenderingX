@@ -20,7 +20,8 @@
 class GLProgramTextureProj {
 private:
     GLuint mProgram;
-    GLuint aPosition,aTexCoord,mSamplerHandle;
+    GLuint aPosition,mSamplerHandle;
+    //GLuint aTexCoord;
     GLuint uModelMatrix,uViewMatrix,uProjMatrix;
     GLuint uTextureMatrix;
     static constexpr auto MY_TEXTURE_UNIT1=GL_TEXTURE1;
@@ -51,11 +52,13 @@ private:
         s<<"varying vec4 vTextureCoordProj;\n";
 
         s<<"void main() {\n";
-        s<<"gl_Position = (uProjMatrix*(uViewMatrix*uModelMatrix))* aPosition;\n";
+        //s<<"gl_Position = (uProjMatrix*(uViewMatrix*uModelMatrix))* aPosition;\n";
+        s<<"gl_Position = vec4(aPosition.xy,0,1);\n";
         s<<"vTexCoord = aTexCoord;\n";
 
         //s<<"vTextureCoordProj = uTextureMatrix * uModelMatrix * aPosition;\n";
-        s<<"vTextureCoordProj = uTextureMatrix * aPosition;";
+        //s<<"vTextureCoordProj = uTextureMatrix * aPosition;";
+        s<<"vTextureCoordProj = uTextureMatrix * vec4(aPosition.xy,0,1);";
         s<<"}\n";
         return s.str();
     }
@@ -82,7 +85,11 @@ private:
         s<<"}else{";
         s<<"textureColorProj =  vec4(0.0,0.0,1.0,1.0);";
         s<<"}";
-        s<<"gl_FragColor = mix(textureColor, textureColorProj, 0.95);\n";
+        //s<<"if(textureColorProj.r==1.0 && textureColorProj.g==1.0 && textureColorProj.b==1.0){";
+        //s<<"textureColorProj=vec4(0.0,0.0,0.0,0.0);";
+        //s<<"}";
+        //s<<"gl_FragColor = mix(textureColor, textureColorProj, 0.95);\n";
+        s<<"gl_FragColor = textureColorProj;\n";
 
         s<<"}\n";
         return s.str();

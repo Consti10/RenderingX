@@ -34,6 +34,10 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     specs[0].SetColorFormat(GVR_COLOR_FORMAT_RGBA_8888);
     specs[0].SetDepthStencilFormat(GVR_DEPTH_STENCIL_FORMAT_DEPTH_16);
     swap_chain = std::make_unique<gvr::SwapChain>(gvr_api_->CreateSwapChain(specs));
+    glProgramTextureProj=new GLProgramTextureProj();
+    GLProgramTexture::loadTexture(mTextureMonaLisa, env, context, "ExampleTexture/grid_2000px.png");
+    const float wh=2.0f;
+    glBufferTextured.uploadGL(TexturedGeometry::makeTesselatedVideoCanvas2(10,glm::vec3(0,0,0),{wh,wh},0.0f,1.0f));
 
     mBasicGLPrograms=std::make_unique<BasicGLPrograms>(&distortionManager);
     mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
@@ -137,11 +141,31 @@ void RendererDistortion::drawEyeVDDC(gvr::Eye eye) {
 
 void RendererDistortion::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen, bool occlusion) {
     const VertexBuffer& tmp=meshColorGreen ? greenMeshB : blueMeshB;
-    mBasicGLPrograms->vc.drawX(viewM,projM,tmp);
+    //mBasicGLPrograms->vc.drawX(viewM,projM,tmp);
 
     if(occlusion){
         mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);
     }
+
+    {
+        constexpr float DEFAULT_CAMERA_Z=10.0f;
+        constexpr auto DEFAULT_CAMERA_POSITION=glm::vec3(0,0,DEFAULT_CAMERA_Z);
+        constexpr auto DEFAULT_CAMERA_LOOK_AT=glm::vec3(0,0,0);
+        constexpr auto DEFAULT_CAMERA_UP=glm::vec3(0,1,0);
+        const auto DEFAULT_EYE_VIEW=glm::lookAt(DEFAULT_CAMERA_POSITION,DEFAULT_CAMERA_LOOK_AT,DEFAULT_CAMERA_UP);
+        glProgramTextureProj->beforeDraw(glBufferTextured.vertexB, mTextureMonaLisa);
+        glProgramTextureProj->draw(glm::scale(glm::mat4(1.0),glm::vec3(3.0f,3.0f,3.0f)),DEFAULT_EYE_VIEW,projM,0,glBufferTextured.nVertices,glBufferTextured.mMode);
+
+        glm::mat4 scaleBiasMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)), glm::vec3(0.5f));
+        // Construct the combined matrix to transform the vertex position to its projective
+        // texture coordiantes.
+        glm::mat4 modelM=glm::translate(glm::mat4(1.0f),glm::vec3(0,0,1));
+        glm::mat4 projectorTransformMatrix = scaleBiasMatrix * projM *viewM*modelM;
+
+        glProgramTextureProj->updateTexMatrix(projectorTransformMatrix);
+        glProgramTextureProj->afterDraw();
+    }
+
     GLHelper::checkGlError("RendererDistortion::drawEye");
 }
 

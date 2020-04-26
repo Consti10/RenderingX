@@ -30,6 +30,7 @@
 #include <DistortionEngine.h>
 #include <gvr_util/util.h>
 #include <GLBufferHelper.hpp>
+#include <GLProgramTextureProj.h>
 
 // Example that compares the distortion created by VDDC and google cardboard with Gvr (google vr)
 // Renders a 2D Mesh for testing
@@ -38,7 +39,7 @@ class RendererDistortion{
 public:
     //Since blending is enabled, when selecting both rendering modes simultaneously the visual difference between them
     //can be observed when rendering the 2D Mesh (the mesh is rendered with a smaller line width the second time)
-    const bool RENDER_SCENE_USING_GVR_RENDERBUFFER=true;
+    const bool RENDER_SCENE_USING_GVR_RENDERBUFFER= false;
     const bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT=true;
 public:
     RendererDistortion(JNIEnv* env, jobject androidContext, gvr_context *gvr_context);
@@ -75,6 +76,10 @@ private:
     VDDCManager distortionManager;
 public:
     DistortionEngine vrHeadsetParams;
+private:
+    GLProgramTextureProj* glProgramTextureProj;
+    GLuint mTextureMonaLisa;
+    VertexBuffer glBufferTextured;
 };
 
 #endif //RENDERINGX_EXAMPLE_DISTORTION_H

@@ -14,7 +14,7 @@ GLProgramTextureProj::GLProgramTextureProj(){
     uProjMatrix=_glGetUniformLocation(mProgram, "uProjMatrix");
     uTextureMatrix=_glGetUniformLocation(mProgram,"uTextureMatrix");
     aPosition = _glGetAttribLocation(mProgram, "aPosition");
-    aTexCoord = _glGetAttribLocation(mProgram, "aTexCoord");
+    //aTexCoord = _glGetAttribLocation(mProgram, "aTexCoord");
     mSamplerHandle = _glGetUniformLocation (mProgram, "sTexture" );
     GLHelper::checkGlError(TAG);
 }
@@ -29,8 +29,8 @@ void GLProgramTextureProj::beforeDraw(const GLuint buffer,GLuint texture) const{
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glEnableVertexAttribArray(aPosition);
     glVertexAttribPointer(aPosition, 3/*xyz*/, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
-    glEnableVertexAttribArray(aTexCoord);
-    glVertexAttribPointer(aTexCoord, 2/*uv*/, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, u));
+    //glEnableVertexAttribArray(aTexCoord);
+    //glVertexAttribPointer(aTexCoord, 2/*uv*/, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, u));
     GLHelper::checkGlError("GLProgramTextureProj::beforeDraw");
 }
 
@@ -45,7 +45,7 @@ void GLProgramTextureProj::draw(const glm::mat4x4& ModelM,const glm::mat4x4& Vie
 
 void GLProgramTextureProj::afterDraw() const{
     glDisableVertexAttribArray(aPosition);
-    glDisableVertexAttribArray(aTexCoord);
+    //glDisableVertexAttribArray(aTexCoord);
     glBindTexture(GL_TEXTURE_2D,0);
     //distortionManager.afterDraw();
     GLHelper::checkGlError("GLProgramTextureProj::afterDraw");

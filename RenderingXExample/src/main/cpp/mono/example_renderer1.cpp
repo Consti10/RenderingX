@@ -69,7 +69,7 @@ VertexBuffer glBufferLine;
 //holds textured vertices
 VertexBuffer glBufferTextured;
 VertexBuffer glBufferPyramid;
-const glm::mat4 DEFAULT_MODEL_MATRIX=glm::scale(glm::mat4(1.0f), glm::vec3(2.0,2.0,2.0));
+const glm::mat4 DEFAULT_MODEL_MATRIX=glm::scale(glm::mat4(1.0f), glm::vec3(1.0,1.0,1.0));
 glm::mat4 modelM;
 
 //simplifies debugging/benchmarking
@@ -171,11 +171,11 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
 
 static void updateCamera(){
     eyeView=DEFAULT_EYE_VIEW;
-    eyeView=glm::rotate(eyeView,glm::radians(60.0f),glm::vec3(1,0,0));
+    //eyeView=glm::rotate(eyeView,glm::radians(60.0f),glm::vec3(1,0,0));
     eyeView=glm::scale(eyeView,glm::vec3(currentCameraScale,currentCameraScale,currentCameraScale));
     eyeView=glm::translate(eyeView,{currentCameraMovement.x,currentCameraMovement.y,0.0f});
 
-    modelM=glm::rotate(modelM,glm::radians(1.0f),glm::vec3(1,0,0));
+    //modelM=glm::rotate(modelM,glm::radians(1.0f),glm::vec3(1,0,0));
 }
 
 //recalculate matrices
@@ -195,17 +195,18 @@ glm::mat4 buildProjectorMatrices() {
     // for the projector view. The texture coordinates in this 2D space are the
     // texture coordinates for the projective texture.
 
-    glm::vec3 projectorPosition = glm::vec3(0.0f, 2.0f, 0.0f);
+    glm::vec3 projectorPosition = glm::vec3(0.0f, 0.0f, 3.0f);
     glm::vec3 projectorLookAtPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 projectorUpVector = glm::vec3(0.0f, 0.0f, 1.0f);
-    float projectorFOV = 20.0f;
+    glm::vec3 projectorUpVector = glm::vec3(0.0f, 1.0f, 0.0f);
+    float projectorFOV = 40.0f;
 
     // The view matrix from the projector's viewpoint.
     glm::mat4 projectorViewMatrix = glm::lookAt(projectorPosition,
                                       projectorLookAtPosition, projectorUpVector);
+    projectorViewMatrix=glm::rotate(projectorViewMatrix,glm::radians(30.0f),glm::vec3(1,0,0));
 
     // The projection matrix for the projector.
-    glm::mat4 projectorProjectionMatrix = glm::perspective(projectorFOV, 1.0f, 0.5f, 10.0f);
+    glm::mat4 projectorProjectionMatrix = glm::perspective(glm::radians(projectorFOV), 1.0f, 0.1f, 10.0f);
     // mat4 projectorProjectionMatrix = ortho(0.3f, 0.3f, 0.3f, 0.0f, 0.5f, 10.0f);
 
     // After the initial projection, the origin is at the center of the window.
@@ -260,15 +261,14 @@ static void onDrawFrame(){
     }else if(currentRenderingMode==4){
          glProgramTexture->drawX(mTextureBrick, eyeView, projection, glBufferTextured);
     }else if(currentRenderingMode==5){
-        glProgramTextureProj->beforeDraw(glBufferPyramid.vertexB, mTextureMonaLisa);
+        /*glProgramTextureProj->beforeDraw(glBufferPyramid.vertexB, mTextureMonaLisa);
         glProgramTextureProj->draw(modelM,eyeView,projection,0,glBufferPyramid.nVertices,glBufferPyramid.mMode);
         glProgramTextureProj->updateTexMatrix(buildProjectorMatrices());
-        glProgramTextureProj->afterDraw();
-        /*glProgramTextureProj->beforeDraw(glBufferTextured.vertexB, mTextureMonaLisa);
+        glProgramTextureProj->afterDraw();*/
+        glProgramTextureProj->beforeDraw(glBufferTextured.vertexB, mTextureMonaLisa);
         glProgramTextureProj->draw(modelM,eyeView,projection,0,glBufferTextured.nVertices,glBufferTextured.mMode);
         glProgramTextureProj->updateTexMatrix(buildProjectorMatrices());
-        glProgramTextureProj->afterDraw();*/
-        //modelM=glm::rotate(modelM, glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        glProgramTextureProj->afterDraw();
     }
     GLHelper::checkGlError("example_renderer::onDrawFrame");
     cpuFrameTime.stop();
