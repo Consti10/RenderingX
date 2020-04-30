@@ -29,7 +29,7 @@ GLProgramText::GLProgramText(const VDDCManager* distortionManager):
     mPositionHandle = _glGetAttribLocation(mProgram, "aPosition");
     mTextureHandle = _glGetAttribLocation(mProgram, "aTexCoord");
     mColorHandle= _glGetAttribLocation(mProgram, "aVertexColor");
-    mSamplerHandle = glGetUniformLocation (mProgram, "sTexture" );
+    mSamplerHandle = _glGetUniformLocation (mProgram, "sTexture" );
     mOutlineColorHandle=_glGetUniformLocation(mProgram,"uOutlineColor");
     mOutlineStrengthHandle=_glGetUniformLocation(mProgram,"uOutlineStrength");
     uEdge=_glGetUniformLocation(mProgram,"uEdge");

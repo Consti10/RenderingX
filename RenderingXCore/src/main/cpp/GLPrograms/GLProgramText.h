@@ -32,7 +32,7 @@
 class GLProgramText {
 private:
     GLuint mProgram;
-    GLint mPositionHandle,mTextureHandle,mSamplerHandle,mColorHandle;
+    GLuint mPositionHandle,mTextureHandle,mSamplerHandle,mColorHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
     GLuint mOutlineColorHandle,mOutlineStrengthHandle;
     GLuint mOverrideColorHandle;
@@ -49,8 +49,6 @@ private:
         float u,v;
         TrueColor color;
     };
-    GLuint mLOLHandle;
-    GLuint mSamplerDistCorrectionHandle;
     const VDDCManager* distortionManager;
     VDDCManager::UndistortionHandles* mUndistortionHandles;
 public:
