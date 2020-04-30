@@ -83,9 +83,17 @@ namespace TrueColor2{
     static const TrueColor YELLOW={1.0f, 1.0f, 0.0f, 1};
 }
 
-// Just to be sure
-static_assert(sizeof(TrueColor)==4);
-
+namespace TrueColorTest{
+    // Just to be sure
+    static_assert(sizeof(TrueColor)==4);
+    struct LOL{
+        TrueColor a;
+        float b;
+        TrueColor c;
+        float d;
+    }__attribute__((packed));
+    static_assert(sizeof(LOL)==4+4+4+4);
+}
 
 
 
