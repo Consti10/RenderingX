@@ -18,7 +18,7 @@ namespace CardboardViewportOcclusion{
     //Creates a construct like drawn above that can be rendered using GL_TRIANGLE_STRIP
     //However, V1==V2 and V3==V4 .. VN==VN+1 or in other words
     //The V2,V4,V6..VN+1 values are not distorted yet
-    static const std::vector<GLProgramVC::Vertex> makeSomething(const glm::vec2 start,const float size,const bool horizontal,const TrueColor color,
+    static const std::vector<GLProgramVC::Vertex> makeSomething(const glm::vec2 start,const float size,const bool horizontal,const Color color,
                                                                 const int tessellation){
         //create a strip in the form of
         //1   | 0 1
@@ -55,7 +55,7 @@ namespace CardboardViewportOcclusion{
     //everything except the part actually visible inside the headset
     //Vertex data can be rendered using GL_TRAINGLE_STRIP
     //TODO: Better documentation of the used algorithm
-    static const std::vector<GLProgramVC::Vertex> makeMesh(const DistortionEngine& params, const int eye, const TrueColor color=Color::BLACK){
+    static const std::vector<GLProgramVC::Vertex> makeMesh(const DistortionEngine& params, const int eye, const Color color=BLACK){
 
         const int tessellation=32;
         //create the 4 meshes (left,right,top,bottom) that are
@@ -97,7 +97,7 @@ namespace CardboardViewportOcclusion{
         return ret;
     }
 
-    static const void uploadOcclusionMeshLeftRight(const DistortionEngine& params, TrueColor color, std::array<VertexBuffer,2>& vb){
+    static const void uploadOcclusionMeshLeftRight(const DistortionEngine& params, Color color, std::array<VertexBuffer,2>& vb){
         vb[0].uploadGL(makeMesh(params,0,color),GL_TRIANGLE_STRIP);
         vb[1].uploadGL(makeMesh(params,1,color),GL_TRIANGLE_STRIP);
     }

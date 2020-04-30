@@ -11,6 +11,7 @@ GLProgramVC::GLProgramVC(const VDDCManager* distortionManager, bool coordinates2
     mPositionHandle =_glGetAttribLocation((GLuint)mProgram, "aPosition");
     mColorHandle =_glGetAttribLocation((GLuint)mProgram, "aColor");
     mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
+    GLHelper::checkGlError("GLProgramVC()");
 }
 
 void GLProgramVC::beforeDraw(const GLuint buffer) const {

@@ -13,7 +13,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <array>
-#include <Color.hpp>
+#include <TrueColor.hpp>
 #include <VDDCManager.h>
 #include <GLBufferHelper.hpp>
 #include <VertexBuffer.hpp>
@@ -33,7 +33,7 @@ private:
 public:
     struct Vertex{
         float x,y,z;
-        TrueColor colorRGBA;
+        TrueColor::Color colorRGBA;
     };
     using INDEX_DATA=GLushort;
     explicit GLProgramVC(const VDDCManager* distortionManager=nullptr, bool coordinates2D=false);

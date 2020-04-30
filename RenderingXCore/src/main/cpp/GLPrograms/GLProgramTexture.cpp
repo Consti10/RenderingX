@@ -17,7 +17,7 @@ GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const VDDCMa
     mTextureHandle = _glGetAttribLocation(mProgram, "aTexCoord");
     mSamplerHandle = glGetUniformLocation (mProgram, "sTexture" );
     mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
-    GLHelper::checkGlError(TAG);
+    GLHelper::checkGlError("GLProgramTexture()");
 }
 
 void GLProgramTexture::beforeDraw(const GLuint buffer,GLuint texture) const{

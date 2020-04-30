@@ -1,7 +1,7 @@
 #include "GLProgramText.h"
 #include "TextAssetsHelper.hpp"
 #include "Macros.h"
-#include <Color.hpp>
+#include <TrueColor.hpp>
 #include <NDKHelper.hpp>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
@@ -35,8 +35,6 @@ GLProgramText::GLProgramText(const VDDCManager* distortionManager):
     uEdge=_glGetUniformLocation(mProgram,"uEdge");
     uBorderEdge=_glGetUniformLocation(mProgram,"uBorderEdge");
     mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
-    GLHelper::checkGlError("GLProgramText() uniforms3");
-
 #ifdef WIREFRAME
     mOverrideColorHandle=_glGetUniformLocation(mProgram,"uOverrideColor");
 #endif
@@ -119,7 +117,7 @@ void GLProgramText::afterDraw() const {
 }
 
 int GLProgramText::convertStringToRenderingData(const float X, const float Y, const float Z, const float charHeight,
-                                                const std::wstring &text,const TrueColor color, Character *array,
+                                                const std::wstring &text, const Color color, Character *array,
                                                 const int arrayOffset) {
 
     const float BOX_SIZE=charHeight*9.0f/8.0f;

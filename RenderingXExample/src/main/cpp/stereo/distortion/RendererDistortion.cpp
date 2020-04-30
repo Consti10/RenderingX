@@ -46,14 +46,14 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     float tesselatedRectSize=1.0; //6.2f
     const float offsetY=0.0f;
     blueMeshB.uploadGL(
-            ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR,{0,0,-2},{tesselatedRectSize,tesselatedRectSize},
-                    Color::BLUE),GL_LINES);
+            ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR, {0,0,-2}, {tesselatedRectSize,tesselatedRectSize},
+                                                                 TrueColor::BLUE), GL_LINES);
     greenMeshB.uploadGL(
-            ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR,{0,0,-2},{tesselatedRectSize,tesselatedRectSize},
-                    Color::GREEN),GL_LINES);
+            ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR, {0,0,-2}, {tesselatedRectSize,tesselatedRectSize},
+                                                                 TrueColor::GREEN), GL_LINES);
     //create the occlusion mesh, left and right viewport
     //use a slightly different color than clear color to make mesh visible
-    const TrueColor color=Color::fromRGBA(0.1,0.1,0.1,1.0);
+    const auto color=TrueColor::fromRGBA(0.1, 0.1, 0.1, 1.0);
     CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(vrHeadsetParams,color,mOcclusionMesh);
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }

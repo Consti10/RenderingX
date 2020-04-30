@@ -12,7 +12,7 @@
 #include "android/log.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <Color.hpp>
+#include <TrueColor.hpp>
 #include <VDDCManager.h>
 #include <GLBufferHelper.hpp>
 #include <VertexBuffer.hpp>
@@ -31,8 +31,8 @@ public:
         float x,y,z;
         float normalX,normalY,normalZ;
         float lineW;
-        TrueColor baseColor;
-        TrueColor outlineColor;
+        TrueColor::Color baseColor;
+        TrueColor::Color outlineColor;
     };
     static constexpr int VERTICES_PER_LINE=6;
     explicit GLProgramLine(const VDDCManager* distortionManager=nullptr);
@@ -43,8 +43,8 @@ public:
     //convenient method for VertexBuffer
     void drawX(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM,const VertexBuffer& vb);
 public:
-    static void convertLineToRenderingData(const glm::vec3& start,const glm::vec3& end,float lineWidth,
-            Vertex array[],int arrayOffset,TrueColor baseColor=Color::BLACK,TrueColor  outlineColor=Color::WHITE);
+    static void convertLineToRenderingData(const glm::vec3& start, const glm::vec3& end, float lineWidth,
+                                           Vertex array[], int arrayOffset, TrueColor::Color baseColor=TrueColor::BLACK, TrueColor::Color  outlineColor=TrueColor::WHITE);
 private:
     static const std::string VS(const VDDCManager* distortionManager){
         std::stringstream s;

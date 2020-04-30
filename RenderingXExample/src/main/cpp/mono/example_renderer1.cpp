@@ -105,7 +105,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     //create all the gl Buffer for later use
     //create the geometry for our simple test scene
     //some colored geometry
-    glBufferVC.uploadGL(ColoredGeometry::makeTessellatedColoredRect(12,glm::vec3(0,0,0),{5.0,5.0},Color::RED)
+    glBufferVC.uploadGL(ColoredGeometry::makeTessellatedColoredRect(12, glm::vec3(0,0,0), {5.0,5.0}, TrueColor::RED)
             ,GL_TRIANGLES);
     //some smooth lines
     //create 5 lines of increasing stroke width
@@ -114,8 +114,8 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     float yOffset=TEXT_Y_OFFSET;
     for(int i=0;i<N_LINES;i++){
         const float strokeWidth=(i%10)*0.01F;
-        TrueColor baseColor=i>=N_LINES/2 ? Color::YELLOW : Color::BLUE;
-        TrueColor outlineColor=i>=N_LINES/2 ? Color::RED : Color::WHITE;
+        auto baseColor= i >= N_LINES / 2 ? TrueColor::YELLOW : TrueColor::BLUE;
+        auto outlineColor= i >= N_LINES / 2 ? TrueColor::RED : TrueColor::WHITE;
         yOffset+=strokeWidth*3;
         GLProgramLine::convertLineToRenderingData({-lineLength/2,yOffset,0},{lineLength/2,yOffset,0},strokeWidth,lines.data(),i*GLProgramLine::VERTICES_PER_LINE,
                 baseColor,outlineColor);
@@ -127,7 +127,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     float textHeight=0.5f;
     for(int i=0;i<EXAMPLE_TEXT_N_LINES;i++){
         float textLength=GLProgramText::getStringLength({EXAMPLE_TEXT},textHeight);
-        GLProgramText::convertStringToRenderingData(-textLength/2.0f,yOffset,0,textHeight,{EXAMPLE_TEXT},Color::YELLOW,charactersAsVertices.data(),i*EXAMPLE_TEXT_LENGTH);
+        GLProgramText::convertStringToRenderingData(-textLength/2.0f, yOffset, 0, textHeight, {EXAMPLE_TEXT}, TrueColor::YELLOW, charactersAsVertices.data(), i * EXAMPLE_TEXT_LENGTH);
         yOffset+=textHeight;
         textHeight+=0.3;
     }
@@ -137,8 +137,8 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     yOffset=TEXT_Y_OFFSET;
     for(int i=0;i<N_ICONS;i++){
         const float textHeight=0.8F;
-        GLProgramText::convertStringToRenderingData(0,yOffset,0,textHeight,{(wchar_t)GLProgramText::ICONS_OFFSET+i},
-                Color::YELLOW,iconsAsVertices.data(),i);
+        GLProgramText::convertStringToRenderingData(0, yOffset, 0, textHeight, {(wchar_t)GLProgramText::ICONS_OFFSET+i},
+                                                    TrueColor::YELLOW, iconsAsVertices.data(), i);
         yOffset+=textHeight;
     }
     glBufferIcons.uploadGL(iconsAsVertices);
@@ -234,13 +234,13 @@ static void onDrawFrame(){
     //Drawing with the OpenGL Programs is easy - call beforeDraw() with the right OpenGL Buffer and then draw until done
     if(currentRenderingMode==0){ //Smooth text
         glProgramText->beforeDraw(glBufferText.vertexB);
-        glProgramText->updateOutline(Color::toRGBA(Color::RED),seekBarValue1/100.0f);
+        glProgramText->updateOutline(TrueColor::toRGBA(TrueColor::RED), seekBarValue1 / 100.0f);
         glProgramText->setOtherUniforms(seekBarValue2/100.0f,seekBarValue3/100.0f);
         glProgramText->draw(eyeView,projection,0,glBufferText.nVertices*GLProgramText::INDICES_PER_CHARACTER);
         glProgramText->afterDraw();
     } else if(currentRenderingMode==1){
         glProgramText->beforeDraw(glBufferIcons.vertexB);
-        glProgramText->updateOutline(Color::toRGBA(Color::RED),seekBarValue1/100.0f);
+        glProgramText->updateOutline(TrueColor::toRGBA(TrueColor::RED), seekBarValue1 / 100.0f);
         glProgramText->setOtherUniforms(seekBarValue2/100.0f,seekBarValue3/100.0f);
         glProgramText->draw(eyeView,projection,0,glBufferIcons.nVertices*GLProgramText::INDICES_PER_CHARACTER);
         glProgramText->afterDraw();

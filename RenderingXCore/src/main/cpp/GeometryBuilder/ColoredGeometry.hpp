@@ -7,15 +7,15 @@
 
 #include <Indices.hpp>
 #include "GLProgramVC.h"
-#include <Color.hpp>
+#include <TrueColor.hpp>
 #include <array>
 #include "VerticalPlane.hpp"
 
 //Create vertex/index buffers for drawing colored geometry
 namespace ColoredGeometry {
     //Needs at least space for 2 more vertices at array*
-    static const void makeColoredLine(GLProgramVC::Vertex* array,const glm::vec3& point1,const glm::vec3& point2,
-            const TrueColor color1,const TrueColor color2){
+    static const void makeColoredLine(GLProgramVC::Vertex* array, const glm::vec3& point1, const glm::vec3& point2,
+                                      const Color color1, const Color color2){
         auto& p0=array[0];
         auto& p1=array[1];
         p0.x=point1[0];
@@ -28,8 +28,8 @@ namespace ColoredGeometry {
         p1.colorRGBA=color2;
     };
     //Needs at least space for 3 more vertices at array*
-    static const void makeColoredTriangle(GLProgramVC::Vertex array[],const glm::vec3& point1,const glm::vec3& point2,const glm::vec3& point3,
-                                          const TrueColor color1,const TrueColor color2,const TrueColor color3) {
+    static const void makeColoredTriangle(GLProgramVC::Vertex array[], const glm::vec3& point1, const glm::vec3& point2, const glm::vec3& point3,
+                                          const Color color1, const Color color2, const Color color3) {
         auto& p0=array[0];
         auto& p1=array[1];
         auto& p2=array[2];
@@ -47,7 +47,7 @@ namespace ColoredGeometry {
         p2.colorRGBA = color3;
     };
     //Needs at least space for 3 more vertices at array*
-    static const void makeColoredTriangle1(GLProgramVC::Vertex array[],const glm::vec3& point,const float width,const float height,const TrueColor color) {
+    static const void makeColoredTriangle1(GLProgramVC::Vertex array[],const glm::vec3& point,const float width,const float height,const Color color) {
         glm::vec3 p1=glm::vec3(point[0],point[1],point[2]);
         glm::vec3 p2=glm::vec3(point[0]+width,point[1],point[2]);
         glm::vec3 p3=glm::vec3(point[0]+width/2.0f,point[1]+height,point[2]);
@@ -55,14 +55,14 @@ namespace ColoredGeometry {
     }
 
     //GL_TRIANGLES
-    static const std::vector<GLProgramVC::Vertex> makeTessellatedColoredRect(const unsigned int tessellation, const glm::vec3 &translation,const glm::vec2 scale,const TrueColor color){
+    static const std::vector<GLProgramVC::Vertex> makeTessellatedColoredRect(const unsigned int tessellation, const glm::vec3 &translation,const glm::vec2 scale,const Color color){
         const auto vertices= VerticalPlane::createVerticesPlaneColored(tessellation,translation,scale,color);
         const auto indices=VerticalPlane::createIndicesPlane(tessellation);
         //we do not want indices, remove them
         return Indices::mergeIndicesIntoVertices(vertices, indices);
     }
     //Can be drawn using GL_LINES
-    static const std::vector<GLProgramVC::Vertex> makeTessellatedColoredRectWireframe(const unsigned int tessellation, const glm::vec3 &translation,const glm::vec2 scale,const TrueColor color){
+    static const std::vector<GLProgramVC::Vertex> makeTessellatedColoredRectWireframe(const unsigned int tessellation, const glm::vec3 &translation,const glm::vec2 scale,const Color color){
         const auto vertices=  VerticalPlane::createVerticesPlaneColored(tessellation,translation,scale,color);
         const auto indices=VerticalPlane::createIndicesWireframe(tessellation);
         //we do not want indices, remove them
@@ -71,11 +71,11 @@ namespace ColoredGeometry {
     //Create a tesselated wireframe mesh that spawns exactly the viewport
     //e.q [-1,1] in x and y direction
     static const std::vector<GLProgramVC::Vertex> makeTessellatedColoredRectLinesNDC(
-            const unsigned int tessellation, const TrueColor color){
+            const unsigned int tessellation, const Color color){
         return makeTessellatedColoredRectWireframe(tessellation,{-1.0f,-1.0f,0},{2.0f,2.0f},color);
     }
     static const void makeOutlineQuadWithLines(GLProgramVC::Vertex array[],const float mX,const float mY,const float mZ,const float quadWith,const float quadHeight,
-                                               const TrueColor color){
+                                               const Color color){
         //left and right
         makeColoredLine(&array[0 * 2], glm::vec3(mX, mY, mZ), glm::vec3(mX, mY + quadHeight, mZ),color, color);
         makeColoredLine(&array[1 * 2], glm::vec3(mX + quadWith, mY, mZ),glm::vec3(mX + quadWith, mY + quadHeight, mZ), color, color);
@@ -83,7 +83,7 @@ namespace ColoredGeometry {
         makeColoredLine(&array[2 * 2], glm::vec3(mX, mY + quadHeight, mZ),glm::vec3(mX + quadWith, mY + quadHeight, mZ), color, color);
         makeColoredLine(&array[3 * 2], glm::vec3(mX, mY, mZ), glm::vec3(mX + quadWith, mY, mZ),color, color);
     }
-    static const void makeBackgroundRect(GLProgramVC::Vertex array[],const glm::vec3& point,const float width,const float height,const TrueColor color1,const TrueColor color2){
+    static const void makeBackgroundRect(GLProgramVC::Vertex array[], const glm::vec3& point, const float width, const float height, const Color color1, const Color color2){
         //p4    p1
         //   p5
         //p3    p2
@@ -102,7 +102,7 @@ namespace ColoredGeometry {
         ret.reserve(((tessellation+1)*(tessellation+1)));
         const float size=10.0f;
         const float stepSize=size/tessellation;
-        const auto color=Color::BLUE;
+        const auto color=TrueColor::BLUE;
         for(int i=0;i<tessellation;i++){
             const float x=(-size/2.f)+i*stepSize;
             const float x2=(-size/2.f)+(i+1)*stepSize;

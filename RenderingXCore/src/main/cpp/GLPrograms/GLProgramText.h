@@ -26,7 +26,7 @@
 #include "TextAssetsHelper.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <Color.hpp>
+#include <TrueColor.hpp>
 #include <VDDCManager.h>
 
 class GLProgramText {
@@ -47,7 +47,7 @@ private:
     struct Vertex{
         float x,y,z;
         float u,v;
-        TrueColor color;
+        TrueColor::Color color;
     };
     const VDDCManager* distortionManager;
     VDDCManager::UndistortionHandles* mUndistortionHandles;
@@ -72,7 +72,7 @@ public:
     void afterDraw() const;
 public:
     static int convertStringToRenderingData(float X, float Y, float Z, float charHeight,
-            const std::wstring &text, TrueColor color, Character array[],int arrayOffset);
+                                            const std::wstring &text, TrueColor::Color color, Character array[], int arrayOffset);
     static float getStringLength(std::wstring s,float scale);
     static float getFontWidthSafe(int idx);
     static constexpr int ICONS_OFFSET=192;
