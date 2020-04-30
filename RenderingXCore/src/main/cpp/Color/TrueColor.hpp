@@ -33,6 +33,7 @@ public:
         b=0;
         a=0;
     }
+private:
     // Create from uint8_t values [0..255]
     TrueColor(const uint8_t r,const uint8_t g,const uint8_t b,const uint8_t a){
         this->r=r;
@@ -40,6 +41,7 @@ public:
         this->b=a;
         this->a=a;
     }
+public:
     // Create from rgba float values [0..1]
     TrueColor(const float r, const float g, const float b, const float a){
         this->r=(uint8_t)(r*255);
