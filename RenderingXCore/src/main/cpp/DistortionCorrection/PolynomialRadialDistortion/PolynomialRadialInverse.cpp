@@ -7,7 +7,7 @@
 #include <cmath>
 #include <sstream>
 
-std::vector<float> PolynomialRadialInverse::getApproximateInverseCoefficients(const PolynomialRadialDistortion& distortion,float maxRadius,int numCoefficients){
+std::vector<float> PolynomialRadialInverse::getApproximateInverseCoefficients(const PolynomialRadialDistortion& distortion,float maxRadius,unsigned int numCoefficients){
     constexpr unsigned int CALCULATION_SIZE=100; //100 by default
     std::vector<std::vector<double>> matA(CALCULATION_SIZE,std::vector<double>(numCoefficients));
     std::vector<double> vecY(CALCULATION_SIZE);
