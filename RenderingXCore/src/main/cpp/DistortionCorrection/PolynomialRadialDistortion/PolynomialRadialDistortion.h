@@ -53,18 +53,18 @@ public:
     // returns the corresponding distorted radius.
     float DistortRadius(float r) const;
 
-    //Given a radius r, returns the radius that would need to be passed
-    //to DistortRadius to get r (approximately).
+    // Given a radius r, returns the radius that would need to be passed
+    // to DistortRadius to get r (approximately).
     float DistortRadiusInverse(float r)const;
 
-    //Convert into human-readable string for debugging
+    // Convert into human-readable string for debugging
     std::string toString()const;
 
-    //Vertex displacement distortion correction needs to obtain the coefficients since it uses
-    //them in the vertex shader. Immutability of coefficients is untouched
+    // Vertex displacement distortion correction needs to obtain the coefficients since it uses
+    // them in the vertex shader. Immutability of coefficients is untouched
     std::vector<float> getCoefficients()const;
 private:
-    //Immutable except trough constructor
+    // Immutable except trough constructor
     std::vector<float> coefficients_;
 };
 

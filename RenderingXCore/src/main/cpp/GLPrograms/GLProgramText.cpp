@@ -1,5 +1,6 @@
 #include "GLProgramText.h"
 #include "TextAssetsHelper.hpp"
+#include "Macros.h"
 #include <Color.hpp>
 #include <NDKHelper.hpp>
 #include <android/asset_manager.h>
@@ -23,25 +24,21 @@ GLProgramText::GLProgramText(const VDDCManager* distortionManager):
     distortionManager(distortionManager)
     {
     mProgram = GLHelper::createProgram(VS(distortionManager),FS2());
-    GLHelper::checkGlError("GLProgramText() create");
-    mMVMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
-    GLHelper::checkGlError("GLProgramText() uniforms0");
-    mPMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uPMatrix");
-    GLHelper::checkGlError("GLProgramText() uniforms1");
-    mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
-    mTextureHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aTexCoord");
-    GLHelper::checkGlError("GLProgramText() uniforms2");
-    mColorHandle= (GLuint)glGetAttribLocation((GLuint)mProgram, "aVertexColor");
+    mMVMatrixHandle=_glGetUniformLocation(mProgram,"uMVMatrix");
+    mPMatrixHandle=_glGetUniformLocation(mProgram,"uPMatrix");
+    mPositionHandle = _glGetAttribLocation(mProgram, "aPosition");
+    mTextureHandle = _glGetAttribLocation(mProgram, "aTexCoord");
+    mColorHandle= _glGetAttribLocation(mProgram, "aVertexColor");
     mSamplerHandle = glGetUniformLocation (mProgram, "sTexture" );
-    mOutlineColorHandle=(GLuint)glGetUniformLocation(mProgram,"uOutlineColor");
-    mOutlineStrengthHandle=(GLuint)glGetUniformLocation(mProgram,"uOutlineStrength");
-    uEdge=(GLuint)glGetUniformLocation(mProgram,"uEdge");
-    uBorderEdge=(GLuint)glGetUniformLocation(mProgram,"uBorderEdge");
+    mOutlineColorHandle=_glGetUniformLocation(mProgram,"uOutlineColor");
+    mOutlineStrengthHandle=_glGetUniformLocation(mProgram,"uOutlineStrength");
+    uEdge=_glGetUniformLocation(mProgram,"uEdge");
+    uBorderEdge=_glGetUniformLocation(mProgram,"uBorderEdge");
     mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
     GLHelper::checkGlError("GLProgramText() uniforms3");
 
 #ifdef WIREFRAME
-    mOverrideColorHandle=(GLuint)glGetUniformLocation(mProgram,"uOverrideColor");
+    mOverrideColorHandle=_glGetUniformLocation(mProgram,"uOverrideColor");
 #endif
     // = {0,1,2, // first triangle (bottom left - top left - top right)
     //  0,2,3}; // second triangle (bottom left - top right - bottom right)
@@ -71,17 +68,17 @@ GLProgramText::GLProgramText(const VDDCManager* distortionManager):
 }
 
 void GLProgramText::beforeDraw(const GLuint buffer) const{
-    glUseProgram((GLuint)mProgram);
+    glUseProgram(mProgram);
     glActiveTexture(MY_TEXTURE_UNIT);
     glBindTexture(GL_TEXTURE_2D,mTexture);
     glUniform1i(mSamplerHandle,MY_SAMPLER_UNIT);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glEnableVertexAttribArray((GLuint)mPositionHandle);
-    glVertexAttribPointer((GLuint)mPositionHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE, sizeof(Vertex),nullptr);
-    glEnableVertexAttribArray((GLuint)mTextureHandle);
-    glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,u));
-    glEnableVertexAttribArray((GLuint)mColorHandle);
-    glVertexAttribPointer((GLuint)mColorHandle,4/*r,g,b,a*/,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,color));
+    glEnableVertexAttribArray(mPositionHandle);
+    glVertexAttribPointer(mPositionHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE, sizeof(Vertex),nullptr);
+    glEnableVertexAttribArray(mTextureHandle);
+    glVertexAttribPointer(mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,u));
+    glEnableVertexAttribArray(mColorHandle);
+    glVertexAttribPointer(mColorHandle,4/*r,g,b,a*/,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,color));
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndicesB);
     if(distortionManager)distortionManager->beforeDraw(mUndistortionHandles);
 }
@@ -114,8 +111,8 @@ void GLProgramText::draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, co
 
 
 void GLProgramText::afterDraw() const {
-    glDisableVertexAttribArray((GLuint)mPositionHandle);
-    glDisableVertexAttribArray((GLuint)mTextureHandle);
+    glDisableVertexAttribArray(mPositionHandle);
+    glDisableVertexAttribArray(mTextureHandle);
     glBindTexture(GL_TEXTURE_2D,0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
     //distortionManager.afterDraw();

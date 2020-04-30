@@ -1,16 +1,16 @@
 
 #include "GLProgramVC.h"
+#include "Macros.h"
 
 
 GLProgramVC::GLProgramVC(const VDDCManager* distortionManager, bool coordinates2D):
     distortionManager(distortionManager){
     mProgram = GLHelper::createProgram(VS(distortionManager,coordinates2D),FS());
-    mMVMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uMVMatrix");
-    mPMatrixHandle=(GLuint)glGetUniformLocation(mProgram,"uPMatrix");
-    mPositionHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aPosition");
-    mColorHandle = (GLuint)glGetAttribLocation((GLuint)mProgram, "aColor");
+    mMVMatrixHandle=_glGetUniformLocation(mProgram,"uMVMatrix");
+    mPMatrixHandle=_glGetUniformLocation(mProgram,"uPMatrix");
+    mPositionHandle =_glGetAttribLocation((GLuint)mProgram, "aPosition");
+    mColorHandle =_glGetAttribLocation((GLuint)mProgram, "aColor");
     mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
-    GLHelper::checkGlError("glGetAttribLocation OGProgramColor");
 }
 
 void GLProgramVC::beforeDraw(const GLuint buffer) const {

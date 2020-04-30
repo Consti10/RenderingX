@@ -5,6 +5,7 @@
 #ifndef RENDERINGX_NDKHELPER_H
 #define RENDERINGX_NDKHELPER_H
 
+#include "NDKArrayHelper.hpp"
 #include <jni.h>
 #include <string>
 #include <vector>
@@ -14,44 +15,7 @@
 #include <type_traits>
 
 namespace NDKHelper {
-    /**
-     * Returns a std::vector whose size depends on the size of the java array
-     * and who owns the underlying memory. Not most efficient, but most generic and memory safe
-     */
-    static std::vector<float> javaArrayToVector(JNIEnv *env, jfloatArray array){
-        const size_t size=(size_t)env->GetArrayLength(array);
-        std::vector<float> ret(size);
-        const auto arrayP=env->GetFloatArrayElements(array, nullptr);
-        std::memcpy(ret.data(),&arrayP[0],size*sizeof(float));
-        env->ReleaseFloatArrayElements(array,arrayP,0);
-        return ret;
-    }
-    /**
-     * Same as above but for int
-     */
-    static std::vector<int> javaArrayToVector(JNIEnv *env, jintArray array){
-        const size_t size=(size_t)env->GetArrayLength(array);
-        std::vector<int> ret(size);
-        const auto arrayP=env->GetIntArrayElements(array, nullptr);
-        std::memcpy(ret.data(),&arrayP[0],size*sizeof(int));
-        env->ReleaseIntArrayElements(array,arrayP,0);
-        return ret;
-    }
-    /**
-     *  Same as javaArrayToVector, but size is already known at compile time
-     * Logs a warning if size!=array size
-     */
-    template<std::size_t S>
-    static std::array<float,S> javaArrayToFixedArray(JNIEnv* env,jfloatArray array){
-        const auto data=javaArrayToVector(env,array);
-        std::array<float,S> ret;
-        if(data.size()!=S){
-            LOGD("Error javaArrayToCPP2 : size!=size");
-        }else{
-            std::memcpy(ret.data(),data.data(),data.size()*sizeof(float));
-        }
-        return ret;
-    }
+
     //Obtain the asset manager instance from the provided android context object
     static jobject getAssetManagerFromContext(JNIEnv* env,jobject android_context){
         jclass context_class =
@@ -153,7 +117,7 @@ namespace NDKHelper {
         //read its underlying instance (float array in our case) then cast
         jobject object_float_array=env->CallObjectMethod(object_input_stream,read_object_method);
         jfloatArray array=(jfloatArray)object_float_array;
-        return javaArrayToFixedArray<S>(env,array);
+        return NDKArrayHelper::FixedSizeArray<float,S>(env,array);
     }
 
     // return the java name for a simple cpp primitive
@@ -210,7 +174,7 @@ namespace NDKHelper {
                 return env->GetIntField(jobject1,field);
             }else if constexpr (std::is_same_v<T, std::vector<float>>){
                 jfloatArray array=(jfloatArray)env->GetObjectField(jobject1,field);
-                return NDKHelper::javaArrayToVector(env,array);
+                return NDKArrayHelper::DynamicSizeArray<float>(env, array);
             }else{
                 static_assert(always_false<T>::value, "Type wrong.");
             }
@@ -220,7 +184,7 @@ namespace NDKHelper {
             jfieldID field=ClassMemberFromJava::getFieldId<std::vector<float>>(name);
             if(field== nullptr)return std::array<float,S>();
             jfloatArray array=(jfloatArray)env->GetObjectField(jobject1,field);
-            return NDKHelper::javaArrayToFixedArray<S>(env,array);
+            return NDKArrayHelper::FixedSizeArray<float,S>(env,array);
         }
     };
 };

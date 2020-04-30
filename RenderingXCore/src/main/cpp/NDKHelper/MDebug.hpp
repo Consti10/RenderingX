@@ -6,8 +6,9 @@
 #define FPV_VR_PRIVATE_MDEBUG_H
 
 #include "android/log.h"
-#include <string.h>
+#include <string>
 
+// C-Style definition
 #define TAG_MDEBUG "MDebug"
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG_MDEBUG, __VA_ARGS__)
 

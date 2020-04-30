@@ -2,6 +2,7 @@
 // Created by Consti10 on 31/10/2019.
 //
 
+#include <Macros.h>
 #include "VDDCManager.h"
 
 VDDCManager::UndistortionHandles*
@@ -11,19 +12,19 @@ VDDCManager::getUndistortionUniformHandles(const VDDCManager* dm, const GLuint p
     }
     UndistortionHandles* ret=new UndistortionHandles();
     if(dm->distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
-        ret->uPolynomialRadialInverse_coefficients=(GLuint)glGetUniformLocation(program,"uPolynomialRadialInverse.coefficients");
-        ret->uPolynomialRadialInverse_maxRadSq=(GLuint)glGetUniformLocation(program,"uPolynomialRadialInverse.maxRadSq");
+        ret->uPolynomialRadialInverse_coefficients=_glGetUniformLocation(program,"uPolynomialRadialInverse.coefficients");
+        ret->uPolynomialRadialInverse_maxRadSq=_glGetUniformLocation(program,"uPolynomialRadialInverse.maxRadSq");
     }else if(dm->distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD){
-        ret->uPolynomialRadialInverse_coefficients=(GLuint)glGetUniformLocation(program,"uPolynomialRadialInverse.coefficients");
-        ret->uPolynomialRadialInverse_maxRadSq=(GLuint)glGetUniformLocation(program,"uPolynomialRadialInverse.maxRadSq");
-        ret->uScreenParams_w=(GLuint)glGetUniformLocation(program,"uScreenParams.width");
-        ret->uScreenParams_h=(GLuint)glGetUniformLocation(program,"uScreenParams.height");
-        ret->uScreenParams_x_off=(GLuint)glGetUniformLocation(program,"uScreenParams.x_eye_offset");
-        ret->uScreenParams_y_off=(GLuint)glGetUniformLocation(program,"uScreenParams.y_eye_offset");
-        ret->uTextureParams_w=(GLuint)glGetUniformLocation(program,"uTextureParams.width");
-        ret->uTextureParams_h=(GLuint)glGetUniformLocation(program,"uTextureParams.height");
-        ret->uTextureParams_x_off=(GLuint)glGetUniformLocation(program,"uTextureParams.x_eye_offset");
-        ret->uTextureParams_y_off=(GLuint)glGetUniformLocation(program,"uTextureParams.y_eye_offset");
+        ret->uPolynomialRadialInverse_coefficients=_glGetUniformLocation(program,"uPolynomialRadialInverse.coefficients");
+        ret->uPolynomialRadialInverse_maxRadSq=_glGetUniformLocation(program,"uPolynomialRadialInverse.maxRadSq");
+        ret->uScreenParams_w=_glGetUniformLocation(program,"uScreenParams.width");
+        ret->uScreenParams_h=_glGetUniformLocation(program,"uScreenParams.height");
+        ret->uScreenParams_x_off=_glGetUniformLocation(program,"uScreenParams.x_eye_offset");
+        ret->uScreenParams_y_off=_glGetUniformLocation(program,"uScreenParams.y_eye_offset");
+        ret->uTextureParams_w=_glGetUniformLocation(program,"uTextureParams.width");
+        ret->uTextureParams_h=_glGetUniformLocation(program,"uTextureParams.height");
+        ret->uTextureParams_x_off=_glGetUniformLocation(program,"uTextureParams.x_eye_offset");
+        ret->uTextureParams_y_off=_glGetUniformLocation(program,"uTextureParams.y_eye_offset");
     }
     return ret;
 }
