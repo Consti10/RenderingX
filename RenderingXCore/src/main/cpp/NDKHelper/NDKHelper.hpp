@@ -14,6 +14,8 @@
 
 #include <type_traits>
 
+// The purpose of this namespace is to provide utility functions
+// That help using the android NDK
 namespace NDKHelper {
 
     //Obtain the asset manager instance from the provided android context object
@@ -47,7 +49,6 @@ namespace NDKHelper {
         env->DeleteLocalRef(j_path);
         return input_stream;
     }
-
 
     // Inspired by gvr_util/util.cc
     // Loads a png file from assets folder and then assigns it to the OpenGL target.
@@ -119,74 +120,6 @@ namespace NDKHelper {
         jfloatArray array=(jfloatArray)object_float_array;
         return NDKArrayHelper::FixedSizeArray<float,S>(env,array);
     }
-
-    // return the java name for a simple cpp primitive
-    // e.g. float -> F, int -> I
-    template <class T> struct cppTypeToNdkName { static const char * const value; };
-    template <> constexpr const char *cppTypeToNdkName<int>::value = "I";
-    template <> constexpr const char *cppTypeToNdkName<float>::value = "F";
-    template <> constexpr const char *cppTypeToNdkName<std::vector<int>>::value = "[I";
-    template <> constexpr const char *cppTypeToNdkName<std::vector<float>>::value = "[F";
-
-     // Helper to obtain member values of a java class instance
-    class ClassMemberFromJava {
-    private:
-        JNIEnv* env;
-        jclass jclass1;
-        jobject jobject1;
-        template <class T> jfieldID getFieldId(const char* name){
-            const char* ndkTypeName=cppTypeToNdkName<T>::value;
-            jfieldID field=env->GetFieldID(jclass1,name,ndkTypeName);
-            if(field==nullptr){
-                LOGD("cannot find member %s of type %s",name,ndkTypeName);
-                env->ExceptionClear();
-                return nullptr;
-            }
-            return field;
-        }
-    public:
-        /**
-         * We can obtain the java class (name) from the instance
-         * When @param env becomes invalid this instance mustn't be used anymore
-         * @param jobject1 instance of the jobject you want to obtain member values from
-         */
-        ClassMemberFromJava(JNIEnv* env,jobject jobject1){
-            this->env=env;
-            this->jclass1=env->GetObjectClass(jobject1);
-            this->jobject1=jobject1;
-        }
-        template <typename T>
-        struct always_false : std::false_type {};
-        /**
-         * If a class member with the name @param name is found AND
-         * Its type can be translated into a generic cpp type
-         * (e.g. java int == cpp int but a special java 'Car' class cannot be translated into cpp)
-         * @return the value of the java class member as generic cpp type or 0 when not found
-         */
-        template <typename T>
-        T get(const char *name) {
-            jfieldID field=ClassMemberFromJava::getFieldId<T>(name);
-            if(field== nullptr)return T();
-            //switch case for all supported cpp types
-            if constexpr (std::is_same_v<T, float>){
-                return env->GetFloatField(jobject1,field);
-            }else if constexpr (std::is_same_v<T, int>){
-                return env->GetIntField(jobject1,field);
-            }else if constexpr (std::is_same_v<T, std::vector<float>>){
-                jfloatArray array=(jfloatArray)env->GetObjectField(jobject1,field);
-                return NDKArrayHelper::DynamicSizeArray<float>(env, array);
-            }else{
-                static_assert(always_false<T>::value, "Type wrong.");
-            }
-            return T();
-        }
-        template<std::size_t S> std::array<float,S> getFloatArrayFixed(const char *name) {
-            jfieldID field=ClassMemberFromJava::getFieldId<std::vector<float>>(name);
-            if(field== nullptr)return std::array<float,S>();
-            jfloatArray array=(jfloatArray)env->GetObjectField(jobject1,field);
-            return NDKArrayHelper::FixedSizeArray<float,S>(env,array);
-        }
-    };
 };
 
 

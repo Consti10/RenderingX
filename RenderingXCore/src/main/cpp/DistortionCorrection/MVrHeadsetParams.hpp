@@ -8,6 +8,7 @@
 #include <vector>
 #include <array>
 #include <sstream>
+#include <NDKJavaClassMember.hpp>
 
 // Links to java MVrHeadsetParams
 
@@ -25,7 +26,7 @@ struct MVrHeadsetParams{
 };
 
 static MVrHeadsetParams createFromJava(JNIEnv *env, jobject instanceMVrHeadsetParams){
-    NDKHelper::ClassMemberFromJava helper(env, instanceMVrHeadsetParams);
+    ClassMemberFromJava helper(env, instanceMVrHeadsetParams);
     return {
             helper.get<float>("ScreenWidthMeters"),
             helper.get<float>("ScreenHeightMeters"),
