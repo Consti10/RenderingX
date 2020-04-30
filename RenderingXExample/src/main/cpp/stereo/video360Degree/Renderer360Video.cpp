@@ -58,7 +58,7 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
             SphereBuilder::createSphereEquirectangularMonoscopic(1.0,72,36),GL_TRIANGLE_STRIP);
     //create the occlusion mesh, left and right viewport
     //use a slightly different color than clear color to make mesh visible
-    const auto color=TrueColor::fromRGBA(0.1, 0.1, 0.1, 1.0);
+    const auto color=TrueColor(0.1f, 0.1, 0.1, 1.0);
     CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(vrHeadsetParams,color,mOcclusionMesh);
     GLHelper::checkGlError("Renderer360Video::onSurfaceCreated");
 }

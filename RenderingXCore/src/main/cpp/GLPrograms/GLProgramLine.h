@@ -31,8 +31,8 @@ public:
         float x,y,z;
         float normalX,normalY,normalZ;
         float lineW;
-        TrueColor::Color baseColor;
-        TrueColor::Color outlineColor;
+        TrueColor baseColor;
+        TrueColor outlineColor;
     };
     static constexpr int VERTICES_PER_LINE=6;
     explicit GLProgramLine(const VDDCManager* distortionManager=nullptr);
@@ -44,7 +44,7 @@ public:
     void drawX(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM,const VertexBuffer& vb);
 public:
     static void convertLineToRenderingData(const glm::vec3& start, const glm::vec3& end, float lineWidth,
-                                           Vertex array[], int arrayOffset, TrueColor::Color baseColor=TrueColor::BLACK, TrueColor::Color  outlineColor=TrueColor::WHITE);
+                                           Vertex array[], int arrayOffset, TrueColor baseColor=TrueColor2::BLACK, TrueColor outlineColor=TrueColor2::WHITE);
 private:
     static const std::string VS(const VDDCManager* distortionManager){
         std::stringstream s;

@@ -117,7 +117,7 @@ void GLProgramText::afterDraw() const {
 }
 
 int GLProgramText::convertStringToRenderingData(const float X, const float Y, const float Z, const float charHeight,
-                                                const std::wstring &text, const Color color, Character *array,
+                                                const std::wstring &text, const TrueColor color, Character *array,
                                                 const int arrayOffset) {
 
     const float BOX_SIZE=charHeight*9.0f/8.0f;

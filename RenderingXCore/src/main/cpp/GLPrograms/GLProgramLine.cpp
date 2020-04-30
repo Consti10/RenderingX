@@ -74,7 +74,7 @@ static void writePos(GLProgramLine::Vertex &v,const glm::vec3 &pos){
     v.y=pos.y;
     v.z=pos.z;
 }
-static void writeColor(GLProgramLine::Vertex &v, const Color baseColor, const Color outlineColor){
+static void writeColor(GLProgramLine::Vertex &v, const TrueColor baseColor, const TrueColor outlineColor){
     v.baseColor=baseColor;
     v.outlineColor=outlineColor;
 }
@@ -87,7 +87,7 @@ static void writeNormal(GLProgramLine::Vertex &v,const glm::vec3 &normal,const f
 
 void GLProgramLine::convertLineToRenderingData(const glm::vec3 &start, const glm::vec3 &end, const float lineWidth,
                                                GLProgramLine::Vertex *array, int arrayOffset,
-                                               const Color baseColor, const Color  outlineColor) {
+                                               const TrueColor baseColor, const TrueColor  outlineColor) {
     const glm::vec3 dir=glm::normalize(glm::vec3(end-start));
     const glm::vec3 normal=glm::vec3(dir.y,dir.x,dir.z);
 

@@ -47,7 +47,7 @@ private:
     struct Vertex{
         float x,y,z;
         float u,v;
-        TrueColor::Color color;
+        TrueColor color;
     };
     const VDDCManager* distortionManager;
     VDDCManager::UndistortionHandles* mUndistortionHandles;
@@ -72,7 +72,7 @@ public:
     void afterDraw() const;
 public:
     static int convertStringToRenderingData(float X, float Y, float Z, float charHeight,
-                                            const std::wstring &text, TrueColor::Color color, Character array[], int arrayOffset);
+                                            const std::wstring &text, TrueColor color, Character array[], int arrayOffset);
     static float getStringLength(std::wstring s,float scale);
     static float getFontWidthSafe(int idx);
     static constexpr int ICONS_OFFSET=192;

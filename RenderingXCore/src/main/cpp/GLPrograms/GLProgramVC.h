@@ -33,7 +33,7 @@ private:
 public:
     struct Vertex{
         float x,y,z;
-        TrueColor::Color colorRGBA;
+        TrueColor colorRGBA;
     };
     using INDEX_DATA=GLushort;
     explicit GLProgramVC(const VDDCManager* distortionManager=nullptr, bool coordinates2D=false);
