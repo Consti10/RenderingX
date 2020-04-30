@@ -17,7 +17,7 @@
 #include <VertexIndexBuffer.h>
 
 
-class GLProgramTextureProj {
+class GLPTextureProj2 {
 private:
     GLuint mProgram;
     GLuint aPosition,mSamplerHandle;
@@ -34,7 +34,7 @@ public:
         float u,v;
     };
     using INDEX_DATA=GLuint;
-    explicit GLProgramTextureProj();
+    explicit GLPTextureProj2();
     void beforeDraw(GLuint buffer,GLuint texture) const;
     void draw(const glm::mat4x4& ModelM,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLenum mode=GL_TRIANGLES) const;
     void afterDraw() const;
@@ -48,17 +48,16 @@ private:
         s<<"uniform mat4 uTextureMatrix;\n";
         s<<"attribute vec4 aPosition;\n";
         s<<"attribute vec2 aTexCoord;\n";
-        s<<"varying vec2 vTexCoord;\n";
-        s<<"varying vec4 vTextureCoordProj;\n";
+        s<<"varying vec2 vTextureCoordProj;\n";
 
         s<<"void main() {\n";
         //s<<"gl_Position = (uProjMatrix*(uViewMatrix*uModelMatrix))* aPosition;\n";
         s<<"gl_Position = vec4(aPosition.xy,0,1);\n";
-        s<<"vTexCoord = aTexCoord;\n";
 
         //s<<"vTextureCoordProj = uTextureMatrix * uModelMatrix * aPosition;\n";
         //s<<"vTextureCoordProj = uTextureMatrix * aPosition;";
-        s<<"vTextureCoordProj = uTextureMatrix * vec4(aPosition.xy,0,1);";
+        s<<"vec4 pos = uTextureMatrix * vec4(aPosition.xy,0,1);\n";
+        s<<"vTextureCoordProj=pos.xy / pos.w;";
         s<<"}\n";
         return s.str();
     }
@@ -66,30 +65,25 @@ private:
         std::stringstream s;
         //s<<"#version 300 es \n";
         s<<"precision mediump float;\n";
-        s<<"varying vec2 vTexCoord;\n";
-        s<<"varying vec4 vTextureCoordProj;\n";
+        s<<"varying vec2 vTextureCoordProj;\n";
         s<<"uniform sampler2D sTexture;\n";
         s<<"bool isInside(const in float inX){ return (inX>=0.0 && inX<=1.0);}";
         s<<"bool isInside(const in vec2 inX){ return (isInside(inX.x) && isInside(inX.y));}";
         s<<"void main() {\n";
 
-        //s<<"vec4 textureColor=texture2D(sTexture,vTexCoord);\n";
-        s<<"vec4 textureColor=vec4(1.0,0.0,0.0,1.0);\n";
-        //s<<"vec4 textureColorProj = vec4(1.0,0.0,0.0,1.0);\n";
-        //s<<"vec4 textureColorProj =  texture2DProj(sTexture, vTextureCoordProj);\n";
-        s<<"vec2 coord=vTextureCoordProj.xy / vTextureCoordProj.w;";
-        //s<<"bool front= vTextureCoordProj.z";
         s<<"vec4 textureColorProj;";
-        s<<"if( isInside(coord) ){";
-        s<<"textureColorProj =  texture2D(sTexture,coord);";
+        s<<"if(isInside(vTextureCoordProj) ){";
+        s<<"textureColorProj =  texture2D(sTexture,vTextureCoordProj);";
         s<<"}else{";
         s<<"textureColorProj =  vec4(0.0,0.0,1.0,1.0);";
         s<<"}";
+        //s<<"float alpha=1.0;";
         //s<<"if(textureColorProj.r==1.0 && textureColorProj.g==1.0 && textureColorProj.b==1.0){";
-        //s<<"textureColorProj=vec4(0.0,0.0,0.0,0.0);";
+        //s<<"alpha=0.0;";
         //s<<"}";
         //s<<"gl_FragColor = mix(textureColor, textureColorProj, 0.95);\n";
         s<<"gl_FragColor = textureColorProj;\n";
+        //s<<"gl_FragColor = vec4(textureColorProj.rgb*alpha,alpha);\n";
 
         s<<"}\n";
         return s.str();

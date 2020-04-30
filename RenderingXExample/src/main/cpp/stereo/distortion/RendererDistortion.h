@@ -10,12 +10,14 @@
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 #include <jni.h>
+
 #include <glm/glm.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/ext.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
+
 #include <GLProgramVC.h>
 #include <GLProgramText.h>
 #include <GLProgramTexture.h>
@@ -30,7 +32,7 @@
 #include <DistortionEngine.h>
 #include <gvr_util/util.h>
 #include <GLBufferHelper.hpp>
-#include <GLProgramTextureProj.h>
+#include <ProjTex/GLPTextureProj.h>
 
 // Example that compares the distortion created by VDDC and google cardboard with Gvr (google vr)
 // Renders a 2D Mesh for testing
@@ -77,7 +79,8 @@ private:
 public:
     DistortionEngine vrHeadsetParams;
 private:
-    GLProgramTextureProj* glProgramTextureProj;
+    GLPTextureProj* glProgramTextureProj;
+    GLProgramTexture* glProgramTexture;
     GLuint mTextureMonaLisa;
     VertexBuffer glBufferTextured;
 };

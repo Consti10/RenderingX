@@ -44,6 +44,7 @@ public class MVrHeadsetParams {
         ScreenWidthPixels=view.getScreenParams().getWidth();
         ScreenHeightPixels=view.getScreenParams().getHeight();
 
+
         view.shutdown();
     }
 }

@@ -7,11 +7,11 @@
 
 #include <vector>
 
-//based on @java Distortion from gvr (google vr) btw. cardboard library
-//Used by PolynomialRadialDistortion to create inverse distortion
+// based on @java Distortion from gvr (google vr) btw. cardboard library
+// Used by PolynomialRadialDistortion to create inverse distortion
 
 namespace LinearAlgebraHelper{
-    //see @java Distortion.solveLinear()
+    // see @java Distortion.solveLinear()
     static std::vector<double> solveLinear(std::vector<std::vector<double>>& a,std::vector<double>& y){
         const auto i = (unsigned int)(a[0]).size();
         for (int b = 0; b < i - 1; ) {
@@ -35,7 +35,7 @@ namespace LinearAlgebraHelper{
         }
         return x;
     }
-    //see @java Distortion.solveLeastSquares()
+    // see @java Distortion.solveLeastSquares()
     static std::vector<double> solveLeastSquares(const std::vector<std::vector<double>>& matA,const std::vector<double>& vecY){
         const auto numSamples = matA.size();
         const auto numCoefficients = matA[0].size();

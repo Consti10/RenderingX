@@ -11,7 +11,8 @@
 #include <jni.h>
 #include <NDKHelper.hpp>
 
-#include "PolynomialRadialDistortion/PolynomialRadialDistortion.h"
+#include <PolynomialRadialDistortion.h>
+#include <PolynomialRadialInverse.h>
 
 //Based on @cardboard/LensDistortion
 //CardboardLensDistortion

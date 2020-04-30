@@ -1,13 +1,13 @@
 
 #include <NDKHelper.hpp>
-#include "GLProgramTextureProj.h"
+#include "GLPTextureProj.h"
 #include "Macros.h"
 
 constexpr auto TAG="GLRenderTexture(-External)";
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
 
-GLProgramTextureProj::GLProgramTextureProj(){
+GLPTextureProj::GLPTextureProj(){
     mProgram = GLHelper::createProgram(VS(),FS());
     uModelMatrix=_glGetUniformLocation(mProgram, "uModelMatrix");
     uViewMatrix=_glGetUniformLocation(mProgram, "uViewMatrix");
@@ -19,7 +19,7 @@ GLProgramTextureProj::GLProgramTextureProj(){
     GLHelper::checkGlError(TAG);
 }
 
-void GLProgramTextureProj::beforeDraw(const GLuint buffer,GLuint texture) const{
+void GLPTextureProj::beforeDraw(const GLuint buffer, GLuint texture) const{
     glUseProgram(mProgram);
 
     glActiveTexture(MY_TEXTURE_UNIT1);
@@ -31,27 +31,27 @@ void GLProgramTextureProj::beforeDraw(const GLuint buffer,GLuint texture) const{
     glVertexAttribPointer(aPosition, 3/*xyz*/, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
     //glEnableVertexAttribArray(aTexCoord);
     //glVertexAttribPointer(aTexCoord, 2/*uv*/, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, u));
-    GLHelper::checkGlError("GLProgramTextureProj::beforeDraw");
+    GLHelper::checkGlError("GLPTextureProj::beforeDraw");
 }
 
-void GLProgramTextureProj::draw(const glm::mat4x4& ModelM,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, const int verticesOffset, const int numberVertices,GLenum mode) const{
+void GLPTextureProj::draw(const glm::mat4x4& ModelM, const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, const int verticesOffset, const int numberVertices, GLenum mode) const{
     glUniformMatrix4fv(uModelMatrix, 1, GL_FALSE, glm::value_ptr(ModelM));
     glUniformMatrix4fv(uViewMatrix, 1, GL_FALSE, glm::value_ptr(ViewM));
     glUniformMatrix4fv(uProjMatrix, 1, GL_FALSE, glm::value_ptr(ProjM));
     glDrawArrays(mode, verticesOffset, numberVertices);
-    GLHelper::checkGlError("GLProgramTextureProj::draw");
+    GLHelper::checkGlError("GLPTextureProj::draw");
 }
 
 
-void GLProgramTextureProj::afterDraw() const{
+void GLPTextureProj::afterDraw() const{
     glDisableVertexAttribArray(aPosition);
     //glDisableVertexAttribArray(aTexCoord);
     glBindTexture(GL_TEXTURE_2D,0);
     //distortionManager.afterDraw();
-    GLHelper::checkGlError("GLProgramTextureProj::afterDraw");
+    GLHelper::checkGlError("GLPTextureProj::afterDraw");
 }
 
 
-void GLProgramTextureProj::updateTexMatrix(const glm::mat4x4& texmatrix) {
+void GLPTextureProj::updateTexMatrix(const glm::mat4x4& texmatrix) {
     glUniformMatrix4fv(uTextureMatrix, 1, GL_FALSE, glm::value_ptr(texmatrix));
 }

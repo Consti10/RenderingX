@@ -34,7 +34,8 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     specs[0].SetColorFormat(GVR_COLOR_FORMAT_RGBA_8888);
     specs[0].SetDepthStencilFormat(GVR_DEPTH_STENCIL_FORMAT_DEPTH_16);
     swap_chain = std::make_unique<gvr::SwapChain>(gvr_api_->CreateSwapChain(specs));
-    glProgramTextureProj=new GLProgramTextureProj();
+    glProgramTextureProj=new GLPTextureProj();
+    glProgramTexture=new GLProgramTexture(false);
     GLProgramTexture::loadTexture(mTextureMonaLisa, env, context, "ExampleTexture/grid_2000px.png");
     const float wh=2.0f;
     glBufferTextured.uploadGL(TexturedGeometry::makeTesselatedVideoCanvas2(10,glm::vec3(0,0,0),{wh,wh},0.0f,1.0f));
@@ -42,19 +43,17 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     mBasicGLPrograms=std::make_unique<BasicGLPrograms>(&distortionManager);
     mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
     //create the green and blue mesh
-    float tesselatedRectSize=2.5; //6.2f
+    float tesselatedRectSize=1.0; //6.2f
     const float offsetY=0.0f;
-    blueMeshB.initializeAndUploadGL(
+    blueMeshB.uploadGL(
             ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR,{0,0,-2},{tesselatedRectSize,tesselatedRectSize},
                     Color::BLUE),GL_LINES);
-    greenMeshB.initializeAndUploadGL(
+    greenMeshB.uploadGL(
             ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR,{0,0,-2},{tesselatedRectSize,tesselatedRectSize},
                     Color::GREEN),GL_LINES);
     //create the occlusion mesh, left and right viewport
     //use a slightly different color than clear color to make mesh visible
     const TrueColor color=Color::fromRGBA(0.1,0.1,0.1,1.0);
-    mOcclusionMesh[0].initializeGL();
-    mOcclusionMesh[1].initializeGL();
     CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(vrHeadsetParams,color,mOcclusionMesh);
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
@@ -140,6 +139,9 @@ void RendererDistortion::drawEyeVDDC(gvr::Eye eye) {
 }
 
 void RendererDistortion::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen, bool occlusion) {
+
+    distortionManager.updateDistortionWithIdentity();
+
     const VertexBuffer& tmp=meshColorGreen ? greenMeshB : blueMeshB;
     //mBasicGLPrograms->vc.drawX(viewM,projM,tmp);
 
@@ -147,6 +149,16 @@ void RendererDistortion::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM,
         mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);
     }
 
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    /*{
+        glProgramTexture->beforeDraw(glBufferTextured.vertexB,mTextureMonaLisa);
+        glm::mat4 modelM=glm::translate(glm::mat4(1.0f),glm::vec3(0,0,-3));
+
+        glProgramTexture->draw(viewM*modelM,projM,0,glBufferTextured.nVertices,glBufferTextured.mMode);
+        glProgramTexture->afterDraw();
+    }*/
     {
         constexpr float DEFAULT_CAMERA_Z=10.0f;
         constexpr auto DEFAULT_CAMERA_POSITION=glm::vec3(0,0,DEFAULT_CAMERA_Z);
@@ -159,12 +171,22 @@ void RendererDistortion::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM,
         glm::mat4 scaleBiasMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)), glm::vec3(0.5f));
         // Construct the combined matrix to transform the vertex position to its projective
         // texture coordiantes.
-        glm::mat4 modelM=glm::translate(glm::mat4(1.0f),glm::vec3(0,0,1));
-        glm::mat4 projectorTransformMatrix = scaleBiasMatrix * projM *viewM*modelM;
+        glm::mat4 modelM=glm::translate(glm::vec3(0,0,0.2));
+        //glm::mat4 modelM=glm::scale(glm::mat4(1.0f),glm::vec3(0.1,0.1,0.1));
+        //glm::mat4 modelM=glm::rotate(glm::radians(20.0f),glm::vec3(0,1,0));
+        //glm::mat4 modelM=glm::mat4(1.0);
+
+        //glm::mat4 viewM2=glm::lookAt()
+        glm::mat4 projM2=glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 10.0f);
+
+        glm::mat4 projectorTransformMatrix = scaleBiasMatrix * projM2 *(viewM*modelM);
 
         glProgramTextureProj->updateTexMatrix(projectorTransformMatrix);
         glProgramTextureProj->afterDraw();
     }
+
+
+    mBasicGLPrograms->vc.drawX(viewM,projM,tmp);
 
     GLHelper::checkGlError("RendererDistortion::drawEye");
 }

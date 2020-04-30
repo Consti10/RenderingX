@@ -17,25 +17,44 @@ public:
     GLuint indexB;
     int nIndices=0;
     GLenum mMode=GL_TRIANGLES;
-    void initializeGL(){
+    bool alreadyCreatedGLBuffer=false;
+    // uploading more than once is not a problem, but probably unintended
+    bool alreadyUploaded=false;
+private:
+    std::string getTAG(){
+        return "VertexIndexBuffer"+std::to_string(vertexB)+","+std::to_string(indexB)+"::";
+    }
+    // We have to 'delay' the creation of the buffer until we have a OpenGL context
+    void createGLBufferIfNeeded(){
+        if(alreadyCreatedGLBuffer)
+            return;
         glGenBuffers(1,&vertexB);
         glGenBuffers(1,&indexB);
-        GLHelper::checkGlError("VertexIndexBuffer::initializeGL");
+        alreadyCreatedGLBuffer=true;
+        GLHelper::checkGlError(getTAG()+"createGL");
     }
-
+    void checkSetAlreadyUploaded(){
+        if(alreadyUploaded){
+            MDebug::log(getTAG()+"uploadGL called twice");
+        }
+        alreadyUploaded=true;
+    }
+public:
     template<typename T, typename T2>
     void uploadGL(const std::vector<T> &vertices,const std::vector<T2> &indices,GLenum mode=GL_TRIANGLES){
+        createGLBufferIfNeeded();
+        checkSetAlreadyUploaded();
         GLBufferHelper::uploadGLBuffer(vertexB, vertices);
         nIndices = GLBufferHelper::uploadGLBuffer(indexB, indices);
         mMode=mode;
-        GLHelper::checkGlError("VertexIndexBuffer::uploadGL");
+        GLHelper::checkGlError(getTAG()+"uploadGL");
     }
 
-    template<typename T, typename T2>
+    /*template<typename T, typename T2>
     void initializeAndUploadGL(const std::vector<T> &vertices,const std::vector<T2> &indices,GLenum mode=GL_TRIANGLES){
         initializeGL();
         uploadGL(vertices,indices,mode);
-    }
+    }*/
 
     void deleteGL() {
         glDeleteBuffers(1, &vertexB);

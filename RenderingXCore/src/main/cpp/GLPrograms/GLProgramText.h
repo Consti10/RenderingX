@@ -86,6 +86,12 @@ public:
     static constexpr const wchar_t ICON_SATELITE=(wchar_t)ICONS_OFFSET+5;
     static constexpr const wchar_t ICON_SPACING=(wchar_t)ICONS_OFFSET+6;
     static constexpr const wchar_t ICON_ARTIFICIAL_HORIZON=(wchar_t)ICONS_OFFSET+7;
+    // We need specific blend mode(s) when rendering text
+    static void setupDepthTestAndBlending(){
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
 private:
     static const std::string VS(const VDDCManager* distortionManager1){
         std::stringstream s;
@@ -119,7 +125,7 @@ private:
         s<<"void main() {\n";
         s<<"float distance = texture2D( sTexture, vTexCoord ).a;\n";
         s<<"float alpha = smoothstep(width-smoothing,width+smoothing,distance);";
-        s<<"gl_FragColor = vec4(vVertexColor.rgb*alpha,alpha);";
+        s<<"gl_FragColor = vec4(vVertexColor.rgb,alpha);";
 #ifdef WIREFRAME
         s<<"gl_FragColor.rgb=vec3(1.0,1.0,1.0);\n";
 #endif

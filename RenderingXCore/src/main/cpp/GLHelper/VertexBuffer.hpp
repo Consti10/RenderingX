@@ -18,31 +18,48 @@ public:
     GLuint vertexB;
     int nVertices=0;
     GLenum mMode=GL_TRIANGLES;
-public:
-    void initializeGL(){
-        glGenBuffers(1,&vertexB);
-        GLHelper::checkGlError("VertexBuffer::initializeGL");
+    bool alreadyCreatedGLBuffer=false;
+    bool alreadyUploaded=false;
+private:
+    std::string getTAG(){
+        return "VertexBuffer"+std::to_string(vertexB)+"::";
     }
-
+    // We have to 'delay' the creation of the buffer until we have a OpenGL context
+    void createGLBufferIfNeeded(){
+        if(alreadyCreatedGLBuffer)
+            return;
+        glGenBuffers(1,&vertexB);
+        alreadyCreatedGLBuffer=true;
+        GLHelper::checkGlError(getTAG()+"createGL");
+    }
+    void checkSetAlreadyUploaded(){
+        if(alreadyUploaded){
+           MDebug::log(getTAG()+":uploadGL called twice");
+        }
+        alreadyUploaded=true;
+    }
+public:
     template<typename T>
     void uploadGL(const std::vector<T> &vertices,GLenum mode=GL_TRIANGLES){
+        createGLBufferIfNeeded();
+        checkSetAlreadyUploaded();
         nVertices = GLBufferHelper::uploadGLBuffer(vertexB, vertices);
         mMode=mode;
-        GLHelper::checkGlError("VertexBuffer::uploadGL");
+        GLHelper::checkGlError(getTAG()+"uploadGL");
         //MDebug::log("N vertices is "+std::to_string(nVertices));
     }
-
     template<typename T,size_t s>
     void uploadGL(const std::array<T,s> &vertices,GLenum mode=GL_TRIANGLES){
+        createGLBufferIfNeeded();
+        checkSetAlreadyUploaded();
         const auto tmp=std::vector<T>(vertices.begin(),vertices.end());
         VertexBuffer::uploadGL(tmp,mode);
     }
-
-    template<typename T>
+    /*template<typename T>
     void initializeAndUploadGL(const std::vector<T> &vertices,GLenum mode=GL_TRIANGLES){
         initializeGL();
         uploadGL(vertices,mode);
-    }
+    }*/
 
     void deleteGL() {
         glDeleteBuffers(1, &vertexB);

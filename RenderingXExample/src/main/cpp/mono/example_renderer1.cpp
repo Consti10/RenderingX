@@ -22,7 +22,7 @@
 #include <GLProgramTexture.h>
 #include <Chronometer.h>
 #include <FPSCalculator.h>
-#include <GLProgramTextureProj.h>
+#include <ProjTex/GLPTextureProj.h>
 
 //Render a simple scene consisting of a colored triangle, smooth lines and smooth text
 
@@ -56,7 +56,7 @@ GLProgramText* glProgramText;
 GLProgramTexture* glProgramTexture;
 GLuint mTextureBrick;
 GLuint mTextureMonaLisa;
-GLProgramTextureProj* glProgramTextureProj;
+GLPTextureProj* glProgramTextureProj;
 
 //holds colored geometry vertices
 VertexBuffer glBufferVC;
@@ -97,17 +97,12 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     glProgramText=new GLProgramText();
     glProgramText->loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
     glProgramTexture=new GLProgramTexture(false);
-    glProgramTextureProj=new GLProgramTextureProj();
+    glProgramTextureProj=new GLPTextureProj();
     glGenTextures(1,&mTextureBrick);
     GLProgramTexture::loadTexture(mTextureBrick,env,context,"ExampleTexture/brick_wall_simple.png");
     GLProgramTexture::loadTexture(mTextureMonaLisa, env, context, "ExampleTexture/mona_lisa.jpg");
 
     //create all the gl Buffer for later use
-    glBufferVC.initializeGL();
-    glBufferText.initializeGL();
-    glBufferLine.initializeGL();
-    glBufferIcons.initializeGL();
-    glBufferTextured.initializeGL();
     //create the geometry for our simple test scene
     //some colored geometry
     glBufferVC.uploadGL(ColoredGeometry::makeTessellatedColoredRect(12,glm::vec3(0,0,0),{5.0,5.0},Color::RED)
@@ -160,7 +155,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
         for(const auto v:plane){
             pyramidAndPlane.push_back(v);
         }
-        glBufferPyramid.initializeAndUploadGL(pyramidAndPlane,GL_TRIANGLES);
+        glBufferPyramid.uploadGL(pyramidAndPlane,GL_TRIANGLES);
     }
     modelM=DEFAULT_MODEL_MATRIX;
 
@@ -234,9 +229,7 @@ static void onDrawFrame(){
     if(currentRenderingMode==5){
         glEnable(GL_DEPTH_TEST);
     }else{
-        glDisable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        GLProgramText::setupDepthTestAndBlending();
     }
     //Drawing with the OpenGL Programs is easy - call beforeDraw() with the right OpenGL Buffer and then draw until done
     if(currentRenderingMode==0){ //Smooth text
