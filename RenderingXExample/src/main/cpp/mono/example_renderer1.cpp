@@ -234,13 +234,13 @@ static void onDrawFrame(){
     //Drawing with the OpenGL Programs is easy - call beforeDraw() with the right OpenGL Buffer and then draw until done
     if(currentRenderingMode==0){ //Smooth text
         glProgramText->beforeDraw(glBufferText.vertexB);
-        glProgramText->updateOutline(TrueColor2::RED.toRGBA(), seekBarValue1 / 100.0f);
+        glProgramText->updateOutline(TrueColor2::RED.RGBA32F(), seekBarValue1 / 100.0f);
         glProgramText->setOtherUniforms(seekBarValue2/100.0f,seekBarValue3/100.0f);
         glProgramText->draw(eyeView,projection,0,glBufferText.nVertices*GLProgramText::INDICES_PER_CHARACTER);
         glProgramText->afterDraw();
     } else if(currentRenderingMode==1){
         glProgramText->beforeDraw(glBufferIcons.vertexB);
-        glProgramText->updateOutline(TrueColor2::RED.toRGBA(), seekBarValue1 / 100.0f);
+        glProgramText->updateOutline(TrueColor2::RED.RGBA32F(), seekBarValue1 / 100.0f);
         glProgramText->setOtherUniforms(seekBarValue2/100.0f,seekBarValue3/100.0f);
         glProgramText->draw(eyeView,projection,0,glBufferIcons.nVertices*GLProgramText::INDICES_PER_CHARACTER);
         glProgramText->afterDraw();
