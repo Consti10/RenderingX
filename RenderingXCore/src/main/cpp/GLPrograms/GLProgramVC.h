@@ -12,10 +12,8 @@
 #include <glm/mat4x4.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <array>
 #include <TrueColor.hpp>
 #include <VDDCManager.h>
-#include <GLBufferHelper.hpp>
 #include <VertexBuffer.hpp>
 #include <VertexIndexBuffer.h>
 

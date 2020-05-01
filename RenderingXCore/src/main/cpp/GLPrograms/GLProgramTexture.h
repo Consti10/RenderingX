@@ -8,12 +8,9 @@
 #include <GLES2/gl2.h>
 #include <glm/mat4x4.hpp>
 #include <jni.h>
-#include "android/log.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <array>
 #include <VDDCManager.h>
-#include <GLBufferHelper.hpp>
 #include <VertexBuffer.hpp>
 #include <VertexIndexBuffer.h>
 //#define WIREFRAME

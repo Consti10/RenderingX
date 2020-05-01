@@ -8,13 +8,10 @@
 #include <GLES2/gl2.h>
 #include <jni.h>
 #include <string>
-#include <vector>
-#include "android/log.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <TrueColor.hpp>
 #include <VDDCManager.h>
-#include <GLBufferHelper.hpp>
 #include <VertexBuffer.hpp>
 #include <VertexIndexBuffer.h>
 

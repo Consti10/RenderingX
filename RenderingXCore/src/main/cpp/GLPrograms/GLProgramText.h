@@ -19,13 +19,11 @@
 #define GL_RENDER_TEXT
 
 #include <GLES2/gl2.h>
-#include <jni.h>
-#include <string>
-#include <vector>
-#include "android/log.h"
-#include "TextAssetsHelper.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <jni.h>
+#include <string>
+#include "TextAssetsHelper.hpp"
 #include <TrueColor.hpp>
 #include <VDDCManager.h>
 
