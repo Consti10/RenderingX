@@ -43,8 +43,7 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     mBasicGLPrograms=std::make_unique<BasicGLPrograms>(&distortionManager);
     mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
     //create the green and blue mesh
-    float tesselatedRectSize=1.0; //6.2f
-    const float offsetY=0.0f;
+    float tesselatedRectSize=2.0; //6.2f
     blueMeshB.uploadGL(
             ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR, {0,0,-2}, {tesselatedRectSize,tesselatedRectSize},
                                                                  TrueColor2::BLUE), GL_LINES);
@@ -139,19 +138,17 @@ void RendererDistortion::drawEyeVDDC(gvr::Eye eye) {
 }
 
 void RendererDistortion::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen, bool occlusion) {
-
-    distortionManager.updateDistortionWithIdentity();
-
     const VertexBuffer& tmp=meshColorGreen ? greenMeshB : blueMeshB;
-    //mBasicGLPrograms->vc.drawX(viewM,projM,tmp);
+    mBasicGLPrograms->vc.drawX(viewM,projM,tmp);
 
     if(occlusion){
         mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);
     }
 
-    glDisable(GL_DEPTH_TEST);
+    // Dev proj texturing
+    /*glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
     /*{
         glProgramTexture->beforeDraw(glBufferTextured.vertexB,mTextureMonaLisa);
         glm::mat4 modelM=glm::translate(glm::mat4(1.0f),glm::vec3(0,0,-3));
@@ -159,7 +156,7 @@ void RendererDistortion::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM,
         glProgramTexture->draw(viewM*modelM,projM,0,glBufferTextured.nVertices,glBufferTextured.mMode);
         glProgramTexture->afterDraw();
     }*/
-    {
+    /*{
         constexpr float DEFAULT_CAMERA_Z=10.0f;
         constexpr auto DEFAULT_CAMERA_POSITION=glm::vec3(0,0,DEFAULT_CAMERA_Z);
         constexpr auto DEFAULT_CAMERA_LOOK_AT=glm::vec3(0,0,0);
@@ -186,7 +183,7 @@ void RendererDistortion::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM,
     }
 
 
-    mBasicGLPrograms->vc.drawX(viewM,projM,tmp);
+    mBasicGLPrograms->vc.drawX(viewM,projM,tmp);*/
 
     GLHelper::checkGlError("RendererDistortion::drawEye");
 }
