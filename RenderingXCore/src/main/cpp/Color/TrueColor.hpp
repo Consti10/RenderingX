@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <glm/vec4.hpp>
+#include <glm/vec3.hpp>
 #include <string>
 #include <sstream>
 
@@ -24,20 +25,18 @@ public:
     uint8_t a=0;
     TrueColor()= default;
     // Create from 8 bit values in the range [0..255]
-    TrueColor(const uint8_t r,const uint8_t g,const uint8_t b,const uint8_t a){
+    constexpr TrueColor(const uint8_t r,const uint8_t g,const uint8_t b,const uint8_t a){
         this->r=r;
         this->g=g;
         this->b=b;
         this->a=a;
     }
     // Create from a 32 bit value where each channel takes 8 bits
-    TrueColor(const uint32_t trueColorRGBA){
-        uint8_t tmp[4];
-        memcpy(&tmp,&trueColorRGBA,sizeof(uint32_t));
-        r=tmp[0];
-        g=tmp[1];
-        b=tmp[2];
-        a=tmp[3];
+    constexpr TrueColor(const uint32_t rgba){
+        r= static_cast<uint8_t>((rgba >> 24) & 0xFF);
+        g= static_cast<uint8_t>((rgba >> 16) & 0xFF);
+        b= static_cast<uint8_t>((rgba >> 8) & 0xFF);
+        a= static_cast<uint8_t>((rgba   ) & 0xFF);
     }
     // Comparing two TrueColor values is straight forward
     bool operator==(const TrueColor& y)const{
@@ -51,22 +50,26 @@ public:
      * Methods to convert from / to GL_RGBA32F
      * Which refers to 4 float values in the range [0..1].
      */
-    static TrueColor RGBA32F(const float r, const float g, const float b, const float a){
+    static constexpr TrueColor RGBA32F(const float r, const float g, const float b, const float a){
         return TrueColor((uint8_t)(r*255),(uint8_t)(g*255),(uint8_t)(b*255),(uint8_t)(a*255));
     }
-    static TrueColor RGBA32F(const glm::vec4& rgba){
+    static constexpr TrueColor RGBA32F(const glm::vec4& rgba){
         return RGBA32F(rgba.r,rgba.g,rgba.b,rgba.a);
     }
-    glm::vec4 RGBA32F()const{
+    // Automatic conversion to glm::vec4 and glm::vec3
+    operator glm::vec4()const{
         return glm::vec4(r/255.0f,g/255.0f,b/255.0f,a/255.0f);
-    };
+    }
+    operator glm::vec3()const{
+        return glm::vec3(r/255.0f,g/255.0f,b/255.0f);
+    }
 public:
     //In Androids JAVA code colors are stored in argb, not rgba
     static TrueColor ARGB(const int argb){
-        const auto alpha=(uint8_t )((argb>>24) & 0xFF);
-        const auto red=  (uint8_t )((argb>>16) & 0xFF);
-        const auto green=(uint8_t )((argb>>8) & 0xFF);
-        const auto blue= (uint8_t )((argb   ) & 0xFF);
+        const auto alpha=static_cast<uint8_t>((argb>>24) & 0xFF);
+        const auto red=  static_cast<uint8_t>((argb>>16) & 0xFF);
+        const auto green=static_cast<uint8_t>((argb>>8) & 0xFF);
+        const auto blue= static_cast<uint8_t>((argb   ) & 0xFF);
         return TrueColor(red,green,blue,alpha);
     }
     uint32_t toUInt32()const{
@@ -76,9 +79,9 @@ public:
         return tmp;
     }
     std::string asString()const{
-        glm::vec4 rgba= RGBA32F();
+        glm::vec4 rgba32F= *this;
         std::stringstream ss;
-        ss << "RGBA(" << rgba.r << "," << rgba.g << "," << rgba.b << "," << rgba.a << ")" << toUInt32();
+        ss << "RGBA32F(" << rgba32F.r << "," << rgba32F.g << "," << rgba32F.b << "," << rgba32F.a << ")" << toUInt32();
         return ss.str();
     }
 }__attribute__((packed));
@@ -107,6 +110,10 @@ namespace TrueColorTest{
         TrueColor color2;
     }__attribute__((packed));
     static_assert(sizeof(ExampleVertex)==2*TRUE_COLOR_SIZE_BYTES+2*sizeof(float));
+    static void examle(){
+        TrueColor c=TrueColor2::BLACK;
+        glm::vec4 x=c;
+    }
 }
 
 
