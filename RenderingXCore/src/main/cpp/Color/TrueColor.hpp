@@ -27,7 +27,7 @@ public:
     TrueColor(const uint8_t r,const uint8_t g,const uint8_t b,const uint8_t a){
         this->r=r;
         this->g=g;
-        this->b=a;
+        this->b=b;
         this->a=a;
     }
     // Create from a 32 bit value where each channel takes 8 bits
