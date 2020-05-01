@@ -297,17 +297,12 @@ JNI_METHOD(void, nativeOnDrawFrame)
 // Scale is value between 0..1 for example scale=0.9f
 JNI_METHOD(void, nativeScale)
 (JNIEnv *env, jobject obj,jfloat scale) {
-    //placeCamera((float) scale, (float) x, (float) y);
-    //modelM=glm::rotate(modelM,glm::radians(x), glm::vec3(0.0f, 1.0f, 0.0f));
     currentCameraScale*=scale;
 }
 JNI_METHOD(void, nativeMove)
 (JNIEnv *env, jobject obj,jfloat moveX,float moveY) {
     currentCameraMovement.x+=moveX*3;
     currentCameraMovement.y+=-moveY*3;
-    //placeCamera((float) scale, (float) x, (float) y);
-    // modelM=glm::rotate(modelM,glm::radians(x), glm::vec3(0.0f, 1.0f, 0.0f));
-    //eyeView=glm::translate(eyeView,)
 }
 JNI_METHOD(void, nativeSetRenderingMode)
 (JNIEnv *env, jobject obj,int renderingMode) {
