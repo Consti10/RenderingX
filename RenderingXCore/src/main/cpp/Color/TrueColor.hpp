@@ -50,11 +50,17 @@ public:
      * Methods to convert from / to GL_RGBA32F
      * Which refers to 4 float values in the range [0..1].
      */
-    static constexpr TrueColor RGBA32F(const float r, const float g, const float b, const float a){
+    /*static constexpr TrueColor RGBA32F(const float r, const float g, const float b, const float a){
         return TrueColor((uint8_t)(r*255),(uint8_t)(g*255),(uint8_t)(b*255),(uint8_t)(a*255));
-    }
-    static constexpr TrueColor RGBA32F(const glm::vec4& rgba){
+    }*/
+    /*static constexpr TrueColor RGBA32F(const glm::vec4& rgba){
         return RGBA32F(rgba.r,rgba.g,rgba.b,rgba.a);
+    }*/
+    constexpr TrueColor(const glm::vec4& colorRGBA32F){
+        r=(uint8_t)(colorRGBA32F.r*255);
+        g=(uint8_t)(colorRGBA32F.g*255);
+        b=(uint8_t)(colorRGBA32F.b*255);
+        a=(uint8_t)(colorRGBA32F.a*255);
     }
     // Automatic conversion to glm::vec4 and glm::vec3
     operator glm::vec4()const{
@@ -89,13 +95,16 @@ public:
 // unfortunately I cannot just make them members of TrueColor class because of the
 // definition of 'TrueColor' is not complete until the closing '}' Error. Should be fixed  with c++20
 namespace TrueColor2{
-    static const TrueColor BLACK=TrueColor::RGBA32F(0.0f, 0, 0, 1);
-    static const TrueColor TRANSPARENT=TrueColor::RGBA32F(0.0f, 0, 0, 0);
-    static const TrueColor WHITE=TrueColor::RGBA32F(1.0f, 1, 1, 1);
-    static const TrueColor RED=TrueColor::RGBA32F(1.0f, 0, 0, 1);
-    static const TrueColor GREEN=TrueColor::RGBA32F(0.0f, 1, 0, 1);
-    static const TrueColor BLUE=TrueColor::RGBA32F(0.0f, 0, 1, 1);
-    static const TrueColor YELLOW=TrueColor::RGBA32F(1.0f, 1.0f, 0.0f, 1);
+    static const TrueColor BLACK=TrueColor(glm::vec4(0.0f, 0, 0, 1));
+    static const TrueColor TRANSPARENT=TrueColor(glm::vec4(0.0f, 0, 0, 0));
+    static const TrueColor WHITE=TrueColor(glm::vec4(1.0f, 1, 1, 1));
+    static const TrueColor RED=TrueColor(glm::vec4(1.0f, 0, 0, 1));
+    static const TrueColor GREEN=TrueColor(glm::vec4(0.0f, 1, 0, 1));
+    static const TrueColor BLUE=TrueColor(glm::vec4(0.0f, 0, 1, 1));
+    static const TrueColor YELLOW=TrueColor(glm::vec4(1.0f, 1.0f, 0.0f, 1));
+    //
+    static const TrueColor ORANGE=TrueColor(glm::vec4(1,0.5f,0,1.0f));
+    static const TrueColor GREY=TrueColor(glm::vec4(0.5f,0.5f,0.5f,1.0f));
 }
 
 // Make sure the compiler does not add any padding AND
