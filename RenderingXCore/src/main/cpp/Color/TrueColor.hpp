@@ -50,12 +50,6 @@ public:
      * Methods to convert from / to GL_RGBA32F
      * Which refers to 4 float values in the range [0..1].
      */
-    /*static constexpr TrueColor RGBA32F(const float r, const float g, const float b, const float a){
-        return TrueColor((uint8_t)(r*255),(uint8_t)(g*255),(uint8_t)(b*255),(uint8_t)(a*255));
-    }*/
-    /*static constexpr TrueColor RGBA32F(const glm::vec4& rgba){
-        return RGBA32F(rgba.r,rgba.g,rgba.b,rgba.a);
-    }*/
     constexpr TrueColor(const glm::vec4& colorRGBA32F){
         r=(uint8_t)(colorRGBA32F.r*255);
         g=(uint8_t)(colorRGBA32F.g*255);
