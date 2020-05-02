@@ -23,6 +23,12 @@ private:
     JNIEnv* env;
     jclass jclass1;
     jobject jobject1;
+    /**
+     * @tparam T a generic cpp data type (like int, float)
+     * @param name the name of the member object instance in the java class
+     * @return On success ( name found and data type matches) return a valid ndk handle
+     * On failure, return nullptr but clear java exception
+     */
     template <class T> jfieldID getFieldId(const char* name){
         const char* ndkTypeName=cppTypeToNdkName<T>::value;
         jfieldID field=env->GetFieldID(jclass1,name,ndkTypeName);

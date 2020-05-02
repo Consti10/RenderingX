@@ -15,6 +15,7 @@
 // Only dependencies are standard libraries and the android java NDK
 //
 namespace NDKArrayHelper{
+
     // workaround from https://en.cppreference.com/w/cpp/language/if#Constexpr_If
     // To have compile time type safety
     template <typename T,typename T2>
@@ -23,32 +24,35 @@ namespace NDKArrayHelper{
     * Returns a std::vector whose size depends on the size of the java array
     * and which owns the underlying memory. Most generic and memory safe.
     * Function has compile time type safety, see example() below
+     * @param TCpp basic cpp type like int, float inside a std::vector
+     * @param TJava java array like jintArray, jfloatArray - has to match the cpp type. For example,
+     * T==int => T2==jintArray
     */
-    template <class T,class T2>
-    static std::vector<T> DynamicSizeArray(JNIEnv *env,T2 array){
-        const size_t size=(size_t)env->GetArrayLength(array);
-        std::vector<T> ret(size);
-        if constexpr (std::is_same_v<T,float> && std::is_same_v<T2,jfloatArray>){
-            auto arrayP=env->GetFloatArrayElements(array, nullptr);
-            std::memcpy(ret.data(),arrayP,size*sizeof(T));
-            env->ReleaseFloatArrayElements(array,arrayP,0);
-        }else if constexpr (std::is_same_v<T,int> && std::is_same_v<T2,jintArray>){
-            auto arrayP=env->GetIntArrayElements(array, nullptr);
-            std::memcpy(ret.data(),arrayP,size*sizeof(T));
-            env->ReleaseIntArrayElements(array,arrayP,0);
-        }else if constexpr (std::is_same_v<T,bool>  && std::is_same_v<T2,jbooleanArray>){
-            auto arrayP=env->GetBooleanArrayElements(array, nullptr);
-            std::memcpy(ret.data(),arrayP,size*sizeof(T));
-            env->ReleaseBooleanArrayElements(array,arrayP,0);
-        }else if constexpr (std::is_same_v<T,double> && std::is_same_v<T2,jdoubleArray >){
-            auto arrayP=env->GetDoubleArrayElements(array, nullptr);
-            std::memcpy(ret.data(),arrayP,size*sizeof(T));
-            env->ReleaseDoubleArrayElements(array,arrayP,0);
+    template <class TCpp,class TJava>
+    static std::vector<TCpp> DynamicSizeArray(JNIEnv *env, TJava jArray){
+        const size_t size=(size_t)env->GetArrayLength(jArray);
+        std::vector<TCpp> ret(size);
+        if constexpr (std::is_same_v<TCpp,float> && std::is_same_v<TJava,jfloatArray>){
+            auto arrayP=env->GetFloatArrayElements(jArray, nullptr);
+            std::memcpy(ret.data(),arrayP,size*sizeof(TCpp));
+            env->ReleaseFloatArrayElements(jArray, arrayP, 0);
+        }else if constexpr (std::is_same_v<TCpp,int> && std::is_same_v<TJava,jintArray>){
+            auto arrayP=env->GetIntArrayElements(jArray, nullptr);
+            std::memcpy(ret.data(),arrayP,size*sizeof(TCpp));
+            env->ReleaseIntArrayElements(jArray, arrayP, 0);
+        }else if constexpr (std::is_same_v<TCpp,bool> && std::is_same_v<TJava,jbooleanArray>){
+            auto arrayP=env->GetBooleanArrayElements(jArray, nullptr);
+            std::memcpy(ret.data(),arrayP,size*sizeof(TCpp));
+            env->ReleaseBooleanArrayElements(jArray, arrayP, 0);
+        }else if constexpr (std::is_same_v<TCpp,double> && std::is_same_v<TJava,jdoubleArray >){
+            auto arrayP=env->GetDoubleArrayElements(jArray, nullptr);
+            std::memcpy(ret.data(),arrayP,size*sizeof(TCpp));
+            env->ReleaseDoubleArrayElements(jArray, arrayP, 0);
         }else{
             // a) Make sure you use the right combination.
             // For example, if you want a std::vector<float> pass a jfloatArray as second parameter
             // b) Make sure you use a supported type. (e.g. one that appears in the above if - else)
-            static_assert(always_false<T,T2>::value, "Unsupported Combination / Type");
+            static_assert(always_false<TCpp,TJava>::value, "Unsupported Combination / Type");
         }
         return ret;
     }

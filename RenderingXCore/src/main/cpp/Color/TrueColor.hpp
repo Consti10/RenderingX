@@ -17,6 +17,8 @@
 // 8 bits per channel * 4 channels = 32 bit / 4 bytes total
 static constexpr const auto TRUE_COLOR_SIZE_BYTES=4;
 // It is possible to upload a TrueColor instance to OpenGL buffers directly - see end of file
+//using X_RGBA32F=glm::vec4();
+
 class TrueColor {
 public:
     uint8_t r=0;
@@ -96,7 +98,6 @@ namespace TrueColor2{
     static const TrueColor GREEN=TrueColor(glm::vec4(0.0f, 1, 0, 1));
     static const TrueColor BLUE=TrueColor(glm::vec4(0.0f, 0, 1, 1));
     static const TrueColor YELLOW=TrueColor(glm::vec4(1.0f, 1.0f, 0.0f, 1));
-    //
     static const TrueColor ORANGE=TrueColor(glm::vec4(1,0.5f,0,1.0f));
     static const TrueColor GREY=TrueColor(glm::vec4(0.5f,0.5f,0.5f,1.0f));
 }
