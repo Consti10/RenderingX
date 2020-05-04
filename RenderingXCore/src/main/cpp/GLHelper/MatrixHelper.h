@@ -87,7 +87,7 @@ static glm::mat4 removeRotationAroundSpecificAxes(const glm::mat4 mat,const bool
         euler.z=0;
     }
     glm::quat quat=glm::quat(euler);
-    glm::mat4 RotationMatrix = glm::toMat4(quat);
+    glm::mat4 RotationMatrix = glm::mat4_cast(quat);
     return mat*RotationMatrix;
 }
 
