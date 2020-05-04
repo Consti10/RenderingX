@@ -54,10 +54,10 @@ public:
      * Which refers to 4 float values in the range [0..1].
      */
     constexpr TrueColor(const glm::vec4& colorRGBA32F){
-        r=(uint8_t)(colorRGBA32F.r*255);
-        g=(uint8_t)(colorRGBA32F.g*255);
-        b=(uint8_t)(colorRGBA32F.b*255);
-        a=(uint8_t)(colorRGBA32F.a*255);
+        r=(uint8_t)(colorRGBA32F.x*255); //read of member 'r' not allowed in constant expression
+        g=(uint8_t)(colorRGBA32F.y*255);// .g
+        b=(uint8_t)(colorRGBA32F.z*255);// .b
+        a=(uint8_t)(colorRGBA32F.w*255);// .a
     }
     // Automatic conversion to glm::vec4 and glm::vec3
     //cannot use constexpr here
@@ -94,24 +94,15 @@ public:
 // unfortunately I cannot just make them members of TrueColor class because of the
 // definition of 'TrueColor' is not complete until the closing '}' Error. Should be fixed  with c++20
 namespace TrueColor2{
-    // unfortunately glm::vec4 constructor is not constexpr. So this one is just for
-    // convenience for declaring these constants
-    static constexpr TrueColor FROM_ARRAY(const std::array<float,4>& colorRGBA32F){
-        return {
-                (uint8_t)(colorRGBA32F[0]*255),
-                (uint8_t)(colorRGBA32F[1]*255),
-                (uint8_t)(colorRGBA32F[2]*255),
-                (uint8_t)(colorRGBA32F[3]*255)};
-    }
-    static constexpr const TrueColor BLACK=FROM_ARRAY({0.0f, 0, 0, 1});
-    static constexpr const TrueColor TRANSPARENT=FROM_ARRAY({0.0f, 0, 0, 0});
-    static constexpr const TrueColor WHITE=FROM_ARRAY({1.0f, 1, 1, 1});
-    static constexpr const TrueColor RED=FROM_ARRAY({1.0f, 0, 0, 1});
-    static constexpr const TrueColor GREEN=FROM_ARRAY({0.0f, 1, 0, 1});
-    static constexpr const TrueColor BLUE=FROM_ARRAY({0.0f, 0, 1, 1});
-    static constexpr const TrueColor YELLOW=FROM_ARRAY({1.0f, 1.0f, 0.0f, 1});
-    static constexpr const TrueColor ORANGE=FROM_ARRAY({1,0.5f,0,1.0f});
-    static constexpr const TrueColor GREY=FROM_ARRAY({0.5f,0.5f,0.5f,1.0f});
+    static constexpr const TrueColor BLACK=TrueColor(glm::vec4{0.0f, 0, 0, 1});
+    static constexpr const TrueColor TRANSPARENT=TrueColor(glm::vec4{0.0f, 0, 0, 0});
+    static constexpr const TrueColor WHITE=TrueColor(glm::vec4{1.0f, 1, 1, 1});
+    static constexpr const TrueColor RED=TrueColor(glm::vec4{1.0f, 0, 0, 1});
+    static constexpr const TrueColor GREEN=TrueColor(glm::vec4{0.0f, 1, 0, 1});
+    static constexpr const TrueColor BLUE=TrueColor(glm::vec4{0.0f, 0, 1, 1});
+    static constexpr const TrueColor YELLOW=TrueColor(glm::vec4{1.0f, 1.0f, 0.0f, 1});
+    static constexpr const TrueColor ORANGE=TrueColor(glm::vec4{1,0.5f,0,1.0f});
+    static constexpr const TrueColor GREY=TrueColor(glm::vec4{0.5f,0.5f,0.5f,1.0f});
 }
 
 // Make sure the compiler does not add any padding AND
