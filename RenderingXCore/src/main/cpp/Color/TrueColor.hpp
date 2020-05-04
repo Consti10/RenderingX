@@ -11,7 +11,7 @@
 #include <glm/vec3.hpp>
 #include <string>
 #include <sstream>
-#include <array>
+#include <cstring>
 
 
 // True Color means 8 bit per channel . OpenGL Uses RGBA by default, so I also use that layout for the TrueColor class
@@ -26,21 +26,22 @@ public:
     uint8_t b=0;
     uint8_t a=0;
     TrueColor()= default;
-    // Create from 8 bit values in the range [0..255]
-    constexpr TrueColor(const uint8_t r,const uint8_t g,const uint8_t b,const uint8_t a){
-        this->r=r;
-        this->g=g;
-        this->b=b;
-        this->a=a;
-    }
-    // Create from a 32 bit value where each channel takes 8 bits
-    constexpr TrueColor(const uint32_t rgba){
-        r= static_cast<uint8_t>((rgba >> 24) & 0xFF);
-        g= static_cast<uint8_t>((rgba >> 16) & 0xFF);
-        b= static_cast<uint8_t>((rgba >> 8) & 0xFF);
-        a= static_cast<uint8_t>((rgba   ) & 0xFF);
-    }
-    // Comparing two TrueColor values is straight forward
+    /**
+     * Create from 8 bit values in the range [0..255]
+     */
+    constexpr TrueColor(const uint8_t r2,const uint8_t g2,const uint8_t b2,const uint8_t a2):
+    r(r2),g(g2),b(b2),a(a2){}
+    /**
+     *  Create from a 32 bit RGBA value where each channel takes 8 bits
+     */
+    constexpr TrueColor(const uint32_t rgba):
+        r(static_cast<uint8_t>((rgba >> 24) & 0xFF)),
+        g(static_cast<uint8_t>((rgba >> 16) & 0xFF)),
+        b(static_cast<uint8_t>((rgba >> 8) & 0xFF)),
+        a(static_cast<uint8_t>((rgba   ) & 0xFF)){}
+    /**
+     * Comparing two TrueColor values is straight forward
+     */
     constexpr bool operator==(const TrueColor& y)const{
         return (r==y.r && g==y.g && b==y.b && a==y.a);
     }
@@ -58,16 +59,19 @@ public:
         b=(uint8_t)(colorRGBA32F.z*255);// .b
         a=(uint8_t)(colorRGBA32F.w*255);// .a
     }
-    // Automatic conversion to glm::vec4 and glm::vec3
+    /**
+     * Automatic conversion to glm::vec4 and glm::vec3
+     */
     constexpr operator glm::vec4()const{
         return glm::vec4(r/255.0f,g/255.0f,b/255.0f,a/255.0f);
     }
     constexpr operator glm::vec3()const{
         return glm::vec3(r/255.0f,g/255.0f,b/255.0f);
     }
-public:
-    //In Androids JAVA code colors are stored in argb, not rgba
-    static TrueColor ARGB(const int argb){
+    /**
+     * In Androids JAVA code colors are stored in argb, not rgba
+     */
+    static constexpr TrueColor ARGB(const int argb){
         const auto alpha=static_cast<uint8_t>((argb>>24) & 0xFF);
         const auto red=  static_cast<uint8_t>((argb>>16) & 0xFF);
         const auto green=static_cast<uint8_t>((argb>>8) & 0xFF);
@@ -100,6 +104,11 @@ namespace TrueColor2{
     static constexpr const TrueColor YELLOW=TrueColor(glm::vec4{1.0f, 1.0f, 0.0f, 1});
     static constexpr const TrueColor ORANGE=TrueColor(glm::vec4{1,0.5f,0,1.0f});
     static constexpr const TrueColor GREY=TrueColor(glm::vec4{0.5f,0.5f,0.5f,1.0f});
+
+    //error: conversion function must be a non-static member function
+    //static constexpr operator TrueColor(const glm::vec4 colorRGBA32F){
+    //    return TrueColor(0);
+    //}
 }
 
 // Make sure the compiler does not add any padding AND
