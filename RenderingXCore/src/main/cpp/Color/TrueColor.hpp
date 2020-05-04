@@ -11,6 +11,7 @@
 #include <glm/vec3.hpp>
 #include <string>
 #include <sstream>
+#include <array>
 
 
 // True Color means 8 bit per channel . OpenGL Uses RGBA by default, so I also use that layout for the TrueColor class
@@ -93,15 +94,24 @@ public:
 // unfortunately I cannot just make them members of TrueColor class because of the
 // definition of 'TrueColor' is not complete until the closing '}' Error. Should be fixed  with c++20
 namespace TrueColor2{
-    static const TrueColor BLACK=TrueColor(glm::vec4(0.0f, 0, 0, 1));
-    static const TrueColor TRANSPARENT=TrueColor(glm::vec4(0.0f, 0, 0, 0));
-    static const TrueColor WHITE=TrueColor(glm::vec4(1.0f, 1, 1, 1));
-    static const TrueColor RED=TrueColor(glm::vec4(1.0f, 0, 0, 1));
-    static const TrueColor GREEN=TrueColor(glm::vec4(0.0f, 1, 0, 1));
-    static const TrueColor BLUE=TrueColor(glm::vec4(0.0f, 0, 1, 1));
-    static const TrueColor YELLOW=TrueColor(glm::vec4(1.0f, 1.0f, 0.0f, 1));
-    static const TrueColor ORANGE=TrueColor(glm::vec4(1,0.5f,0,1.0f));
-    static const TrueColor GREY=TrueColor(glm::vec4(0.5f,0.5f,0.5f,1.0f));
+    // unfortunately glm::vec4 constructor is not constexpr. So this one is just for
+    // convenience for declaring these constants
+    static constexpr TrueColor FROM_ARRAY(const std::array<float,4>& colorRGBA32F){
+        return {
+                (uint8_t)(colorRGBA32F[0]*255),
+                (uint8_t)(colorRGBA32F[1]*255),
+                (uint8_t)(colorRGBA32F[2]*255),
+                (uint8_t)(colorRGBA32F[3]*255)};
+    }
+    static constexpr const TrueColor BLACK=FROM_ARRAY({0.0f, 0, 0, 1});
+    static constexpr const TrueColor TRANSPARENT=FROM_ARRAY({0.0f, 0, 0, 0});
+    static constexpr const TrueColor WHITE=FROM_ARRAY({1.0f, 1, 1, 1});
+    static constexpr const TrueColor RED=FROM_ARRAY({1.0f, 0, 0, 1});
+    static constexpr const TrueColor GREEN=FROM_ARRAY({0.0f, 1, 0, 1});
+    static constexpr const TrueColor BLUE=FROM_ARRAY({0.0f, 0, 1, 1});
+    static constexpr const TrueColor YELLOW=FROM_ARRAY({1.0f, 1.0f, 0.0f, 1});
+    static constexpr const TrueColor ORANGE=FROM_ARRAY({1,0.5f,0,1.0f});
+    static constexpr const TrueColor GREY=FROM_ARRAY({0.5f,0.5f,0.5f,1.0f});
 }
 
 // Make sure the compiler does not add any padding AND
