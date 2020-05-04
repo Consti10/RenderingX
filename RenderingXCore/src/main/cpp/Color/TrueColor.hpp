@@ -18,7 +18,6 @@
 // 8 bits per channel * 4 channels = 32 bit / 4 bytes total
 static constexpr const auto TRUE_COLOR_SIZE_BYTES=4;
 // It is possible to upload a TrueColor instance to OpenGL buffers directly - see end of file
-//using X_RGBA32F=glm::vec4();
 
 class TrueColor {
 public:
@@ -48,10 +47,10 @@ public:
     constexpr bool operator!=(const TrueColor& y)const{
         return !(*this==y);
     }
-public:
     /**
      * Methods to convert from / to GL_RGBA32F
      * Which refers to 4 float values in the range [0..1].
+     * glm::vec4 / vec3 are RGBA32F by default.
      */
     constexpr TrueColor(const glm::vec4& colorRGBA32F){
         r=(uint8_t)(colorRGBA32F.x*255); //read of member 'r' not allowed in constant expression
@@ -60,12 +59,10 @@ public:
         a=(uint8_t)(colorRGBA32F.w*255);// .a
     }
     // Automatic conversion to glm::vec4 and glm::vec3
-    //cannot use constexpr here
-    //error: constexpr function never produces a constant expression [-Winvalid-constexpr]
-    operator glm::vec4()const{
+    constexpr operator glm::vec4()const{
         return glm::vec4(r/255.0f,g/255.0f,b/255.0f,a/255.0f);
     }
-    operator glm::vec3()const{
+    constexpr operator glm::vec3()const{
         return glm::vec3(r/255.0f,g/255.0f,b/255.0f);
     }
 public:
@@ -80,7 +77,7 @@ public:
     uint32_t toUInt32()const{
         uint32_t tmp;
         auto tmp2={r,g,b,a};
-        memcpy(&tmp,&tmp2,sizeof(uint32_t));
+        std::memcpy(&tmp,&tmp2,sizeof(uint32_t));
         return tmp;
     }
     std::string asString()const{
