@@ -41,10 +41,10 @@ public:
         a= static_cast<uint8_t>((rgba   ) & 0xFF);
     }
     // Comparing two TrueColor values is straight forward
-    bool operator==(const TrueColor& y)const{
+    constexpr bool operator==(const TrueColor& y)const{
         return (r==y.r && g==y.g && b==y.b && a==y.a);
     }
-    bool operator!=(const TrueColor& y)const{
+    constexpr bool operator!=(const TrueColor& y)const{
         return !(*this==y);
     }
 public:
@@ -59,6 +59,8 @@ public:
         a=(uint8_t)(colorRGBA32F.a*255);
     }
     // Automatic conversion to glm::vec4 and glm::vec3
+    //cannot use constexpr here
+    //error: constexpr function never produces a constant expression [-Winvalid-constexpr]
     operator glm::vec4()const{
         return glm::vec4(r/255.0f,g/255.0f,b/255.0f,a/255.0f);
     }
