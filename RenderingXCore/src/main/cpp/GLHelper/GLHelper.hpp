@@ -82,10 +82,9 @@ namespace GLHelper{
     }
 };
 // some OpenGL calls return a -1 on error, else a positive value (GLuint)
-
+// these functions print a warning on -1 and return GLuint
 // uniform might just be optimized out
 // https://www.khronos.org/opengl/wiki/GLSL_:_common_mistakes ... will optimize your uniform out.
-
 static const GLuint _glGetUniformLocation(GLuint program, const GLchar *name){
     GLint location=glGetUniformLocation(program,name);
     if(location<0){
