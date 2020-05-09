@@ -1,6 +1,5 @@
 
 #include "GLProgramVC.h"
-#include "Macros.h"
 
 
 GLProgramVC::GLProgramVC(const VDDCManager* distortionManager, bool coordinates2D):

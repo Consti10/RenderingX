@@ -1,6 +1,5 @@
 #include "GLProgramText.h"
 #include "TextAssetsHelper.hpp"
-#include "Macros.h"
 #include <TrueColor.hpp>
 #include <NDKHelper.hpp>
 #include <android/asset_manager.h>

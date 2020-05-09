@@ -3,7 +3,6 @@
 //
 
 #include "GLProgramLine.h"
-#include "Macros.h"
 
 GLProgramLine::GLProgramLine(const VDDCManager* distortionManager):
 distortionManager(distortionManager) {

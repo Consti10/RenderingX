@@ -2,7 +2,6 @@
 // Created by Consti10 on 31/10/2019.
 //
 
-#include <Macros.h>
 #include "VDDCManager.h"
 
 VDDCManager::UndistortionHandles*

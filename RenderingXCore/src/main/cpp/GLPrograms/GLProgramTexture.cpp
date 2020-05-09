@@ -1,7 +1,6 @@
 
 #include <NDKHelper.hpp>
 #include "GLProgramTexture.h"
-#include "Macros.h"
 
 constexpr auto TAG="GLRenderTexture(-External)";
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
