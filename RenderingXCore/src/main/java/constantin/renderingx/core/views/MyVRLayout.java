@@ -49,23 +49,19 @@ public class MyVRLayout extends FrameLayout implements LifecycleObserver {
 
     public MyVRLayout(Context context) {
         super(context);
-        init(false);
-        ((AppCompatActivity)context).getLifecycle().addObserver(this);
+        init((AppCompatActivity)context,false);
     }
 
     public MyVRLayout(Context context, AttributeSet attrs) {
         super(context,attrs);
-        init(false);
-        ((AppCompatActivity)context).getLifecycle().addObserver(this);
+        init((AppCompatActivity)context,false);
     }
 
-    private void init(final boolean createDisplaySynchronizer){
+    private void init(final AppCompatActivity activity,final boolean createDisplaySynchronizer){
         LayoutInflater.from(getContext()).inflate(R.layout.my_vr_layout, this, true);
-        final Activity activity=(Activity)getContext();
         final Display display=activity.getWindowManager().getDefaultDisplay();
         displaySynchronizer=null;
         if(createDisplaySynchronizer){
-            final Context context=activity;
             displaySynchronizer=new DisplaySynchronizer(activity,display);
         }
         gvrApi=new GvrApi(getContext(),displaySynchronizer);
@@ -111,6 +107,7 @@ public class MyVRLayout extends FrameLayout implements LifecycleObserver {
                gvrApi.recenterTracking();
            }
        });
+       activity.getLifecycle().addObserver(this);
     }
 
     //Disable / enable the UI overlay with settings button and seperator line
