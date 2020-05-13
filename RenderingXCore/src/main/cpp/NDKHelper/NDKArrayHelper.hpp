@@ -32,22 +32,14 @@ namespace NDKArrayHelper{
     static std::vector<TCpp> DynamicSizeArray(JNIEnv *env, TJava jArray){
         const size_t size=(size_t)env->GetArrayLength(jArray);
         std::vector<TCpp> ret(size);
-        if constexpr (std::is_same_v<TCpp,float> && std::is_same_v<TJava,jfloatArray>){
-            auto arrayP=env->GetFloatArrayElements(jArray, nullptr);
-            std::memcpy(ret.data(),arrayP,size*sizeof(TCpp));
-            env->ReleaseFloatArrayElements(jArray, arrayP, 0);
+        if constexpr (std::is_same_v<TCpp,bool> && std::is_same_v<TJava,jbooleanArray>){
+            env->GetBooleanArrayRegion(jArray,0,size,ret.data());
+        }else if constexpr (std::is_same_v<TCpp,float> && std::is_same_v<TJava,jfloatArray>){
+            env->GetFloatArrayRegion(jArray,0,size,ret.data());
         }else if constexpr (std::is_same_v<TCpp,int> && std::is_same_v<TJava,jintArray>){
-            auto arrayP=env->GetIntArrayElements(jArray, nullptr);
-            std::memcpy(ret.data(),arrayP,size*sizeof(TCpp));
-            env->ReleaseIntArrayElements(jArray, arrayP, 0);
-        }else if constexpr (std::is_same_v<TCpp,bool> && std::is_same_v<TJava,jbooleanArray>){
-            auto arrayP=env->GetBooleanArrayElements(jArray, nullptr);
-            std::memcpy(ret.data(),arrayP,size*sizeof(TCpp));
-            env->ReleaseBooleanArrayElements(jArray, arrayP, 0);
+            env->GetIntArrayRegion(jArray,0,size,ret.data());
         }else if constexpr (std::is_same_v<TCpp,double> && std::is_same_v<TJava,jdoubleArray >){
-            auto arrayP=env->GetDoubleArrayElements(jArray, nullptr);
-            std::memcpy(ret.data(),arrayP,size*sizeof(TCpp));
-            env->ReleaseDoubleArrayElements(jArray, arrayP, 0);
+            env->GetDoubleArrayRegion(jArray,0,size,ret.data());
         }else{
             // a) Make sure you use the right combination.
             // For example, if you want a std::vector<float> pass a jfloatArray as second parameter
@@ -73,10 +65,10 @@ namespace NDKArrayHelper{
     // X Compiles, but Y does not (which is exactly what we want)
     static void example(){
         JNIEnv* env= nullptr;
-        jfloatArray array= nullptr;
-        std::vector<float> X=DynamicSizeArray<float>(env,array);
+        jfloatArray jFloatArray= nullptr;
+        std::vector<float> X=DynamicSizeArray<float>(env,jFloatArray);
         // This one does not compile - we cannot get a int array from a java float array
-        //std::vector<int> Y=DynamicSizeArray<int>(env,array);
+        //std::vector<int> Y=DynamicSizeArray<int>(env,jFloatArray);
     }
 }
 
