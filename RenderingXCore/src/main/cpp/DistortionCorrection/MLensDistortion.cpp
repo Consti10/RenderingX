@@ -10,7 +10,7 @@
 float MLensDistortion::GetYEyeOffsetMeters(const int vertical_alignment,
                                            const float tray_to_lens_distance,
                                            const float screen_height_meters) {
-    LOGD("Vertical alignment %d | tray_to_lens_distance %f",vertical_alignment,tray_to_lens_distance);
+    LOG::D("Vertical alignment %d | tray_to_lens_distance %f",vertical_alignment,tray_to_lens_distance);
 
     switch (vertical_alignment) {
         case 1:
@@ -66,7 +66,7 @@ std::array<float, 4> MLensDistortion::CalculateFov(
     //return {ret[1],ret[0],ret[3],ret[2]};
     std::stringstream ss;
     ss<<"FOV (L,R,B,T) ("<<ret[0]<<","<<ret[1]<<","<<ret[2]<<","<<ret[3]<<")";
-    LOGD("%s",ss.str().c_str());
+    LOG::D("%s",ss.str().c_str());
     //return {50,30,40,40};
     return ret;
 }

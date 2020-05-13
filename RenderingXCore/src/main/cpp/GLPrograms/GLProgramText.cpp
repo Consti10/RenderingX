@@ -7,7 +7,7 @@
 #include <vector>
 
 constexpr auto TAG="GLRenderText";
-#define LOGD1(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
 
 constexpr const int CHAR_START = 0;           // First Character (ASCII Code)
 constexpr const int CHAR_END = 256;            // Last Character (ASCII Code)
@@ -92,7 +92,7 @@ void GLProgramText::updateOutline(const glm::vec3 &outlineColor, const float out
 
 void GLProgramText::draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, const int verticesOffset, const int numberIndices) const {
     if(verticesOffset+numberIndices>INDEX_BUFFER_SIZE){
-        LOGD1("Error n vert:%d n Indices:%d",numberIndices,verticesOffset);
+        LOGD("Error n vert:%d n Indices:%d",numberIndices,verticesOffset);
     }
     glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
     glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
@@ -133,7 +133,7 @@ int GLProgramText::convertStringToRenderingData(const float X, const float Y, co
         // Calculate the uv parts
         const int row = index / 16;
         const int col = index % 16;
-        //LOGD1("Char: %c | index: %d | row: %d | col: %d",c,index,row,col);
+        //LOGD("Char: %c | index: %d | row: %d | col: %d",c,index,row,col);
 
         const float u = col * CELL_WIDTH_U;
         const float u2 = u + CELL_WIDTH_U;
@@ -225,7 +225,7 @@ void  GLProgramText::loadTextRenderingData(JNIEnv *env, jobject androidContext,
 
 float GLProgramText::getFontWidthSafe(int idx) {
     if(idx >= CHAR_CNT || idx<0){
-        LOGD1("Error Text: Array out of bounds %d", idx);
+        LOGD("Error Text: Array out of bounds %d", idx);
         return 0;
     }
     return FONTS_WIDTHS_U[idx];

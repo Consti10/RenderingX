@@ -72,9 +72,9 @@ void GLRSuperSyncExample::onSurfaceChanged(int width, int height) {
 
 void GLRSuperSyncExample::enterSuperSyncLoop(JNIEnv *env, jobject obj,int exclusiveVRCore) {
     setAffinity(exclusiveVRCore);
-    LOGD("entering superSync loop. GLThread will be blocked");
+    LOG::D("entering superSync loop. GLThread will be blocked");
     mFBRManager->enterDirectRenderingLoop(env);
-    LOGD("exited superSync loop. GLThread unblocked");
+    LOG::D("exited superSync loop. GLThread unblocked");
 }
 
 void GLRSuperSyncExample::exitSuperSyncLoop() {
@@ -161,12 +161,12 @@ JNI_METHOD(void, nativeOnSurfaceChanged)
 }
 JNI_METHOD(void, nativeEnterSuperSyncLoop)
 (JNIEnv *env, jobject obj, jlong glRendererStereo,jint exclusiveVRCore) {
-    LOGD("nativeEnterSuperSyncLoop()");
+    LOG::D("nativeEnterSuperSyncLoop()");
     native(glRendererStereo)->enterSuperSyncLoop(env,obj,(int)exclusiveVRCore);
 }
 JNI_METHOD(void, nativeExitSuperSyncLoop)
 (JNIEnv *env, jobject obj, jlong glRendererStereo) {
-    LOGD("nativeExitSuperSyncLoop()");
+    LOG::D("nativeExitSuperSyncLoop()");
     native(glRendererStereo)->exitSuperSyncLoop();
 }
 JNI_METHOD(void, nativeDoFrame)

@@ -17,7 +17,7 @@ void DistortionEngine::setGvrApi(gvr::GvrApi *gvrApi) {
 void DistortionEngine::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     this->screenWidthP=mDP.screen_width_pixels;
     this->screenHeightP=mDP.screen_height_pixels;
-    LOGD("%s",MyVrHeadsetParamsAsString(mDP).c_str());
+    LOG::D("%s",MyVrHeadsetParamsAsString(mDP).c_str());
     mDistortion=PolynomialRadialDistortion(mDP.radial_distortion_params);
 
     const auto GetYEyeOffsetMeters= MLensDistortion::GetYEyeOffsetMeters(mDP.vertical_alignment,
@@ -40,9 +40,9 @@ void DistortionEngine::updateHeadsetParams(const MVrHeadsetParams &mDP) {
                                                      mDP.inter_lens_distance, fovRight,
                                                      mDP.screen_width_meters, mDP.screen_height_meters,
                                                      screen_params[1], texture_params[1]);
-    LOGD("%s",mDistortion.toString().c_str());
-    LOGD("Left Eye: %s",MLensDistortion::ViewportParamsAsString(screen_params[0],texture_params[0]).c_str());
-    LOGD("Right Eye: %s", MLensDistortion::ViewportParamsAsString(screen_params[1],texture_params[1]).c_str());
+    LOG::D("%s",mDistortion.toString().c_str());
+    LOG::D("Left Eye: %s",MLensDistortion::ViewportParamsAsString(screen_params[0],texture_params[0]).c_str());
+    LOG::D("Right Eye: %s", MLensDistortion::ViewportParamsAsString(screen_params[1],texture_params[1]).c_str());
 
     //TODO calculate right maxRadSq
     /*const float maxX=1*texture_params[0].width+texture_params[0].x_eye_offset;
@@ -62,7 +62,7 @@ void DistortionEngine::updateHeadsetParams(const MVrHeadsetParams &mDP) {
             maxRangeInverse=i;
         }
     }
-    LOGD("Max value used for getApproximateInverseDistortion() %f",maxRangeInverse);
+    LOG::D("Max value used for getApproximateInverseDistortion() %f",maxRangeInverse);
     mInverse=PolynomialRadialInverse(mDistortion, maxRangeInverse, VDDCManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
     MDebug::log("Inverse is:"+mInverse.toStringX());
 

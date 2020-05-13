@@ -88,7 +88,7 @@ namespace GLHelper{
 static const GLuint _glGetUniformLocation(GLuint program, const GLchar *name){
     GLint location=glGetUniformLocation(program,name);
     if(location<0){
-        LOGD("Error glGetUniformLocation %s. The Uniform is either missing in the Shader or optimized out.",name);
+        LOG::D("Error glGetUniformLocation %s. The Uniform is either missing in the Shader or optimized out.",name);
     }
     return (GLuint) location;
 }
@@ -96,7 +96,7 @@ static const GLuint _glGetUniformLocation(GLuint program, const GLchar *name){
 static const GLuint _glGetAttribLocation(GLuint program, const GLchar *name){
     GLint location=glGetAttribLocation(program,name);
     if(location<0){
-        LOGD("Error glGetAttribLocation %s. The Attrib is either missing in the Shader or optimized out.",name);
+        LOG::D("Error glGetAttribLocation %s. The Attrib is either missing in the Shader or optimized out.",name);
     }
     return (GLuint) location;
 }

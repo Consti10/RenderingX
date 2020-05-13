@@ -33,7 +33,7 @@ private:
         const char* ndkTypeName=cppTypeToNdkName<T>::value;
         jfieldID field=env->GetFieldID(jclass1,name,ndkTypeName);
         if(field==nullptr){
-            LOGD("cannot find member %s of type %s",name,ndkTypeName);
+            LOG::D("cannot find member %s of type %s",name,ndkTypeName);
             env->ExceptionClear();
             return nullptr;
         }

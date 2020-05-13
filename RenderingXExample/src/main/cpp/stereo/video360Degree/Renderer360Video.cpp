@@ -157,7 +157,7 @@ void Renderer360Video::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM, b
             mGLProgramTextureExt->drawX(mVideoTexture,viewM*modelMatrix, projM, mSphereDualFisheye2);
         }break;
         default:
-            LOGD("Unknown sphere mode");
+            LOG::D("Unknown sphere mode");
     }
     if(occlusion){
         mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);
