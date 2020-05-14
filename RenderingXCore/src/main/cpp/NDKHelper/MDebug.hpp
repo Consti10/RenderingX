@@ -42,17 +42,12 @@
 
 class LOG2{
 public:
-    LOG2(const std::string& TAG="NoTag"):TAG(TAG) {
-        uncaught = std::uncaught_exceptions();
-    }
+    LOG2(const std::string& TAG="NoTag"):TAG(TAG) {}
     ~LOG2() {
-        if (uncaught >= std::uncaught_exceptions()) {
-            logBigMessage(stream.str());
-        }
+        logBigMessage(stream.str());
     }
 private:
     std::stringstream stream;
-    int uncaught;
     const std::string TAG;
     // taken from https://android.googlesource.com/platform/system/core/+/android-2.1_r1/liblog/logd_write.c
     static constexpr const auto ANDROID_LOG_BUFF_SIZE=1024;

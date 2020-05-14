@@ -14,7 +14,7 @@
 
 namespace GLHelper{
     static LOG2 MLOG(){
-        return LOG2("GLHELPER");
+        return LOG2("GLHelper");
     }
     inline static const std::string TAG="GLHelper";
     static const char *GlErrorString(GLenum error ){
