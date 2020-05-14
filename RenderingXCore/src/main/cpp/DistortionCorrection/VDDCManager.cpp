@@ -3,6 +3,7 @@
 //
 
 #include "VDDCManager.h"
+constexpr auto TAG="VDDCManager";
 
 VDDCManager::UndistortionHandles*
 VDDCManager::getUndistortionUniformHandles(const VDDCManager* dm, const GLuint program){
@@ -126,7 +127,7 @@ void VDDCManager::updateDistortion(const PolynomialRadialInverse &inverseDistort
         radialDistortionCoefficients.kN[i]=inverseDistortion.getCoefficients()[i];
     }
     radialDistortionCoefficients.maxRadSquared=inverseDistortion.getMaxRadSq();
-    //MDebug::log(inverseDistortion.toString());
+    //LOG2(TAG)<<inverseDistortion.toString();
 }
 
 void VDDCManager::updateDistortion(const PolynomialRadialInverse &inverseDistortion,

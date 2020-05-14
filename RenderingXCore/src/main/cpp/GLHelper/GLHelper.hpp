@@ -36,7 +36,7 @@ namespace GLHelper{
             anyError=true;
         }
         if(anyError){
-            MDebug::log(ss.str(),TAG);
+            LOG2(TAG)<<ss.str(),TAG;
 #ifdef CRASH_APPLICATION_ON_GL_ERROR
             std::exit(-1);
 #endif
@@ -55,8 +55,8 @@ namespace GLHelper{
             GLchar infoLog[size];
             GLsizei len;
             glGetShaderInfoLog(shader,size,&len,infoLog);
-            MDebug::log("Couldn't compile shader "+std::string(infoLog),TAG);
-            MDebug::log("Code is:\n"+shaderCode,TAG);
+            LOG2(TAG)<<"Couldn't compile shader "+std::string(infoLog);
+            LOG2(TAG)<<"Code is:\n"<<shaderCode;
         }
         return shader;
     }
@@ -73,7 +73,7 @@ namespace GLHelper{
             int linkStatus;
             glGetProgramiv(program,GL_LINK_STATUS,&linkStatus);
             if (linkStatus != GL_TRUE) {
-                MDebug::log("Couldn't create shader program");
+                LOG2(TAG)<<"Couldn't create shader program";
                 glDeleteProgram(program);
                 program = 0;
             }

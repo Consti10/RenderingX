@@ -35,7 +35,7 @@ private:
     }
     void checkSetAlreadyUploaded(){
         if(alreadyUploaded){
-            MDebug::log(getTAG()+"uploadGL called twice");
+            LOG2(getTAG())<<+"uploadGL called twice";
         }
         alreadyUploaded=true;
     }

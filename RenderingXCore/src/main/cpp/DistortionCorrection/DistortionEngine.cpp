@@ -10,6 +10,8 @@
 #include "VDDCManager.h"
 #include "XTestDistortion.h"
 
+constexpr auto TAG="DistortionEngine";
+
 void DistortionEngine::setGvrApi(gvr::GvrApi *gvrApi) {
     this->gvr_api=gvrApi;
 }
@@ -64,7 +66,7 @@ void DistortionEngine::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     }
     LOG::D("Max value used for getApproximateInverseDistortion() %f",maxRangeInverse);
     mInverse=PolynomialRadialInverse(mDistortion, maxRangeInverse, VDDCManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
-    MDebug::log("Inverse is:"+mInverse.toStringX());
+    LOG2(TAG)<<"Inverse is:"<<mInverse.toStringX();
 
     //as long as the function is still strict monotonic increasing we can increase the value that will be used for
     //clamping later in the vertex shader.

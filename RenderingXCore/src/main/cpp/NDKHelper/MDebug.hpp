@@ -7,6 +7,7 @@
 
 #include "android/log.h"
 #include <string.h>
+#include <sstream>
 
 //#define TAG_MDEBUG "MDebug"
 //#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG_MDEBUG, __VA_ARGS__)
@@ -15,13 +16,13 @@ namespace LOG{
     // taken from https://android.googlesource.com/platform/system/core/+/android-2.1_r1/liblog/logd_write.c
     static constexpr const auto ANDROID_LOG_BUFF_SIZE=1024;
     static constexpr auto DEFAULT_TAG="NoTag";
-    static void D(const char* fmt,...) {
+    static void D(const char* fmt,...)__attribute__((__format__(printf, 1, 2))) {
         va_list argptr;
         va_start(argptr, fmt);
         __android_log_vprint(ANDROID_LOG_DEBUG,DEFAULT_TAG,fmt,argptr);
         va_end(argptr);
     }
-    static void E(const char* fmt,...) {
+    static void E(const char* fmt,...)__attribute__((__format__(printf, 1, 2))) {
         va_list argptr;
         va_start(argptr, fmt);
         __android_log_vprint(ANDROID_LOG_ERROR,DEFAULT_TAG,fmt,argptr);
@@ -39,27 +40,56 @@ namespace LOG{
     }
 }
 
-class MDebug{
+class LOG2{
 public:
+    LOG2(const std::string& TAG="NoTag"):TAG(TAG) {
+        uncaught = std::uncaught_exceptions();
+    }
+    ~LOG2() {
+        if (uncaught >= std::uncaught_exceptions()) {
+            logBigMessage(stream.str());
+        }
+    }
+    std::stringstream stream;
+    int uncaught;
+    const std::string TAG;
+private:
     //Splits debug messages that exceed the android log maximum length into smaller log(s)
-    static void log(const std::string& message,const std::string& tag="NoTag"){
+    //Recursive declaration
+    void logBigMessage(const std::string& message){
         constexpr int MAX_L=1024;
         if(message.length()>MAX_L){
-            __android_log_print(ANDROID_LOG_DEBUG,tag.c_str(),"%s",message.substr(0,MAX_L).c_str());
-            log(message.substr(MAX_L),tag);
+            __android_log_print(ANDROID_LOG_DEBUG,TAG.c_str(),"%s",message.substr(0,MAX_L).c_str());
+            logBigMessage(message.substr(MAX_L));
         }else{
-            __android_log_print(ANDROID_LOG_DEBUG,tag.c_str(),"%s",message.c_str());
+            __android_log_print(ANDROID_LOG_DEBUG,TAG.c_str(),"%s",message.c_str());
         }
     }
 };
+template <typename T>
+LOG2& operator<<(LOG2& record, T&& t) {
+    record.stream << std::forward<T>(t);
+    return record;
+}
+template <typename T>
+LOG2& operator<<(LOG2&& record, T&& t) {
+    return record << std::forward<T>(t);
+}
 
-namespace SOMETHING_LONG_TO_HIDE_STUFF{
+
+// print some example LOGs
+namespace TEST_LOGGING_ON_ANDROID{
     static void test(){
-        LOG::D("TestTAG","TestText %d",1);
+        LOG::D("TestText %d",1);
         LOG::D("TestText %d",1);
         const char*LOL="LOL";
         LOG::D("TestText %s",LOL);
         LOG::LOL("HALLO %s %d",LOL,2);
+    }
+    static void test2(){
+        LOG::D("Before");
+        LOG2("MyTAG")<<"Hello World I "<<1<<" F "<<0.0f<<" X";
+        LOG::D("After");
     }
 }
 
