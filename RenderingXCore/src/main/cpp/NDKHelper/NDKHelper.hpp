@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 #include <array>
-#include <MDebug.hpp>
+#include <AndroidLogger.hpp>
 
 #include <type_traits>
 

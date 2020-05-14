@@ -6,7 +6,7 @@
 #define RENDERINGX_INDICES_HPP
 
 #include <vector>
-#include <MDebug.hpp>
+#include <AndroidLogger.hpp>
 #include "GLES2/gl2.h"
 
 namespace Indices{

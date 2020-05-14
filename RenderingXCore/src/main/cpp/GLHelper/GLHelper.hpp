@@ -4,7 +4,7 @@
 #include <GLES2/gl2.h>
 #include <string>
 #include <sstream>
-#include "MDebug.hpp"
+#include "AndroidLogger.hpp"
 
 //#define CRASH_APPLICATION_ON_GL_ERROR
 

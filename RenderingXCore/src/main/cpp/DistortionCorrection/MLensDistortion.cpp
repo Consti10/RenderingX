@@ -3,7 +3,7 @@
 //
 
 #include <sstream>
-#include <MDebug.hpp>
+#include <AndroidLogger.hpp>
 #include "MLensDistortion.h"
 
 constexpr auto TAG="MLensDistortion";

@@ -4,7 +4,7 @@
 //
 
 #include <string>
-#include <MDebug.hpp>
+#include <AndroidLogger.hpp>
 #include <MatrixHelper.h>
 #include "DistortionEngine.h"
 #include "VDDCManager.h"

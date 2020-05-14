@@ -8,7 +8,7 @@
 #include "PolynomialRadialDistortion/PolynomialRadialDistortion.h"
 #include <vector>
 #include <array>
-#include "../NDKHelper/MDebug.hpp"
+#include "AndroidLogger.hpp"
 
 
 static void EXPECT_NEAR(float a,float b,float tolerance){

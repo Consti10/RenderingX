@@ -8,7 +8,7 @@
 #include <array>
 #include <string>
 #include <sstream>
-#include <MDebug.hpp>
+#include <AndroidLogger.hpp>
 #include <vector>
 #include <sys/stat.h>
 #include <GLHelper.hpp>
