@@ -13,7 +13,7 @@
 #include <Sphere/SphereBuilder.hpp>
 
 constexpr auto TAG="DistortionExample";
-#define MLOG LOG2(TAG)
+#define MLOGD LOGD(TAG)
 
 Renderer360Video::Renderer360Video(JNIEnv *env, jobject androidContext, gvr_context *gvr_context, bool RENDER_SCENE_USING_GVR_RENDERBUFFER,
                                        bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT, const int vSPHERE_MODE):
@@ -158,7 +158,7 @@ void Renderer360Video::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM, b
             mGLProgramTextureExt->drawX(mVideoTexture,viewM*modelMatrix, projM, mSphereDualFisheye2);
         }break;
         default:
-            MLOG << "Unknown sphere mode";
+            MLOGD << "Unknown sphere mode";
     }
     if(occlusion){
         mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);

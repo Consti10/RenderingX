@@ -80,10 +80,12 @@ AndroidLogger& operator<<(AndroidLogger&& record, T&& t) {
     return record << std::forward<T>(t);
 }
 
-static AndroidLogger LOG2(const std::string& TAG="NoTag"){
+static AndroidLogger LOGD(const std::string& TAG="NoTag"){
     return AndroidLogger(ANDROID_LOG_DEBUG,TAG);
 }
-
+static AndroidLogger LOGE(const std::string& TAG="NoTag"){
+    return AndroidLogger(ANDROID_LOG_ERROR,TAG);
+}
 
 // print some example LOGs
 namespace TEST_LOGGING_ON_ANDROID{

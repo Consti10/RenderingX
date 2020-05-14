@@ -7,7 +7,7 @@
 #include "MLensDistortion.h"
 
 constexpr auto TAG="MLensDistortion";
-#define MLOG LOG2(TAG)
+#define MLOG LOGD(TAG)
 
 float MLensDistortion::GetYEyeOffsetMeters(const int vertical_alignment,
                                            const float tray_to_lens_distance,

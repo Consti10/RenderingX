@@ -39,7 +39,7 @@ namespace GLHelper{
             anyError=true;
         }
         if(anyError){
-            LOG2(TAG)<<ss.str();
+            LOGE(TAG)<<ss.str();
 #ifdef CRASH_APPLICATION_ON_GL_ERROR
             std::exit(-1);
 #endif

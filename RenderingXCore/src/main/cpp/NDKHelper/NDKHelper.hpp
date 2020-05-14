@@ -41,7 +41,7 @@ namespace NDKHelper {
         jstring j_path = env->NewStringUTF(path.c_str());
         jobject input_stream =env->CallObjectMethod(java_asset_mgr, open_method, j_path);
         if (env->ExceptionOccurred() != nullptr) {
-            LOG2(TAG)<<"Java exception in createInputStreamFromAsset for file:"<<path;
+            LOGE(TAG)<<"Java exception in createInputStreamFromAsset for file:"<<path;
             env->ExceptionClear();
             env->DeleteLocalRef(j_path);
             return nullptr;
@@ -84,7 +84,7 @@ namespace NDKHelper {
             image_obj=env->CallObjectMethod(image_obj,extract_alpha_method);
         }
         if (env->ExceptionOccurred() != nullptr) {
-            LOG2(TAG)<<"Java exception while loading image";
+            LOGE(TAG)<<"Java exception while loading image";
             env->ExceptionClear();
             image_obj = nullptr;
             return false;

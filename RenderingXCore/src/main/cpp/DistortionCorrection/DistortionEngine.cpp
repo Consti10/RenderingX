@@ -11,7 +11,7 @@
 #include "XTestDistortion.h"
 
 constexpr auto TAG="DistortionEngine";
-#define MLOG LOG2(TAG)
+#define MLOG LOGD(TAG)
 
 void DistortionEngine::setGvrApi(gvr::GvrApi *gvrApi) {
     this->gvr_api=gvrApi;

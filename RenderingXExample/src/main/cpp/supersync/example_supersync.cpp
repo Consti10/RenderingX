@@ -30,7 +30,7 @@
 
 //TODO: use better geometry
 constexpr auto TAG="GLRSuperSyncExample";
-#define MLOG LOG2(TAG)
+#define MLOGD LOGD(TAG)
 
 GLRSuperSyncExample::GLRSuperSyncExample(JNIEnv *env, jobject androidContext,
                                        bool qcomTiledRenderingAvailable,
@@ -74,9 +74,9 @@ void GLRSuperSyncExample::onSurfaceChanged(int width, int height) {
 
 void GLRSuperSyncExample::enterSuperSyncLoop(JNIEnv *env, jobject obj,int exclusiveVRCore) {
     setAffinity(exclusiveVRCore);
-    MLOG<<"entering superSync loop. GLThread will be blocked";
+    MLOGD<<"entering superSync loop. GLThread will be blocked";
     mFBRManager->enterDirectRenderingLoop(env);
-    MLOG<<"exited superSync loop. GLThread unblocked";
+    MLOGD<<"exited superSync loop. GLThread unblocked";
 }
 
 void GLRSuperSyncExample::exitSuperSyncLoop() {
@@ -163,12 +163,12 @@ JNI_METHOD(void, nativeOnSurfaceChanged)
 }
 JNI_METHOD(void, nativeEnterSuperSyncLoop)
 (JNIEnv *env, jobject obj, jlong glRendererStereo,jint exclusiveVRCore) {
-    MLOG<<"nativeEnterSuperSyncLoop()";
+    MLOGD<<"nativeEnterSuperSyncLoop()";
     native(glRendererStereo)->enterSuperSyncLoop(env,obj,(int)exclusiveVRCore);
 }
 JNI_METHOD(void, nativeExitSuperSyncLoop)
 (JNIEnv *env, jobject obj, jlong glRendererStereo) {
-    MLOG << "nativeExitSuperSyncLoop()";
+    MLOGD<<"nativeExitSuperSyncLoop()";
     native(glRendererStereo)->exitSuperSyncLoop();
 }
 JNI_METHOD(void, nativeDoFrame)

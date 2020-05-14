@@ -127,7 +127,7 @@ void VDDCManager::updateDistortion(const PolynomialRadialInverse &inverseDistort
         radialDistortionCoefficients.kN[i]=inverseDistortion.getCoefficients()[i];
     }
     radialDistortionCoefficients.maxRadSquared=inverseDistortion.getMaxRadSq();
-    //LOG2(TAG)<<inverseDistortion.toString();
+    //LOGD(TAG)<<inverseDistortion.toString();
 }
 
 void VDDCManager::updateDistortion(const PolynomialRadialInverse &inverseDistortion,

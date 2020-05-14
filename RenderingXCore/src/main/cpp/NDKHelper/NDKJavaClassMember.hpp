@@ -34,7 +34,7 @@ private:
         const char* ndkTypeName=cppTypeToNdkName<T>::value;
         jfieldID field=env->GetFieldID(jclass1,name,ndkTypeName);
         if(field==nullptr){
-            LOG2(TAG)<<"cannot find member "<<name<<" of type "<<ndkTypeName;
+            LOGE(TAG)<<"cannot find member "<<name<<" of type "<<ndkTypeName;
             env->ExceptionClear();
             return nullptr;
         }
