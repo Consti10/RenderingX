@@ -9,6 +9,10 @@
 #include <string.h>
 #include <sstream>
 
+// See https://medium.com/@geierconstantinabc/best-way-to-log-in-android-native-code-c-style-7461005610f6
+// Handles logging in all my android studio projects with native code
+// inspired by https://android.googlesource.com/platform/system/core/+/refs/heads/master/base/include/android-base/logging.h
+// Most notable difference : I have LOGD(TAG) they have LOG(SEVERITY)
 class AndroidLogger{
 public:
     // TODO Chrome university https://www.youtube.com/watch?v=UNJrgsQXvCA
