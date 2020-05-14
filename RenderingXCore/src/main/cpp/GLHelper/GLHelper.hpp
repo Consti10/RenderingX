@@ -13,8 +13,8 @@
 // compile shader program from vertex and fragment shader string
 
 namespace GLHelper{
-    static LOG2 MLOG(){
-        return LOG2("GLHelper");
+    static AndroidLogger MLOG(){
+        return AndroidLogger(ANDROID_LOG_DEBUG,"GLHelper");
     }
     inline static const std::string TAG="GLHelper";
     static const char *GlErrorString(GLenum error ){
