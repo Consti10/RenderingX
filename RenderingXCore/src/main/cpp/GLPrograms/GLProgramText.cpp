@@ -23,19 +23,19 @@ GLProgramText::GLProgramText(const VDDCManager* distortionManager):
     distortionManager(distortionManager)
     {
     mProgram = GLHelper::createProgram(VS(distortionManager),FS2());
-    mMVMatrixHandle=_glGetUniformLocation(mProgram,"uMVMatrix");
-    mPMatrixHandle=_glGetUniformLocation(mProgram,"uPMatrix");
-    mPositionHandle = _glGetAttribLocation(mProgram, "aPosition");
-    mTextureHandle = _glGetAttribLocation(mProgram, "aTexCoord");
-    mColorHandle= _glGetAttribLocation(mProgram, "aVertexColor");
-    mSamplerHandle = _glGetUniformLocation (mProgram, "sTexture" );
-    mOutlineColorHandle=_glGetUniformLocation(mProgram,"uOutlineColor");
-    mOutlineStrengthHandle=_glGetUniformLocation(mProgram,"uOutlineStrength");
-    uEdge=_glGetUniformLocation(mProgram,"uEdge");
-    uBorderEdge=_glGetUniformLocation(mProgram,"uBorderEdge");
+    mMVMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uMVMatrix");
+    mPMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uPMatrix");
+    mPositionHandle = GLHelper::GlGetAttribLocation(mProgram, "aPosition");
+    mTextureHandle = GLHelper::GlGetAttribLocation(mProgram, "aTexCoord");
+    mColorHandle= GLHelper::GlGetAttribLocation(mProgram, "aVertexColor");
+    mSamplerHandle = GLHelper::GlGetUniformLocation (mProgram, "sTexture" );
+    mOutlineColorHandle=GLHelper::GlGetUniformLocation(mProgram,"uOutlineColor");
+    mOutlineStrengthHandle=GLHelper::GlGetUniformLocation(mProgram,"uOutlineStrength");
+    uEdge=GLHelper::GlGetUniformLocation(mProgram,"uEdge");
+    uBorderEdge=GLHelper::GlGetUniformLocation(mProgram,"uBorderEdge");
     mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
 #ifdef WIREFRAME
-    mOverrideColorHandle=_glGetUniformLocation(mProgram,"uOverrideColor");
+    mOverrideColorHandle=GLHelper::GlGetUniformLocation(mProgram,"uOverrideColor");
 #endif
     // = {0,1,2, // first triangle (bottom left - top left - top right)
     //  0,2,3}; // second triangle (bottom left - top right - bottom right)

@@ -13,6 +13,9 @@
 // compile shader program from vertex and fragment shader string
 
 namespace GLHelper{
+    static LOG2 MLOG(){
+        return LOG2("GLHELPER");
+    }
     inline static const std::string TAG="GLHelper";
     static const char *GlErrorString(GLenum error ){
         switch ( error ){
@@ -55,8 +58,8 @@ namespace GLHelper{
             GLchar infoLog[size];
             GLsizei len;
             glGetShaderInfoLog(shader,size,&len,infoLog);
-            LOG2(TAG)<<"Couldn't compile shader "+std::string(infoLog);
-            LOG2(TAG)<<"Code is:\n"<<shaderCode;
+            MLOG()<<"Couldn't compile shader "+std::string(infoLog);
+            MLOG()<<"Code is:\n"<<shaderCode;
         }
         return shader;
     }
@@ -73,32 +76,32 @@ namespace GLHelper{
             int linkStatus;
             glGetProgramiv(program,GL_LINK_STATUS,&linkStatus);
             if (linkStatus != GL_TRUE) {
-                LOG2(TAG)<<"Couldn't create shader program";
+                MLOG()<<"Couldn't create shader program";
                 glDeleteProgram(program);
                 program = 0;
             }
         }
         return program;
     }
-};
-// some OpenGL calls return a -1 on error, else a positive value (GLuint)
-// these functions print a warning on -1 and return GLuint
-// uniform might just be optimized out
-// https://www.khronos.org/opengl/wiki/GLSL_:_common_mistakes ... will optimize your uniform out.
-static const GLuint _glGetUniformLocation(GLuint program, const GLchar *name){
-    GLint location=glGetUniformLocation(program,name);
-    if(location<0){
-        LOG2("GLHelper")<<"Error glGetUniformLocation "<<name<<". The Uniform is either missing in the Shader or optimized out.";
+    // some OpenGL calls return a -1 on error, else a positive value (GLuint)
+    // these functions print a warning on -1 and return GLuint
+    // uniform might just be optimized out
+    // https://www.khronos.org/opengl/wiki/GLSL_:_common_mistakes ... will optimize your uniform out.
+    static const GLuint GlGetUniformLocation(GLuint program, const GLchar *name){
+        GLint location=glGetUniformLocation(program,name);
+        if(location<0){
+            MLOG()<<"Error glGetUniformLocation "<<name<<". The Uniform is either missing in the Shader or optimized out.";
+        }
+        return (GLuint) location;
     }
-    return (GLuint) location;
-}
 
-static const GLuint _glGetAttribLocation(GLuint program, const GLchar *name){
-    GLint location=glGetAttribLocation(program,name);
-    if(location<0){
-        LOG2("GLHelper")<<"Error glGetAttribLocation "<<name<<". The Attrib is either missing in the Shader or optimized out.";
+    static const GLuint GlGetAttribLocation(GLuint program, const GLchar *name){
+        GLint location=glGetAttribLocation(program,name);
+        if(location<0){
+            MLOG()<<"Error glGetAttribLocation "<<name<<". The Attrib is either missing in the Shader or optimized out.";
+        }
+        return (GLuint) location;
     }
-    return (GLuint) location;
-}
+};
 
 #endif

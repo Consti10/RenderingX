@@ -12,7 +12,7 @@
 //#define TAG_MDEBUG "MDebug"
 //#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG_MDEBUG, __VA_ARGS__)
 
-namespace LOG{
+/*namespace LOG{
     // taken from https://android.googlesource.com/platform/system/core/+/android-2.1_r1/liblog/logd_write.c
     static constexpr const auto ANDROID_LOG_BUFF_SIZE=1024;
     static constexpr auto DEFAULT_TAG="NoTag";
@@ -38,7 +38,7 @@ namespace LOG{
         va_end(argptr);
         __android_log_print(ANDROID_LOG_DEBUG,"HA","%s",buffer);
     }
-}
+}*/
 
 class LOG2{
 public:
@@ -82,17 +82,17 @@ LOG2& operator<<(LOG2&& record, T&& t) {
 
 // print some example LOGs
 namespace TEST_LOGGING_ON_ANDROID{
-    static void test(){
+    /*static void test(){
         LOG::D("TestText %d",1);
         LOG::D("TestText %d",1);
         const char*LOL="LOL";
         LOG::D("TestText %s",LOL);
         LOG::LOL("HALLO %s %d",LOL,2);
-    }
+    }*/
     static void test2(){
-        LOG::D("Before");
+        __android_log_print(ANDROID_LOG_DEBUG,"TAG","Before");
         LOG2("MyTAG")<<"Hello World I "<<1<<" F "<<0.0f<<" X";
-        LOG::D("After");
+        __android_log_print(ANDROID_LOG_DEBUG,"TAG","After");
     }
 }
 

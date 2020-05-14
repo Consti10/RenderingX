@@ -5,10 +5,10 @@
 GLProgramVC::GLProgramVC(const VDDCManager* distortionManager, bool coordinates2D):
     distortionManager(distortionManager){
     mProgram = GLHelper::createProgram(VS(distortionManager,coordinates2D),FS());
-    mMVMatrixHandle=_glGetUniformLocation(mProgram,"uMVMatrix");
-    mPMatrixHandle=_glGetUniformLocation(mProgram,"uPMatrix");
-    mPositionHandle =_glGetAttribLocation((GLuint)mProgram, "aPosition");
-    mColorHandle =_glGetAttribLocation((GLuint)mProgram, "aColor");
+    mMVMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uMVMatrix");
+    mPMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uPMatrix");
+    mPositionHandle =GLHelper::GlGetAttribLocation((GLuint)mProgram, "aPosition");
+    mColorHandle =GLHelper::GlGetAttribLocation((GLuint)mProgram, "aColor");
     mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
     GLHelper::checkGlError("GLProgramVC()");
 }

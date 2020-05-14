@@ -12,19 +12,19 @@ VDDCManager::getUndistortionUniformHandles(const VDDCManager* dm, const GLuint p
     }
     UndistortionHandles* ret=new UndistortionHandles();
     if(dm->distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
-        ret->uPolynomialRadialInverse_coefficients=_glGetUniformLocation(program,"uPolynomialRadialInverse.coefficients");
-        ret->uPolynomialRadialInverse_maxRadSq=_glGetUniformLocation(program,"uPolynomialRadialInverse.maxRadSq");
+        ret->uPolynomialRadialInverse_coefficients=GLHelper::GlGetUniformLocation(program,"uPolynomialRadialInverse.coefficients");
+        ret->uPolynomialRadialInverse_maxRadSq=GLHelper::GlGetUniformLocation(program,"uPolynomialRadialInverse.maxRadSq");
     }else if(dm->distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD){
-        ret->uPolynomialRadialInverse_coefficients=_glGetUniformLocation(program,"uPolynomialRadialInverse.coefficients");
-        ret->uPolynomialRadialInverse_maxRadSq=_glGetUniformLocation(program,"uPolynomialRadialInverse.maxRadSq");
-        ret->uScreenParams_w=_glGetUniformLocation(program,"uScreenParams.width");
-        ret->uScreenParams_h=_glGetUniformLocation(program,"uScreenParams.height");
-        ret->uScreenParams_x_off=_glGetUniformLocation(program,"uScreenParams.x_eye_offset");
-        ret->uScreenParams_y_off=_glGetUniformLocation(program,"uScreenParams.y_eye_offset");
-        ret->uTextureParams_w=_glGetUniformLocation(program,"uTextureParams.width");
-        ret->uTextureParams_h=_glGetUniformLocation(program,"uTextureParams.height");
-        ret->uTextureParams_x_off=_glGetUniformLocation(program,"uTextureParams.x_eye_offset");
-        ret->uTextureParams_y_off=_glGetUniformLocation(program,"uTextureParams.y_eye_offset");
+        ret->uPolynomialRadialInverse_coefficients=GLHelper::GlGetUniformLocation(program,"uPolynomialRadialInverse.coefficients");
+        ret->uPolynomialRadialInverse_maxRadSq=GLHelper::GlGetUniformLocation(program,"uPolynomialRadialInverse.maxRadSq");
+        ret->uScreenParams_w=GLHelper::GlGetUniformLocation(program,"uScreenParams.width");
+        ret->uScreenParams_h=GLHelper::GlGetUniformLocation(program,"uScreenParams.height");
+        ret->uScreenParams_x_off=GLHelper::GlGetUniformLocation(program,"uScreenParams.x_eye_offset");
+        ret->uScreenParams_y_off=GLHelper::GlGetUniformLocation(program,"uScreenParams.y_eye_offset");
+        ret->uTextureParams_w=GLHelper::GlGetUniformLocation(program,"uTextureParams.width");
+        ret->uTextureParams_h=GLHelper::GlGetUniformLocation(program,"uTextureParams.height");
+        ret->uTextureParams_x_off=GLHelper::GlGetUniformLocation(program,"uTextureParams.x_eye_offset");
+        ret->uTextureParams_y_off=GLHelper::GlGetUniformLocation(program,"uTextureParams.y_eye_offset");
     }
     return ret;
 }

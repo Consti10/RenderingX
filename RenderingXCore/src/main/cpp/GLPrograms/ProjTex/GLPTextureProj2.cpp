@@ -8,13 +8,13 @@ constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
 GLPTextureProj2::GLPTextureProj2(){
     mProgram = GLHelper::createProgram(VS(),FS());
-    uModelMatrix=_glGetUniformLocation(mProgram, "uModelMatrix");
-    uViewMatrix=_glGetUniformLocation(mProgram, "uViewMatrix");
-    uProjMatrix=_glGetUniformLocation(mProgram, "uProjMatrix");
-    uTextureMatrix=_glGetUniformLocation(mProgram,"uTextureMatrix");
-    aPosition = _glGetAttribLocation(mProgram, "aPosition");
+    uModelMatrix=GLHelper::GlGetUniformLocation(mProgram, "uModelMatrix");
+    uViewMatrix=GLHelper::GlGetUniformLocation(mProgram, "uViewMatrix");
+    uProjMatrix=GLHelper::GlGetUniformLocation(mProgram, "uProjMatrix");
+    uTextureMatrix=GLHelper::GlGetUniformLocation(mProgram,"uTextureMatrix");
+    aPosition = GLHelper::GlGetAttribLocation(mProgram, "aPosition");
     //aTexCoord = _glGetAttribLocation(mProgram, "aTexCoord");
-    mSamplerHandle = _glGetUniformLocation (mProgram, "sTexture" );
+    mSamplerHandle = GLHelper::GlGetUniformLocation (mProgram, "sTexture" );
     GLHelper::checkGlError(TAG);
 }
 

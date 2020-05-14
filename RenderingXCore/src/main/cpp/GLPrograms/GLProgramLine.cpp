@@ -7,16 +7,16 @@
 GLProgramLine::GLProgramLine(const VDDCManager* distortionManager):
 distortionManager(distortionManager) {
     mProgram = GLHelper::createProgram(VS(distortionManager),FS());
-    mMVMatrixHandle=_glGetUniformLocation(mProgram,"uMVMatrix");
-    mPMatrixHandle=_glGetUniformLocation(mProgram,"uPMatrix");
-    mPositionHandle =_glGetAttribLocation(mProgram, "aPosition");
-    mNormalHandle=_glGetAttribLocation(mProgram, "aNormal");
-    mLineWidthHandle=_glGetAttribLocation(mProgram,"aLineWidth");
-    mBaseColorHandle=_glGetAttribLocation(mProgram,"aBaseColor");
-    mOutlineColorHandle=_glGetAttribLocation(mProgram,"aOutlineColor");
-    uEdge=_glGetUniformLocation(mProgram,"uEdge");
-    uBorderEdge=_glGetUniformLocation(mProgram,"uBorderEdge");
-    uOutlineStrength=_glGetUniformLocation(mProgram,"uOutlineStrength");
+    mMVMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uMVMatrix");
+    mPMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uPMatrix");
+    mPositionHandle =GLHelper::GlGetAttribLocation(mProgram, "aPosition");
+    mNormalHandle=GLHelper::GlGetAttribLocation(mProgram, "aNormal");
+    mLineWidthHandle=GLHelper::GlGetAttribLocation(mProgram,"aLineWidth");
+    mBaseColorHandle=GLHelper::GlGetAttribLocation(mProgram,"aBaseColor");
+    mOutlineColorHandle=GLHelper::GlGetAttribLocation(mProgram,"aOutlineColor");
+    uEdge=GLHelper::GlGetUniformLocation(mProgram,"uEdge");
+    uBorderEdge=GLHelper::GlGetUniformLocation(mProgram,"uBorderEdge");
+    uOutlineStrength=GLHelper::GlGetUniformLocation(mProgram,"uOutlineStrength");
     mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
     glUseProgram(mProgram);
     setOtherUniforms();
