@@ -45,7 +45,7 @@
 class AndroidLogger{
 public:
     // TODO Chrome university https://www.youtube.com/watch?v=UNJrgsQXvCA
-    // can we make these functions more performant (constructor and << )
+    // can we make these functions more performant (constructor and << ) ?
     AndroidLogger(const android_LogPriority priority,const std::string& TAG):M_PRIORITY(priority),M_TAG(TAG) {}
     ~AndroidLogger() {
         logBigMessage(stream.str());

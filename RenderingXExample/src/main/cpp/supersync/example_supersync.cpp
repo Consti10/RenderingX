@@ -168,7 +168,7 @@ JNI_METHOD(void, nativeEnterSuperSyncLoop)
 }
 JNI_METHOD(void, nativeExitSuperSyncLoop)
 (JNIEnv *env, jobject obj, jlong glRendererStereo) {
-    MLOG<<"nativeExitSuperSyncLoop()";
+    MLOG << "nativeExitSuperSyncLoop()";
     native(glRendererStereo)->exitSuperSyncLoop();
 }
 JNI_METHOD(void, nativeDoFrame)
