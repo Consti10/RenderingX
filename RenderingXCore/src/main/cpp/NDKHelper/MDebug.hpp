@@ -50,10 +50,10 @@ public:
             logBigMessage(stream.str());
         }
     }
+private:
     std::stringstream stream;
     int uncaught;
     const std::string TAG;
-private:
     // taken from https://android.googlesource.com/platform/system/core/+/android-2.1_r1/liblog/logd_write.c
     static constexpr const auto ANDROID_LOG_BUFF_SIZE=1024;
     //Splits debug messages that exceed the android log maximum length into smaller log(s)
@@ -66,6 +66,9 @@ private:
             __android_log_print(ANDROID_LOG_DEBUG,TAG.c_str(),"%s",message.c_str());
         }
     }
+    // the non-member function operator<< will now have access to private members
+    template <typename T>
+    friend LOG2& operator<<(LOG2& record, T&& t);
 };
 template <typename T>
 LOG2& operator<<(LOG2& record, T&& t) {
