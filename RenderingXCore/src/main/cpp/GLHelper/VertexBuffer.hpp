@@ -22,7 +22,7 @@ public:
     bool alreadyUploaded=false;
 private:
     std::string getTAG(){
-        return "VertexBuffer"+std::to_string(vertexB)+"::";
+        return "VertexBuffer"+std::to_string(vertexB);
     }
     // We have to 'delay' the creation of the buffer until we have a OpenGL context
     void createGLBufferIfNeeded(){
@@ -30,11 +30,11 @@ private:
             return;
         glGenBuffers(1,&vertexB);
         alreadyCreatedGLBuffer=true;
-        GLHelper::checkGlError(getTAG()+"createGL");
+        GLHelper::checkGlError(getTAG()+"::createGL");
     }
     void checkSetAlreadyUploaded(){
         if(alreadyUploaded){
-            LOG2(getTAG())<<":uploadGL called twice";
+            LOG2(getTAG())<<"uploadGL called twice";
         }
         alreadyUploaded=true;
     }

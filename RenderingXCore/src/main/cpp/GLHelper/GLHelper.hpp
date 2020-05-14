@@ -36,7 +36,7 @@ namespace GLHelper{
             anyError=true;
         }
         if(anyError){
-            LOG2(TAG)<<ss.str(),TAG;
+            LOG2(TAG)<<ss.str();
 #ifdef CRASH_APPLICATION_ON_GL_ERROR
             std::exit(-1);
 #endif
@@ -88,7 +88,7 @@ namespace GLHelper{
 static const GLuint _glGetUniformLocation(GLuint program, const GLchar *name){
     GLint location=glGetUniformLocation(program,name);
     if(location<0){
-        LOG::D("Error glGetUniformLocation %s. The Uniform is either missing in the Shader or optimized out.",name);
+        LOG2("GLHelper")<<"Error glGetUniformLocation "<<name<<". The Uniform is either missing in the Shader or optimized out.";
     }
     return (GLuint) location;
 }
@@ -96,7 +96,7 @@ static const GLuint _glGetUniformLocation(GLuint program, const GLchar *name){
 static const GLuint _glGetAttribLocation(GLuint program, const GLchar *name){
     GLint location=glGetAttribLocation(program,name);
     if(location<0){
-        LOG::D("Error glGetAttribLocation %s. The Attrib is either missing in the Shader or optimized out.",name);
+        LOG2("GLHelper")<<"Error glGetAttribLocation "<<name<<". The Attrib is either missing in the Shader or optimized out.";
     }
     return (GLuint) location;
 }

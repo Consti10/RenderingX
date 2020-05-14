@@ -54,13 +54,14 @@ public:
     int uncaught;
     const std::string TAG;
 private:
+    // taken from https://android.googlesource.com/platform/system/core/+/android-2.1_r1/liblog/logd_write.c
+    static constexpr const auto ANDROID_LOG_BUFF_SIZE=1024;
     //Splits debug messages that exceed the android log maximum length into smaller log(s)
     //Recursive declaration
     void logBigMessage(const std::string& message){
-        constexpr int MAX_L=1024;
-        if(message.length()>MAX_L){
-            __android_log_print(ANDROID_LOG_DEBUG,TAG.c_str(),"%s",message.substr(0,MAX_L).c_str());
-            logBigMessage(message.substr(MAX_L));
+        if(message.length()>ANDROID_LOG_BUFF_SIZE){
+            __android_log_print(ANDROID_LOG_DEBUG,TAG.c_str(),"%s",message.substr(0,ANDROID_LOG_BUFF_SIZE).c_str());
+            logBigMessage(message.substr(ANDROID_LOG_BUFF_SIZE));
         }else{
             __android_log_print(ANDROID_LOG_DEBUG,TAG.c_str(),"%s",message.c_str());
         }
@@ -75,7 +76,6 @@ template <typename T>
 LOG2& operator<<(LOG2&& record, T&& t) {
     return record << std::forward<T>(t);
 }
-
 
 // print some example LOGs
 namespace TEST_LOGGING_ON_ANDROID{

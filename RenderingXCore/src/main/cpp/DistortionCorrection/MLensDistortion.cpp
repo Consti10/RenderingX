@@ -6,12 +6,13 @@
 #include <MDebug.hpp>
 #include "MLensDistortion.h"
 
+constexpr auto TAG="MLensDistortion";
+#define MLOG LOG2(TAG)
 
 float MLensDistortion::GetYEyeOffsetMeters(const int vertical_alignment,
                                            const float tray_to_lens_distance,
                                            const float screen_height_meters) {
-    LOG::D("Vertical alignment %d | tray_to_lens_distance %f",vertical_alignment,tray_to_lens_distance);
-
+     MLOG<<"Vertical alignment "<<vertical_alignment<<" tray_to_lens_distance "<<tray_to_lens_distance;
     switch (vertical_alignment) {
         case 1:
         default:
@@ -64,9 +65,7 @@ std::array<float, 4> MLensDistortion::CalculateFov(
     //return {fov,fov,fov,fov};
     //fov of e.g 20 results in not covering the whole screen
     //return {ret[1],ret[0],ret[3],ret[2]};
-    std::stringstream ss;
-    ss<<"FOV (L,R,B,T) ("<<ret[0]<<","<<ret[1]<<","<<ret[2]<<","<<ret[3]<<")";
-    LOG::D("%s",ss.str().c_str());
+    MLOG<<"FOV (L,R,B,T) ("<<ret[0]<<","<<ret[1]<<","<<ret[2]<<","<<ret[3]<<")";
     //return {50,30,40,40};
     return ret;
 }

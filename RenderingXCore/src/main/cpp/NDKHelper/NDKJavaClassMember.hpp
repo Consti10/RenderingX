@@ -20,6 +20,7 @@ template <> constexpr const char *cppTypeToNdkName<std::vector<float>>::value = 
 
 class ClassMemberFromJava {
 private:
+    static constexpr auto TAG="ClassMemberFromJava";
     JNIEnv* env;
     jclass jclass1;
     jobject jobject1;
@@ -33,7 +34,7 @@ private:
         const char* ndkTypeName=cppTypeToNdkName<T>::value;
         jfieldID field=env->GetFieldID(jclass1,name,ndkTypeName);
         if(field==nullptr){
-            LOG::D("cannot find member %s of type %s",name,ndkTypeName);
+            LOG2(TAG)<<"cannot find member "<<name<<" of type "<<ndkTypeName;
             env->ExceptionClear();
             return nullptr;
         }

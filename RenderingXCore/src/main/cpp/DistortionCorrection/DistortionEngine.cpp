@@ -11,6 +11,7 @@
 #include "XTestDistortion.h"
 
 constexpr auto TAG="DistortionEngine";
+#define MLOG LOG2(TAG)
 
 void DistortionEngine::setGvrApi(gvr::GvrApi *gvrApi) {
     this->gvr_api=gvrApi;
@@ -19,7 +20,7 @@ void DistortionEngine::setGvrApi(gvr::GvrApi *gvrApi) {
 void DistortionEngine::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     this->screenWidthP=mDP.screen_width_pixels;
     this->screenHeightP=mDP.screen_height_pixels;
-    LOG::D("%s",MyVrHeadsetParamsAsString(mDP).c_str());
+    MLOG<<MyVrHeadsetParamsAsString(mDP);
     mDistortion=PolynomialRadialDistortion(mDP.radial_distortion_params);
 
     const auto GetYEyeOffsetMeters= MLensDistortion::GetYEyeOffsetMeters(mDP.vertical_alignment,
@@ -42,9 +43,9 @@ void DistortionEngine::updateHeadsetParams(const MVrHeadsetParams &mDP) {
                                                      mDP.inter_lens_distance, fovRight,
                                                      mDP.screen_width_meters, mDP.screen_height_meters,
                                                      screen_params[1], texture_params[1]);
-    LOG::D("%s",mDistortion.toString().c_str());
-    LOG::D("Left Eye: %s",MLensDistortion::ViewportParamsAsString(screen_params[0],texture_params[0]).c_str());
-    LOG::D("Right Eye: %s", MLensDistortion::ViewportParamsAsString(screen_params[1],texture_params[1]).c_str());
+    MLOG<<mDistortion.toString();
+    MLOG<<"Left Eye: "<<MLensDistortion::ViewportParamsAsString(screen_params[0],texture_params[0]);
+    MLOG<<"Right Eye: "<<MLensDistortion::ViewportParamsAsString(screen_params[1],texture_params[1]);
 
     //TODO calculate right maxRadSq
     /*const float maxX=1*texture_params[0].width+texture_params[0].x_eye_offset;
@@ -64,9 +65,9 @@ void DistortionEngine::updateHeadsetParams(const MVrHeadsetParams &mDP) {
             maxRangeInverse=i;
         }
     }
-    LOG::D("Max value used for getApproximateInverseDistortion() %f",maxRangeInverse);
+    MLOG<<"Max value used for getApproximateInverseDistortion()"<<maxRangeInverse;
     mInverse=PolynomialRadialInverse(mDistortion, maxRangeInverse, VDDCManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
-    LOG2(TAG)<<"Inverse is:"<<mInverse.toStringX();
+    MLOG<<"Inverse is:"<<mInverse.toStringX();
 
     //as long as the function is still strict monotonic increasing we can increase the value that will be used for
     //clamping later in the vertex shader.
