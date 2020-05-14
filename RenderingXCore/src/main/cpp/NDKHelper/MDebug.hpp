@@ -40,35 +40,9 @@
     }
 }*/
 
+
+
 class AndroidLogger{
-public:
-    AndroidLogger(const android_LogPriority priority,const std::string& TAG):M_PRIORITY(priority),M_TAG(TAG) {}
-    ~AndroidLogger() {
-        __android_log_print(ANDROID_LOG_DEBUG,M_TAG.c_str(),"%s",stream.str().c_str());
-    }
-private:
-    std::stringstream stream;
-    const std::string M_TAG;
-    const android_LogPriority M_PRIORITY;
-    template <typename T>
-    friend AndroidLogger& operator<<(AndroidLogger& record, T&& t);
-};
-template <typename T>
-AndroidLogger& operator<<(AndroidLogger& record, T&& t) {
-    record.stream << std::forward<T>(t);
-    return record;
-}
-template <typename T>
-AndroidLogger& operator<<(AndroidLogger&& record, T&& t) {
-    return record << std::forward<T>(t);
-}
-
-static AndroidLogger LOG2(const std::string& TAG="NoTag"){
-    return AndroidLogger(ANDROID_LOG_DEBUG,TAG);
-}
-
-
-/*class AndroidLogger{
 public:
     // TODO Chrome university https://www.youtube.com/watch?v=UNJrgsQXvCA
     // can we make these functions more performant (constructor and << )
@@ -108,7 +82,7 @@ AndroidLogger& operator<<(AndroidLogger&& record, T&& t) {
 
 static AndroidLogger LOG2(const std::string& TAG="NoTag"){
     return AndroidLogger(ANDROID_LOG_DEBUG,TAG);
-}*/
+}
 
 
 // print some example LOGs
@@ -124,19 +98,6 @@ namespace TEST_LOGGING_ON_ANDROID{
         __android_log_print(ANDROID_LOG_DEBUG,"TAG","Before");
         AndroidLogger(ANDROID_LOG_DEBUG,"MyTAG")<<"Hello World I "<<1<<" F "<<0.0f<<" X";
         __android_log_print(ANDROID_LOG_DEBUG,"TAG","After");
-    }
-
-    static AndroidLogger MLOGD(){
-        return AndroidLogger(ANDROID_LOG_DEBUG,"MyExampleClass");
-    }
-
-    static void test3(){
-        __android_log_print(ANDROID_LOG_DEBUG,"TAG","Before");
-        AndroidLogger(ANDROID_LOG_DEBUG,"MyTAG")<<"Hello World I "<<1<<" F "<<0.0f<<" X";
-        __android_log_print(ANDROID_LOG_DEBUG,"TAG","After");
-
-        MLOGD()<<"Hello World"<<1;
-
     }
 }
 
