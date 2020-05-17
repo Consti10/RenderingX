@@ -67,7 +67,6 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
     private void onResume(){
         //FullscreenHelper.setImmersiveSticky(this);
         //FullscreenHelper.enableAndroidVRModeIfPossible(this);
-        //FullscreenHelper.enableSustainedPerformanceIfPossible(this);
         resumeX();
         mGLSurfaceView.onResume();
         mGLSurfaceView.queueEvent(new Runnable() {
@@ -88,7 +87,6 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
         Choreographer.getInstance().removeFrameCallback(this);
         mGLSurfaceView.onPause();
         pauseX();
-        //FullscreenHelper.disableSustainedPerformanceIfEnabled(this);
         //FullscreenHelper.disableAndroidVRModeIfEnabled(this);
     }
 
