@@ -6,8 +6,8 @@ import android.graphics.SurfaceTexture;
 
 public class STHelper {
     // returns true if SurfaceTexture was actually updated
-    // Tested on following APIs:
-
+    // Tested here:
+    // https://console.firebase.google.com/u/1/project/fpv-vr-for-wifibroadcast/testlab/histories/bh.88d8060ed73917a4/matrices/9009976508266637057
     public static boolean updateAndCheck(final SurfaceTexture surfaceTexture){
         final long oldTimestamp=surfaceTexture.getTimestamp();
         surfaceTexture.updateTexImage();
