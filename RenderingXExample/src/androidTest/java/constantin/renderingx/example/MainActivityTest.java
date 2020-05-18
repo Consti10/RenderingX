@@ -33,8 +33,9 @@ public class MainActivityTest {
     @Rule
     public ActivityTestRule<AExampleRendering> mExampleRenderingRule = new ActivityTestRule<>(AExampleRendering.class,false,false);
     @Rule
-    public ActivityTestRule<AExampleDistortion> mExampleVRRenderingRule = new ActivityTestRule<>(AExampleDistortion.class,false,false);
-
+    public ActivityTestRule<AExampleDistortion> mExampleVRRenderingVDDCRule = new ActivityTestRule<>(AExampleDistortion.class,false,false);
+    @Rule
+    public ActivityTestRule<AExample360Video> mExampleVRRendering360VideoRule = new ActivityTestRule<>(AExample360Video.class,false,false);
 
     @Rule
     public GrantPermissionRule mGrantPermissionRule =
@@ -56,12 +57,25 @@ public class MainActivityTest {
         mExampleRenderingRule.finishActivity();
     }
 
-    private void testVRRendering(int mode){
+
+    private void testVrVDDC(){
         Intent i = new Intent();
-        i.putExtra(AExample360Video.KEY_SPHERE_MODE,mode);
-        mExampleVRRenderingRule.launchActivity(i);
+        mExampleVRRenderingVDDCRule.launchActivity(i);
         try { Thread.sleep(WAIT_TIME); } catch (InterruptedException e) { e.printStackTrace(); }
-        mExampleVRRenderingRule.finishActivity();
+        mExampleVRRenderingVDDCRule.finishActivity();
+    }
+
+    private void testVr360Video(){
+        Intent i = new Intent();
+        i.putExtra(AExample360Video.KEY_SPHERE_MODE,AExample360Video.SPHERE_MODE_GVR_EQUIRECTANGULAR);
+        i.putExtra(AExample360Video.KEY_VIDEO_FILENAME,"360DegreeVideos/testRoom1_1920Mono.mp4");
+        mExampleVRRendering360VideoRule.launchActivity(i);
+        try { Thread.sleep(WAIT_TIME); } catch (InterruptedException e) { e.printStackTrace(); }
+        final int nUpdates=mExampleVRRendering360VideoRule.getActivity().getNSurfaceTextureUpdateReturnedTrue();
+        if(nUpdates<60){
+            throw new RuntimeException("Error nUpdates < 60");
+        }
+        mExampleVRRendering360VideoRule.finishActivity();
     }
 
     private void testSuperSyncIfPossible(){
@@ -78,13 +92,8 @@ public class MainActivityTest {
         startGLESInfo();
         //without VDDC / VR
         testRendering();
-        //VDDC
-        testVRRendering(0);
-        //Sphere Equi
-        testVRRendering(1);
-        //Sphere Gvr
-        testVRRendering(2);
-        //Super sync
+        testVrVDDC();
+        testVr360Video();
         testSuperSyncIfPossible();
     }
 

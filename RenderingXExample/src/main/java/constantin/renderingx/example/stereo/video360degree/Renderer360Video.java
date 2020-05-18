@@ -2,6 +2,7 @@ package constantin.renderingx.example.stereo.video360degree;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.SurfaceTexture;
 import android.opengl.GLSurfaceView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import constantin.renderingx.core.MVrHeadsetParams;
+import constantin.renderingx.core.STHelper;
 import constantin.video.core.gl.ISurfaceAvailable;
 import constantin.video.core.gl.VideoSurfaceHolder;
 
@@ -32,6 +34,7 @@ public class Renderer360Video implements GLSurfaceView.Renderer {
     private final Context mContext;
     private final long nativeRenderer;
     private final VideoSurfaceHolder mVideoSurfaceHolder;
+    private int nSurfaceTextureUpdateReturnedTrue=0;
 
     @SuppressLint("ApplySharedPref")
     public Renderer360Video(final AppCompatActivity context, final ISurfaceAvailable iSurfaceAvailable, final GvrApi gvrApi, boolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
@@ -58,8 +61,15 @@ public class Renderer360Video implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        mVideoSurfaceHolder.getSurfaceTexture().updateTexImage();
+        if(STHelper.updateAndCheck(mVideoSurfaceHolder.getSurfaceTexture())){
+            nSurfaceTextureUpdateReturnedTrue++;
+        }
         nativeOnDrawFrame(nativeRenderer);
+    }
+
+    // For testing the 'check if update was successfully'
+    public int getNSurfaceTextureUpdateReturnedTrue(){
+        return nSurfaceTextureUpdateReturnedTrue;
     }
 
     @Override

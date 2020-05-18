@@ -32,6 +32,7 @@ public class AExample360Video extends VrActivity {
     private static final boolean USE_ANDROID_MEDIA_PLAYER=false;
     private VideoPlayer videoPlayer;
     private MediaPlayer mediaPlayer;
+    private Renderer360Video renderer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,13 +72,17 @@ public class AExample360Video extends VrActivity {
                     }
                 } :
                 videoPlayer.configure2();
-        final Renderer360Video renderer =new Renderer360Video(this,iSurfaceAvailable, gvrApi,false,
+        renderer =new Renderer360Video(this,iSurfaceAvailable, gvrApi,false,
                 true,SPHERE_MODE);
         gLView.setRenderer(renderer);
         gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         gLView.setPreserveEGLContextOnPause(true);
         setContentView(myVRLayout);
         myVRLayout.setPresentationView(gLView);
+    }
+
+    public int getNSurfaceTextureUpdateReturnedTrue(){
+        return renderer.getNSurfaceTextureUpdateReturnedTrue();
     }
 
 }

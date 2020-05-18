@@ -8,6 +8,7 @@
 #include <jni.h>
 #include <vector>
 #include <type_traits>
+#include <string>
 
 //
 // The purpose of this namespace is to make it easier to transfer arrays of generic data types
@@ -59,6 +60,12 @@ namespace NDKArrayHelper{
         std::array<T,S> ret;
         assert(data.size()==S);
         std::memcpy(ret.data(),data.data(),data.size()*sizeof(T));
+        return ret;
+    }
+    static std::string DynamicSizeString(JNIEnv* env,jstring jstring1){
+        const char* valueP = env->GetStringUTFChars(jstring1, nullptr);
+        const std::string ret=std::string(valueP);
+        env->ReleaseStringUTFChars(jstring1,valueP);
         return ret;
     }
     // Demonstrate the type safety of DynamicSizeArray:
