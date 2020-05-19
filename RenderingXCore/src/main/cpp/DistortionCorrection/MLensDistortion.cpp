@@ -6,13 +6,10 @@
 #include <AndroidLogger.hpp>
 #include "MLensDistortion.h"
 
-constexpr auto TAG="MLensDistortion";
-#define MLOG LOGD(TAG)
-
 float MLensDistortion::GetYEyeOffsetMeters(const int vertical_alignment,
                                            const float tray_to_lens_distance,
                                            const float screen_height_meters) {
-     MLOG<<"Vertical alignment "<<vertical_alignment<<" tray_to_lens_distance "<<tray_to_lens_distance;
+     MLOGD<<"Vertical alignment "<<vertical_alignment<<" tray_to_lens_distance "<<tray_to_lens_distance;
     switch (vertical_alignment) {
         case 1:
         default:
@@ -65,7 +62,7 @@ std::array<float, 4> MLensDistortion::CalculateFov(
     //return {fov,fov,fov,fov};
     //fov of e.g 20 results in not covering the whole screen
     //return {ret[1],ret[0],ret[3],ret[2]};
-    MLOG<<"FOV (L,R,B,T) ("<<ret[0]<<","<<ret[1]<<","<<ret[2]<<","<<ret[3]<<")";
+    MLOGD<<"FOV (L,R,B,T) ("<<ret[0]<<","<<ret[1]<<","<<ret[2]<<","<<ret[3]<<")";
     //return {50,30,40,40};
     return ret;
 }

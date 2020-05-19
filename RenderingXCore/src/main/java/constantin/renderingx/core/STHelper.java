@@ -4,6 +4,9 @@ package constantin.renderingx.core;
 
 import android.graphics.SurfaceTexture;
 
+// 18.05.2020
+// It looks like we can safely use the timestamp to measure delay
+// Also, if the timestamp changes we know that the update of SurfaceTexture was successfully
 public class STHelper {
     // returns true if SurfaceTexture was actually updated
     // Tested here:

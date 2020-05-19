@@ -4,8 +4,6 @@
 
 #include "FPSCalculator.h"
 
-#define TAG "FPSCalculator"
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
 
 using namespace std::chrono;
 
@@ -22,7 +20,6 @@ void FPSCalculator::tick() {
         currFPS=ticksSinceLastFPSCalculation/exactElapsedSeconds;
         ticksSinceLastFPSCalculation=0;
         lastFPSCalculation=now;
-        //LOGD("%s:%f",PATH.c_str(),currFPS);
     }
 }
 

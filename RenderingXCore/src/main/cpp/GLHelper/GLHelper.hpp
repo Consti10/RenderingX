@@ -13,10 +13,6 @@
 // compile shader program from vertex and fragment shader string
 
 namespace GLHelper{
-    static AndroidLogger MLOG(){
-        return AndroidLogger(ANDROID_LOG_DEBUG,"GLHelper");
-    }
-    inline static const std::string TAG="GLHelper";
     static const char *GlErrorString(GLenum error ){
         switch ( error ){
             case GL_NO_ERROR:						return "GL_NO_ERROR";
@@ -39,7 +35,7 @@ namespace GLHelper{
             anyError=true;
         }
         if(anyError){
-            LOGE(TAG)<<ss.str();
+            MLOGE<<ss.str();
 #ifdef CRASH_APPLICATION_ON_GL_ERROR
             std::exit(-1);
 #endif
@@ -58,8 +54,8 @@ namespace GLHelper{
             GLchar infoLog[size];
             GLsizei len;
             glGetShaderInfoLog(shader,size,&len,infoLog);
-            MLOG()<<"Couldn't compile shader "+std::string(infoLog);
-            MLOG()<<"Code is:\n"<<shaderCode;
+            MLOGD<<"Couldn't compile shader "+std::string(infoLog);
+            MLOGD<<"Code is:\n"<<shaderCode;
         }
         return shader;
     }
@@ -76,7 +72,7 @@ namespace GLHelper{
             int linkStatus;
             glGetProgramiv(program,GL_LINK_STATUS,&linkStatus);
             if (linkStatus != GL_TRUE) {
-                MLOG()<<"Couldn't create shader program";
+                MLOGD<<"Couldn't create shader program";
                 glDeleteProgram(program);
                 program = 0;
             }
@@ -90,7 +86,7 @@ namespace GLHelper{
     static const GLuint GlGetUniformLocation(GLuint program, const GLchar *name){
         GLint location=glGetUniformLocation(program,name);
         if(location<0){
-            MLOG()<<"Error glGetUniformLocation "<<name<<". The Uniform is either missing in the Shader or optimized out.";
+            MLOGE<<"glGetUniformLocation "<<name<<". The Uniform is either missing in the Shader or optimized out.";
         }
         return (GLuint) location;
     }
@@ -98,7 +94,7 @@ namespace GLHelper{
     static const GLuint GlGetAttribLocation(GLuint program, const GLchar *name){
         GLint location=glGetAttribLocation(program,name);
         if(location<0){
-            MLOG()<<"Error glGetAttribLocation "<<name<<". The Attrib is either missing in the Shader or optimized out.";
+            MLOGE<<"glGetAttribLocation "<<name<<". The Attrib is either missing in the Shader or optimized out.";
         }
         return (GLuint) location;
     }

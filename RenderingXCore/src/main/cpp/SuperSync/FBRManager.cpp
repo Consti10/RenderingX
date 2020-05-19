@@ -7,9 +7,7 @@
 #include <sstream>
 #include "FBRManager.h"
 #include "Extensions.hpp"
-
-constexpr auto TAG="FBRManager";
-#define LOGD(...) __android_log_print(ANDROID_LOG_ERROR, TAG,__VA_ARGS__)
+#include <AndroidLogger.hpp>
 
 //#define RELEASE
 constexpr auto MS_TO_NS=1000*1000;
@@ -45,7 +43,7 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env) {
     cNanoseconds before,diff=0;
     while(shouldRender){
         if(diff>=DISPLAY_REFRESH_TIME){
-            LOGD("WARNING: rendering a eye took longer than displayRefreshTime ! Error. Time: %d",(int)(diff/1000/1000));
+            MLOGE<<"WARNING: rendering a eye took longer than displayRefreshTime ! Error. Time: "<<(diff/1000/1000);
         }
         vsyncStartWT.start();
         int64_t leOffset=waitUntilVsyncStart();
@@ -58,7 +56,7 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env) {
             break;
         }
         if(diff>=DISPLAY_REFRESH_TIME){
-            LOGD("WARNING: rendering a eye took longer than displayRefreshTime ! Error. Time: %d",(int)(diff/1000/1000));
+            MLOGE<<"WARNING: rendering a eye took longer than displayRefreshTime ! Error. Time: "<<(diff/1000/1000);
         }
         vsyncMiddleWT.start();
         int64_t reOffset=waitUntilVsyncMiddle();
@@ -331,7 +329,7 @@ void FBRManager::printLog() {
         avgLog<<"\nVsync advance ms:"<< advanceMS;
         //avgLog<<"\nDisplay refresh time ms:"<<DISPLAY_REFRESH_TIME/1000.0/1000.0;
         avgLog<<"\n----  -----  ----  ----  ----  ----  ----  ----  --- ---";
-        LOGD("%s",avgLog.str().c_str());
+        MLOGD<<avgLog.str();
         resetTS();
     }
 }

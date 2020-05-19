@@ -29,8 +29,6 @@
 #include "example_supersync.h"
 
 //TODO: use better geometry
-constexpr auto TAG="GLRSuperSyncExample";
-#define MLOGD LOGD(TAG)
 
 GLRSuperSyncExample::GLRSuperSyncExample(JNIEnv *env, jobject androidContext,
                                        bool qcomTiledRenderingAvailable,
