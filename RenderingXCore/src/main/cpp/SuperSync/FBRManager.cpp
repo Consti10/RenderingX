@@ -27,9 +27,9 @@ FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailab
     previousVSYNC=0;
     displayRefreshTimeSum=0;
     displayRefreshTimeC=0;
-    initOtherExtensions();
+    Extensions::initOtherExtensions();
     switch(directRenderingMode){
-        case QCOM_TILED_RENDERING:initQCOMTiling();break;
+        case QCOM_TILED_RENDERING:Extensions::initQCOMTiling();break;
         default:
             break;
     }
@@ -69,7 +69,7 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env) {
     }
     //do not forget to clean up for a more pleasant view
     switch(directRenderingMode){
-        case QCOM_TILED_RENDERING:glEndTilingQCOM();break;
+        case QCOM_TILED_RENDERING:Extensions::glEndTilingQCOM();break;
         default:
             break;
     }
@@ -83,12 +83,12 @@ int64_t FBRManager::waitUntilVsyncStart() {
     leGPUChrono.nEyes++;
     while(true){
         if(leGPUChrono.eglSyncKHR!= nullptr){
-            const EGLint wait = eglClientWaitSyncKHR_( eglGetCurrentDisplay(), leGPUChrono.eglSyncKHR,
+            const EGLint wait = Extensions::eglClientWaitSyncKHR_( eglGetCurrentDisplay(), leGPUChrono.eglSyncKHR,
                                                        EGL_SYNC_FLUSH_COMMANDS_BIT_KHR, 0 );
             if(wait==EGL_CONDITION_SATISFIED_KHR){
                 //great ! We can measure the GPU time
                 leGPUChrono.eglSyncSatisfiedT=getSystemTimeNS();
-                eglDestroySyncKHR_( eglGetCurrentDisplay(), leGPUChrono.eglSyncKHR );
+                Extensions::eglDestroySyncKHR_( eglGetCurrentDisplay(), leGPUChrono.eglSyncKHR );
                 leGPUChrono.eglSyncKHR= nullptr;
                 leGPUChrono.lastDelta=leGPUChrono.eglSyncSatisfiedT-leGPUChrono.eglSyncCreationT;
                 leGPUChrono.deltaSumUS+=leGPUChrono.lastDelta/1000;
@@ -100,7 +100,7 @@ int64_t FBRManager::waitUntilVsyncStart() {
         if(pos<EYE_REFRESH_TIME){
             //don't forget to delete the sync object if it was not jet signaled. We can't measure the completion time because of the Asynchronousity of glFlush()
             if(leGPUChrono.eglSyncKHR!= nullptr){
-                eglDestroySyncKHR_( eglGetCurrentDisplay(), leGPUChrono.eglSyncKHR );
+                Extensions::eglDestroySyncKHR_( eglGetCurrentDisplay(), leGPUChrono.eglSyncKHR );
                 leGPUChrono.eglSyncKHR= nullptr;
                 leGPUChrono.eglSyncSatisfiedT=getSystemTimeNS();
                 leGPUChrono.nEyesNotMeasurable++;
@@ -118,12 +118,12 @@ int64_t FBRManager::waitUntilVsyncMiddle() {
     reGPUChrono.nEyes++;
     while(true){
         if(reGPUChrono.eglSyncKHR!= nullptr){
-            const EGLint wait = eglClientWaitSyncKHR_( eglGetCurrentDisplay(), reGPUChrono.eglSyncKHR,
+            const EGLint wait = Extensions::eglClientWaitSyncKHR_( eglGetCurrentDisplay(), reGPUChrono.eglSyncKHR,
                                                        EGL_SYNC_FLUSH_COMMANDS_BIT_KHR, 0 );
             if(wait==EGL_CONDITION_SATISFIED_KHR){
                 //great ! We can measure the GPU time
                 reGPUChrono.eglSyncSatisfiedT=getSystemTimeNS();
-                eglDestroySyncKHR_( eglGetCurrentDisplay(), reGPUChrono.eglSyncKHR );
+                Extensions::eglDestroySyncKHR_( eglGetCurrentDisplay(), reGPUChrono.eglSyncKHR );
                 reGPUChrono.eglSyncKHR= nullptr;
                 reGPUChrono.lastDelta=reGPUChrono.eglSyncSatisfiedT-reGPUChrono.eglSyncCreationT;
                 reGPUChrono.deltaSumUS+=reGPUChrono.lastDelta/1000;
@@ -135,7 +135,7 @@ int64_t FBRManager::waitUntilVsyncMiddle() {
         if(pos>EYE_REFRESH_TIME){
             //don't forget to delete the sync object if it was not jet signaled. We can't measure the completion time because of the Asynchronousity of glFlush()
             if(reGPUChrono.eglSyncKHR!= nullptr){
-                eglDestroySyncKHR_( eglGetCurrentDisplay(), reGPUChrono.eglSyncKHR );
+                Extensions::eglDestroySyncKHR_( eglGetCurrentDisplay(), reGPUChrono.eglSyncKHR );
                 reGPUChrono.eglSyncKHR= nullptr;
                 reGPUChrono.eglSyncSatisfiedT=getSystemTimeNS();
                 reGPUChrono.nEyesNotMeasurable++;
@@ -221,19 +221,19 @@ void FBRManager::startDirectRendering(bool leftEye, int viewPortW, int viewPortH
     //NOTE: glClear has to be called from the application, depending on the GPU time (I had to differentiate because of the updateTexImage2D)
     switch (directRenderingMode){
         case QCOM_TILED_RENDERING:{
-            glStartTilingQCOM(x,y,w,h);
+            Extensions::glStartTilingQCOM(x,y,w,h);
             glScissor(x,y,w,h); //glStartTiling should be enough. But just for safety set the scissor rect, too
             break;
         }
         case MALI_SoylentGraham:{
             const GLenum attachmentsSG[3] = { GL_COLOR_EXT, GL_DEPTH_EXT, GL_STENCIL_EXT};
-            glInvalidateFramebuffer_( GL_FRAMEBUFFER, 3, attachmentsSG );
+            Extensions::glInvalidateFramebuffer_( GL_FRAMEBUFFER, 3, attachmentsSG );
             glScissor( x, y, w, h);
             break;
         }
         case MALI_Consti1:{
             const GLenum attachments[3] = { GL_COLOR_EXT,GL_DEPTH_EXT,GL_STENCIL_EXT};
-            glInvalidateFramebuffer_( GL_FRAMEBUFFER, 3, attachments);
+            Extensions::glInvalidateFramebuffer_( GL_FRAMEBUFFER, 3, attachments);
             glScissor(x,y,w,h);
             break;
         }
@@ -246,17 +246,17 @@ void FBRManager::startDirectRendering(bool leftEye, int viewPortW, int viewPortH
 void FBRManager::stopDirectRendering(bool whichEye) {
     switch (directRenderingMode){
         case QCOM_TILED_RENDERING:{
-            glEndTilingQCOM();
+            Extensions::glEndTilingQCOM();
             break;
         }
         case MALI_SoylentGraham:{
             const GLenum attachmentsSG[2] = { GL_DEPTH_EXT, GL_STENCIL_EXT};
-            glInvalidateFramebuffer_( GL_FRAMEBUFFER, 2, attachmentsSG );
+            Extensions::glInvalidateFramebuffer_( GL_FRAMEBUFFER, 2, attachmentsSG );
             break;
         }
         case MALI_Consti1:{
             const GLenum attachmentsSG[2] = { GL_DEPTH_EXT, GL_STENCIL_EXT};
-            glInvalidateFramebuffer_( GL_FRAMEBUFFER, 2, attachmentsSG );
+            Extensions::glInvalidateFramebuffer_( GL_FRAMEBUFFER, 2, attachmentsSG );
             break;
         }
         default:
@@ -265,11 +265,11 @@ void FBRManager::stopDirectRendering(bool whichEye) {
     if(EGL_KHR_Reusable_Sync_Available){
         if(whichEye){
             leGPUChrono.eglSyncCreationT=getSystemTimeNS();
-            leGPUChrono.eglSyncKHR=eglCreateSyncKHR_( eglGetCurrentDisplay(), EGL_SYNC_FENCE_KHR,
+            leGPUChrono.eglSyncKHR=Extensions::eglCreateSyncKHR_( eglGetCurrentDisplay(), EGL_SYNC_FENCE_KHR,
                                                       nullptr );
         }else{
             reGPUChrono.eglSyncCreationT=getSystemTimeNS();
-            reGPUChrono.eglSyncKHR=eglCreateSyncKHR_( eglGetCurrentDisplay(), EGL_SYNC_FENCE_KHR,
+            reGPUChrono.eglSyncKHR=Extensions::eglCreateSyncKHR_( eglGetCurrentDisplay(), EGL_SYNC_FENCE_KHR,
                                                       nullptr );
         }
     }

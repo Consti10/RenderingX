@@ -18,7 +18,7 @@ namespace Indices{
         ret.reserve(indices.size());
         for(unsigned int index:indices){
             if(index>=vertices.size()){
-                LOGE("Indices")<<"Error wanted "<<index;
+                MLOGE<<"Error wanted "<<index;
             }
             ret.push_back(vertices.at(index));
         }

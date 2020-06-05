@@ -12,11 +12,11 @@
 
 
 static void EXPECT_NEAR(float a,float b,float tolerance){
-    LOGD()<<("Deviation:"+std::to_string(std::abs(a-b)));
+    MLOGD<<("Deviation:"+std::to_string(std::abs(a-b)));
     if(std::abs(a-b)>tolerance){
-        LOGD()<<"Test Error";
+        MLOGD<<"Test Error";
     }else{
-        LOGD()<<"Test OK";
+        MLOGD<<"Test OK";
     }
 }
 

@@ -5,9 +5,8 @@
 #include <sstream>
 #include "Chronometer.h"
 #include "jni.h"
-#include "android/log.h"
+#include <AndroidLogger.hpp>
 
-#define LOGT(...) __android_log_print(ANDROID_LOG_DEBUG,"Chronometer:", __VA_ARGS__)
 
 using namespace std::chrono;
 
@@ -27,12 +26,12 @@ float DurationAccumulator::getAvgMS() const {
 }
 
 
-Chronometer::Chronometer(const std::string& name): mName(name) {
+Chronometer::Chronometer(std::string name): mName(std::move(name)) {
     lastLog=startTS=steady_clock::now();
     reset();
 }
 
-Chronometer::Chronometer(): mName("") {
+Chronometer::Chronometer(): mName("Unknown") {
     lastLog=startTS=steady_clock::now();
     reset();
 }
@@ -59,12 +58,11 @@ float Chronometer::getAvgMS()const{
     return average.getAvgMS();
 }
 
-
-void Chronometer::printAvg(int intervalMS) {
+void Chronometer::printAvg(const steady_clock::duration& interval) {
     const auto now=steady_clock::now();
-    if(duration_cast<milliseconds>(now-lastLog).count()>intervalMS){
+    if(now-lastLog>interval){
         lastLog=now;
-        LOGT("Avg: %s:%fms",mName.c_str(),getAvgMS());
+        MLOGD2(mName)<<"Avg: "<<getAvgMS()<<"ms";
         reset();
     }
 }

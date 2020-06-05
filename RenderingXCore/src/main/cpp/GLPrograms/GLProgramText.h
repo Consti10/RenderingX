@@ -15,8 +15,8 @@
  * */
 
 
-#ifndef GL_RENDER_TEXT
-#define GL_RENDER_TEXT
+#ifndef GL_PROGRAM_RENDER_TEXT_H
+#define GL_PROGRAM_RENDER_TEXT_H
 
 #include <GLES2/gl2.h>
 #include <glm/glm.hpp>
@@ -166,4 +166,4 @@ private:
 };
 
 
-#endif
+#endif //GL_PROGRAM_RENDER_TEXT_H

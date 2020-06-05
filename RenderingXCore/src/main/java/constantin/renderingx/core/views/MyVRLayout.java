@@ -112,7 +112,7 @@ public class MyVRLayout extends FrameLayout implements LifecycleObserver {
 
     //Disable / enable the UI overlay with settings button and seperator line
     public void setVrOverlayEnabled(boolean enabled){
-        final int wantedVisibility=enabled ? VISIBLE : INVISIBLE;
+        final int wantedVisibility=enabled ? VISIBLE : GONE;
         findViewById(R.id.vr_overlay_seperator).setVisibility(wantedVisibility);
         findViewById(R.id.vr_overlay_back_button).setVisibility(wantedVisibility);
         findViewById(R.id.vr_overlay_settings_button).setVisibility(wantedVisibility);

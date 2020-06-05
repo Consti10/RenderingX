@@ -34,7 +34,7 @@ private:
     }
     void checkSetAlreadyUploaded(){
         if(alreadyUploaded){
-            LOGD(getTAG())<<"uploadGL called twice";
+            MLOGD2(getTAG())<<"uploadGL called twice";
         }
         alreadyUploaded=true;
     }

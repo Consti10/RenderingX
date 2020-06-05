@@ -28,14 +28,14 @@ private:
 
 class Chronometer {
 public:
-    explicit Chronometer(const std::string& name);
+    explicit Chronometer(std::string name);
     explicit Chronometer();
     void start();
     void stop();
     void reset();
     int64_t getAvgUS()const;
     float getAvgMS()const;
-    void printAvg(int intervalMS);
+    void printAvg(const std::chrono::steady_clock::duration& interval);
 private:
     const std::string mName;
     std::chrono::steady_clock::time_point startTS;

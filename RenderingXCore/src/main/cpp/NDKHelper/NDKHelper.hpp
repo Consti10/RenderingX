@@ -17,7 +17,6 @@
 // The purpose of this namespace is to provide utility functions
 // That help using the android NDK
 namespace NDKHelper {
-    constexpr auto TAG="NDKHelper";
     //Obtain the asset manager instance from the provided android context object
     static jobject getAssetManagerFromContext(JNIEnv* env,jobject android_context){
         jclass context_class =
@@ -41,7 +40,7 @@ namespace NDKHelper {
         jstring j_path = env->NewStringUTF(path.c_str());
         jobject input_stream =env->CallObjectMethod(java_asset_mgr, open_method, j_path);
         if (env->ExceptionOccurred() != nullptr) {
-            LOGE(TAG)<<"Java exception in createInputStreamFromAsset for file:"<<path;
+            MLOGE<<"Java exception in createInputStreamFromAsset for file:"<<path;
             env->ExceptionClear();
             env->DeleteLocalRef(j_path);
             return nullptr;
@@ -84,7 +83,7 @@ namespace NDKHelper {
             image_obj=env->CallObjectMethod(image_obj,extract_alpha_method);
         }
         if (env->ExceptionOccurred() != nullptr) {
-            LOGE(TAG)<<"Java exception while loading image";
+            MLOGE<<"Java exception while loading image";
             env->ExceptionClear();
             image_obj = nullptr;
             return false;
