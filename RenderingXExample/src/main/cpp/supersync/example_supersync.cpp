@@ -71,7 +71,7 @@ void GLRSuperSyncExample::onSurfaceChanged(int width, int height) {
 }
 
 void GLRSuperSyncExample::enterSuperSyncLoop(JNIEnv *env, jobject obj,int exclusiveVRCore) {
-    setAffinity(exclusiveVRCore);
+    Extensions::setAffinity(exclusiveVRCore);
     MLOGD<<"entering superSync loop. GLThread will be blocked";
     mFBRManager->enterDirectRenderingLoop(env);
     MLOGD<<"exited superSync loop. GLThread unblocked";
