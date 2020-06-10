@@ -12,8 +12,6 @@ import javax.microedition.khronos.egl.EGLSurface;
 
 public class MyEGLWindowSurfaceFactory implements GLSurfaceView.EGLWindowSurfaceFactory{
 
-    public static final int EGL_ANDROID_front_buffer_auto_refresh = 0x314C;
-
     private final boolean mSingleBuffer;
 
     public MyEGLWindowSurfaceFactory(){

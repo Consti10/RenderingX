@@ -15,11 +15,66 @@
 #include <GLES2/gl2ext.h>
 #include <AndroidLogger.hpp>
 
+// https://www.khronos.org/registry/OpenGL/extensions/QCOM/QCOM_tiled_rendering.txt
+namespace QCOM_tiled_rendering{
+    static PFNGLSTARTTILINGQCOMPROC	glStartTilingQCOM=nullptr;
+    static PFNGLENDTILINGQCOMPROC glEndTilingQCOM=nullptr;
+    static void init(){
+        glStartTilingQCOM= reinterpret_cast<PFNGLSTARTTILINGQCOMPROC>(eglGetProcAddress("glStartTilingQCOM"));
+        glEndTilingQCOM = reinterpret_cast<PFNGLENDTILINGQCOMPROC>(eglGetProcAddress("glEndTilingQCOM"));
+        if(glStartTilingQCOM== nullptr || glEndTilingQCOM==nullptr){
+            MLOGE<<"Cannot initialize QCOM_tiled_rendering";
+        }
+    }
+    static void HalfFrameStartTilingQCOM(bool rightHalf,int framebufferW,int framebufferH){
+        const int XOFFSET= rightHalf ? framebufferW/2 : 0;
+        glStartTilingQCOM(XOFFSET,0,framebufferW/2,framebufferH,0);
+    }
+    static void EndTilingQCOM() {
+        glEndTilingQCOM(GL_COLOR_BUFFER_BIT0_QCOM);
+    }
+}
 
+// https://www.khronos.org/registry/OpenGL/extensions/KHR/KHR_debug.txt
+namespace KHR_debug{
+    static PFNGLDEBUGMESSAGECALLBACKKHRPROC glDebugMessageCallbackKHR=nullptr;
+    static PFNGLGETDEBUGMESSAGELOGKHRPROC glGetDebugMessageLogKHR= nullptr;
+    static void on_gl_error(unsigned int source,unsigned int type, uint id,unsigned int severity,
+                            int length, const char* message,const void *userParam){
+        MLOGD2("GL_DEBUG")<<std::string(message);
+    }
+    static void enable(){
+        glDebugMessageCallbackKHR =(PFNGLDEBUGMESSAGECALLBACKKHRPROC)eglGetProcAddress(
+                "glDebugMessageCallbackKHR");
+        glGetDebugMessageLogKHR =(PFNGLGETDEBUGMESSAGELOGKHRPROC)eglGetProcAddress(
+                "glGetDebugMessageLogKHR");
+        if(glDebugMessageCallbackKHR==nullptr){
+            MLOGE<<"GL_KHR_DEBUG functions not found";
+            return;
+        }
+        // callback is thread safe
+        glEnable(GL_DEBUG_OUTPUT_KHR);
+        if(!glIsEnabled(GL_DEBUG_OUTPUT_KHR)){
+            MLOGE<<"Cannot enable GL_DEBUG_OUTPUT_KHR";
+            return;
+        }
+        glDebugMessageCallbackKHR(on_gl_error, NULL);
+    }
+}
+
+// https://www.khronos.org/registry/EGL/extensions/ANDROID/EGL_ANDROID_presentation_time.txt
+namespace ANDROID_presentation_time{
+    static PFNEGLPRESENTATIONTIMEANDROIDPROC eglPresentationTimeANDROID=nullptr;
+    static void init(){
+        eglPresentationTimeANDROID=reinterpret_cast<PFNEGLPRESENTATIONTIMEANDROIDPROC>(eglGetProcAddress("eglPresentationTimeANDROID"));
+        if(eglPresentationTimeANDROID== nullptr){
+            MLOGE<<"Cannot initialize ANDROID_presentation_time";
+        }
+    }
+}
+
+// other extensions
 namespace Extensions{
-    static PFNGLSTARTTILINGQCOMPROC	glStartTilingQCOM_;
-    static PFNGLENDTILINGQCOMPROC		glEndTilingQCOM_;
-
     typedef void (GL_APIENTRYP PFNGLINVALIDATEFRAMEBUFFER_) (GLenum target, GLsizei numAttachments, const GLenum* attachments);
     static PFNGLINVALIDATEFRAMEBUFFER_	glInvalidateFramebuffer_;
 
@@ -29,20 +84,6 @@ namespace Extensions{
     static PFNEGLSIGNALSYNCKHRPROC eglSignalSyncKHR_;
     static PFNEGLGETSYNCATTRIBKHRPROC eglGetSyncAttribKHR_;
 
-    static void initQCOMTiling(){
-        glStartTilingQCOM_ = (PFNGLSTARTTILINGQCOMPROC)eglGetProcAddress("glStartTilingQCOM");
-        glEndTilingQCOM_ = (PFNGLENDTILINGQCOMPROC)eglGetProcAddress("glEndTilingQCOM");
-    }
-
-    static void glStartTilingQCOM(int x,int y,int width,int height) {
-        glStartTilingQCOM_( (GLuint)x,(GLuint)y,(GLuint)width,(GLuint)height, 0 );
-        //glMultiDrawElementsBaseVertexEXT
-    }
-
-    static void glEndTilingQCOM() {
-        glEndTilingQCOM_( GL_COLOR_BUFFER_BIT0_QCOM );
-    }
-
     static void initOtherExtensions(){
         glInvalidateFramebuffer_  = (PFNGLINVALIDATEFRAMEBUFFER_)eglGetProcAddress("glInvalidateFramebuffer");
         eglCreateSyncKHR_ = (PFNEGLCREATESYNCKHRPROC)eglGetProcAddress( "eglCreateSyncKHR" );
@@ -51,23 +92,10 @@ namespace Extensions{
         eglSignalSyncKHR_ = (PFNEGLSIGNALSYNCKHRPROC)eglGetProcAddress( "eglSignalSyncKHR" );
         eglGetSyncAttribKHR_ = (PFNEGLGETSYNCATTRIBKHRPROC)eglGetProcAddress( "eglGetSyncAttribKHR" );
     }
-
     static void glInvalidateFramebuffer(){
         int count=3;
         const GLenum attachments[3] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT };
         glInvalidateFramebuffer_( GL_FRAMEBUFFER, count, attachments);
-    }
-
-    static void setAffinity(int core){
-        cpu_set_t  cpuset;
-        CPU_ZERO(&cpuset);       //clears the cpuset
-        CPU_SET( core, &cpuset); //set CPU x on cpuset*/
-        long err,syscallres;
-        pid_t pid=gettid();
-        syscallres=syscall(__NR_sched_setaffinity,pid, sizeof(cpuset),&cpuset);
-        if(syscallres) {
-            //PrivLOG("Error sched_setaffinity");
-        }
     }
 }
 
@@ -75,30 +103,38 @@ namespace Extensions{
 #include <TimeHelper.hpp>
 #include <array>
 
+/*namespace EGLExtensionsHelper{
+    template<typename T>
+    static void eglGetProcAddress(const char* name){
+        T f= eglGetProcAddress(name);
+    }
+}*/
+
 namespace Extensions2{
-    using eglGetNextFrameIdANDROID_type = EGLBoolean (*)(EGLDisplay, EGLSurface, EGLuint64KHR *);
-    static eglGetNextFrameIdANDROID_type eglGetNextFrameIdANDROID = nullptr;
-    using eglGetFrameTimestampsANDROID_type =  EGLBoolean (*)(EGLDisplay, EGLSurface,
-                                                              EGLuint64KHR, EGLint, const EGLint *, EGLnsecsANDROID *);
-    static eglGetFrameTimestampsANDROID_type eglGetFrameTimestampsANDROID = nullptr;
-    using eglGetCompositorTimingANDROID_type=EGLBoolean (*)(EGLDisplay, EGLSurface,EGLint, const EGLint *, EGLnsecsANDROID *);
-    static eglGetCompositorTimingANDROID_type eglGetCompositorTimingANDROID=nullptr;
+    static PFNEGLGETNEXTFRAMEIDANDROIDPROC eglGetNextFrameIdANDROID = nullptr;
+    static PFNEGLGETFRAMETIMESTAMPSANDROIDPROC eglGetFrameTimestampsANDROID = nullptr;
+    static PFNEGLGETCOMPOSITORTIMINGANDROIDPROC eglGetCompositorTimingANDROID=nullptr;
+    static PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC eglGetFrameTimestampSupportedANDROID=nullptr;
     static void init(){
-        eglGetNextFrameIdANDROID = reinterpret_cast<eglGetNextFrameIdANDROID_type>(
+        eglGetNextFrameIdANDROID = reinterpret_cast<PFNEGLGETNEXTFRAMEIDANDROIDPROC>(
                 eglGetProcAddress("eglGetNextFrameIdANDROID"));
         if (eglGetNextFrameIdANDROID == nullptr) {
             MLOGD<<"Failed to load eglGetNextFrameIdANDROID";
         }
-
-        eglGetFrameTimestampsANDROID = reinterpret_cast<eglGetFrameTimestampsANDROID_type>(
+        eglGetFrameTimestampsANDROID = reinterpret_cast<PFNEGLGETFRAMETIMESTAMPSANDROIDPROC>(
                 eglGetProcAddress("eglGetFrameTimestampsANDROID"));
         if (eglGetFrameTimestampsANDROID == nullptr) {
             MLOGD<<"Failed to load eglGetFrameTimestampsANDROID";
         }
-        eglGetCompositorTimingANDROID= reinterpret_cast<eglGetCompositorTimingANDROID_type>(
+        eglGetCompositorTimingANDROID= reinterpret_cast<PFNEGLGETCOMPOSITORTIMINGANDROIDPROC >(
                 eglGetProcAddress("eglGetCompositorTimingANDROID"));
         if (eglGetFrameTimestampsANDROID == nullptr) {
             MLOGD<<"Failed to load eglGetCompositorTimingANDROID";
+        }
+        eglGetFrameTimestampSupportedANDROID=reinterpret_cast<PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC>(
+                eglGetProcAddress("eglGetFrameTimestampSupportedANDROID"));
+        if (eglGetFrameTimestampsANDROID == nullptr) {
+            MLOGD<<"Failed to load eglGetFrameTimestampSupportedANDROID";
         }
     }
     static std::optional<EGLuint64KHR> getNextFrameId(EGLDisplay dpy, EGLSurface surface){
@@ -203,5 +239,17 @@ namespace Extensions2{
 }
 
 
-
+namespace LOLX{
+    static void setAffinity(int core){
+        cpu_set_t  cpuset;
+        CPU_ZERO(&cpuset);       //clears the cpuset
+        CPU_SET( core, &cpuset); //set CPU x on cpuset*/
+        long err,syscallres;
+        pid_t pid=gettid();
+        syscallres=syscall(__NR_sched_setaffinity,pid, sizeof(cpuset),&cpuset);
+        if(syscallres) {
+            //PrivLOG("Error sched_setaffinity");
+        }
+    }
+}
 #endif //OSDTESTER_EXTENSIONS_H

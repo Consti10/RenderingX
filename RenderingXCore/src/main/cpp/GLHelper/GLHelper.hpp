@@ -8,10 +8,10 @@
 
 //#define CRASH_APPLICATION_ON_GL_ERROR
 
-//Convenient methods for:
+// Convenient methods for:
 // Check GL error(s)
 // compile shader program from vertex and fragment shader string
-
+// and more
 namespace GLHelper{
     static const char *GlErrorString(GLenum error ){
         switch ( error ){
@@ -36,9 +36,10 @@ namespace GLHelper{
         }
         if(anyError){
             MLOGE<<ss.str();
-#ifdef CRASH_APPLICATION_ON_GL_ERROR
-            std::exit(-1);
-#endif
+            // CRASH_APPLICATION_ON_GL_ERROR
+            if(false){
+                std::exit(-1);
+            }
         }
     }
     static const GLuint loadShader(GLenum type,const std::string& shaderCode){
@@ -97,6 +98,15 @@ namespace GLHelper{
             MLOGE<<"glGetAttribLocation "<<name<<". The Attrib is either missing in the Shader or optimized out.";
         }
         return (GLuint) location;
+    }
+    static constexpr auto ALL_BUFFERS=GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT;
+    static void updateSetClearColor(int& index){
+        index++;
+        if(index % 2){
+            glClearColor(0.0f,0.0f,0.0f,0.0f);
+        }else{
+            glClearColor(1.0f,1.0f,0.0f,0.0f);
+        }
     }
 };
 

@@ -17,6 +17,8 @@ public class MyEGLConfigChooser implements GLSurfaceView.EGLConfigChooser {
     private static final String TAG="MyEGLConfigChooser";
     private static final boolean DEBUG=true;
 
+    public static final int EGL_ANDROID_front_buffer_auto_refresh = 0x314C;
+
     private static final int  EGL_KHR_mutable_render_buffer=0x1000;
     private static final int EGL_OPENGL_ES3_BIT_KHR = 0x40;
     private static final int EGL_OPENGL_ES2_BIT = 0x0004;

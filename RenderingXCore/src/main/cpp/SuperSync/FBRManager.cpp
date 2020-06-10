@@ -29,7 +29,7 @@ FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailab
     displayRefreshTimeC=0;
     Extensions::initOtherExtensions();
     switch(directRenderingMode){
-        case QCOM_TILED_RENDERING:Extensions::initQCOMTiling();break;
+        case QCOM_TILED_RENDERING:QCOM_tiled_rendering::init();break;
         default:
             break;
     }
@@ -69,7 +69,7 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env) {
     }
     //do not forget to clean up for a more pleasant view
     switch(directRenderingMode){
-        case QCOM_TILED_RENDERING:Extensions::glEndTilingQCOM();break;
+        case QCOM_TILED_RENDERING:QCOM_tiled_rendering::EndTilingQCOM();break;
         default:
             break;
     }
@@ -221,7 +221,7 @@ void FBRManager::startDirectRendering(bool leftEye, int viewPortW, int viewPortH
     //NOTE: glClear has to be called from the application, depending on the GPU time (I had to differentiate because of the updateTexImage2D)
     switch (directRenderingMode){
         case QCOM_TILED_RENDERING:{
-            Extensions::glStartTilingQCOM(x,y,w,h);
+            QCOM_tiled_rendering::glStartTilingQCOM(x,y,w,h,0);
             glScissor(x,y,w,h); //glStartTiling should be enough. But just for safety set the scissor rect, too
             break;
         }
@@ -246,7 +246,7 @@ void FBRManager::startDirectRendering(bool leftEye, int viewPortW, int viewPortH
 void FBRManager::stopDirectRendering(bool whichEye) {
     switch (directRenderingMode){
         case QCOM_TILED_RENDERING:{
-            Extensions::glEndTilingQCOM();
+            QCOM_tiled_rendering::EndTilingQCOM();
             break;
         }
         case MALI_SoylentGraham:{

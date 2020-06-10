@@ -19,8 +19,7 @@ import java.util.Objects;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import static constantin.renderingx.core.views.MyEGLWindowSurfaceFactory.EGL_ANDROID_front_buffer_auto_refresh;
-
+import static constantin.renderingx.core.views.MyEGLConfigChooser.EGL_ANDROID_front_buffer_auto_refresh;
 
 /**
  * Wrapper around GvrLayout/GLSurfaceView that includes its own rendering interface, created for SuperSync
@@ -132,6 +131,7 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
         GLES20.glClearColor(0,0,0,0.0f);
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         Process.setThreadPriority(-20);
+
         mRenderer.enterSuperSyncLoop(getExclusiveVRCore());
         debug("Exited SS on GL thread");
         doNotEnterAgain=true;

@@ -6,8 +6,7 @@
 #include <android/asset_manager_jni.h>
 #include <vector>
 
-constexpr auto TAG="GLRenderText";
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
+constexpr auto TAG="GLProgramText";
 
 constexpr const int CHAR_START = 0;           // First Character (ASCII Code)
 constexpr const int CHAR_END = 256;            // Last Character (ASCII Code)
@@ -61,7 +60,7 @@ GLProgramText::GLProgramText(const VDDCManager* distortionManager):
     updateOutline();
     setOtherUniforms();
     glUseProgram(0);
-    GLHelper::checkGlError("GLProgramText()");
+    GLHelper::checkGlError(TAG);
 }
 
 void GLProgramText::beforeDraw(const GLuint buffer) const{
@@ -92,7 +91,7 @@ void GLProgramText::updateOutline(const glm::vec3 &outlineColor, const float out
 
 void GLProgramText::draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, const int verticesOffset, const int numberIndices) const {
     if(verticesOffset+numberIndices>INDEX_BUFFER_SIZE){
-        LOGD("Error n vert:%d n Indices:%d",numberIndices,verticesOffset);
+        MLOGE<<"n vert:"<<numberIndices<<" n Indices:"<<verticesOffset;
     }
     glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
     glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
@@ -198,7 +197,7 @@ void  GLProgramText::loadTextRenderingData(JNIEnv *env, jobject androidContext,
     NDKHelper::LoadPngFromAssetManager2(env,androidContext,GL_TEXTURE_2D,TextAssetsHelper::getDistanceFieldNameByStyle(textStyle),true);
 
     //load the text widths into cpu memory, as a float array
-    const auto tmp=NDKHelper::getFloatArrayFromAssets2<CHAR_CNT>(env,androidContext,TextAssetsHelper::getOtherDataNameByStyle(textStyle).c_str());
+    const auto tmp=NDKHelper::getFloatArrayFromAssets2<CHAR_CNT>(env,androidContext,TextAssetsHelper::getOtherDataNameByStyle(textStyle));
     memcpy(FONTS_WIDTHS_U,tmp.data(),CHAR_CNT*sizeof(float));
 
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
@@ -225,7 +224,7 @@ void  GLProgramText::loadTextRenderingData(JNIEnv *env, jobject androidContext,
 
 float GLProgramText::getFontWidthSafe(int idx) {
     if(idx >= CHAR_CNT || idx<0){
-        LOGD("Error Text: Array out of bounds %d", idx);
+        MLOGE<<"Text: Array out of bounds "<<idx;
         return 0;
     }
     return FONTS_WIDTHS_U[idx];

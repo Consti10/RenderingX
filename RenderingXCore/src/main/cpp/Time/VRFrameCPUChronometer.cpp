@@ -6,9 +6,8 @@
 #include <android/log.h>
 #include <sstream>
 #include <numeric>
+#include <AndroidLogger.hpp>
 
-#define TAG "FrameCPUChronometer"
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
 
 using namespace std::chrono;
 
@@ -21,7 +20,7 @@ void VREyeDurations::print() {
         ss<<name<<": "<<std::chrono::duration_cast<std::chrono::nanoseconds>(time).count()<<"\n";
     }
     ss<<"Total:"<<std::chrono::duration_cast<std::chrono::nanoseconds>(totalTime).count();
-    LOGD("%s",ss.str().c_str());
+    MLOGD<<ss.str();
 }
 
 VRFrameTimeAccumulator::VRFrameTimeAccumulator(
@@ -36,13 +35,13 @@ VRFrameTimeAccumulator::VRFrameTimeAccumulator(
 void VRFrameTimeAccumulator::add(const VREyeDurations &timeStamps) {
     const int size=timeStamps.stamps.size();
     if(size!=mFrameCPUTimestamps.size()){
-        LOGD("ERROR not matching size");
+        MLOGD<<"ERROR not matching size";
         return;
     }
     for(unsigned int i=0;i<size;i++){
         const auto [name, delta]=timeStamps.stamps.at(i);
         if(name!=mFrameCPUTimestamps.at(i).get()->name){
-            LOGD("ERROR not matching name");
+            MLOGD<<"ERROR not matching name";
             return;
         }
         auto& frameCPUTimeStamp=timeStamps.whichEye ?mFrameCPUTimestamps.at(i).get()->leftEye :
@@ -73,7 +72,7 @@ void VRFrameTimeAccumulator::print() {
     const float rightEyeDelta= rightEyeTotal.getAvgMS();
     ss<<"\n"<<"CPUTimeSum:"<<" leftEye:"<<leftEyeDelta<<" | rightEye:"<<rightEyeDelta<<" | avg:"<<(leftEyeDelta+rightEyeDelta)/2.0f;
     ss<<"\n----  -----  ----  ----  ----  ----  ----  ----  ";
-    LOGD("%s",ss.str().c_str());
+    MLOGD<<ss.str();
 }
 
 void VRFrameTimeAccumulator::reset() {
