@@ -41,7 +41,7 @@ namespace KHR_debug{
     static PFNGLGETDEBUGMESSAGELOGKHRPROC glGetDebugMessageLogKHR= nullptr;
     static void on_gl_error(unsigned int source,unsigned int type, uint id,unsigned int severity,
                             int length, const char* message,const void *userParam){
-        MLOGD2("GL_DEBUG")<<std::string(message);
+        MLOGE2("GL_DEBUG")<<std::string(message);
     }
     static void enable(){
         glDebugMessageCallbackKHR =(PFNGLDEBUGMESSAGECALLBACKKHRPROC)eglGetProcAddress(
@@ -110,6 +110,7 @@ namespace Extensions{
     }
 }*/
 
+// https://www.khronos.org/registry/EGL/extensions/ANDROID/EGL_ANDROID_get_frame_timestamps.txt
 namespace Extensions2{
     static PFNEGLGETNEXTFRAMEIDANDROIDPROC eglGetNextFrameIdANDROID = nullptr;
     static PFNEGLGETFRAMETIMESTAMPSANDROIDPROC eglGetFrameTimestampsANDROID = nullptr;
@@ -119,22 +120,22 @@ namespace Extensions2{
         eglGetNextFrameIdANDROID = reinterpret_cast<PFNEGLGETNEXTFRAMEIDANDROIDPROC>(
                 eglGetProcAddress("eglGetNextFrameIdANDROID"));
         if (eglGetNextFrameIdANDROID == nullptr) {
-            MLOGD<<"Failed to load eglGetNextFrameIdANDROID";
+            MLOGE<<"Failed to load eglGetNextFrameIdANDROID";
         }
         eglGetFrameTimestampsANDROID = reinterpret_cast<PFNEGLGETFRAMETIMESTAMPSANDROIDPROC>(
                 eglGetProcAddress("eglGetFrameTimestampsANDROID"));
         if (eglGetFrameTimestampsANDROID == nullptr) {
-            MLOGD<<"Failed to load eglGetFrameTimestampsANDROID";
+            MLOGE<<"Failed to load eglGetFrameTimestampsANDROID";
         }
         eglGetCompositorTimingANDROID= reinterpret_cast<PFNEGLGETCOMPOSITORTIMINGANDROIDPROC >(
                 eglGetProcAddress("eglGetCompositorTimingANDROID"));
         if (eglGetFrameTimestampsANDROID == nullptr) {
-            MLOGD<<"Failed to load eglGetCompositorTimingANDROID";
+            MLOGE<<"Failed to load eglGetCompositorTimingANDROID";
         }
         eglGetFrameTimestampSupportedANDROID=reinterpret_cast<PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC>(
                 eglGetProcAddress("eglGetFrameTimestampSupportedANDROID"));
         if (eglGetFrameTimestampsANDROID == nullptr) {
-            MLOGD<<"Failed to load eglGetFrameTimestampSupportedANDROID";
+            MLOGE<<"Failed to load eglGetFrameTimestampSupportedANDROID";
         }
     }
     static std::optional<EGLuint64KHR> getNextFrameId(EGLDisplay dpy, EGLSurface surface){
