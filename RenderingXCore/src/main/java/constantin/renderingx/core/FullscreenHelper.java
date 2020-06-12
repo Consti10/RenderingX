@@ -7,7 +7,7 @@ import android.view.View;
 //Use to enable 'true' android immersive sticky == FULLSCREEN
 //For VR
 //(True) Fullscreen is such a pain on android !
-
+ 
 public final class FullscreenHelper {
     //Call this in onCreate
     public static void enableImmersiveSticky(final Activity c){
