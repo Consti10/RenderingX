@@ -55,12 +55,12 @@ add_library( GLPrograms SHARED
         ${RX_CORE_CPP}/DistortionCorrection/PolynomialRadialDistortion/PolynomialRadialInverse.cpp
         ${RX_CORE_CPP}/DistortionCorrection/DistortionEngine.cpp
         ${RX_CORE_CPP}/DistortionCorrection/MLensDistortion.cpp
+        ${RX_CORE_CPP}/DistortionCorrection/VrCompositorRenderer.cpp
         ${RX_CORE_CPP}/GLPrograms/GLProgramVC.cpp
         ${RX_CORE_CPP}/GLPrograms/GLProgramText.cpp
         ${RX_CORE_CPP}/GLPrograms/GLProgramTexture.cpp
         ${RX_CORE_CPP}/GLPrograms/GLProgramLine.cpp
         ${RX_CORE_CPP}/GLPrograms/ProjTex/GLPTextureProj.cpp
         ${RX_CORE_CPP}/GLPrograms/ProjTex/GLPTextureProj2.cpp
-        ${RX_CORE_CPP}/Experimental/CompositorLayerRenderer.cpp
         )
 target_link_libraries( GLPrograms ${log-lib} android GLESv2 gvr-lib)

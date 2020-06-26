@@ -12,9 +12,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <array>
-#include <GLBufferHelper.hpp>
 #include <VertexBuffer.hpp>
-#include <VertexIndexBuffer.h>
+#include <VertexIndexBuffer.hpp>
 
 // TODO replace <0,1> with GL_TEXTURE_BORDER_COLOR ..
 

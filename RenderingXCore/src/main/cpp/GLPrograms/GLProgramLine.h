@@ -11,9 +11,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <TrueColor.hpp>
-#include <VDDCManager.h>
 #include <VertexBuffer.hpp>
-#include <VertexIndexBuffer.h>
+#include <VertexIndexBuffer.hpp>
 
 class GLProgramLine {
 private:
@@ -21,8 +20,6 @@ private:
     GLuint mPositionHandle,mNormalHandle,mLineWidthHandle,mBaseColorHandle,mOutlineColorHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
     GLuint uEdge,uBorderEdge,uOutlineStrength;
-    const VDDCManager* distortionManager;
-    VDDCManager::UndistortionHandles* mUndistortionHandles;
 public:
     struct Vertex{
         float x,y,z;
@@ -32,7 +29,7 @@ public:
         TrueColor outlineColor;
     };
     static constexpr int VERTICES_PER_LINE=6;
-    explicit GLProgramLine(const VDDCManager* distortionManager=nullptr);
+    explicit GLProgramLine();
     void beforeDraw(GLuint buffer) const;
     void setOtherUniforms(float outlineWidth=0.4f,float edge=0.1f,float borderEdge=0.1f)const;
     void draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, int verticesOffset, int numberVertices) const;
@@ -43,7 +40,7 @@ public:
     static void convertLineToRenderingData(const glm::vec3& start, const glm::vec3& end, float lineWidth,
                                            Vertex array[], int arrayOffset, TrueColor baseColor=TrueColor2::BLACK, TrueColor outlineColor=TrueColor2::WHITE);
 private:
-    static const std::string VS(const VDDCManager* distortionManager){
+    static const std::string VS(){
         std::stringstream s;
         s<<"uniform mat4 uMVMatrix;\n";
         s<<"uniform mat4 uPMatrix;\n";
@@ -55,15 +52,14 @@ private:
         s<<"varying vec3 vNormal;";
         s<<"varying vec4 vBaseColor;";
         s<<"varying vec4 vOutlineColor;";
-        s << VDDCManager::writeDistortionParams(distortionManager);
         s<<"vec4 extruded_pos;";
         s<<"void main(){\n";
         s<<"extruded_pos=aPosition+vec4(aNormal*aLineWidth,0.0);\n";
-        s << VDDCManager::writeGLPosition(distortionManager, "extruded_pos");
-        //s<<"gl_Position = (uPMatrix*uMVMatrix)* extruded_pos;\n";
+        s<<"gl_Position = (uPMatrix*uMVMatrix)* extruded_pos;\n";
         s<<"vNormal=aNormal;";
         s<<"vBaseColor=aBaseColor;";
         s<<"vOutlineColor=aOutlineColor;";
+        //s<<" gl_Position.zw=vec2(0.0,1.0);";
         s<<"}\n";
         return s.str();
     }

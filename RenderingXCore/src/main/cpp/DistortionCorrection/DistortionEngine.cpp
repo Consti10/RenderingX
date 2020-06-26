@@ -96,7 +96,6 @@ void DistortionEngine::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     //test3();
 }
 
-
 void DistortionEngine::updateDistortionManager(VDDCManager &distortionManager)const {
     distortionManager.updateDistortion(mInverse,screen_params,texture_params);
 }
@@ -122,7 +121,7 @@ glm::mat4 DistortionEngine::GetProjectionMatrix(gvr::Eye eye)const{
     return mProjectionM[eye];
 }
 
-void DistortionEngine::setOpenGLViewport(gvr::Eye eye) {
+void DistortionEngine::setOpenGLViewport(gvr::Eye eye)const {
     const int ViewPortW=(int)(screenWidthP/2.0f);
     const int ViewPortH=screenHeightP;
     if(eye==0){

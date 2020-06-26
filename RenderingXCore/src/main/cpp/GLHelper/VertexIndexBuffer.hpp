@@ -5,7 +5,7 @@
 #ifndef RENDERINGX_VERTEXINDEXBUFFER_H
 #define RENDERINGX_VERTEXINDEXBUFFER_H
 
-#include <GLBufferHelper.hpp>
+#include <GLBuffer.hpp>
 
 //Helps Generalizing the following re-occuring pattern:
 //1) create vertices/indices on stack

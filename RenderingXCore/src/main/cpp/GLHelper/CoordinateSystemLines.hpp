@@ -8,7 +8,7 @@
 #include <GLES2/gl2.h>
 #include "../GLPrograms/GLProgramVC.h"
 #include "../GeometryBuilder/ColoredGeometry.hpp"
-#include "GLBufferHelper.hpp"
+#include "GLBuffer.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>

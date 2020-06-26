@@ -5,37 +5,38 @@
 #ifndef FPV_VR_GLPROGRAMS_HELPER_GEOMETRYHELPER1_H
 #define FPV_VR_GLPROGRAMS_HELPER_GEOMETRYHELPER1_H
 
-#include <Indices.hpp>
+#include <IndicesHelper.hpp>
 #include "GLProgramTexture.h"
 #include "VerticalPlane.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <optional>
 
 #include <utility>
+#include <AbstractMesh.hpp>
 
 //Create vertex/index buffers for drawing textured geometry
 namespace TexturedGeometry {
-    using VerticesIndices=std::pair<std::vector<GLProgramTexture::Vertex>,std::vector<GLProgramTexture::INDEX_DATA>>;
+    using Vertices=std::vector<GLProgramTexture::Vertex>;
+    using Indices=std::vector<GLProgramTexture::INDEX_DATA>;
 
-    static const VerticesIndices makeTesselatedVideoCanvas(const unsigned int tessellation, const glm::vec3& translation,const glm::vec2& scale, const float uOffset,
-                                                           const float uRange){
-        const auto vertices=VerticalPlane::createVerticesPlaneTextured(tessellation,translation,scale,uOffset,uRange);
+    static const GLProgramTexture::Mesh makeTesselatedVideoCanvas(const unsigned int tessellation, const glm::vec3& translation,const glm::vec2& scale, const float uOffset,
+                                                           const float uRange,const bool invertUCoordinates=false,const bool invertVCoordinates=true){
+        const auto vertices=VerticalPlane::createVerticesPlaneTextured(tessellation,translation,scale,uOffset,uRange,invertUCoordinates,invertVCoordinates);
         const auto indices=VerticalPlane::createIndicesPlane(tessellation);
-        return {vertices,indices};
+        return GLProgramTexture::Mesh(vertices,indices,GL_TRIANGLES);
     }
     //Sometimes we want no indices for simplicity over performance
     static const std::vector<GLProgramTexture::Vertex> makeTesselatedVideoCanvas2(const unsigned int tessellation, const glm::vec3& translation,const glm::vec2& scale, const float uOffset,
                                                                                   const float uRange){
         const auto tmp=makeTesselatedVideoCanvas(tessellation,translation,scale,uOffset,uRange);
-        return Indices::mergeIndicesIntoVertices(tmp.first, tmp.second);
+        return IndicesHelper::mergeIndicesIntoVertices(tmp.vertices,*tmp.indices);
     }
-
     static const std::vector<GLProgramTexture::Vertex> makeTesselatedVideoCanvas2(const unsigned int tessellation,
                                                                                   const glm::mat4 modelMatrix=glm::mat4(1.0f),const glm::mat4 textureMatrix=glm::mat4(1.0f)){
-        const auto tmp= VerticalPlane::createVerticesPlaneTextured(tessellation, modelMatrix,
-                                                                   textureMatrix);
+        const auto tmp= VerticalPlane::createVerticesPlaneTextured(tessellation, modelMatrix,textureMatrix,true);
         const auto tmp2=VerticalPlane::createIndicesPlane(tessellation);
-        return Indices::mergeIndicesIntoVertices(tmp, tmp2);
+        return IndicesHelper::mergeIndicesIntoVertices(tmp, tmp2);
     }
     static const std::vector<GLProgramTexture::Vertex> makePyramid(){
         return {

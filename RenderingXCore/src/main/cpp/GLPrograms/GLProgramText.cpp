@@ -5,6 +5,7 @@
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #include <vector>
+#include <GLHelper.hpp>
 
 constexpr auto TAG="GLProgramText";
 
@@ -18,12 +19,9 @@ static float FONTS_WIDTHS_U[CHAR_CNT];
 
 //#define WIREFRAME
 
-GLProgramText::GLProgramText(const VDDCManager* distortionManager):
-    distortionManager(distortionManager)
-    {
-    mProgram = GLHelper::createProgram(VS(distortionManager),FS2());
-    mMVMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uMVMatrix");
-    mPMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uPMatrix");
+GLProgramText::GLProgramText(){
+    mProgram = GLHelper::createProgram(VS(),FS2());
+    uProjectionMatrix=GLHelper::GlGetUniformLocation(mProgram,"uProjectionMatrix");
     mPositionHandle = GLHelper::GlGetAttribLocation(mProgram, "aPosition");
     mTextureHandle = GLHelper::GlGetAttribLocation(mProgram, "aTexCoord");
     mColorHandle= GLHelper::GlGetAttribLocation(mProgram, "aVertexColor");
@@ -32,7 +30,6 @@ GLProgramText::GLProgramText(const VDDCManager* distortionManager):
     mOutlineStrengthHandle=GLHelper::GlGetUniformLocation(mProgram,"uOutlineStrength");
     uEdge=GLHelper::GlGetUniformLocation(mProgram,"uEdge");
     uBorderEdge=GLHelper::GlGetUniformLocation(mProgram,"uBorderEdge");
-    mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
 #ifdef WIREFRAME
     mOverrideColorHandle=GLHelper::GlGetUniformLocation(mProgram,"uOverrideColor");
 #endif
@@ -76,7 +73,6 @@ void GLProgramText::beforeDraw(const GLuint buffer) const{
     glEnableVertexAttribArray(mColorHandle);
     glVertexAttribPointer(mColorHandle,4/*r,g,b,a*/,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,color));
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndicesB);
-    if(distortionManager)distortionManager->beforeDraw(mUndistortionHandles);
 }
 
 void GLProgramText::setOtherUniforms(float edge, float borderEdge)const {
@@ -89,12 +85,11 @@ void GLProgramText::updateOutline(const glm::vec3 &outlineColor, const float out
     glUniform1f(mOutlineStrengthHandle,outlineStrength);
 }
 
-void GLProgramText::draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, const int verticesOffset, const int numberIndices) const {
+void GLProgramText::draw(const glm::mat4x4& ProjM, const int verticesOffset, const int numberIndices) const {
     if(verticesOffset+numberIndices>INDEX_BUFFER_SIZE){
         MLOGE<<"n vert:"<<numberIndices<<" n Indices:"<<verticesOffset;
     }
-    glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
-    glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
+    glUniformMatrix4fv(uProjectionMatrix, 1, GL_FALSE, glm::value_ptr(ProjM));
 #ifdef WIREFRAME
     glUniform1f(mOverrideColorHandle,1.0f);
     glLineWidth(1);

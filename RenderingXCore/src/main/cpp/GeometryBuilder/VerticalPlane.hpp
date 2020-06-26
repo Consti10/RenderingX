@@ -20,7 +20,7 @@ namespace VerticalPlane{
      * @param textureMatrix to scale and translate the texture (u,v) coordinates
      */
     static std::vector<GLProgramTexture::Vertex> createVerticesPlaneTextured(const unsigned int tessellation,
-            const glm::mat4 modelMatrix=glm::mat4(1.0f),const glm::mat4 textureMatrix= glm::mat4(1.0f)){
+            const glm::mat4 modelMatrix=glm::mat4(1.0f),const glm::mat4 textureMatrix= glm::mat4(1.0f),const bool invertUCoordinates=false,const bool invertVCoordinates=true){
         std::vector<GLProgramTexture::Vertex> vertices((tessellation+1)*(tessellation+1));
         const int tessellationX=tessellation;
         const int tessellationY=tessellation;
@@ -32,7 +32,9 @@ namespace VerticalPlane{
         for(int i=0;i<tessellationX+1;i++){
             for(int j=0;j<tessellationY+1;j++){
                 const glm::vec4 pos={-0.5f+subW*j,-0.5f+subH*i,0.0f,1.0f};
-                const glm::vec4 texture={subURange*j,1.0f-subVRange*i,0.0f,1.0f};
+                const float tmpU=invertUCoordinates ? 1.0f-subURange*j : subURange*j;
+                const float tmpV=invertVCoordinates ? 1.0f-subVRange*i : subVRange*i;
+                const glm::vec4 texture={tmpU,tmpV,0.0f,1.0f};
                 const glm::vec4 pos2=modelMatrix*pos;
                 const glm::vec4 texture2=textureMatrix*texture;
                 GLProgramTexture::Vertex& v=vertices.at(count);
@@ -122,10 +124,10 @@ namespace VerticalPlane{
 
     // Reduced / simplified some parameters for FPV_VR, which does not rotate the plane (UI) and only modifies texture u values
     static std::vector<GLProgramTexture::Vertex> createVerticesPlaneTextured(const unsigned int tessellation, const glm::vec3& translation,const glm::vec2& scale,
-                                                                             const float uOffset,const float uRange){
+                                                                             const float uOffset,const float uRange,const bool invertUCoordinates,const bool invertVCoordinates){
         auto modelMatrix=glm::translate(translation)*glm::scale(glm::vec3(scale.x,scale.y,1));
         auto textureMatrix=glm::translate(glm::vec3(uOffset,0,0))*glm::scale(glm::vec3(uRange,1,1));
-        return VerticalPlane::createVerticesPlaneTextured(tessellation, modelMatrix, textureMatrix);
+        return VerticalPlane::createVerticesPlaneTextured(tessellation, modelMatrix, textureMatrix,invertUCoordinates,invertVCoordinates);
     }
     // Reduced / simplified some parameters for FPV_VR, which does not rotate the plane (UI)
     static std::vector<GLProgramVC::Vertex> createVerticesPlaneColored(const unsigned int tessellation,

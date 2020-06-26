@@ -23,7 +23,7 @@ private:
     gvr::Mat4f latestHeadSpaceFromStartSpaceRotation_=toGVR(latestHeadSpaceFromStartSpaceRotation);
 public:
     //These values must match the surface that is used for rendering VR content
-    //E.g. must be create full screen surface
+    //E.g. must be created as full screen surface
     int screenWidthP=1920;
     int screenHeightP=1080;
     //
@@ -59,7 +59,7 @@ public:
 
     //Set the viewport to exactly half framebuffer size
     //where framebuffer size==screen size
-    void setOpenGLViewport(gvr::Eye eye);
+    void setOpenGLViewport(gvr::Eye eye)const;
 
     //This one does not use the inverse and is therefore (relatively) slow compared to when
     //using the approximate inverse

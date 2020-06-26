@@ -12,8 +12,10 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <VDDCManager.h>
 #include <VertexBuffer.hpp>
-#include <VertexIndexBuffer.h>
+#include <VertexIndexBuffer.hpp>
 //#define WIREFRAME
+#include <AbstractMesh.hpp>
+
 
 class GLProgramTexture {
 private:
@@ -32,6 +34,7 @@ public:
         float u,v;
     };
     using INDEX_DATA=GLuint;
+    using Mesh=AbstractMesh<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
     explicit GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const VDDCManager* distortionManager=nullptr, const bool use2dCoordinates=false, const bool mapEquirectangularToInsta360=false);
     void beforeDraw(GLuint buffer,GLuint texture) const;
     void draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLenum mode=GL_TRIANGLES) const;
@@ -41,6 +44,7 @@ public:
     //Advanced
     void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const VertexBuffer& vb)const;
     void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const VertexIndexBuffer& vib)const;
+    void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const Mesh& mesh);
 private:
     static const std::string VS(const VDDCManager* distortionManager1, const bool use2dCoordinates){
         std::stringstream s;

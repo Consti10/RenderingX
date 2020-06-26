@@ -70,7 +70,8 @@ private:
     gvr::Sizei framebuffer_size;
     void updateBufferViewports();
     FPSCalculator mFPSCalculator;
-    std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
+    //std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
+    std::unique_ptr<GLProgramVC> mGLProgramVC=nullptr;
     std::array<VertexBuffer,2> mOcclusionMesh;
     static constexpr int LINE_MESH_TESSELATION_FACTOR=12;
     VertexBuffer blueMeshB;

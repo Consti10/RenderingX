@@ -9,7 +9,7 @@
 #include <AndroidLogger.hpp>
 #include "GLES2/gl2.h"
 
-namespace Indices{
+namespace IndicesHelper{
     // takes a mesh that uses indices and removes indices by duplicating/adding vertices
     // less memory efficient, but easier to draw / debug
     template<class T>

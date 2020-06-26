@@ -97,3 +97,14 @@ void GLProgramTexture::drawX(GLuint texture,const glm::mat4x4& ViewM, const glm:
     drawIndexed(vib.indexB,ViewM,ProjM,0,vib.nIndices,vib.mMode);
     afterDraw();
 }
+
+void GLProgramTexture::drawX(GLuint texture, const glm::mat4x4 &ViewM, const glm::mat4x4 &ProjM,
+                             const GLProgramTexture::Mesh &mesh) {
+    beforeDraw(mesh.glBufferVertices.glBufferId, texture);
+    if(mesh.glBufferIndices!=std::nullopt){
+        drawIndexed(mesh.glBufferIndices->glBufferId, ViewM, ProjM, 0, mesh.count, mesh.mode);
+    }else{
+        draw(ViewM,ProjM,0,mesh.count,mesh.mode);
+    }
+    afterDraw();
+}

@@ -40,8 +40,9 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     const float wh=2.0f;
     glBufferTextured.uploadGL(TexturedGeometry::makeTesselatedVideoCanvas2(10,glm::vec3(0,0,0),{wh,wh},0.0f,1.0f));
 
-    mBasicGLPrograms=std::make_unique<BasicGLPrograms>(&distortionManager);
-    mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
+    //mBasicGLPrograms=std::make_unique<BasicGLPrograms>();
+    //mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
+    mGLProgramVC=std::make_unique<GLProgramVC>(&distortionManager);
     //create the green and blue mesh
     float tesselatedRectSize=2.0; //6.2f
     blueMeshB.uploadGL(
@@ -139,11 +140,11 @@ void RendererDistortion::drawEyeVDDC(gvr::Eye eye) {
 
 void RendererDistortion::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen, bool occlusion) {
     const VertexBuffer& tmp=meshColorGreen ? greenMeshB : blueMeshB;
-    mBasicGLPrograms->vc.drawX(viewM,projM,tmp);
+    mGLProgramVC->drawX(viewM,projM,tmp);
 
-    if(occlusion){
-        mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);
-    }
+    //if(occlusion){
+    //    mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);
+    //}
 
     // Dev proj texturing
     /*glDisable(GL_DEPTH_TEST);

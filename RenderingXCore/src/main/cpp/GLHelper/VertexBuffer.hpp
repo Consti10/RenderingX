@@ -6,8 +6,7 @@
 #define RENDERINGX_VERTEXBUFFER_H
 
 #include <GLHelper.hpp>
-#include <GLBufferHelper.hpp>
-
+#include <GLBuffer.hpp>
 //Helps Generalizing the following re-occuring pattern:
 //1) create vertices on stack
 //2) upload vertex data to gpu, then object on stack is freed
@@ -60,7 +59,6 @@ public:
         initializeGL();
         uploadGL(vertices,mode);
     }*/
-
     void deleteGL() {
         glDeleteBuffers(1, &vertexB);
     }

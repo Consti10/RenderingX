@@ -12,9 +12,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <array>
-#include <GLBufferHelper.hpp>
+#include <GLBuffer.hpp>
 #include <VertexBuffer.hpp>
-#include <VertexIndexBuffer.h>
+#include <VertexIndexBuffer.hpp>
 
 
 class GLPTextureProj2 {

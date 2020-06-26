@@ -5,7 +5,7 @@
 #ifndef FPV_VR_GLPROGRAMS_HELPER_GEOMETRYHELPER2_H
 #define FPV_VR_GLPROGRAMS_HELPER_GEOMETRYHELPER2_H
 
-#include <Indices.hpp>
+#include <IndicesHelper.hpp>
 #include "GLProgramVC.h"
 #include <TrueColor.hpp>
 #include <array>
@@ -59,14 +59,14 @@ namespace ColoredGeometry {
         const auto vertices= VerticalPlane::createVerticesPlaneColored(tessellation,translation,scale,color);
         const auto indices=VerticalPlane::createIndicesPlane(tessellation);
         //we do not want indices, remove them
-        return Indices::mergeIndicesIntoVertices(vertices, indices);
+        return IndicesHelper::mergeIndicesIntoVertices(vertices, indices);
     }
     //Can be drawn using GL_LINES
     static const std::vector<GLProgramVC::Vertex> makeTessellatedColoredRectWireframe(const unsigned int tessellation, const glm::vec3 &translation,const glm::vec2 scale,const TrueColor color){
         const auto vertices=  VerticalPlane::createVerticesPlaneColored(tessellation,translation,scale,color);
         const auto indices=VerticalPlane::createIndicesWireframe(tessellation);
         //we do not want indices, remove them
-        return Indices::mergeIndicesIntoVertices(vertices, indices);
+        return IndicesHelper::mergeIndicesIntoVertices(vertices, indices);
     }
     //Create a tesselated wireframe mesh that spawns exactly the viewport
     //e.q [-1,1] in x and y direction

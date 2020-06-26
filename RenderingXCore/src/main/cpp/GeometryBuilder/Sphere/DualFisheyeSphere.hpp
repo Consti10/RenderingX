@@ -10,7 +10,7 @@
 #include <vector>
 #include <GLES2/gl2.h>
 #include "cmath"
-#include <GLBufferHelper.hpp>
+#include <GLBuffer.hpp>
 #include <GLProgramTexture.h>
 #include <VertexBuffer.hpp>
 #include <VertexIndexBuffer.h>

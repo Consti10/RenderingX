@@ -37,8 +37,8 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
     specs[0].SetDepthStencilFormat(GVR_DEPTH_STENCIL_FORMAT_DEPTH_16);
     swap_chain = std::make_unique<gvr::SwapChain>(gvr_api_->CreateSwapChain(specs));
 
-    mBasicGLPrograms=std::make_unique<BasicGLPrograms>(&distortionManager);
-    mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
+    //mBasicGLPrograms=std::make_unique<BasicGLPrograms>(&distortionManager);
+    //mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
     mGLProgramTextureExt=std::make_unique<GLProgramTextureExt>(&distortionManager);
     mGLProgramTextureExt2=std::make_unique<GLProgramTextureExt>(&distortionManager,true);
     mVideoTexture=(GLuint)videoTexture;
@@ -157,9 +157,9 @@ void Renderer360Video::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM, b
         default:
             MLOGE<<"Unknown sphere mode";
     }
-    if(occlusion){
-        mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);
-    }
+    //if(occlusion){
+    //    mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);
+    //}
     GLHelper::checkGlError("Renderer360Video::drawEye");
 }
 

@@ -4,9 +4,8 @@
 
 #include "GLProgramLine.h"
 
-GLProgramLine::GLProgramLine(const VDDCManager* distortionManager):
-distortionManager(distortionManager) {
-    mProgram = GLHelper::createProgram(VS(distortionManager),FS());
+GLProgramLine::GLProgramLine(){
+    mProgram = GLHelper::createProgram(VS(),FS());
     mMVMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uMVMatrix");
     mPMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uPMatrix");
     mPositionHandle =GLHelper::GlGetAttribLocation(mProgram, "aPosition");
@@ -17,7 +16,6 @@ distortionManager(distortionManager) {
     uEdge=GLHelper::GlGetUniformLocation(mProgram,"uEdge");
     uBorderEdge=GLHelper::GlGetUniformLocation(mProgram,"uBorderEdge");
     uOutlineStrength=GLHelper::GlGetUniformLocation(mProgram,"uOutlineStrength");
-    mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
     glUseProgram(mProgram);
     setOtherUniforms();
     glUseProgram(0);
@@ -37,7 +35,6 @@ void GLProgramLine::beforeDraw(GLuint buffer) const {
     glVertexAttribPointer(mBaseColorHandle,4,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,baseColor));
     glEnableVertexAttribArray(mOutlineColorHandle);
     glVertexAttribPointer(mOutlineColorHandle,4,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,outlineColor));
-    if(distortionManager)distortionManager->beforeDraw(mUndistortionHandles);
 }
 
 void GLProgramLine::setOtherUniforms(float outlineWidth,float edge, float borderEdge) const {

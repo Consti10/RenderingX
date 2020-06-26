@@ -15,19 +15,16 @@
 
 class BasicGLPrograms{
 public:
-    explicit BasicGLPrograms(const VDDCManager* distortionManager= nullptr):
-        vc(distortionManager),
-        text(distortionManager),
-        line(distortionManager),
-        vc2D()
+    explicit BasicGLPrograms():
+        vc(nullptr),
+        text(),
+        line()
     {}
 public:
     //Once these GLPrograms are created, they don't change - only the content of the buffers they draw changes
     const GLProgramVC vc;
     const GLProgramText text;
     const GLProgramLine line;
-    //The 2D program never does V.D.D.C -it only works on ('raw') viewport coordinates
-    const GLProgramVC2D vc2D;
 };
 
 

@@ -15,7 +15,7 @@
 #include <TrueColor.hpp>
 #include <VDDCManager.h>
 #include <VertexBuffer.hpp>
-#include <VertexIndexBuffer.h>
+#include <VertexIndexBuffer.hpp>
 
 //#define WIREFRAME
 

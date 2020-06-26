@@ -25,13 +25,12 @@
 #include <string>
 #include "TextAssetsHelper.hpp"
 #include <TrueColor.hpp>
-#include <VDDCManager.h>
 
 class GLProgramText {
 private:
     GLuint mProgram;
     GLuint mPositionHandle,mTextureHandle,mSamplerHandle,mColorHandle;
-    GLuint mMVMatrixHandle,mPMatrixHandle;
+    GLuint uProjectionMatrix;
     GLuint mOutlineColorHandle,mOutlineStrengthHandle;
     GLuint mOverrideColorHandle;
     GLuint uEdge,uBorderEdge;
@@ -47,8 +46,6 @@ private:
         float u,v;
         TrueColor color;
     };
-    const VDDCManager* distortionManager;
-    VDDCManager::UndistortionHandles* mUndistortionHandles;
 public:
     //Characters are indexed squares
     struct Character{
@@ -60,13 +57,13 @@ public:
     static constexpr const int VERTICES_PER_CHARACTER=4; //2 quads
     static constexpr const int INDICES_PER_CHARACTER=6;
 public:
-    explicit GLProgramText(const VDDCManager* distortionManager=nullptr);
+    explicit GLProgramText();
     void loadTextRenderingData(JNIEnv *env, jobject androidContext,const TextAssetsHelper::TEXT_STYLE& textStyle)const;
     void beforeDraw(GLuint buffer) const;
     //Outline with: 0==no outline, 0.2==default outline size
     void updateOutline(const glm::vec3 &outlineColor=glm::vec3(1,1,1), float outlineStrength=0.2f)const;
     void setOtherUniforms(float edge=0.1f,float borderEdge=0.1f)const;
-    void draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, int verticesOffset, int numberIndices) const;
+    void draw(const glm::mat4x4& ProjM, int verticesOffset, int numberIndices) const;
     void afterDraw() const;
 public:
     static int convertStringToRenderingData(float X, float Y, float Z, float charHeight,
@@ -89,19 +86,18 @@ public:
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 private:
-    static const std::string VS(const VDDCManager* distortionManager1){
+    static const std::string VS(){
         std::stringstream s;
-        s<<"uniform mat4 uMVMatrix;\n";
-        s<<"uniform mat4 uPMatrix;\n";
+        s<<"uniform mat4 uProjectionMatrix;\n";
         s<<"attribute vec4 aPosition;\n";
         s<<"attribute vec2 aTexCoord;\n";
         s<<"varying vec2 vTexCoord;\n";
         s<<"attribute vec4 aVertexColor;\n";
         s<<"varying vec4 vVertexColor;\n";
-        s << VDDCManager::writeDistortionParams(distortionManager1);
         s<<"void main() {\n";
-        s << VDDCManager::writeGLPosition(distortionManager1);
+        s<<"gl_Position = vec4((uProjectionMatrix * aPosition).xy,0.0,1.0);\n";
         s<<"  vTexCoord = aTexCoord;\n";
+        //s<<" gl_Position.zw=vec2(0.0,1.0);";
         s<<"  vVertexColor = aVertexColor;\n";
 #ifdef WIREFRAME
         s<<"gl_PointSize=4.0;";

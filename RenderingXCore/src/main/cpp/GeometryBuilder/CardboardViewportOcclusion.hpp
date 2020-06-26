@@ -5,7 +5,8 @@
 #ifndef RENDERINGX_CARDBOARDVIEWPORTOCCLUSION_HPP
 #define RENDERINGX_CARDBOARDVIEWPORTOCCLUSION_HPP
 
-#import "../DistortionCorrection/DistortionEngine.h"
+#include "DistortionEngine.h"
+#include <GLProgramVC.h>
 #include <array>
 #include <vector>
 
