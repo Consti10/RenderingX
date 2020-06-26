@@ -4,7 +4,7 @@
 #include "Renderer360Video.h"
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
-#include <GLBufferHelper.hpp>
+#include <GLBuffer.hpp>
 #include <MatrixHelper.h>
 #include <array>
 #include <Sphere/DualFisheyeSphere.hpp>

@@ -29,7 +29,7 @@
 #include <BasicGLPrograms.hpp>
 #include <DistortionEngine.h>
 #include <gvr_util/util.h>
-#include <GLBufferHelper.hpp>
+#include <GLBuffer.hpp>
 
 // Example that renders 360° video - depending on the selected mode
 // It uses either VDDC (Vertex displacement distortion correction) or the gvr lib

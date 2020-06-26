@@ -20,15 +20,15 @@ add_library( example-1
         SHARED
         src/main/cpp/stereo/distortion/RendererDistortion.cpp
         ${CMAKE_SOURCE_DIR}/../RenderingXCore/src/main/cpp/Other/gvr_util/util.cc
-        )
+       )
 target_link_libraries( example-1 ${BASIC_DEPENDENCIES} gvr-lib)
 
-add_library( example-2
-        SHARED
-        src/main/cpp/stereo/video360Degree/Renderer360Video.cpp
-        ${CMAKE_SOURCE_DIR}/../RenderingXCore/src/main/cpp/Other/gvr_util/util.cc
-        )
-target_link_libraries( example-2 ${BASIC_DEPENDENCIES} gvr-lib)
+#add_library( example-2
+#        SHARED
+#        src/main/cpp/stereo/video360Degree/Renderer360Video.cpp
+#        ${CMAKE_SOURCE_DIR}/../RenderingXCore/src/main/cpp/Other/gvr_util/util.cc
+#        )
+#target_link_libraries( example-2 ${BASIC_DEPENDENCIES} gvr-lib)
 
 
 add_library( example-supersync

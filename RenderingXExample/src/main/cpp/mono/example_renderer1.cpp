@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cert-err58-cpp"
 //
 // Created by Consti10 on 15/05/2019.
 //
@@ -17,12 +19,13 @@
 #include <ColoredGeometry.hpp>
 #include <TexturedGeometry.hpp>
 #include <TextAssetsHelper.hpp>
-#include <GLBufferHelper.hpp>
+#include <GLBuffer.hpp>
 #include <GLProgramLine.h>
 #include <GLProgramTexture.h>
 #include <Chronometer.h>
 #include <FPSCalculator.h>
 #include <ProjTex/GLPTextureProj.h>
+#include "../../../../../RenderingXCore/src/main/cpp/GLPrograms/GLProgramVC.h"
 
 //Render a simple scene consisting of a colored triangle, smooth lines and smooth text
 
@@ -59,7 +62,7 @@ GLuint mTextureMonaLisa;
 GLPTextureProj* glProgramTextureProj;
 
 //holds colored geometry vertices
-VertexBuffer glBufferVC;
+GLProgramVC::Mesh mMeshColoredGeometry;
 //holds text vertices
 VertexBuffer glBufferText;
 //holds icon vertices (also interpreted as text)
@@ -106,8 +109,11 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     //create all the gl Buffer for later use
     //create the geometry for our simple test scene
     //some colored geometry
-    glBufferVC.uploadGL(ColoredGeometry::makeTessellatedColoredRect(12, glm::vec3(0,0,0), {5.0,5.0}, TrueColor2::RED)
-            ,GL_TRIANGLES);
+    mMeshColoredGeometry=GLProgramVC::Mesh(ColoredGeometry::makeTessellatedColoredRect(12, glm::vec3(0, 0, 0), {5.0, 5.0}, TrueColor2::RED)
+            , GL_TRIANGLES);
+    mMeshColoredGeometry.uploadGL();
+    //glBufferVC.uploadGL(ColoredGeometry::makeTessellatedColoredRect(12, glm::vec3(0,0,0), {5.0,5.0}, TrueColor2::RED)
+    //        ,GL_TRIANGLES);
     //some smooth lines
     //create 5 lines of increasing stroke width
     std::vector<GLProgramLine::Vertex> lines(N_LINES*GLProgramLine::VERTICES_PER_LINE);
@@ -237,13 +243,13 @@ static void onDrawFrame(){
         glProgramText->beforeDraw(glBufferText.vertexB);
         glProgramText->updateOutline(TrueColor2::RED, seekBarValue1 / 100.0f);
         glProgramText->setOtherUniforms(seekBarValue2/100.0f,seekBarValue3/100.0f);
-        glProgramText->draw(eyeView,projection,0,glBufferText.nVertices*GLProgramText::INDICES_PER_CHARACTER);
+        glProgramText->draw(projection*eyeView,0,glBufferText.nVertices*GLProgramText::INDICES_PER_CHARACTER);
         glProgramText->afterDraw();
     } else if(currentRenderingMode==1){
         glProgramText->beforeDraw(glBufferIcons.vertexB);
         glProgramText->updateOutline(TrueColor2::RED, seekBarValue1 / 100.0f);
         glProgramText->setOtherUniforms(seekBarValue2/100.0f,seekBarValue3/100.0f);
-        glProgramText->draw(eyeView,projection,0,glBufferIcons.nVertices*GLProgramText::INDICES_PER_CHARACTER);
+        glProgramText->draw(projection*eyeView,0,glBufferIcons.nVertices*GLProgramText::INDICES_PER_CHARACTER);
         glProgramText->afterDraw();
     }else if(currentRenderingMode==2){
         glProgramLine->beforeDraw(glBufferLine.vertexB);
@@ -251,7 +257,7 @@ static void onDrawFrame(){
         glProgramLine->draw(eyeView,projection,0,glBufferLine.nVertices);
         glProgramLine->afterDraw();
     }else if(currentRenderingMode==3){
-        glProgramVC->drawX(eyeView,projection,glBufferVC);
+        glProgramVC->drawX(eyeView, projection, mMeshColoredGeometry);
     }else if(currentRenderingMode==4){
          glProgramTexture->drawX(mTextureBrick, eyeView, projection, glBufferTextured);
     }else if(currentRenderingMode==5){
@@ -318,3 +324,5 @@ JNI_METHOD(void, nativeSetSeekBarValues)
 }
 
 }
+
+#pragma clang diagnostic pop

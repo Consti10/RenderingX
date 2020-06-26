@@ -31,7 +31,7 @@
 #include <BasicGLPrograms.hpp>
 #include <DistortionEngine.h>
 #include <gvr_util/util.h>
-#include <GLBufferHelper.hpp>
+#include <GLBuffer.hpp>
 #include <ProjTex/GLPTextureProj.h>
 
 // Example that compares the distortion created by VDDC and google cardboard with Gvr (google vr)
@@ -72,10 +72,10 @@ private:
     FPSCalculator mFPSCalculator;
     //std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
     std::unique_ptr<GLProgramVC> mGLProgramVC=nullptr;
-    std::array<VertexBuffer,2> mOcclusionMesh;
+    std::array<GLProgramVC::Mesh ,2> mOcclusionMesh;
     static constexpr int LINE_MESH_TESSELATION_FACTOR=12;
-    VertexBuffer blueMeshB;
-    VertexBuffer greenMeshB;
+    GLProgramVC::Mesh blueMeshB;
+    GLProgramVC::Mesh greenMeshB;
     VDDCManager distortionManager;
 public:
     DistortionEngine vrHeadsetParams;

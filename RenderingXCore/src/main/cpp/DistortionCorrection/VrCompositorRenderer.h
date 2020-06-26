@@ -23,7 +23,7 @@ public:
     DistortionEngine distortionEngine;
 private:
     //One for left and right eye each
-    std::array<VertexBuffer,2> mOcclusionMesh;
+    std::array<GLProgramVC::Mesh,2> mOcclusionMesh;
 public:
     VrCompositorRenderer(const VDDCManager::DISTORTION_MODE distortionMode);
     // Call this once when the OpenGL context is available

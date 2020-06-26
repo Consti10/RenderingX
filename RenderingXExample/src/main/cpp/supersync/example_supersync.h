@@ -83,10 +83,10 @@ private:
     glm::mat4 eyeView;
     glm::mat4 leftEyeView,rightEyeView;
     //holds colored geometry vertices
-    VertexBuffer mVertexBufferVC;
+    GLProgramVC::Mesh mVertexBufferVC;
     //
-    VertexBuffer solidRectangleYellow;
-    VertexBuffer solidRectangleBlack;
+    GLProgramVC::Mesh solidRectangleYellow;
+    GLProgramVC::Mesh solidRectangleBlack;
     std::array<int,2> whichColor;
     static constexpr int N_TRIANGLES=5;
     static constexpr int N_COLOR_VERTICES=3*N_TRIANGLES;

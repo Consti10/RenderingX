@@ -16,9 +16,9 @@
 #include <ColoredGeometry.hpp>
 #include <TextAssetsHelper.hpp>
 #include <BasicGLPrograms.hpp>
-#include <GLBufferHelper.hpp>
+#include <GLBuffer.hpp>
 #include <VertexBuffer.hpp>
-#include <VertexIndexBuffer.h>
+#include <VertexIndexBuffer.hpp>
 #include <FBRManager.h>
 #include <Extensions.hpp>
 
@@ -55,12 +55,12 @@ void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext) {
     for(int i=0;i<N_TRIANGLES;i++){
         ColoredGeometry::makeColoredTriangle1(&coloredVertices[i*3], glm::vec3(-triangleWidth/2,0,0), triangleWidth, triangleWidth, TrueColor2::BLUE);
     }
-    mVertexBufferVC.uploadGL(coloredVertices);
+    mVertexBufferVC=GLProgramVC::Mesh(coloredVertices,GL_TRIANGLES);
     const float cbs=20.0f;
-    solidRectangleBlack.uploadGL(
-            ColoredGeometry::makeTessellatedColoredRect(10, {0,0,0}, {cbs,cbs}, TrueColor2::BLACK));
-    solidRectangleYellow.uploadGL(
-            ColoredGeometry::makeTessellatedColoredRect(10, {0,0,0}, {cbs,cbs}, TrueColor2::YELLOW));
+    solidRectangleBlack=GLProgramVC::Mesh(
+            ColoredGeometry::makeTessellatedColoredRect(10, {0,0,0}, {cbs,cbs}, TrueColor2::BLACK),GL_TRIANGLES);
+    solidRectangleYellow=GLProgramVC::Mesh(
+            ColoredGeometry::makeTessellatedColoredRect(10, {0,0,0}, {cbs,cbs}, TrueColor2::YELLOW),GL_TRIANGLES);
 }
 
 
@@ -123,9 +123,7 @@ void GLRSuperSyncExample::drawEye(JNIEnv *env, bool whichEye) {
     //A typical application has way more than 1 draw call only
     for(int i=0;i<20;i++){
         const glm::mat4 leftOrRightEyeView= whichEye==0 ? leftEyeView : rightEyeView;
-        glProgramVC->beforeDraw(mVertexBufferVC.vertexB);
-        glProgramVC->draw(leftOrRightEyeView,projection,0,mVertexBufferVC.nVertices,GL_TRIANGLES);
-        glProgramVC->afterDraw();
+        glProgramVC->drawX(leftOrRightEyeView,projection,mVertexBufferVC);
     }
 }
 

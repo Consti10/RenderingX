@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <GLBuffer.hpp>
+#include <AndroidLogger.hpp>
 
 // A mesh always has vertices, optionally also has indices.
 // Mode is one of  GL_TRIANGLES, GL_TRIANGLE_STRIP ...
@@ -27,10 +28,14 @@ public:
     AbstractMesh(VERTICES vertices,INDICES indices,GLenum mode1):
             vertices(std::move(vertices)),
             indices(std::move(indices)),
-            mode(mode1){}
+            mode(mode1){
+        uploadGL(true);
+    }
     AbstractMesh(VERTICES vertices,GLenum mode1):
             vertices(std::move(vertices)),
-            mode(mode1){}
+            mode(mode1){
+        uploadGL(true);
+    }
     void uploadGL(const bool deleteDataFromCPU=true){
         glBufferVertices.uploadGL(vertices);
         if(indices){
@@ -47,9 +52,9 @@ public:
             }
         }
     }
-    void logWarningWhenDrawnUninitialized(){
+    void logWarningWhenDrawnUninitialized()const{
         if(!glBufferVertices.alreadyUploaded || (glBufferIndices!=std::nullopt && !glBufferIndices->alreadyUploaded)){
-            //
+            MLOGD<<"Mesh - not uploaded !";
         }
     }
 };

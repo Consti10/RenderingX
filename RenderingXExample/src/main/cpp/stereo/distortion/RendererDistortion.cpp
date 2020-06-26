@@ -4,7 +4,7 @@
 #include "RendererDistortion.h"
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
-#include <GLBufferHelper.hpp>
+#include <GLBuffer.hpp>
 #include <MatrixHelper.h>
 #include <array>
 #include <Sphere/DualFisheyeSphere.hpp>
@@ -45,10 +45,10 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     mGLProgramVC=std::make_unique<GLProgramVC>(&distortionManager);
     //create the green and blue mesh
     float tesselatedRectSize=2.0; //6.2f
-    blueMeshB.uploadGL(
+    blueMeshB=GLProgramVC::Mesh(
             ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR, {0,0,-2}, {tesselatedRectSize,tesselatedRectSize},
                                                                  TrueColor2::BLUE), GL_LINES);
-    greenMeshB.uploadGL(
+    greenMeshB=GLProgramVC::Mesh(
             ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR, {0,0,-2}, {tesselatedRectSize,tesselatedRectSize},
                                                                  TrueColor2::GREEN), GL_LINES);
     //create the occlusion mesh, left and right viewport
@@ -139,7 +139,7 @@ void RendererDistortion::drawEyeVDDC(gvr::Eye eye) {
 }
 
 void RendererDistortion::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen, bool occlusion) {
-    const VertexBuffer& tmp=meshColorGreen ? greenMeshB : blueMeshB;
+    const auto& tmp=meshColorGreen ? greenMeshB : blueMeshB;
     mGLProgramVC->drawX(viewM,projM,tmp);
 
     //if(occlusion){
