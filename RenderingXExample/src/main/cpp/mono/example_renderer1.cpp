@@ -70,7 +70,7 @@ VertexBuffer glBufferIcons;
 //holds smooth line vertices
 VertexBuffer glBufferLine;
 //holds textured vertices
-VertexBuffer glBufferTextured;
+GLProgramTexture::Mesh mMeshTexturedGeometry;
 VertexBuffer glBufferPyramid;
 const glm::mat4 DEFAULT_MODEL_MATRIX=glm::scale(glm::mat4(1.0f), glm::vec3(1.0,1.0,1.0));
 glm::mat4 modelM;
@@ -151,8 +151,8 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     glBufferIcons.uploadGL(iconsAsVertices);
     //Textured geometry
     const float wh=5.0f;
-    glBufferTextured.uploadGL(TexturedGeometry::makeTesselatedVideoCanvas2(10,glm::vec3(0,0,0),{wh,wh},0.0f,1.0f));
-    {
+    mMeshTexturedGeometry=TexturedGeometry::makeTesselatedVideoCanvas2(10, glm::vec3(0, 0, 0), {wh, wh}, 0.0f, 1.0f);
+    /*{
         const auto pyramid=TexturedGeometry::makePyramid();
         const auto modelMatrix= glm::translate(glm::vec3(0,-1,0))*
                 glm::rotate(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f))*
@@ -163,7 +163,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
             pyramidAndPlane.push_back(v);
         }
         glBufferPyramid.uploadGL(pyramidAndPlane,GL_TRIANGLES);
-    }
+    }*/
     modelM=DEFAULT_MODEL_MATRIX;
 
     //const auto lol=TexturedGeometry::makeTesselatedVideoCanvas(glm::vec3(-wh*0.5f,-wh*0.5f,0),wh,wh,10,0.0f,1.0f);
@@ -259,16 +259,16 @@ static void onDrawFrame(){
     }else if(currentRenderingMode==3){
         glProgramVC->drawX(eyeView, projection, mMeshColoredGeometry);
     }else if(currentRenderingMode==4){
-         glProgramTexture->drawX(mTextureBrick, eyeView, projection, glBufferTextured);
+         glProgramTexture->drawX(mTextureBrick, eyeView, projection, mMeshTexturedGeometry);
     }else if(currentRenderingMode==5){
         /*glProgramTextureProj->beforeDraw(glBufferPyramid.vertexB, mTextureMonaLisa);
         glProgramTextureProj->draw(modelM,eyeView,projection,0,glBufferPyramid.nVertices,glBufferPyramid.mMode);
         glProgramTextureProj->updateTexMatrix(buildProjectorMatrices());
         glProgramTextureProj->afterDraw();*/
-        glProgramTextureProj->beforeDraw(glBufferTextured.vertexB, mTextureMonaLisa);
-        glProgramTextureProj->draw(modelM,eyeView,projection,0,glBufferTextured.nVertices,glBufferTextured.mMode);
+        /* C glProgramTextureProj->beforeDraw(mMeshTexturedGeometry.vertexB, mTextureMonaLisa);
+        glProgramTextureProj->draw(modelM, eyeView, projection, 0, mMeshTexturedGeometry.nVertices, mMeshTexturedGeometry.mMode);
         glProgramTextureProj->updateTexMatrix(buildProjectorMatrices());
-        glProgramTextureProj->afterDraw();
+        glProgramTextureProj->afterDraw();*/
     }
     GLHelper::checkGlError("example_renderer::onDrawFrame");
     cpuFrameTime.stop();

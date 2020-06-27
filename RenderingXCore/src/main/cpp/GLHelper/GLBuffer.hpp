@@ -42,6 +42,7 @@ namespace GLBufferHelper {
 // Since the creation of the OpenGL buffer is delayed until the first call to uploadGL()
 // It is possible to create an instance of this class without a valid OpenGL context
 // The OpenGL buffer is automatically created with the first call to uploadGL
+template<typename T>
 class GLBuffer{
 public:
     GLuint glBufferId;
@@ -60,6 +61,8 @@ private:
         alreadyCreatedGLBuffer=true;
         GLHelper::checkGlError(getTAG()+"::createGL");
     }
+    // Calling uploadGL on the same OpenGL buffer multiple times is not a bug
+    // but might be an accident. Log debug message in this case;
     void checkSetAlreadyUploaded(){
         if(alreadyUploaded){
             MLOGD2(getTAG())<<"uploadGL called twice";
@@ -67,7 +70,7 @@ private:
         alreadyUploaded=true;
     }
 public:
-    template<typename T>
+    //template<typename T>
     void uploadGL(const std::vector<T> &vertices){
         createGLBufferIfNeeded();
         checkSetAlreadyUploaded();
@@ -75,7 +78,7 @@ public:
         GLHelper::checkGlError(getTAG()+"uploadGL");
         //MDebug::log("N vertices is "+std::to_string(nVertices));
     }
-    template<typename T,size_t s>
+    template<size_t s>
     void uploadGL(const std::array<T,s> &vertices){
         createGLBufferIfNeeded();
         checkSetAlreadyUploaded();

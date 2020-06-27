@@ -17,9 +17,6 @@
 
 //Create vertex/index buffers for drawing textured geometry
 namespace TexturedGeometry {
-    using Vertices=std::vector<GLProgramTexture::Vertex>;
-    using Indices=std::vector<GLProgramTexture::INDEX_DATA>;
-
     static const GLProgramTexture::Mesh makeTesselatedVideoCanvas(const unsigned int tessellation, const glm::vec3& translation,const glm::vec2& scale, const float uOffset,
                                                            const float uRange,const bool invertUCoordinates=false,const bool invertVCoordinates=true){
         const auto vertices=VerticalPlane::createVerticesPlaneTextured(tessellation,translation,scale,uOffset,uRange,invertUCoordinates,invertVCoordinates);
@@ -27,10 +24,11 @@ namespace TexturedGeometry {
         return GLProgramTexture::Mesh(vertices,indices,GL_TRIANGLES);
     }
     //Sometimes we want no indices for simplicity over performance
-    static const std::vector<GLProgramTexture::Vertex> makeTesselatedVideoCanvas2(const unsigned int tessellation, const glm::vec3& translation,const glm::vec2& scale, const float uOffset,
+    static const GLProgramTexture::Mesh makeTesselatedVideoCanvas2(const unsigned int tessellation, const glm::vec3& translation,const glm::vec2& scale, const float uOffset,
                                                                                   const float uRange){
         const auto tmp=makeTesselatedVideoCanvas(tessellation,translation,scale,uOffset,uRange);
-        return IndicesHelper::mergeIndicesIntoVertices(tmp.vertices,*tmp.indices);
+        const auto verticesOnly=IndicesHelper::mergeIndicesIntoVertices(tmp.vertices,*tmp.indices);
+        return GLProgramTexture::Mesh(verticesOnly,GL_TRIANGLES);
     }
     static const std::vector<GLProgramTexture::Vertex> makeTesselatedVideoCanvas2(const unsigned int tessellation,
                                                                                   const glm::mat4 modelMatrix=glm::mat4(1.0f),const glm::mat4 textureMatrix=glm::mat4(1.0f)){

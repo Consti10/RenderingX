@@ -17,9 +17,9 @@ class AbstractMesh{
     using INDICES=std::vector<INDEX>;
 public:
     VERTICES vertices;
-    GLBuffer glBufferVertices;
+    GLBuffer<VERTEX> glBufferVertices;
     std::optional<INDICES> indices=std::nullopt;
-    std::optional<GLBuffer> glBufferIndices=std::nullopt;
+    std::optional<GLBuffer<INDEX>> glBufferIndices=std::nullopt;
     GLenum mode;
     // OpenGL
     AbstractMesh(){}
@@ -43,7 +43,7 @@ public:
     void uploadGL(const bool deleteDataFromCPU=true){
         glBufferVertices.uploadGL(vertices);
         if(indices){
-            glBufferIndices=GLBuffer();
+            glBufferIndices=GLBuffer<INDEX>();
             glBufferIndices->uploadGL(*indices);
         }
         if(deleteDataFromCPU){

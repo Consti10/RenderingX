@@ -38,7 +38,7 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     glProgramTexture=new GLProgramTexture(false);
     GLProgramTexture::loadTexture(mTextureMonaLisa, env, context, "ExampleTexture/grid_2000px.png");
     const float wh=2.0f;
-    glBufferTextured.uploadGL(TexturedGeometry::makeTesselatedVideoCanvas2(10,glm::vec3(0,0,0),{wh,wh},0.0f,1.0f));
+    //glBufferTextured.uploadGL(TexturedGeometry::makeTesselatedVideoCanvas2(10,glm::vec3(0,0,0),{wh,wh},0.0f,1.0f));
 
     //mBasicGLPrograms=std::make_unique<BasicGLPrograms>();
     //mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
