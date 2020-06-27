@@ -17,13 +17,11 @@ class AbstractMesh{
     using INDICES=std::vector<INDEX>;
 public:
     VERTICES vertices;
-    std::optional<INDICES> indices=std::nullopt;
-    GLenum mode;
-    // If mesh has indices count==n of indices, n of vertices otherwise
-    int count;
-    // OpenGL
     GLBuffer glBufferVertices;
+    std::optional<INDICES> indices=std::nullopt;
     std::optional<GLBuffer> glBufferIndices=std::nullopt;
+    GLenum mode;
+    // OpenGL
     AbstractMesh(){}
     AbstractMesh(VERTICES vertices,INDICES indices,GLenum mode1):
             vertices(std::move(vertices)),
@@ -36,14 +34,17 @@ public:
             mode(mode1){
         uploadGL(true);
     }
+    bool hasIndices()const{
+        return indices!=std::nullopt;
+    }
+    int getCount()const{
+        return hasIndices() ? glBufferIndices->count : glBufferVertices.count;
+    }
     void uploadGL(const bool deleteDataFromCPU=true){
         glBufferVertices.uploadGL(vertices);
         if(indices){
             glBufferIndices=GLBuffer();
             glBufferIndices->uploadGL(*indices);
-            count=indices->size();
-        }else{
-            count=vertices.size();
         }
         if(deleteDataFromCPU){
             vertices.resize(0);

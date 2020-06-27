@@ -81,10 +81,10 @@ void GLProgramVC::drawX(const glm::mat4 &ViewM, const glm::mat4 ProjM,
                         const GLProgramVC::Mesh &mesh) const {
     mesh.logWarningWhenDrawnUninitialized();
     beforeDraw(mesh.glBufferVertices.glBufferId);
-    if(mesh.glBufferIndices!=std::nullopt){
-        drawIndexed(mesh.glBufferIndices->glBufferId,ViewM,ProjM,0,mesh.count,mesh.mode);
+    if(mesh.hasIndices()){
+        drawIndexed(mesh.glBufferIndices->glBufferId,ViewM,ProjM,0,mesh.getCount(),mesh.mode);
     }else{
-        draw(ViewM,ProjM,0,mesh.count,mesh.mode);
+        draw(ViewM,ProjM,0,mesh.getCount(),mesh.mode);
     }
     afterDraw();
 }

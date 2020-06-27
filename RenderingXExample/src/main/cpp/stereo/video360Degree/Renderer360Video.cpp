@@ -47,13 +47,11 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
     GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
     GLProgramTexture::loadTexture(mTexture360ImageInsta360,env,context,"360DegreeImages/insta_360_equirectangular.png");*/
     //create the insta360 sphere
-    mSphereDualFisheye1.uploadGL(
-            SphereBuilder::createSphereDualFisheyeInsta360(),GL_TRIANGLE_STRIP);
+    mSphereDualFisheye1=SphereBuilder::createSphereDualFisheyeInsta360();
     //second insta360
-    DualFisheyeSphere::uploadSphereGL(mSphereDualFisheye2,2560,1280);
+    mSphereDualFisheye2=DualFisheyeSphere::createSphereGL(2560,1280);
     //create the gvr sphere
-    mGvrSphereB.uploadGL(
-            SphereBuilder::createSphereEquirectangularMonoscopic(1.0,72,36),GL_TRIANGLE_STRIP);
+    mGvrSphereB=SphereBuilder::createSphereEquirectangularMonoscopic(1.0,72,36);
     //create the occlusion mesh, left and right viewport
     //use a slightly different color than clear color to make mesh visible
     const auto color=TrueColor(glm::vec4{0.1f, 0.1, 0.1, 1.0});

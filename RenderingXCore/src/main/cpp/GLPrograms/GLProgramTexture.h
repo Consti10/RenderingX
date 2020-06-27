@@ -124,6 +124,7 @@ private:
         return s.str();
     }
 };
+using TexturedMesh=GLProgramTexture::Mesh;
 
 class GLProgramTextureExt: public GLProgramTexture{
 public:

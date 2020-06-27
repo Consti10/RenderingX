@@ -91,6 +91,7 @@ private:
         return s.str();
     }
 };
+using ColoredMesh=GLProgramVC::Mesh;
 
 class GLProgramVC2D: public GLProgramVC{
 public:

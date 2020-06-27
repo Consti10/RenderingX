@@ -41,6 +41,7 @@ namespace GLBufferHelper {
 // Wrapper around an OpenGL buffer ID
 // Since the creation of the OpenGL buffer is delayed until the first call to uploadGL()
 // It is possible to create an instance of this class without a valid OpenGL context
+// The OpenGL buffer is automatically created with the first call to uploadGL
 class GLBuffer{
 public:
     GLuint glBufferId;

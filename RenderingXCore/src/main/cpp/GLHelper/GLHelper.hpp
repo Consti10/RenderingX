@@ -91,7 +91,6 @@ namespace GLHelper{
         }
         return (GLuint) location;
     }
-
     static const GLuint GlGetAttribLocation(GLuint program, const GLchar *name){
         GLint location=glGetAttribLocation(program,name);
         if(location<0){
