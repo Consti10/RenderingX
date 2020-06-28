@@ -27,6 +27,10 @@
  * For technical details,see https://www.youtube.com/watch?v=yJVkdsZc9YA
  */
 
+struct VDDCParams{
+
+};
+
 class VDDCManager {
 public:
     //NONE: Nothing is distorted,use a normal gl_Position=MVP*pos; multiplication
@@ -61,22 +65,22 @@ public:
     //Each GLSL program needs to bind its own distortion parameter uniforms
     //TODO when using OpenGL ES 3.0 use uniform buffers for that
     //Returns null if VDDCManager is null or disabled
-    static UndistortionHandles* getUndistortionUniformHandles(const VDDCManager* distortionManager, const GLuint program);
+    static UndistortionHandles* getUndistortionUniformHandles(const GLuint program);
+    // update all the uniforms
     void beforeDraw(const UndistortionHandles* undistortionHandles)const;
-    void afterDraw()const;
 
     // Use the #define XX to actually enable VDDC for the shader
-    static std::string writeDistortionParams();
+    static std::string writeDistortionUtilFunctionsAndUniforms();
     //Write "gl_Position"  with or without Distortion
-    static std::string writeGLPosition();
+    static std::string writeDistortedGLPosition();
     //successive calls to VDDCManager::beforeDraw will upload the new un-distortion parameters
     void updateDistortion(const PolynomialRadialInverse& distortion);
     void updateDistortion(const PolynomialRadialInverse& inverseDistortion,const std::array<MLensDistortion::ViewportParams,2> screen_params,const std::array<MLensDistortion::ViewportParams,2> texture_params);
     //Identity leaves x,y values untouched (as if no V.D.D.C was enabled in the shader)
     void updateDistortionWithIdentity();
     //Successive calls to VDDCManager::beforeDraw apply left or right eye distortion
-    void setEye(bool leftEye){
-        this->leftEye=leftEye;
+    void setEye(bool leftEye1){
+        this->leftEye=leftEye1;
     }
     //returns true if dm==nullptr or mode==NONE
     static bool isNullOrDisabled(const VDDCManager* dm){

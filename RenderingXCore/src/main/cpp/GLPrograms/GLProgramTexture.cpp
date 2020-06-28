@@ -20,7 +20,9 @@ GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const VDDCMa
     mPositionHandle = GLHelper::GlGetAttribLocation(mProgram, "aPosition");
     mTextureHandle = GLHelper::GlGetAttribLocation(mProgram, "aTexCoord");
     mSamplerHandle = GLHelper::GlGetUniformLocation (mProgram, "sTexture" );
-    mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
+    if(distortionManager){
+        mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(mProgram);
+    }
     GLHelper::checkGlError("GLProgramTexture()");
 }
 

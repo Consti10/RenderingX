@@ -6,8 +6,8 @@
 constexpr auto TAG="VDDCManager";
 
 VDDCManager::UndistortionHandles*
-VDDCManager::getUndistortionUniformHandles(const VDDCManager* dm, const GLuint program){
-    if(isNullOrDisabled(dm)){
+VDDCManager::getUndistortionUniformHandles(const GLuint program){
+    /*if(isNullOrDisabled(dm)){
         return nullptr;
     }
     UndistortionHandles* ret=new UndistortionHandles();
@@ -26,12 +26,23 @@ VDDCManager::getUndistortionUniformHandles(const VDDCManager* dm, const GLuint p
         ret->uTextureParams_x_off=GLHelper::GlGetUniformLocation(program,"uTextureParams.x_eye_offset");
         ret->uTextureParams_y_off=GLHelper::GlGetUniformLocation(program,"uTextureParams.y_eye_offset");
     }
+    return ret;*/
+    UndistortionHandles* ret=new UndistortionHandles();
+    ret->uPolynomialRadialInverse_coefficients=GLHelper::GlGetUniformLocation(program,"uPolynomialRadialInverse.coefficients");
+    ret->uPolynomialRadialInverse_maxRadSq=GLHelper::GlGetUniformLocation(program,"uPolynomialRadialInverse.maxRadSq");
+    ret->uScreenParams_w=GLHelper::GlGetUniformLocation(program,"uScreenParams.width");
+    ret->uScreenParams_h=GLHelper::GlGetUniformLocation(program,"uScreenParams.height");
+    ret->uScreenParams_x_off=GLHelper::GlGetUniformLocation(program,"uScreenParams.x_eye_offset");
+    ret->uScreenParams_y_off=GLHelper::GlGetUniformLocation(program,"uScreenParams.y_eye_offset");
+    ret->uTextureParams_w=GLHelper::GlGetUniformLocation(program,"uTextureParams.width");
+    ret->uTextureParams_h=GLHelper::GlGetUniformLocation(program,"uTextureParams.height");
+    ret->uTextureParams_x_off=GLHelper::GlGetUniformLocation(program,"uTextureParams.x_eye_offset");
+    ret->uTextureParams_y_off=GLHelper::GlGetUniformLocation(program,"uTextureParams.y_eye_offset");
     return ret;
 }
 
-void VDDCManager::beforeDraw(
-        const VDDCManager::UndistortionHandles* uh) const {
-    if(distortionMode==NONE){
+void VDDCManager::beforeDraw(const VDDCManager::UndistortionHandles* uh) const {
+    /*if(distortionMode==NONE){
         return;
     }else if(distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
         const UndistortionHandles& undistortionHandles=*uh;
@@ -51,14 +62,23 @@ void VDDCManager::beforeDraw(
         glUniform1f(undistortionHandles.uTextureParams_h,texture_params[i].height);
         glUniform1f(undistortionHandles.uTextureParams_x_off,texture_params[i].x_eye_offset);
         glUniform1f(undistortionHandles.uTextureParams_y_off,texture_params[i].y_eye_offset);
-    }
+    }*/
+    const UndistortionHandles& undistortionHandles=*uh;
+    glUniform1f(undistortionHandles.uPolynomialRadialInverse_maxRadSq,radialDistortionCoefficients.maxRadSquared);
+    glUniform1fv(undistortionHandles.uPolynomialRadialInverse_coefficients,N_RADIAL_UNDISTORTION_COEFICIENTS,radialDistortionCoefficients.kN.data());
+    const int i=leftEye ? 0 : 1; //update screen params
+    glUniform1f(undistortionHandles.uScreenParams_w,screen_params[i].width);
+    glUniform1f(undistortionHandles.uScreenParams_h,screen_params[i].height);
+    glUniform1f(undistortionHandles.uScreenParams_x_off,screen_params[i].x_eye_offset);
+    glUniform1f(undistortionHandles.uScreenParams_y_off,screen_params[i].y_eye_offset);
+    //same for texture params
+    glUniform1f(undistortionHandles.uTextureParams_w,texture_params[i].width);
+    glUniform1f(undistortionHandles.uTextureParams_h,texture_params[i].height);
+    glUniform1f(undistortionHandles.uTextureParams_x_off,texture_params[i].x_eye_offset);
+    glUniform1f(undistortionHandles.uTextureParams_y_off,texture_params[i].y_eye_offset);
 }
 
-void VDDCManager::afterDraw() const {
-    //glBindTexture(GL_TEXTURE_2D,0);
-}
-
-std::string VDDCManager::writeDistortionParams() {
+std::string VDDCManager::writeDistortionUtilFunctionsAndUniforms() {
     std::stringstream s;
     s<<"#ifdef ENABLE_VDDC\n";
     //Write all shader function(s) needed for VDDC
@@ -76,7 +96,7 @@ std::string VDDCManager::writeDistortionParams() {
     return s.str();
 }
 
-std::string VDDCManager::writeGLPosition() {
+std::string VDDCManager::writeDistortedGLPosition() {
     /*if(isNullOrDisabled(distortionManager1))
         return "gl_Position = (uPMatrix*uMVMatrix)* aPosition;\n";;
     const VDDCManager& distortionManager=*distortionManager1;

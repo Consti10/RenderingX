@@ -21,7 +21,9 @@ GLProgramVC::GLProgramVC(const VDDCManager* distortionManager, bool coordinates2
     mPMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uPMatrix");
     mPositionHandle =GLHelper::GlGetAttribLocation((GLuint)mProgram, "aPosition");
     mColorHandle =GLHelper::GlGetAttribLocation((GLuint)mProgram, "aColor");
-    mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(distortionManager, mProgram);
+    if(distortionManager){
+        mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(mProgram);
+    }
     GLHelper::checkGlError("GLProgramVC()");
 }
 

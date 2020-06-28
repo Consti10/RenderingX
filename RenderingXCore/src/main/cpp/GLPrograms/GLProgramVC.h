@@ -57,13 +57,13 @@ private:
         s<<"attribute vec4 aPosition;\n";
         s<<"attribute vec4 aColor;\n";
         s<<"varying vec4 vColor;\n";
-        s<<VDDCManager::writeDistortionParams();
+        s<< VDDCManager::writeDistortionUtilFunctionsAndUniforms();
         s<<"void main(){\n";
         // Depending on the selected mode writing gl_Position is different
         s<<"#ifdef USE_2D_COORDINATES\n";
         s<<"gl_Position=vec4(aPosition.xy,0,1);\n";
         s<<"#elif defined(ENABLE_VDDC)\n";
-        s<<VDDCManager::writeGLPosition();
+        s<< VDDCManager::writeDistortedGLPosition();
         s<<"#else\n";
         s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition;\n";
         s<<"#endif\n";

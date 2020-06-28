@@ -53,14 +53,13 @@ private:
         s<<"attribute vec2 aTexCoord;\n";
         s<<"varying vec2 vTexCoord;\n";
         //s<<"varying float overwrite;";
-        s<<VDDCManager::writeDistortionParams();
+        s<< VDDCManager::writeDistortionUtilFunctionsAndUniforms();
         s<<"void main() {\n";
-
         // Depending on the selected mode writing gl_Position is different
         s<<"#ifdef USE_2D_COORDINATES\n";
         s<<"gl_Position=vec4(aPosition.xy,0,1);\n";
         s<<"#elif defined(ENABLE_VDDC)\n";
-        s<<VDDCManager::writeGLPosition();
+        s<< VDDCManager::writeDistortedGLPosition();
         s<<"#else\n";
         s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition;\n";
         s<<"#endif\n";
