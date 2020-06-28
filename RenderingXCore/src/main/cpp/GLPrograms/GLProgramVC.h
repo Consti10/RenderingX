@@ -35,8 +35,7 @@ public:
         TrueColor colorRGBA;
     };
     using INDEX_DATA=GLushort;
-    using Mesh=AbstractMesh<GLProgramVC::Vertex,GLProgramVC::INDEX_DATA>;
-
+    using ColoredMesh=AbstractMesh<GLProgramVC::Vertex,GLProgramVC::INDEX_DATA>;
     explicit GLProgramVC(const VDDCManager* distortionManager=nullptr, bool coordinates2D=false);
     void beforeDraw(GLuint buffer) const;
     void draw(Mat4x4 ViewM, Mat4x4 ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
@@ -44,11 +43,9 @@ public:
     void drawIndexed(GLuint indexBuffer,Mat4x4 ViewM, Mat4x4 ProjM,int indicesOffset,int numberIndices, GLenum mode) const;
     void drawIndexed(GLuint indexBuffer,const glm::mat4& ViewM,const glm::mat4& ProjM,int indicesOffset,int numberIndices, GLenum mode) const;
     void afterDraw() const;
-    //convenient methods for drawing Vertex / VertexIndex buffer(s)
+    //convenient methods for drawing a colored mesh with / without indices
     //calls beforeDraw(), draw() and afterDraw() properly
-    //void drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const VertexBuffer& vb)const;
-    //void drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const VertexIndexBuffer& vib)const;
-    void drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const Mesh& mesh)const;
+    void drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const ColoredMesh& mesh)const;
 private:
     static const std::string VS(const VDDCManager* distortionManager1, bool coordinates2D){
         std::stringstream s;
@@ -91,7 +88,7 @@ private:
         return s.str();
     }
 };
-using ColoredMesh=GLProgramVC::Mesh;
+using ColoredMesh=GLProgramVC::ColoredMesh;
 
 class GLProgramVC2D: public GLProgramVC{
 public:

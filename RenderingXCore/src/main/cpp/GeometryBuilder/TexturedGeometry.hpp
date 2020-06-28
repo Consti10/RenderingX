@@ -17,24 +17,11 @@
 
 //Create vertex/index buffers for drawing textured geometry
 namespace TexturedGeometry {
-    static const GLProgramTexture::Mesh makeTesselatedVideoCanvas(const unsigned int tessellation, const glm::vec3& translation,const glm::vec2& scale, const float uOffset,
-                                                           const float uRange,const bool invertUCoordinates=false,const bool invertVCoordinates=true){
+    static const GLProgramTexture::TexturedMesh makeTesselatedVideoCanvas(const unsigned int tessellation, const glm::vec3& translation, const glm::vec2& scale, const float uOffset,
+                                                                          const float uRange, const bool invertUCoordinates=false, const bool invertVCoordinates=true){
         const auto vertices=VerticalPlane::createVerticesPlaneTextured(tessellation,translation,scale,uOffset,uRange,invertUCoordinates,invertVCoordinates);
         const auto indices=VerticalPlane::createIndicesPlane(tessellation);
-        return GLProgramTexture::Mesh(vertices,indices,GL_TRIANGLES);
-    }
-    //Sometimes we want no indices for simplicity over performance
-    static const GLProgramTexture::Mesh makeTesselatedVideoCanvas2(const unsigned int tessellation, const glm::vec3& translation,const glm::vec2& scale, const float uOffset,
-                                                                                  const float uRange){
-        const auto tmp=makeTesselatedVideoCanvas(tessellation,translation,scale,uOffset,uRange);
-        const auto verticesOnly=IndicesHelper::mergeIndicesIntoVertices(tmp.vertices,*tmp.indices);
-        return GLProgramTexture::Mesh(verticesOnly,GL_TRIANGLES);
-    }
-    static const std::vector<GLProgramTexture::Vertex> makeTesselatedVideoCanvas2(const unsigned int tessellation,
-                                                                                  const glm::mat4 modelMatrix=glm::mat4(1.0f),const glm::mat4 textureMatrix=glm::mat4(1.0f)){
-        const auto tmp= VerticalPlane::createVerticesPlaneTextured(tessellation, modelMatrix,textureMatrix,true);
-        const auto tmp2=VerticalPlane::createIndicesPlane(tessellation);
-        return IndicesHelper::mergeIndicesIntoVertices(tmp, tmp2);
+        return GLProgramTexture::TexturedMesh(vertices, indices, GL_TRIANGLES);
     }
     static const std::vector<GLProgramTexture::Vertex> makePyramid(){
         return {

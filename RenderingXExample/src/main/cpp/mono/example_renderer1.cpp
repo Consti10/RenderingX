@@ -62,15 +62,15 @@ GLuint mTextureMonaLisa;
 GLPTextureProj* glProgramTextureProj;
 
 //holds colored geometry vertices
-GLProgramVC::Mesh mMeshColoredGeometry;
-//holds text vertices
-VertexBuffer glBufferText;
-//holds icon vertices (also interpreted as text)
-VertexBuffer glBufferIcons;
-//holds smooth line vertices
-VertexBuffer glBufferLine;
+ColoredMesh mMeshColoredGeometry;
 //holds textured vertices
-GLProgramTexture::Mesh mMeshTexturedGeometry;
+TexturedMesh mMeshTexturedGeometry;
+//holds text vertices
+GLBuffer<GLProgramText::Character> glBufferText;
+//holds icon vertices (also interpreted as text)
+GLBuffer<GLProgramText::Character> glBufferIcons;
+//holds smooth line vertices
+GLBuffer<GLProgramLine::Vertex> glBufferLine;
 VertexBuffer glBufferPyramid;
 const glm::mat4 DEFAULT_MODEL_MATRIX=glm::scale(glm::mat4(1.0f), glm::vec3(1.0,1.0,1.0));
 glm::mat4 modelM;
@@ -109,11 +109,8 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     //create all the gl Buffer for later use
     //create the geometry for our simple test scene
     //some colored geometry
-    mMeshColoredGeometry=GLProgramVC::Mesh(ColoredGeometry::makeTessellatedColoredRect(12, glm::vec3(0, 0, 0), {5.0, 5.0}, TrueColor2::RED)
+    mMeshColoredGeometry=GLProgramVC::ColoredMesh(ColoredGeometry::makeTessellatedColoredRect(12, glm::vec3(0, 0, 0), {5.0, 5.0}, TrueColor2::RED)
             , GL_TRIANGLES);
-    mMeshColoredGeometry.uploadGL();
-    //glBufferVC.uploadGL(ColoredGeometry::makeTessellatedColoredRect(12, glm::vec3(0,0,0), {5.0,5.0}, TrueColor2::RED)
-    //        ,GL_TRIANGLES);
     //some smooth lines
     //create 5 lines of increasing stroke width
     std::vector<GLProgramLine::Vertex> lines(N_LINES*GLProgramLine::VERTICES_PER_LINE);
@@ -151,7 +148,8 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     glBufferIcons.uploadGL(iconsAsVertices);
     //Textured geometry
     const float wh=5.0f;
-    mMeshTexturedGeometry=TexturedGeometry::makeTesselatedVideoCanvas2(10, glm::vec3(0, 0, 0), {wh, wh}, 0.0f, 1.0f);
+    mMeshTexturedGeometry=TexturedGeometry::makeTesselatedVideoCanvas(10, glm::vec3(0, 0, 0), {wh, wh}, 0.0f, 1.0f);
+    mMeshTexturedGeometry.mergeIndicesIntoVertexBuffer();
     /*{
         const auto pyramid=TexturedGeometry::makePyramid();
         const auto modelMatrix= glm::translate(glm::vec3(0,-1,0))*
@@ -240,21 +238,21 @@ static void onDrawFrame(){
     }
     //Drawing with the OpenGL Programs is easy - call beforeDraw() with the right OpenGL Buffer and then draw until done
     if(currentRenderingMode==0){ //Smooth text
-        glProgramText->beforeDraw(glBufferText.vertexB);
+        glProgramText->beforeDraw(glBufferText.glBufferId);
         glProgramText->updateOutline(TrueColor2::RED, seekBarValue1 / 100.0f);
         glProgramText->setOtherUniforms(seekBarValue2/100.0f,seekBarValue3/100.0f);
-        glProgramText->draw(projection*eyeView,0,glBufferText.nVertices*GLProgramText::INDICES_PER_CHARACTER);
+        glProgramText->draw(projection*eyeView,0,glBufferText.count*GLProgramText::INDICES_PER_CHARACTER);
         glProgramText->afterDraw();
     } else if(currentRenderingMode==1){
-        glProgramText->beforeDraw(glBufferIcons.vertexB);
+        glProgramText->beforeDraw(glBufferIcons.glBufferId);
         glProgramText->updateOutline(TrueColor2::RED, seekBarValue1 / 100.0f);
         glProgramText->setOtherUniforms(seekBarValue2/100.0f,seekBarValue3/100.0f);
-        glProgramText->draw(projection*eyeView,0,glBufferIcons.nVertices*GLProgramText::INDICES_PER_CHARACTER);
+        glProgramText->draw(projection*eyeView,0,glBufferIcons.count*GLProgramText::INDICES_PER_CHARACTER);
         glProgramText->afterDraw();
     }else if(currentRenderingMode==2){
-        glProgramLine->beforeDraw(glBufferLine.vertexB);
+        glProgramLine->beforeDraw(glBufferLine.glBufferId);
         glProgramLine->setOtherUniforms(seekBarValue1/100.0F,seekBarValue2/100.0F,seekBarValue3/100.0F);
-        glProgramLine->draw(eyeView,projection,0,glBufferLine.nVertices);
+        glProgramLine->draw(eyeView,projection,0,glBufferLine.count);
         glProgramLine->afterDraw();
     }else if(currentRenderingMode==3){
         glProgramVC->drawX(eyeView, projection, mMeshColoredGeometry);

@@ -45,10 +45,10 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     mGLProgramVC=std::make_unique<GLProgramVC>(&distortionManager);
     //create the green and blue mesh
     float tesselatedRectSize=2.0; //6.2f
-    blueMeshB=GLProgramVC::Mesh(
+    blueMeshB=GLProgramVC::ColoredMesh(
             ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR, {0,0,-2}, {tesselatedRectSize,tesselatedRectSize},
                                                                  TrueColor2::BLUE), GL_LINES);
-    greenMeshB=GLProgramVC::Mesh(
+    greenMeshB=GLProgramVC::ColoredMesh(
             ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR, {0,0,-2}, {tesselatedRectSize,tesselatedRectSize},
                                                                  TrueColor2::GREEN), GL_LINES);
     //create the occlusion mesh, left and right viewport

@@ -46,6 +46,7 @@ template<typename T>
 class GLBuffer{
 public:
     GLuint glBufferId;
+    // N of elements of type T stored inside OpenGL buffer.
     int count=0;
     bool alreadyCreatedGLBuffer=false;
     bool alreadyUploaded=false;
@@ -54,6 +55,7 @@ private:
         return "GLBuffer"+std::to_string(glBufferId);
     }
     // We have to 'delay' the creation of the buffer until we have a OpenGL context
+    // Do nothing if buffer was already created
     void createGLBufferIfNeeded(){
         if(alreadyCreatedGLBuffer)
             return;
@@ -80,8 +82,6 @@ public:
     }
     template<size_t s>
     void uploadGL(const std::array<T,s> &vertices){
-        createGLBufferIfNeeded();
-        checkSetAlreadyUploaded();
         const auto tmp=std::vector<T>(vertices.begin(),vertices.end());
         GLBuffer::uploadGL(tmp);
     }

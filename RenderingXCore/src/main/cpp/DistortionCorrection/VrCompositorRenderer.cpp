@@ -18,7 +18,7 @@ void VrCompositorRenderer::initializeGL() {
     distortionEngine.updateDistortionManager(vddcManager);
 }
 
-void VrCompositorRenderer::addLayer(GLProgramTexture::Mesh mesh,GLuint textureId,bool isExternalTexture,HEAD_TRACKING headTracking) {
+void VrCompositorRenderer::addLayer(GLProgramTexture::TexturedMesh mesh, GLuint textureId, bool isExternalTexture, HEAD_TRACKING headTracking) {
     mesh.uploadGL();
     VRLayer vrLayer{std::move(mesh),textureId,isExternalTexture,headTracking};
     mVrLayerList.push_back(std::move(vrLayer));

@@ -65,22 +65,11 @@ void GLProgramVC::afterDraw() const {
     //distortionManager.afterDraw();
 }
 
-/*void GLProgramVC::drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const VertexBuffer& vb)const{
-    beforeDraw(vb.vertexB);
-    draw(ViewM,ProjM,0,vb.nVertices,vb.mMode);
-    afterDraw();
-}
-
-void GLProgramVC::drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const VertexIndexBuffer& vib)const{
-    beforeDraw(vib.vertexB);
-    drawIndexed(vib.indexB,ViewM,ProjM,0,vib.nIndices,vib.mMode);
-    afterDraw();
-}*/
-
 void GLProgramVC::drawX(const glm::mat4 &ViewM, const glm::mat4 ProjM,
-                        const GLProgramVC::Mesh &mesh) const {
+                        const GLProgramVC::ColoredMesh &mesh) const {
     mesh.logWarningWhenDrawnUninitialized();
     beforeDraw(mesh.glBufferVertices.glBufferId);
+    // MLOGD<<mesh.getCount()<<" "<<mesh.glBufferVertices.count<<" "<<mesh.glBufferIndices->count;
     if(mesh.hasIndices()){
         drawIndexed(mesh.glBufferIndices->glBufferId,ViewM,ProjM,0,mesh.getCount(),mesh.mode);
     }else{

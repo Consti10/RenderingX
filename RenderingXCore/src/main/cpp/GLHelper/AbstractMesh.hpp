@@ -8,6 +8,7 @@
 #include <optional>
 #include <GLBuffer.hpp>
 #include <AndroidLogger.hpp>
+#include <IndicesHelper.hpp>
 
 // A mesh always has vertices, optionally also has indices.
 // Mode is one of  GL_TRIANGLES, GL_TRIANGLE_STRIP ...
@@ -27,22 +28,22 @@ public:
             vertices(std::move(vertices)),
             indices(std::move(indices)),
             mode(mode1){
-        uploadGL(true);
+        uploadGL(false);
     }
     AbstractMesh(VERTICES vertices,GLenum mode1):
             vertices(std::move(vertices)),
             mode(mode1){
-        uploadGL(true);
+        uploadGL(false);
     }
     bool hasIndices()const{
-        return indices!=std::nullopt;
+        return glBufferIndices!=std::nullopt;
     }
     int getCount()const{
         return hasIndices() ? glBufferIndices->count : glBufferVertices.count;
     }
     void uploadGL(const bool deleteDataFromCPU=true){
         glBufferVertices.uploadGL(vertices);
-        if(indices){
+        if(indices!=std::nullopt){
             glBufferIndices=GLBuffer<INDEX>();
             glBufferIndices->uploadGL(*indices);
         }
@@ -57,6 +58,18 @@ public:
         if(!glBufferVertices.alreadyUploaded || (glBufferIndices!=std::nullopt && !glBufferIndices->alreadyUploaded)){
             MLOGD<<"Mesh - not uploaded !";
         }
+    }
+    // Sometimes we want no indices for simplicity over performance
+    void mergeIndicesIntoVertexBuffer(){
+        if(indices==std::nullopt || indices->size()==0){
+            MLOGD<<"Called mergeIndicesIntoVertexBuffer but Mesh has no indices ";
+            return;
+        }
+        const auto verticesOnly=IndicesHelper::mergeIndicesIntoVertices(vertices,*indices);
+        vertices=verticesOnly;
+        indices=std::nullopt;
+        glBufferIndices=std::nullopt;
+        uploadGL(false);
     }
 };
 

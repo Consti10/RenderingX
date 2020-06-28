@@ -72,10 +72,10 @@ private:
     FPSCalculator mFPSCalculator;
     //std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
     std::unique_ptr<GLProgramVC> mGLProgramVC=nullptr;
-    std::array<GLProgramVC::Mesh ,2> mOcclusionMesh;
+    std::array<GLProgramVC::ColoredMesh ,2> mOcclusionMesh;
     static constexpr int LINE_MESH_TESSELATION_FACTOR=12;
-    GLProgramVC::Mesh blueMeshB;
-    GLProgramVC::Mesh greenMeshB;
+    GLProgramVC::ColoredMesh blueMeshB;
+    GLProgramVC::ColoredMesh greenMeshB;
     VDDCManager distortionManager;
 public:
     DistortionEngine vrHeadsetParams;

@@ -98,9 +98,9 @@ namespace CardboardViewportOcclusion{
         return ret;
     }
 
-    static const void uploadOcclusionMeshLeftRight(const DistortionEngine& params, TrueColor color, std::array<GLProgramVC::Mesh,2>& vb){
-        vb[0]=GLProgramVC::Mesh(makeMesh(params,0,color),GL_TRIANGLE_STRIP);
-        vb[1]=GLProgramVC::Mesh(makeMesh(params,1,color),GL_TRIANGLE_STRIP);
+    static const void uploadOcclusionMeshLeftRight(const DistortionEngine& params, TrueColor color, std::array<GLProgramVC::ColoredMesh,2>& vb){
+        vb[0]=GLProgramVC::ColoredMesh(makeMesh(params, 0, color), GL_TRIANGLE_STRIP);
+        vb[1]=GLProgramVC::ColoredMesh(makeMesh(params, 1, color), GL_TRIANGLE_STRIP);
     }
 };
 

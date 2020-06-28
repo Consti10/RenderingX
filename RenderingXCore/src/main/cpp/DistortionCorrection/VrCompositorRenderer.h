@@ -23,7 +23,7 @@ public:
     DistortionEngine distortionEngine;
 private:
     //One for left and right eye each
-    std::array<GLProgramVC::Mesh,2> mOcclusionMesh;
+    std::array<GLProgramVC::ColoredMesh,2> mOcclusionMesh;
 public:
     VrCompositorRenderer(const VDDCManager::DISTORTION_MODE distortionMode);
     // Call this once when the OpenGL context is available
@@ -38,7 +38,7 @@ public:
         // Holds either Indexed vertices (VertexIndexBuffer)
         // or not-indexed vertices (VertexBuffer)
         // std::variant<VertexBuffer,VertexIndexBuffer> geometry;
-        GLProgramTexture::Mesh mesh;
+        GLProgramTexture::TexturedMesh mesh;
         GLuint textureId;
         bool isExternalTexture;
         //
@@ -46,7 +46,7 @@ public:
     };
     // List of layer descriptions
     std::vector<VRLayer> mVrLayerList;
-    void addLayer(GLProgramTexture::Mesh mesh,GLuint textureId,bool isExternalTexture,HEAD_TRACKING headTracking=NONE);
+    void addLayer(GLProgramTexture::TexturedMesh mesh, GLuint textureId, bool isExternalTexture, HEAD_TRACKING headTracking=NONE);
     void removeLayers();
     void drawLayers(gvr::Eye eye);
     //

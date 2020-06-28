@@ -34,7 +34,7 @@ public:
         float u,v;
     };
     using INDEX_DATA=GLuint;
-    using Mesh=AbstractMesh<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
+    using TexturedMesh=AbstractMesh<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
     explicit GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const VDDCManager* distortionManager=nullptr, const bool use2dCoordinates=false, const bool mapEquirectangularToInsta360=false);
     void beforeDraw(GLuint buffer,GLuint texture) const;
     void draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLenum mode=GL_TRIANGLES) const;
@@ -42,9 +42,9 @@ public:
     void afterDraw() const;
     static void loadTexture(GLuint texture,JNIEnv *env, jobject androidContext,const char* name);
     //Advanced
-    void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const VertexBuffer& vb)const;
-    void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const VertexIndexBuffer& vib)const;
-    void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const Mesh& mesh);
+    //void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const VertexBuffer& vb)const;
+    //void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const VertexIndexBuffer& vib)const;
+    void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const TexturedMesh& mesh);
 private:
     static const std::string VS(const VDDCManager* distortionManager1, const bool use2dCoordinates){
         std::stringstream s;
@@ -54,10 +54,12 @@ private:
         s<<"attribute vec2 aTexCoord;\n";
         s<<"varying vec2 vTexCoord;\n";
         //s<<"varying float overwrite;";
+        s<<"#ifdef LOL\n";
+        s<<"#endif //LOL\n";
         s << VDDCManager::writeDistortionParams(distortionManager1);
         s<<"void main() {\n";
         if(use2dCoordinates){
-            s<<"gl_Position = vec4(aPosition.xy*2.0,0,1);";
+            s<<"gl_Position = vec4(aPosition.xy*2.0,0,1);\n";
         }else{
             s << VDDCManager::writeGLPosition(distortionManager1);
         }
@@ -124,7 +126,7 @@ private:
         return s.str();
     }
 };
-using TexturedMesh=GLProgramTexture::Mesh;
+using TexturedMesh=GLProgramTexture::TexturedMesh;
 
 class GLProgramTextureExt: public GLProgramTexture{
 public:

@@ -72,10 +72,10 @@ private:
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt=nullptr;
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt2=nullptr;
     GLuint mVideoTexture;
-    GLProgramTexture::Mesh mGvrSphereB;
-    GLProgramTexture::Mesh mSphereDualFisheye1;
-    GLProgramTexture::Mesh mSphereDualFisheye2;
-    std::array<GLProgramVC::Mesh,2> mOcclusionMesh;
+    GLProgramTexture::TexturedMesh mGvrSphereB;
+    GLProgramTexture::TexturedMesh mSphereDualFisheye1;
+    GLProgramTexture::TexturedMesh mSphereDualFisheye2;
+    std::array<GLProgramVC::ColoredMesh,2> mOcclusionMesh;
     VDDCManager distortionManager;
 public:
     DistortionEngine vrHeadsetParams;
