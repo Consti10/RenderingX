@@ -58,11 +58,9 @@ void VDDCManager::afterDraw() const {
     //glBindTexture(GL_TEXTURE_2D,0);
 }
 
-std::string VDDCManager::writeDistortionParams(
-        const VDDCManager* distortionManager) {
-    if(isNullOrDisabled(distortionManager))
-        return "";
+std::string VDDCManager::writeDistortionParams() {
     std::stringstream s;
+    s<<"#ifdef ENABLE_VDDC\n";
     //Write all shader function(s) needed for VDDC
     const int N_COEFICIENTS=VDDCManager::N_RADIAL_UNDISTORTION_COEFICIENTS;
     s<< glsl_struct_PolynomialRadialInverse(N_COEFICIENTS);
@@ -71,24 +69,20 @@ std::string VDDCManager::writeDistortionParams(
     s<<glsl_ViewportParams();
     s<<glsl_UndistortedNDCForDistortedNDC();
     //The uniforms needed for vddc
-    if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
-        s<<"uniform PolynomialRadialInverse uPolynomialRadialInverse;";
-    }else if(distortionManager->distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD){
-        s<<"uniform PolynomialRadialInverse uPolynomialRadialInverse;";
-        s<<"uniform ViewportParams uScreenParams;\n";
-        s<<"uniform ViewportParams uTextureParams;\n";
-    }
+    s<<"uniform PolynomialRadialInverse uPolynomialRadialInverse;";
+    s<<"uniform ViewportParams uScreenParams;\n";
+    s<<"uniform ViewportParams uTextureParams;\n";
+    s<<"#endif //ENABLE_VDDC\n";
     return s.str();
 }
 
-std::string VDDCManager::writeGLPosition(const VDDCManager* distortionManager1,
-                                         const std::string &positionAttribute) {
-    if(isNullOrDisabled(distortionManager1))
-        return "gl_Position = (uPMatrix*uMVMatrix)* "+positionAttribute+";\n";;
+std::string VDDCManager::writeGLPosition() {
+    /*if(isNullOrDisabled(distortionManager1))
+        return "gl_Position = (uPMatrix*uMVMatrix)* aPosition;\n";;
     const VDDCManager& distortionManager=*distortionManager1;
     std::stringstream s;
     if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_VIEW_SPACE){
-        s<<"vec4 pos=uMVMatrix*"+positionAttribute+";\n";
+        s<<"vec4 pos=uMVMatrix*aPosition;\n";
         s<<"float r2=dot(pos.xy,pos.xy)/(pos.z*pos.z);\n";
         //s<<"r2=clamp(r2,0.0,uMaxRadSq);\n";
         s<<"float dist_factor=PolynomialDistortionFactor(r2,uPolynomialRadialInverse.coefficients);\n";
@@ -98,7 +92,7 @@ std::string VDDCManager::writeGLPosition(const VDDCManager* distortionManager1,
         //s<<"gl_Position.x=gl_Position.x*uScreenParams.width+uScreenParams.x_eye_offset;";
         //s<<"gl_Position.y=gl_Position.y*uScreenParams.height+uScreenParams.y_eye_offset;";
     }else if(distortionManager.distortionMode==DISTORTION_MODE::RADIAL_CARDBOARD){
-        s<<"vec4 pos_view=uMVMatrix*"+positionAttribute+";\n";
+        s<<"vec4 pos_view=uMVMatrix*aPosition;\n";
         s<<"vec4 pos_clip=uPMatrix*pos_view;\n";
         s<<"vec3 ndc=pos_clip.xyz/pos_clip.w;\n";
         //s<<"bool inside=isInsideViewPort(ndc.xy);";
@@ -119,6 +113,13 @@ std::string VDDCManager::writeGLPosition(const VDDCManager* distortionManager1,
         //s<<"pos.y+=-0.18;";
         //s<<"pos.x+=0.1;";
     }
+    return s.str();*/
+    std::stringstream s;
+    s<<"vec4 pos_view=uMVMatrix*aPosition;\n";
+    s<<"vec4 pos_clip=uPMatrix*pos_view;\n";
+    s<<"vec3 ndc=pos_clip.xyz/pos_clip.w;\n";
+    s<<"vec2 dist_p=UndistortedNDCForDistortedNDC(uPolynomialRadialInverse,uScreenParams,uTextureParams,ndc.xy);\n";
+    s<<"gl_Position=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);\n";
     return s.str();
 }
 

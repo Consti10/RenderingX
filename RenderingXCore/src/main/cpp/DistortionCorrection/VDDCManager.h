@@ -65,10 +65,10 @@ public:
     void beforeDraw(const UndistortionHandles* undistortionHandles)const;
     void afterDraw()const;
 
-    //Add this string to your GLSL vertex shader if enabled
-    static std::string writeDistortionParams(const VDDCManager* distortionManager);
+    // Use the #define XX to actually enable VDDC for the shader
+    static std::string writeDistortionParams();
     //Write "gl_Position"  with or without Distortion
-    static std::string writeGLPosition(const VDDCManager* distortionManager, const std::string &positionAttribute="aPosition");
+    static std::string writeGLPosition();
     //successive calls to VDDCManager::beforeDraw will upload the new un-distortion parameters
     void updateDistortion(const PolynomialRadialInverse& distortion);
     void updateDistortion(const PolynomialRadialInverse& inverseDistortion,const std::array<MLensDistortion::ViewportParams,2> screen_params,const std::array<MLensDistortion::ViewportParams,2> texture_params);

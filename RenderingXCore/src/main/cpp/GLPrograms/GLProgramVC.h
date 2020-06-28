@@ -24,6 +24,8 @@ using Mat4x4=const GLfloat*;
 
 class GLProgramVC {
 private:
+    // 2 Dimensions or 3 dimensions or Vertex displacement distortion correction (3 dimensions)
+    enum MODE{D2,D3,VDDC};
     GLuint mProgram;
     GLuint mPositionHandle,mColorHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
@@ -47,7 +49,7 @@ public:
     //calls beforeDraw(), draw() and afterDraw() properly
     void drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const ColoredMesh& mesh)const;
 private:
-    static const std::string VS(const VDDCManager* distortionManager1, bool coordinates2D){
+    static const std::string VS(){
         std::stringstream s;
         //s<<"#version 100\n";
         s<<"uniform mat4 uMVMatrix;\n";
@@ -55,16 +57,16 @@ private:
         s<<"attribute vec4 aPosition;\n";
         s<<"attribute vec4 aColor;\n";
         s<<"varying vec4 vColor;\n";
-        if(!coordinates2D){
-            s << VDDCManager::writeDistortionParams(distortionManager1);
-        }
+        s<<VDDCManager::writeDistortionParams();
         s<<"void main(){\n";
-        if(coordinates2D){
-            s<<"gl_Position=vec4(aPosition.xy,0,1);\n";
-        }else{
-            s << VDDCManager::writeGLPosition(distortionManager1);
-        }
-        //s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition";
+        // Depending on the selected mode writing gl_Position is different
+        s<<"#ifdef USE_2D_COORDINATES\n";
+        s<<"gl_Position=vec4(aPosition.xy,0,1);\n";
+        s<<"#elif defined(ENABLE_VDDC)\n";
+        s<<VDDCManager::writeGLPosition();
+        s<<"#else\n";
+        s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition;\n";
+        s<<"#endif\n";
         s<<"vColor = aColor;\n";
         s<<"gl_PointSize=15.0;";
         s<<"}\n";

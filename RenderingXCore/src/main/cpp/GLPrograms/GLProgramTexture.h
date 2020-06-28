@@ -41,12 +41,11 @@ public:
     void drawIndexed(GLuint indexBuffer,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int indicesOffset, int numberIndices,GLenum mode) const;
     void afterDraw() const;
     static void loadTexture(GLuint texture,JNIEnv *env, jobject androidContext,const char* name);
-    //Advanced
-    //void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const VertexBuffer& vb)const;
-    //void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const VertexIndexBuffer& vib)const;
+    // convenient methods for drawing a textured mesh with / without indices
+    // calls beforeDraw(), draw() and afterDraw() properly
     void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const TexturedMesh& mesh);
 private:
-    static const std::string VS(const VDDCManager* distortionManager1, const bool use2dCoordinates){
+    static const std::string VS(){
         std::stringstream s;
         s<<"uniform mat4 uMVMatrix;\n";
         s<<"uniform mat4 uPMatrix;\n";
@@ -54,15 +53,18 @@ private:
         s<<"attribute vec2 aTexCoord;\n";
         s<<"varying vec2 vTexCoord;\n";
         //s<<"varying float overwrite;";
-        s<<"#ifdef LOL\n";
-        s<<"#endif //LOL\n";
-        s << VDDCManager::writeDistortionParams(distortionManager1);
+        s<<VDDCManager::writeDistortionParams();
         s<<"void main() {\n";
-        if(use2dCoordinates){
-            s<<"gl_Position = vec4(aPosition.xy*2.0,0,1);\n";
-        }else{
-            s << VDDCManager::writeGLPosition(distortionManager1);
-        }
+
+        // Depending on the selected mode writing gl_Position is different
+        s<<"#ifdef USE_2D_COORDINATES\n";
+        s<<"gl_Position=vec4(aPosition.xy,0,1);\n";
+        s<<"#elif defined(ENABLE_VDDC)\n";
+        s<<VDDCManager::writeGLPosition();
+        s<<"#else\n";
+        s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition;\n";
+        s<<"#endif\n";
+        //
         s<<"vTexCoord = aTexCoord;\n";
         /*s<<"vec4 lul = (uMVMatrix * vec4(aTexCoord, 0.0,1.0));";
         s<<"vec4 lul2=lul;";

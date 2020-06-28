@@ -6,10 +6,15 @@ constexpr auto TAG="GLRenderTexture(-External)";
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
 
-
 GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const VDDCManager* distortionManager, const bool use2dCoordinates, const bool mapEquirectangularToInsta360)
         :USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE),distortionManager(distortionManager),mapEquirectangularToInsta360(mapEquirectangularToInsta360) {
-    mProgram = GLHelper::createProgram(VS(distortionManager,use2dCoordinates),FS(USE_EXTERNAL_TEXTURE,mapEquirectangularToInsta360));
+    std::string lol="";
+    if(distortionManager!= nullptr){
+        lol="#define ENABLE_VDDC\n";
+    }else if(use2dCoordinates){
+        lol="#define USE_2D_COORDINATES\n";
+    }
+    mProgram = GLHelper::createProgram(VS(),FS(USE_EXTERNAL_TEXTURE,mapEquirectangularToInsta360),lol);
     mMVMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uMVMatrix");
     mPMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uPMatrix");
     mPositionHandle = GLHelper::GlGetAttribLocation(mProgram, "aPosition");
@@ -85,18 +90,6 @@ void GLProgramTexture::loadTexture(GLuint texture,JNIEnv *env, jobject androidCo
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
-
-/*void GLProgramTexture::drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const VertexBuffer& vb)const{
-    beforeDraw(vb.vertexB,texture);
-    draw(ViewM,ProjM,0,vb.nVertices,vb.mMode);
-    afterDraw();
-}
-
-void GLProgramTexture::drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const VertexIndexBuffer& vib)const{
-    beforeDraw(vib.vertexB,texture);
-    drawIndexed(vib.indexB,ViewM,ProjM,0,vib.nIndices,vib.mMode);
-    afterDraw();
-}*/
 
 void GLProgramTexture::drawX(GLuint texture, const glm::mat4x4 &ViewM, const glm::mat4x4 &ProjM,
                              const GLProgramTexture::TexturedMesh &mesh) {

@@ -1,10 +1,22 @@
 
 #include "GLProgramVC.h"
 
+#define LOL
+#define LOL2
+
+#ifdef LOL
+#elif LOL2
+#endif
 
 GLProgramVC::GLProgramVC(const VDDCManager* distortionManager, bool coordinates2D):
     distortionManager(distortionManager){
-    mProgram = GLHelper::createProgram(VS(distortionManager,coordinates2D),FS());
+    std::string lol="";
+    if(distortionManager!= nullptr){
+        lol="#define ENABLE_VDDC\n";
+    }else if(coordinates2D){
+        lol="#define USE_2D_COORDINATES\n";
+    }
+    mProgram = GLHelper::createProgram(VS(),FS(),lol);
     mMVMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uMVMatrix");
     mPMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uPMatrix");
     mPositionHandle =GLHelper::GlGetAttribLocation((GLuint)mProgram, "aPosition");

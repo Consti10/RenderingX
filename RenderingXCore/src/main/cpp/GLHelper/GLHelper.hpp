@@ -42,11 +42,12 @@ namespace GLHelper{
             }
         }
     }
-    static const GLuint loadShader(GLenum type,const std::string& shaderCode){
+    // Additional flags: for example "#define ENABLE_SOMETHING"
+    static const GLuint loadShader(GLenum type,const std::string& shaderCode,const std::string& additionalFlags){
         GLuint shader = glCreateShader(type);
         // add the source code to the shader and compile it
-        const char *c_str = shaderCode.c_str();
-        glShaderSource(shader, 1, &c_str, nullptr);
+        const char* tmp[2]={additionalFlags.c_str(),shaderCode.c_str()};
+        glShaderSource(shader, 2, tmp, nullptr);
         glCompileShader(shader);
         int result;
         glGetShaderiv(shader,GL_COMPILE_STATUS,&result);
@@ -60,9 +61,10 @@ namespace GLHelper{
         }
         return shader;
     }
-    static GLuint createProgram(const std::string& vertexSource,const std::string& fragmentSource) {
-        auto vertexShader = loadShader(GL_VERTEX_SHADER, vertexSource);
-        auto fragmentShader = loadShader(GL_FRAGMENT_SHADER, fragmentSource);
+    // Additional flags: for example "#define ENABLE_SOMETHING"
+    static GLuint createProgram(const std::string& vertexSource,const std::string& fragmentSource,const std::string& additionalFlags="") {
+        auto vertexShader = loadShader(GL_VERTEX_SHADER, vertexSource,additionalFlags);
+        auto fragmentShader = loadShader(GL_FRAGMENT_SHADER, fragmentSource,additionalFlags);
         auto program = glCreateProgram();
         if (program != 0) {
             glAttachShader(program, vertexShader);
