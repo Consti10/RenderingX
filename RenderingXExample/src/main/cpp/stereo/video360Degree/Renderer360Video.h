@@ -32,8 +32,7 @@
 #include <GLBuffer.hpp>
 #include <VrCompositorRenderer.h>
 
-// Example that renders 360° video - depending on the selected mode
-// It uses either VDDC (Vertex displacement distortion correction) or the gvr lib
+// Example that renders 360° video with the Vr compositor renderer using VDDC
 class Renderer360Video{
 public:
     enum SPHERE_MODE{SPHERE_MODE_EQUIRECTANGULAR_TEST,SPHERE_MODE_INSTA360_TEST2};

@@ -75,11 +75,6 @@ private:
     static constexpr float LINE_WIDTH_SMALL=3.0f;
 public:
     VrCompositorRenderer vrCompositorRenderer;
-private:
-    /*GLPTextureProj* glProgramTextureProj;
-    GLProgramTexture* glProgramTexture;
-    GLuint mTextureMonaLisa;
-    VertexBuffer glBufferTextured;*/
 };
 
 #endif //RENDERINGX_EXAMPLE_DISTORTION_H

@@ -34,7 +34,6 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     framebuffer_size = gvr_api_->GetMaximumEffectiveRenderTargetSize();
     specs[0].SetSize(framebuffer_size);
     specs[0].SetColorFormat(GVR_COLOR_FORMAT_RGBA_8888);
-    specs[0].SetDepthStencilFormat(GVR_DEPTH_STENCIL_FORMAT_DEPTH_16);
     swap_chain = std::make_unique<gvr::SwapChain>(gvr_api_->CreateSwapChain(specs));
 
     mGLProgramVC=std::make_unique<GLProgramVC>();
