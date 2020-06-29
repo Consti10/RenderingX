@@ -46,7 +46,6 @@ private:
     std::unique_ptr<gvr::GvrApi> gvr_api_;
     FPSCalculator mFPSCalculator;
     GLuint mVideoTexture;
-    GLProgramTexture::TexturedMesh m360VideoSphere;
 public:
     VrCompositorRenderer vrCompositorRenderer;
 };

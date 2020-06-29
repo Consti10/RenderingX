@@ -29,20 +29,20 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
     glGenTextures(1,&mTexture360ImageInsta360);
     GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
     GLProgramTexture::loadTexture(mTexture360ImageInsta360,env,context,"360DegreeImages/insta_360_equirectangular.png");*/
+    GLProgramTexture::TexturedMesh videoSphere360;
     switch(M_SPHERE_MODE){
         case SPHERE_MODE_EQUIRECTANGULAR_TEST:{
-            m360VideoSphere=SphereBuilder::createSphereEquirectangularMonoscopic(1.0,72,36);
+            videoSphere360=SphereBuilder::createSphereEquirectangularMonoscopic(1.0, 72, 36);
         }break;
         case SPHERE_MODE_INSTA360_TEST2:{
-            m360VideoSphere=DualFisheyeSphere::createSphereGL(2560,1280);
+            videoSphere360=DualFisheyeSphere::createSphereGL(2560, 1280);
         }break;
         default:
             MLOGE<<"Unknown sphere mode";
     }
     vrCompositorRenderer.removeLayers();
-    vrCompositorRenderer.addLayer(m360VideoSphere,mVideoTexture,true,VrCompositorRenderer::HEAD_TRACKING::FULL);
+    vrCompositorRenderer.addLayer(std::move(videoSphere360), mVideoTexture, true, VrCompositorRenderer::HEAD_TRACKING::FULL);
 }
-
 
 void Renderer360Video::onDrawFrame() {
     mFPSCalculator.tick();
