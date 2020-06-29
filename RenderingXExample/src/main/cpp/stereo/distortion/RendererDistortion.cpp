@@ -14,8 +14,7 @@ constexpr auto TAG="DistortionExample";
 
 RendererDistortion::RendererDistortion(JNIEnv *env, jobject androidContext, gvr_context *gvr_context):
         vrCompositorRenderer(VDDCManager::RADIAL_CARDBOARD,TrueColor(glm::vec4{1.0f, 0.1, 0.1, 1.0})),
-        mFPSCalculator("OpenGL FPS", 2000)
-        {
+        mFPSCalculator("OpenGL FPS", 2000){
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
     vrCompositorRenderer.distortionEngine.setGvrApi(gvr_api_.get());
     buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();
@@ -35,16 +34,19 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     swap_chain = std::make_unique<gvr::SwapChain>(gvr_api_->CreateSwapChain(specs));
 
     mGLProgramVC=std::make_unique<GLProgramVC>();
+    mGLProgramTexture=std::make_unique<GLProgramTexture>(false);
     //create the green and blue mesh
     float tesselatedRectSize=2.0; //6.2f
-    blueMeshB=GLProgramVC::ColoredMesh(
-            ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR, {0,0,-2}, {tesselatedRectSize,tesselatedRectSize},
-                                                                 TrueColor2::BLUE), GL_LINES);
-    greenMeshB=GLProgramVC::ColoredMesh(
-            ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR, {0,0,-2}, {tesselatedRectSize,tesselatedRectSize},
-                                                                 TrueColor2::GREEN), GL_LINES);
+    mTestMesh2DWireframe=TexturedGeometry::makeTessellatedRectWireframe(LINE_MESH_TESSELATION_FACTOR, {0, 0, -2}, {tesselatedRectSize, tesselatedRectSize});
+
+    glGenTextures(1,&mBlueTexture);
+    glGenTextures(1,&mGreenTexture);
+    GLProgramTexture::loadTexture(mBlueTexture,env,context,"ExampleTexture/blue.png");
+    GLProgramTexture::loadTexture(mGreenTexture,env,context,"ExampleTexture/green.png");
+
     vrCompositorRenderer.removeLayers();
-    vrCompositorRenderer.debug.push_back(VrCompositorRenderer::DebugLayer{greenMeshB});
+    //vrCompositorRenderer.debug.push_back(VrCompositorRenderer::DebugLayer{greenMeshB});
+    vrCompositorRenderer.addLayer(mTestMesh2DWireframe, mGreenTexture, false, VrCompositorRenderer::HEAD_TRACKING::FULL);
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
@@ -110,7 +112,7 @@ void RendererDistortion::drawEyeGvrRenderbuffer(gvr::Eye eye) {
     const auto projectionM=toGLM(perspective);
     glLineWidth(LINE_WIDTH_BIG);
     // draw debug mesh:
-    mGLProgramVC->drawX(viewM,projectionM,blueMeshB);
+    mGLProgramTexture->drawX(mBlueTexture, viewM, projectionM, mTestMesh2DWireframe);
     GLHelper::checkGlError("RendererDistortion::drawEyeGvrRenderbuffer");
 }
 

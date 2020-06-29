@@ -68,13 +68,15 @@ private:
     void updateBufferViewports();
     FPSCalculator mFPSCalculator;
     std::unique_ptr<GLProgramVC> mGLProgramVC=nullptr;
+    std::unique_ptr<GLProgramTexture> mGLProgramTexture=nullptr;
     static constexpr int LINE_MESH_TESSELATION_FACTOR=12;
-    GLProgramVC::ColoredMesh blueMeshB;
-    GLProgramVC::ColoredMesh greenMeshB;
-    static constexpr float LINE_WIDTH_BIG=6.0f;
-    static constexpr float LINE_WIDTH_SMALL=3.0f;
+    static constexpr float LINE_WIDTH_BIG=8.0f;
+    static constexpr float LINE_WIDTH_SMALL=4.0f;
+    GLProgramTexture::TexturedMesh mTestMesh2DWireframe;
 public:
     VrCompositorRenderer vrCompositorRenderer;
+    GLuint mGreenTexture;
+    GLuint mBlueTexture;
 };
 
 #endif //RENDERINGX_EXAMPLE_DISTORTION_H

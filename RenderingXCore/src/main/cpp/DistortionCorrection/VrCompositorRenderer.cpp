@@ -12,7 +12,6 @@ VrCompositorRenderer::VrCompositorRenderer(const VDDCManager::DISTORTION_MODE di
 
 void VrCompositorRenderer::initializeGL() {
     mGLProgramVC2D=std::make_unique<GLProgramVC2D>();
-    mGLProgramVC=std::make_unique<GLProgramVC>(&vddcManager);
     mGLProgramTexture=std::make_unique<GLProgramTexture>(false,&vddcManager);
     mGLProgramTextureExt=std::make_unique<GLProgramTextureExt>(&vddcManager,false);
     CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(distortionEngine, occlusionMeshColor, mOcclusionMesh);
@@ -47,11 +46,6 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
             glProgramTexture->drawX(layer.textureId, viewM, distortionEngine.GetProjectionMatrix(eye), vib);
         }*/
         glProgramTexture->drawX(layer.textureId,viewM,distortionEngine.GetProjectionMatrix(eye),layer.mesh);
-    }
-    for(int i=0;i<debug.size();i++){
-        const auto& layer=debug[i];
-        const glm::mat4 viewM=distortionEngine.GetEyeFromHeadMatrix(eye) * rotation;
-        mGLProgramVC->drawX(viewM,distortionEngine.GetProjectionMatrix(eye),layer.mesh);
     }
     //
     //Render the mesh that occludes everything except the part actually visible inside the headset

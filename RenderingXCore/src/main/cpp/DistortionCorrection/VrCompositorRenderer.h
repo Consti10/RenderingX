@@ -45,11 +45,6 @@ public:
     // List of layer descriptions
     std::vector<VRLayer> mVrLayerList;
     void addLayer(GLProgramTexture::TexturedMesh mesh, GLuint textureId, bool isExternalTexture, HEAD_TRACKING headTracking=NONE);
-    //
-    struct DebugLayer{
-        ColoredMesh mesh;
-    };
-    std::vector<DebugLayer> debug;
 
     void removeLayers();
     void drawLayers(gvr::Eye eye);
@@ -59,8 +54,6 @@ public:
     std::unique_ptr<GLProgramTexture> mGLProgramTexture;
     // Sample from 'external' OpenGL texture (aka video texture)
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt;
-    //
-    std::unique_ptr<GLProgramVC> mGLProgramVC;
 public:
     // NOT VR
     //void drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM);
