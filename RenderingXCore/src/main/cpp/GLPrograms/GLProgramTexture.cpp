@@ -15,7 +15,7 @@ GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const VDDCMa
         flags="#define USE_2D_COORDINATES\n";
     }
     if(USE_EXTERNAL_TEXTURE)flags+="#define USE_EXTERNAL_TEXTURE\n";
-    mProgram = GLHelper::createProgram(VS(), FS(USE_EXTERNAL_TEXTURE,mapEquirectangularToInsta360), flags);
+    mProgram = GLHelper::createProgram(VS(), FS(mapEquirectangularToInsta360), flags);
     mMVMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uMVMatrix");
     mPMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uPMatrix");
     mPositionHandle = GLHelper::GlGetAttribLocation(mProgram, "aPosition");

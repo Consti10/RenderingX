@@ -72,7 +72,7 @@ private:
         s<<"}\n";
         return s.str();
     }
-    static const std::string FS(const bool externalTexture,const bool mapEquirectangularToInsta360){
+    static const std::string FS(const bool mapEquirectangularToInsta360){
         std::stringstream s;
         s<<"#ifdef USE_EXTERNAL_TEXTURE\n";
         s<<"#extension GL_OES_EGL_image_external : require\n";
