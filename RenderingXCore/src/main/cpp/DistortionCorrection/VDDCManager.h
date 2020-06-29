@@ -27,9 +27,9 @@
  * For technical details,see https://www.youtube.com/watch?v=yJVkdsZc9YA
  */
 
-struct VDDCParams{
+namespace VDDC{
 
-};
+}
 
 class VDDCManager {
 public:

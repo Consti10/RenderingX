@@ -33,6 +33,7 @@
 #include <gvr_util/util.h>
 #include <GLBuffer.hpp>
 #include <ProjTex/GLPTextureProj.h>
+#include <VrCompositorRenderer.h>
 
 // Example that compares the distortion created by VDDC and google cardboard with Gvr (google vr)
 // Renders a 2D Mesh for testing
@@ -57,10 +58,6 @@ private:
      * No intermediate renderbuffer needed
      */
     void drawEyeVDDC(gvr::Eye eye);
-    /*
-     * draw everything into what's currently bound (renderbuffer for gvr,framebuffer for vddc)
-     */
-    void drawEye(gvr::Eye eye,glm::mat4 viewM,glm::mat4 projM,bool meshColorGreen,bool vignette=false);
 private:
     std::unique_ptr<gvr::GvrApi> gvr_api_;
     gvr::BufferViewportList buffer_viewports;
@@ -70,20 +67,17 @@ private:
     gvr::Sizei framebuffer_size;
     void updateBufferViewports();
     FPSCalculator mFPSCalculator;
-    //std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
     std::unique_ptr<GLProgramVC> mGLProgramVC=nullptr;
-    std::array<GLProgramVC::ColoredMesh ,2> mOcclusionMesh;
     static constexpr int LINE_MESH_TESSELATION_FACTOR=12;
     GLProgramVC::ColoredMesh blueMeshB;
     GLProgramVC::ColoredMesh greenMeshB;
-    VDDCManager distortionManager;
 public:
-    DistortionEngine vrHeadsetParams;
+    VrCompositorRenderer vrCompositorRenderer;
 private:
-    GLPTextureProj* glProgramTextureProj;
+    /*GLPTextureProj* glProgramTextureProj;
     GLProgramTexture* glProgramTexture;
     GLuint mTextureMonaLisa;
-    VertexBuffer glBufferTextured;
+    VertexBuffer glBufferTextured;*/
 };
 
 #endif //RENDERINGX_EXAMPLE_DISTORTION_H

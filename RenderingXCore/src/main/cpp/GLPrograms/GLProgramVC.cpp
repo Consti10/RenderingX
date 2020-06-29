@@ -1,12 +1,6 @@
 
 #include "GLProgramVC.h"
 
-#define LOL
-#define LOL2
-
-#ifdef LOL
-#elif LOL2
-#endif
 
 GLProgramVC::GLProgramVC(const VDDCManager* distortionManager, bool coordinates2D):
     distortionManager(distortionManager){
@@ -90,6 +84,11 @@ void GLProgramVC::drawX(const glm::mat4 &ViewM, const glm::mat4 ProjM,
         draw(ViewM,ProjM,0,mesh.getCount(),mesh.mode);
     }
     afterDraw();
+}
+
+void GLProgramVC::updateVDDCParamsGL() const {
+    glUseProgram(mProgram);
+    if(distortionManager)distortionManager->beforeDraw(mUndistortionHandles);
 }
 
 

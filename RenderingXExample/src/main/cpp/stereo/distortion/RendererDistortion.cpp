@@ -15,9 +15,13 @@
 constexpr auto TAG="DistortionExample";
 
 RendererDistortion::RendererDistortion(JNIEnv *env, jobject androidContext, gvr_context *gvr_context):
-        distortionManager(VDDCManager::RADIAL_CARDBOARD), mFPSCalculator("OpenGL FPS", 2000){
+        //distortionManager(VDDCManager::RADIAL_CARDBOARD),
+        vrCompositorRenderer(VDDCManager::RADIAL_CARDBOARD),
+        mFPSCalculator("OpenGL FPS", 2000)
+        {
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
-    vrHeadsetParams.setGvrApi(gvr_api_.get());
+    //vrHeadsetParams.setGvrApi(gvr_api_.get());
+    vrCompositorRenderer.distortionEngine.setGvrApi(gvr_api_.get());
     buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();
     recommended_buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();
     scratch_viewport = gvr_api_->CreateBufferViewport();
@@ -25,7 +29,7 @@ RendererDistortion::RendererDistortion(JNIEnv *env, jobject androidContext, gvr_
 
 
 void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
-//Instantiate all our OpenGL rendering 'Programs'
+    vrCompositorRenderer.initializeGL();
     gvr_api_->InitializeGl();
     std::vector<gvr::BufferSpec> specs;
     specs.push_back(gvr_api_->CreateBufferSpec());
@@ -34,15 +38,15 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     specs[0].SetColorFormat(GVR_COLOR_FORMAT_RGBA_8888);
     specs[0].SetDepthStencilFormat(GVR_DEPTH_STENCIL_FORMAT_DEPTH_16);
     swap_chain = std::make_unique<gvr::SwapChain>(gvr_api_->CreateSwapChain(specs));
-    glProgramTextureProj=new GLPTextureProj();
+    /*glProgramTextureProj=new GLPTextureProj();
     glProgramTexture=new GLProgramTexture(false);
-    GLProgramTexture::loadTexture(mTextureMonaLisa, env, context, "ExampleTexture/grid_2000px.png");
+    GLProgramTexture::loadTexture(mTextureMonaLisa, env, context, "ExampleTexture/grid_2000px.png");*/
     const float wh=2.0f;
     //glBufferTextured.uploadGL(TexturedGeometry::makeTesselatedVideoCanvas2(10,glm::vec3(0,0,0),{wh,wh},0.0f,1.0f));
 
     //mBasicGLPrograms=std::make_unique<BasicGLPrograms>();
     //mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
-    mGLProgramVC=std::make_unique<GLProgramVC>(&distortionManager);
+    mGLProgramVC=std::make_unique<GLProgramVC>();
     //create the green and blue mesh
     float tesselatedRectSize=2.0; //6.2f
     blueMeshB=GLProgramVC::ColoredMesh(
@@ -53,8 +57,12 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
                                                                  TrueColor2::GREEN), GL_LINES);
     //create the occlusion mesh, left and right viewport
     //use a slightly different color than clear color to make mesh visible
-    const auto color=TrueColor(glm::vec4{1.0f, 0.1, 0.1, 1.0});
-    CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(vrHeadsetParams,color,mOcclusionMesh);
+    // TODO const auto color=TrueColor(glm::vec4{1.0f, 0.1, 0.1, 1.0});
+    //CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(vrHeadsetParams,color,mOcclusionMesh);
+    vrCompositorRenderer.removeLayers();
+    //vrCompositorRenderer.addLayer()
+    vrCompositorRenderer.debug.push_back(VrCompositorRenderer::DebugLayer{greenMeshB});
+
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
@@ -72,7 +80,7 @@ void RendererDistortion::onDrawFrame() {
     //LOGD("FPS: %f",mFPSCalculator.getCurrentFPS());
 
     //Update the head position (rotation) then leave it untouched during the frame
-    vrHeadsetParams.updateLatestHeadSpaceFromStartSpaceRotation();
+    vrCompositorRenderer.distortionEngine.updateLatestHeadSpaceFromStartSpaceRotation();
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -86,18 +94,16 @@ void RendererDistortion::onDrawFrame() {
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
-        distortionManager.updateDistortionWithIdentity();
         for(uint32_t eye=0;eye<2;eye++){
             drawEyeGvrRenderbuffer(static_cast<gvr::Eye>(eye));
         }
         frame.Unbind();
-        frame.Submit(buffer_viewports, vrHeadsetParams.GetLatestHeadSpaceFromStartSpaceRotation_());
+        frame.Submit(buffer_viewports, vrCompositorRenderer.distortionEngine.GetLatestHeadSpaceFromStartSpaceRotation_());
     }
     if(RENDER_SCENE_USING_VERTEX_DISPLACEMENT){
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
-        vrHeadsetParams.updateDistortionManager(distortionManager);
         for(int eye=0;eye<2;eye++){
             drawEyeVDDC(static_cast<gvr::Eye>(eye));
         }
@@ -107,38 +113,38 @@ void RendererDistortion::onDrawFrame() {
 
 void RendererDistortion::drawEyeGvrRenderbuffer(gvr::Eye eye) {
     buffer_viewports.GetBufferViewport(eye, &scratch_viewport);
-
     const gvr::Rectf& rect = scratch_viewport.GetSourceUv();
     int left = static_cast<int>(rect.left * framebuffer_size.width);
     int bottom = static_cast<int>(rect.bottom * framebuffer_size.width);
     int width = static_cast<int>((rect.right - rect.left) * framebuffer_size.width);
     int height = static_cast<int>((rect.top - rect.bottom) * framebuffer_size.height);
     glViewport(left, bottom, width, height);
-
     const gvr_rectf fov = scratch_viewport.GetSourceFov();
-    const gvr::Mat4f perspective =ndk_hello_vr::PerspectiveMatrixFromView(fov, vrHeadsetParams.MIN_Z_DISTANCE,vrHeadsetParams.MAX_Z_DISTANCE);
+    const gvr::Mat4f perspective =ndk_hello_vr::PerspectiveMatrixFromView(fov, DistortionEngine::MIN_Z_DISTANCE,DistortionEngine::MAX_Z_DISTANCE);
     const auto eyeM=gvr_api_->GetEyeFromHeadMatrix(eye==0 ? GVR_LEFT_EYE : GVR_RIGHT_EYE);
     //const auto rotM=gvr_api_->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
-    const auto rotM=vrHeadsetParams.GetLatestHeadSpaceFromStartSpaceRotation_();
+    const auto rotM=vrCompositorRenderer.distortionEngine.GetLatestHeadSpaceFromStartSpaceRotation_();
     const auto viewM=toGLM(ndk_hello_vr::MatrixMul(eyeM,rotM));
     const auto projectionM=toGLM(perspective);
     glLineWidth(6.0f);
-    drawEye(eye,viewM,projectionM,false);
+    // draw debug mesh:
+    mGLProgramVC->drawX(viewM,projectionM,blueMeshB);
     GLHelper::checkGlError("RendererDistortion::drawEyeGvr");
 }
 
 void RendererDistortion::drawEyeVDDC(gvr::Eye eye) {
-    vrHeadsetParams.setOpenGLViewport(eye);
+    glLineWidth(3.0f);
+    vrCompositorRenderer.drawLayers(eye);
+    /*vrHeadsetParams.setOpenGLViewport(eye);
     distortionManager.setEye(eye==0);
     const auto rotM=vrHeadsetParams.GetLatestHeadSpaceFromStartSpaceRotation();
     auto viewM=vrHeadsetParams.GetEyeFromHeadMatrix(eye)*rotM;
     auto projM=vrHeadsetParams.GetProjectionMatrix(eye);
-    glLineWidth(3.0f);
-    drawEye(eye,viewM,projM,true,true);
+    drawEye(eye,viewM,projM,true,true);*/
     GLHelper::checkGlError("RendererDistortion::drawEyeVDDC2");
 }
 
-void RendererDistortion::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen, bool occlusion) {
+/*void RendererDistortion::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen, bool occlusion) {
     const auto& tmp=meshColorGreen ? greenMeshB : blueMeshB;
     mGLProgramVC->drawX(viewM,projM,tmp);
 
@@ -186,8 +192,8 @@ void RendererDistortion::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM,
 
     mBasicGLPrograms->vc.drawX(viewM,projM,tmp);*/
 
-    GLHelper::checkGlError("RendererDistortion::drawEye");
-}
+    /*GLHelper::checkGlError("RendererDistortion::drawEye");
+}*/
 
 
 #define JNI_METHOD(return_type, method_name) \
@@ -225,7 +231,8 @@ JNI_METHOD(void, nativeOnDrawFrame)
 JNI_METHOD(void, nativeUpdateHeadsetParams)
 (JNIEnv *env, jobject obj, jlong instancePointer,jobject instanceMyVrHeadsetParams) {
     const MVrHeadsetParams deviceParams=createFromJava(env, instanceMyVrHeadsetParams);
-    native(instancePointer)->vrHeadsetParams.updateHeadsetParams(deviceParams);
+    native(instancePointer)->vrCompositorRenderer.updateHeadsetParams(deviceParams);
+    //TODO native(instancePointer)->vrHeadsetParams.updateHeadsetParams(deviceParams);
 }
 
 }

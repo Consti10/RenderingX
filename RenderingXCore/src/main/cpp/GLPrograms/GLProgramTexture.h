@@ -11,12 +11,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <VDDCManager.h>
-#include <VertexBuffer.hpp>
-#include <VertexIndexBuffer.hpp>
-//#define WIREFRAME
 #include <AbstractMesh.hpp>
 
-
+//#define WIREFRAME
 class GLProgramTexture {
 private:
     const bool USE_EXTERNAL_TEXTURE;

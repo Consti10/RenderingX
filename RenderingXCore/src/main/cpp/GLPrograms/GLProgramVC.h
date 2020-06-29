@@ -15,8 +15,6 @@
 #include <TrueColor.hpp>
 #include <VDDCManager.h>
 #include <AbstractMesh.hpp>
-#include <VertexBuffer.hpp>
-#include <VertexIndexBuffer.hpp>
 
 //#define WIREFRAME
 
@@ -48,6 +46,7 @@ public:
     //convenient methods for drawing a colored mesh with / without indices
     //calls beforeDraw(), draw() and afterDraw() properly
     void drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const ColoredMesh& mesh)const;
+    void updateVDDCParamsGL()const;
 private:
     static const std::string VS(){
         std::stringstream s;
