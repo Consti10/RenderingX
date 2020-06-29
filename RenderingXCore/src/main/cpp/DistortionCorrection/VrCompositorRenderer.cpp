@@ -49,7 +49,7 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
     }
     //
     //Render the mesh that occludes everything except the part actually visible inside the headset
-    if (true) {
+    if (ENABLE_OCCLUSION_MESH) {
         int idx = eye == GVR_LEFT_EYE ? 0 : 1;
         mGLProgramVC2D->drawX(glm::mat4(1.0f), glm::mat4(1.0f), mOcclusionMesh[idx]);
     }
@@ -89,6 +89,8 @@ void VrCompositorRenderer::createVrRenderbuffer(VrCompositorRenderer::VrRenderbu
         MLOGE<<"Framebuffer not complete "<<status;
     }
     glBindFramebuffer(GL_FRAMEBUFFER,0);
+    rb.WIDTH_PX=W;
+    rb.HEIGH_PX=H;
     GLHelper::checkGlError("createVrRenderbuffer2");
 }
 

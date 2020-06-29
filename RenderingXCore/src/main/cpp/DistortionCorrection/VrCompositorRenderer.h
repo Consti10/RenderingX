@@ -16,12 +16,12 @@
 #include <DistortionEngine.h>
 #include <variant>
 
-
 class VrCompositorRenderer {
 public:
     VDDCManager vddcManager;
     DistortionEngine distortionEngine;
 private:
+    static constexpr bool ENABLE_OCCLUSION_MESH=true;
     const TrueColor occlusionMeshColor;
     //One for left and right eye each
     std::array<GLProgramVC::ColoredMesh,2> mOcclusionMesh;
@@ -60,9 +60,9 @@ public:
     void updateHeadsetParams(const MVrHeadsetParams &mDP);
     //
     struct VrRenderbuffer{
-        GLuint WIDTH_PX=0,HEIGH_PX=0;
         GLuint framebuffer;        // framebuffer object. VR applications render into framebuffer
         GLuint texture;            // texture object. Is distorted / reprojected by the compositor layer renderer
+        GLuint WIDTH_PX=0,HEIGH_PX=0;
     };
     static void createVrRenderbuffer(VrRenderbuffer& vrRenderbuffer,int W,int H);
 };

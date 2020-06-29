@@ -24,7 +24,7 @@ private:
     VDDCManager::UndistortionHandles* mUndistortionHandles;
     static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
     static constexpr auto MY_SAMPLER_UNIT=1;
-    const bool mapEquirectangularToInsta360;
+    const bool MAP_EQUIRECTANGULAR_TO_INSTA360;
 public:
     struct Vertex{
         float x,y,z;
@@ -72,7 +72,7 @@ private:
         s<<"}\n";
         return s.str();
     }
-    static const std::string FS(const bool mapEquirectangularToInsta360){
+    static const std::string FS(const bool MAP_EQUIRECTANGULAR_TO_INSTA360){
         std::stringstream s;
         s<<"#ifdef USE_EXTERNAL_TEXTURE\n";
         s<<"#extension GL_OES_EGL_image_external : require\n";
@@ -84,7 +84,7 @@ private:
         s<<"#else\n";
         s<<"uniform sampler2D sTexture;\n";
         s<<"#endif\n";
-        if(mapEquirectangularToInsta360){
+        if(MAP_EQUIRECTANGULAR_TO_INSTA360){
             s<<"vec2 map_equirectangular(in float x,in float y){\n"
                "        float pi = 3.14159265359;\n"
                "        float pi_2 = 1.57079632679;\n"
@@ -107,7 +107,7 @@ private:
                "    }";
         }
         s<<"void main() {\n";
-        if(mapEquirectangularToInsta360){
+        if(MAP_EQUIRECTANGULAR_TO_INSTA360){
             s<<"vec2 newTexCoord=map_equirectangular(vTexCoord.x,vTexCoord.y);";
             s<<"gl_FragColor = texture2D(sTexture,newTexCoord);\n";
         }else{

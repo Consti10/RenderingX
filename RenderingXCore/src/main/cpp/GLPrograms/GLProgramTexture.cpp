@@ -7,7 +7,7 @@ constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
 
 GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const VDDCManager* distortionManager, const bool use2dCoordinates, const bool mapEquirectangularToInsta360)
-        :USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE),distortionManager(distortionManager),mapEquirectangularToInsta360(mapEquirectangularToInsta360) {
+        : USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE), distortionManager(distortionManager), MAP_EQUIRECTANGULAR_TO_INSTA360(mapEquirectangularToInsta360) {
     std::string flags;
     if(distortionManager!= nullptr){
         flags="#define ENABLE_VDDC\n";
