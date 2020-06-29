@@ -36,9 +36,6 @@ public:
     };
     // https://developer.oculus.com/documentation/unity/unity-ovroverlay/
     struct VRLayer{
-        // Holds either Indexed vertices (VertexIndexBuffer)
-        // or not-indexed vertices (VertexBuffer)
-        // std::variant<VertexBuffer,VertexIndexBuffer> geometry;
         GLProgramTexture::TexturedMesh mesh;
         GLuint textureId;
         bool isExternalTexture;

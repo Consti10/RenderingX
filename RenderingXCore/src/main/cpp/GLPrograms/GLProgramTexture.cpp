@@ -8,12 +8,13 @@ constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
 GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const VDDCManager* distortionManager, const bool use2dCoordinates, const bool mapEquirectangularToInsta360)
         :USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE),distortionManager(distortionManager),mapEquirectangularToInsta360(mapEquirectangularToInsta360) {
-    std::string flags="";
+    std::string flags;
     if(distortionManager!= nullptr){
         flags="#define ENABLE_VDDC\n";
     }else if(use2dCoordinates){
         flags="#define USE_2D_COORDINATES\n";
     }
+    if(USE_EXTERNAL_TEXTURE)flags+="#define USE_EXTERNAL_TEXTURE\n";
     mProgram = GLHelper::createProgram(VS(), FS(USE_EXTERNAL_TEXTURE,mapEquirectangularToInsta360), flags);
     mMVMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uMVMatrix");
     mPMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uPMatrix");

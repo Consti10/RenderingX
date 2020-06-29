@@ -74,17 +74,16 @@ private:
     }
     static const std::string FS(const bool externalTexture,const bool mapEquirectangularToInsta360){
         std::stringstream s;
-        if(externalTexture){
-            s<<"#extension GL_OES_EGL_image_external : require\n";
-        }
+        s<<"#ifdef USE_EXTERNAL_TEXTURE\n";
+        s<<"#extension GL_OES_EGL_image_external : require\n";
+        s<<"#endif\n";
         s<<"precision mediump float;\n";
         s<<"varying vec2 vTexCoord;\n";
-        s<<"varying float invisibleFragment;";
-        if(externalTexture){
-            s<<"uniform samplerExternalOES sTexture;\n";
-        }else{
-            s<<"uniform sampler2D sTexture;\n";
-        }
+        s<<"#ifdef USE_EXTERNAL_TEXTURE\n";
+        s<<"uniform samplerExternalOES sTexture;\n";
+        s<<"#else\n";
+        s<<"uniform sampler2D sTexture;\n";
+        s<<"#endif\n";
         if(mapEquirectangularToInsta360){
             s<<"vec2 map_equirectangular(in float x,in float y){\n"
                "        float pi = 3.14159265359;\n"

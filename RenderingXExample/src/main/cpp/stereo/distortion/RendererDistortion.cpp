@@ -6,10 +6,8 @@
 #include "vr/gvr/capi/include/gvr_types.h"
 #include <GLBuffer.hpp>
 #include <MatrixHelper.h>
-#include <array>
 #include <Sphere/DualFisheyeSphere.hpp>
 #include <Sphere/UvSphere.hpp>
-#include <CardboardViewportOcclusion.hpp>
 #include <Sphere/SphereBuilder.hpp>
 
 constexpr auto TAG="DistortionExample";
