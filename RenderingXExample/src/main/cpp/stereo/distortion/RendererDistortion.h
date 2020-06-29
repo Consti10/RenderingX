@@ -36,7 +36,7 @@
 #include <VrCompositorRenderer.h>
 
 // Example that compares the distortion created by VDDC and google cardboard with Gvr (google vr)
-// Renders a 2D Mesh for testing
+// Renders the wireframe of a 2D rectangular surface
 
 class RendererDistortion{
 public:
@@ -50,7 +50,7 @@ public:
     void onDrawFrame();
 private:
     /*
-    * draws into gvr renderbuffer which is then distorted into framebuffer
+    * draws the grid of a 2D surface into gvr renderbuffer which is then distorted into framebuffer
     */
     void drawEyeGvrRenderbuffer(gvr::Eye eye);
     /*
@@ -71,6 +71,8 @@ private:
     static constexpr int LINE_MESH_TESSELATION_FACTOR=12;
     GLProgramVC::ColoredMesh blueMeshB;
     GLProgramVC::ColoredMesh greenMeshB;
+    static constexpr float LINE_WIDTH_BIG=6.0f;
+    static constexpr float LINE_WIDTH_SMALL=3.0f;
 public:
     VrCompositorRenderer vrCompositorRenderer;
 private:

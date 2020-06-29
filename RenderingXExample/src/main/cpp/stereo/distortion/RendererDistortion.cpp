@@ -16,7 +16,7 @@ constexpr auto TAG="DistortionExample";
 
 RendererDistortion::RendererDistortion(JNIEnv *env, jobject androidContext, gvr_context *gvr_context):
         //distortionManager(VDDCManager::RADIAL_CARDBOARD),
-        vrCompositorRenderer(VDDCManager::RADIAL_CARDBOARD),
+        vrCompositorRenderer(VDDCManager::RADIAL_CARDBOARD,TrueColor(glm::vec4{1.0f, 0.1, 0.1, 1.0})),
         mFPSCalculator("OpenGL FPS", 2000)
         {
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
@@ -38,14 +38,7 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     specs[0].SetColorFormat(GVR_COLOR_FORMAT_RGBA_8888);
     specs[0].SetDepthStencilFormat(GVR_DEPTH_STENCIL_FORMAT_DEPTH_16);
     swap_chain = std::make_unique<gvr::SwapChain>(gvr_api_->CreateSwapChain(specs));
-    /*glProgramTextureProj=new GLPTextureProj();
-    glProgramTexture=new GLProgramTexture(false);
-    GLProgramTexture::loadTexture(mTextureMonaLisa, env, context, "ExampleTexture/grid_2000px.png");*/
-    const float wh=2.0f;
-    //glBufferTextured.uploadGL(TexturedGeometry::makeTesselatedVideoCanvas2(10,glm::vec3(0,0,0),{wh,wh},0.0f,1.0f));
 
-    //mBasicGLPrograms=std::make_unique<BasicGLPrograms>();
-    //mBasicGLPrograms->text.loadTextRenderingData(env,context,TextAssetsHelper::ARIAL_PLAIN);
     mGLProgramVC=std::make_unique<GLProgramVC>();
     //create the green and blue mesh
     float tesselatedRectSize=2.0; //6.2f
@@ -55,14 +48,8 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     greenMeshB=GLProgramVC::ColoredMesh(
             ColoredGeometry::makeTessellatedColoredRectWireframe(LINE_MESH_TESSELATION_FACTOR, {0,0,-2}, {tesselatedRectSize,tesselatedRectSize},
                                                                  TrueColor2::GREEN), GL_LINES);
-    //create the occlusion mesh, left and right viewport
-    //use a slightly different color than clear color to make mesh visible
-    // TODO const auto color=TrueColor(glm::vec4{1.0f, 0.1, 0.1, 1.0});
-    //CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(vrHeadsetParams,color,mOcclusionMesh);
     vrCompositorRenderer.removeLayers();
-    //vrCompositorRenderer.addLayer()
     vrCompositorRenderer.debug.push_back(VrCompositorRenderer::DebugLayer{greenMeshB});
-
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
@@ -126,74 +113,17 @@ void RendererDistortion::drawEyeGvrRenderbuffer(gvr::Eye eye) {
     const auto rotM=vrCompositorRenderer.distortionEngine.GetLatestHeadSpaceFromStartSpaceRotation_();
     const auto viewM=toGLM(ndk_hello_vr::MatrixMul(eyeM,rotM));
     const auto projectionM=toGLM(perspective);
-    glLineWidth(6.0f);
+    glLineWidth(LINE_WIDTH_BIG);
     // draw debug mesh:
     mGLProgramVC->drawX(viewM,projectionM,blueMeshB);
-    GLHelper::checkGlError("RendererDistortion::drawEyeGvr");
+    GLHelper::checkGlError("RendererDistortion::drawEyeGvrRenderbuffer");
 }
 
 void RendererDistortion::drawEyeVDDC(gvr::Eye eye) {
-    glLineWidth(3.0f);
+    glLineWidth(LINE_WIDTH_SMALL);
     vrCompositorRenderer.drawLayers(eye);
-    /*vrHeadsetParams.setOpenGLViewport(eye);
-    distortionManager.setEye(eye==0);
-    const auto rotM=vrHeadsetParams.GetLatestHeadSpaceFromStartSpaceRotation();
-    auto viewM=vrHeadsetParams.GetEyeFromHeadMatrix(eye)*rotM;
-    auto projM=vrHeadsetParams.GetProjectionMatrix(eye);
-    drawEye(eye,viewM,projM,true,true);*/
-    GLHelper::checkGlError("RendererDistortion::drawEyeVDDC2");
+    GLHelper::checkGlError("RendererDistortion::drawEyeVDDC");
 }
-
-/*void RendererDistortion::drawEye(gvr::Eye eye, glm::mat4 viewM, glm::mat4 projM, bool meshColorGreen, bool occlusion) {
-    const auto& tmp=meshColorGreen ? greenMeshB : blueMeshB;
-    mGLProgramVC->drawX(viewM,projM,tmp);
-
-    //if(occlusion){
-    //    mBasicGLPrograms->vc2D.drawX(glm::mat4(1.0f),glm::mat4(1.0f),mOcclusionMesh[eye==GVR_LEFT_EYE ? 0 : 1]);
-    //}
-
-    // Dev proj texturing
-    /*glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
-    /*{
-        glProgramTexture->beforeDraw(glBufferTextured.vertexB,mTextureMonaLisa);
-        glm::mat4 modelM=glm::translate(glm::mat4(1.0f),glm::vec3(0,0,-3));
-
-        glProgramTexture->draw(viewM*modelM,projM,0,glBufferTextured.nVertices,glBufferTextured.mMode);
-        glProgramTexture->afterDraw();
-    }*/
-    /*{
-        constexpr float DEFAULT_CAMERA_Z=10.0f;
-        constexpr auto DEFAULT_CAMERA_POSITION=glm::vec3(0,0,DEFAULT_CAMERA_Z);
-        constexpr auto DEFAULT_CAMERA_LOOK_AT=glm::vec3(0,0,0);
-        constexpr auto DEFAULT_CAMERA_UP=glm::vec3(0,1,0);
-        const auto DEFAULT_EYE_VIEW=glm::lookAt(DEFAULT_CAMERA_POSITION,DEFAULT_CAMERA_LOOK_AT,DEFAULT_CAMERA_UP);
-        glProgramTextureProj->beforeDraw(glBufferTextured.vertexB, mTextureMonaLisa);
-        glProgramTextureProj->draw(glm::scale(glm::mat4(1.0),glm::vec3(3.0f,3.0f,3.0f)),DEFAULT_EYE_VIEW,projM,0,glBufferTextured.nVertices,glBufferTextured.mMode);
-
-        glm::mat4 scaleBiasMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)), glm::vec3(0.5f));
-        // Construct the combined matrix to transform the vertex position to its projective
-        // texture coordiantes.
-        glm::mat4 modelM=glm::translate(glm::vec3(0,0,0.2));
-        //glm::mat4 modelM=glm::scale(glm::mat4(1.0f),glm::vec3(0.1,0.1,0.1));
-        //glm::mat4 modelM=glm::rotate(glm::radians(20.0f),glm::vec3(0,1,0));
-        //glm::mat4 modelM=glm::mat4(1.0);
-
-        //glm::mat4 viewM2=glm::lookAt()
-        glm::mat4 projM2=glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 10.0f);
-
-        glm::mat4 projectorTransformMatrix = scaleBiasMatrix * projM2 *(viewM*modelM);
-
-        glProgramTextureProj->updateTexMatrix(projectorTransformMatrix);
-        glProgramTextureProj->afterDraw();
-    }
-
-
-    mBasicGLPrograms->vc.drawX(viewM,projM,tmp);*/
-
-    /*GLHelper::checkGlError("RendererDistortion::drawEye");
-}*/
 
 
 #define JNI_METHOD(return_type, method_name) \

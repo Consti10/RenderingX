@@ -5,7 +5,8 @@
 #include <CardboardViewportOcclusion.hpp>
 #include "VrCompositorRenderer.h"
 
-VrCompositorRenderer::VrCompositorRenderer(const VDDCManager::DISTORTION_MODE distortionMode):
+VrCompositorRenderer::VrCompositorRenderer(const VDDCManager::DISTORTION_MODE distortionMode,const TrueColor occlusionMeshColor1):
+        occlusionMeshColor(occlusionMeshColor1),
         vddcManager(distortionMode){
 }
 
@@ -14,8 +15,7 @@ void VrCompositorRenderer::initializeGL() {
     mGLProgramVC=std::make_unique<GLProgramVC>(&vddcManager);
     mGLProgramTexture=std::make_unique<GLProgramTexture>(false,&vddcManager);
     mGLProgramTextureExt=std::make_unique<GLProgramTextureExt>(&vddcManager,false);
-    const auto color=TrueColor2::BLACK;
-    CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(distortionEngine, color, mOcclusionMesh);
+    CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(distortionEngine, occlusionMeshColor, mOcclusionMesh);
     distortionEngine.updateDistortionManager(vddcManager);
 }
 
@@ -71,6 +71,31 @@ void VrCompositorRenderer::removeLayers() {
 
 void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     distortionEngine.updateHeadsetParams(mDP);
+}
+
+void VrCompositorRenderer::createVrRenderbuffer(VrCompositorRenderer::VrRenderbuffer &rb,int W, int H) {
+    GLHelper::checkGlError("createVrRenderbuffer1");
+    // Create render texture.
+    glGenTextures(1, &rb.texture);
+    glBindTexture(GL_TEXTURE_2D, rb.texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    //  GL_RGBA8_OES
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, W,H, 0,
+                 GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    // Create render target.
+    glGenFramebuffers(1, &rb.framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, rb.framebuffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                           rb.texture, 0);
+    auto status=glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if(status!=GL_FRAMEBUFFER_COMPLETE){
+        MLOGE<<"Framebuffer not complete "<<status;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER,0);
+    GLHelper::checkGlError("createVrRenderbuffer2");
 }
 
 /*void VrCompositorRenderer::drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM) {

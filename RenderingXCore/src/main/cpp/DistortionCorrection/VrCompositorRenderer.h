@@ -22,10 +22,11 @@ public:
     VDDCManager vddcManager;
     DistortionEngine distortionEngine;
 private:
+    const TrueColor occlusionMeshColor;
     //One for left and right eye each
     std::array<GLProgramVC::ColoredMesh,2> mOcclusionMesh;
 public:
-    VrCompositorRenderer(const VDDCManager::DISTORTION_MODE distortionMode);
+    VrCompositorRenderer(const VDDCManager::DISTORTION_MODE distortionMode,const TrueColor occlusionMeshColor1=TrueColor2::BLACK);
     // Call this once when the OpenGL context is available
     void initializeGL();
     // NONE == position is fixed
@@ -67,6 +68,13 @@ public:
     // NOT VR
     //void drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM);
     void updateHeadsetParams(const MVrHeadsetParams &mDP);
+    //
+    struct VrRenderbuffer{
+        GLuint WIDTH_PX=0,HEIGH_PX=0;
+        GLuint framebuffer;        // framebuffer object. VR applications render into framebuffer
+        GLuint texture;            // texture object. Is distorted / reprojected by the compositor layer renderer
+    };
+    static void createVrRenderbuffer(VrRenderbuffer& vrRenderbuffer,int W,int H);
 };
 
 
