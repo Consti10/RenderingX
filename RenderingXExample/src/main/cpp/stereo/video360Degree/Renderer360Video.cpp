@@ -25,6 +25,8 @@ Renderer360Video::Renderer360Video(JNIEnv *env, jobject androidContext, gvr_cont
 void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoTexture) {
     vrCompositorRenderer.initializeGL();
     mVideoTexture=(GLuint)videoTexture;
+    glGenTextures(1,&mExampleUiTexture);
+    GLProgramTexture::loadTexture(mExampleUiTexture,env,context,"ExampleTexture/ui.png");
     /*glGenTextures(1,&mTexture360Image);
     glGenTextures(1,&mTexture360ImageInsta360);
     GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
@@ -42,6 +44,9 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
     }
     vrCompositorRenderer.removeLayers();
     vrCompositorRenderer.addLayer(std::move(videoSphere360), mVideoTexture, true, VrCompositorRenderer::HEAD_TRACKING::FULL);
+    float tesselatedRectSize=2.0; //6.2f
+    auto uiMesh=TexturedGeometry::makeTesselatedVideoCanvas(12,{0, 0, -2}, {tesselatedRectSize, tesselatedRectSize},0.0f,1.0f);
+    vrCompositorRenderer.addLayer(std::move(uiMesh),mExampleUiTexture,false);
 }
 
 void Renderer360Video::onDrawFrame() {

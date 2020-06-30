@@ -9,10 +9,6 @@
 #include "GLProgramVC.h"
 #include "GLProgramLine.h"
 
-//Every renderer uses these 4
-//makes it easier to create all of them at once
-//and pass all GLPrograms to functions together
-
 class BasicGLPrograms{
 public:
     explicit BasicGLPrograms():

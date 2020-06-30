@@ -72,7 +72,6 @@ private:
         alreadyUploaded=true;
     }
 public:
-    //template<typename T>
     void uploadGL(const std::vector<T> &vertices){
         createGLBufferIfNeeded();
         checkSetAlreadyUploaded();
@@ -85,11 +84,6 @@ public:
         const auto tmp=std::vector<T>(vertices.begin(),vertices.end());
         GLBuffer::uploadGL(tmp);
     }
-    /*template<typename T>
-    void initializeAndUploadGL(const std::vector<T> &vertices,GLenum mode=GL_TRIANGLES){
-        initializeGL();
-        uploadGL(vertices,mode);
-    }*/
     void deleteGL() {
         glDeleteBuffers(1, &glBufferId);
     }
