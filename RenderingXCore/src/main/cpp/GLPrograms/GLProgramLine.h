@@ -11,8 +11,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <TrueColor.hpp>
-#include <VertexBuffer.hpp>
-#include <VertexIndexBuffer.hpp>
+#include <GLBuffer.hpp>
 
 class GLProgramLine {
 private:
@@ -32,7 +31,7 @@ public:
     explicit GLProgramLine();
     void beforeDraw(GLuint buffer) const;
     void setOtherUniforms(float outlineWidth=0.4f,float edge=0.1f,float borderEdge=0.1f)const;
-    void draw(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM, int verticesOffset, int numberVertices) const;
+    void draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices) const;
     void afterDraw() const;
     //convenient method for VertexBuffer
     void drawX(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM,const GLBuffer<Vertex>& vb);
