@@ -45,11 +45,11 @@ public:
     };
     // List of layer descriptions
     std::vector<VRLayer> mVrLayerList;
-    void addLayer(GLProgramTexture::TexturedMesh mesh, GLuint textureId, bool isExternalTexture, HEAD_TRACKING headTracking=NONE);
+    void addLayer(GLProgramTexture::TexturedMesh mesh, GLuint textureId, bool isExternalTexture, HEAD_TRACKING headTracking=FULL);
 
     void removeLayers();
     void drawLayers(gvr::Eye eye);
-    //
+    //this one is for drawing the occlusion mesh only
     std::unique_ptr<GLProgramVC2D> mGLProgramVC2D;
     // Sample from 'normal' OpenGL texture
     std::unique_ptr<GLProgramTexture> mGLProgramTexture;

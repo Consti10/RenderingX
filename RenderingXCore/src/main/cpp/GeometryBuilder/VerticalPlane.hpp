@@ -20,7 +20,7 @@ namespace VerticalPlane{
      * @param textureMatrix to scale and translate the texture (u,v) coordinates
      */
     static std::vector<GLProgramTexture::Vertex> createVerticesPlaneTextured(const unsigned int tessellation,
-            const glm::mat4 modelMatrix=glm::mat4(1.0f),const glm::mat4 textureMatrix= glm::mat4(1.0f),const bool invertUCoordinates=false,const bool invertVCoordinates=true){
+            const glm::mat4& modelMatrix=glm::mat4(1.0f),const glm::mat4& textureMatrix= glm::mat4(1.0f),const bool invertUCoordinates=false,const bool invertVCoordinates=true){
         std::vector<GLProgramTexture::Vertex> vertices((tessellation+1)*(tessellation+1));
         const int tessellationX=tessellation;
         const int tessellationY=tessellation;
@@ -56,7 +56,7 @@ namespace VerticalPlane{
     //Tessellation 2 : [ | ]
     //Tessellation 3 : [ | | ]
     static std::vector<GLProgramVC::Vertex> createVerticesPlaneColored(const unsigned int tessellation,
-            const glm::mat4 modelMatrix= glm::mat4(1.0f),const TrueColor color= TrueColor2::BLACK){
+            const glm::mat4& modelMatrix= glm::mat4(1.0f),const TrueColor& color= TrueColor2::BLACK){
         std::vector<GLProgramVC::Vertex> vertices((tessellation+1)*(tessellation+1));
         const int tessellationX=tessellation;
         const int tessellationY=tessellation;

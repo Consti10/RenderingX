@@ -15,7 +15,6 @@ void VrCompositorRenderer::initializeGL() {
     mGLProgramTexture=std::make_unique<GLProgramTexture>(false,true);
     mGLProgramTextureExt=std::make_unique<GLProgramTextureExt>(true,false);
     CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(distortionEngine, occlusionMeshColor, mOcclusionMesh);
-    //distortionEngine.updateDistortionManager(vddcManager);
 }
 
 void VrCompositorRenderer::addLayer(GLProgramTexture::TexturedMesh mesh, GLuint textureId, bool isExternalTexture, HEAD_TRACKING headTracking) {
