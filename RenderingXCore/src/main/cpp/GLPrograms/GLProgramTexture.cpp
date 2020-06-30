@@ -44,13 +44,7 @@ void GLProgramTexture::beforeDraw(const GLuint buffer,GLuint texture) const{
 void GLProgramTexture::draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, const int verticesOffset, const int numberVertices,GLenum mode) const{
     glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
     glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
-#ifndef WIREFRAME
     glDrawArrays(mode, verticesOffset, numberVertices);
-#else
-    glLineWidth(4.0f);
-    glDrawArrays(GL_LINES, verticesOffset, numberVertices);
-    glDrawArrays(GL_POINTS, verticesOffset, numberVertices);
-#endif
 }
 
 void GLProgramTexture::drawIndexed(GLuint indexBuffer, const glm::mat4x4 &ViewM,
@@ -58,15 +52,8 @@ void GLProgramTexture::drawIndexed(GLuint indexBuffer, const glm::mat4x4 &ViewM,
                                    GLenum mode) const {
     glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
     glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
-    //
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-#ifndef WIREFRAME
     glDrawElements(mode,numberIndices,GL_UNSIGNED_INT, (void*)(indicesOffset*sizeof(INDEX_DATA)));
-#else
-    glLineWidth(4.0f);
-    glDrawElements(GL_LINES,numberVertices,GL_UNSIGNED_SHORT, (void*)(verticesOffset*sizeof(GLushort)));
-    glDrawElements(GL_POINTS,numberVertices,GL_UNSIGNED_SHORT, (void*)(verticesOffset*sizeof(GLushort)));
-#endif
 }
 
 void GLProgramTexture::afterDraw() const{

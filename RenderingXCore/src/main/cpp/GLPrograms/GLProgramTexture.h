@@ -13,7 +13,6 @@
 #include <VDDC.h>
 #include <AbstractMesh.hpp>
 
-//#define WIREFRAME
 class GLProgramTexture {
 private:
     const bool USE_EXTERNAL_TEXTURE;
@@ -62,15 +61,7 @@ private:
         s<<"#else\n";
         s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition;\n";
         s<<"#endif\n";
-        //
         s<<"vTexCoord = aTexCoord;\n";
-        /*s<<"vec4 lul = (uMVMatrix * vec4(aTexCoord, 0.0,1.0));";
-        s<<"vec4 lul2=lul;";
-        s<<"vec3 ndc = lul2.xyz / lul2.w;";
-        s<<"vTexCoord=lul.xy;";*/
-#ifdef WIREFRAME
-        s<<"gl_PointSize=15.0;";
-#endif
         s<<"}\n";
         return s.str();
     }
@@ -118,9 +109,6 @@ private:
         //s<<"if(invisibleFragment>=0.9){";
         //s<<"gl_FragColor=vec4(1.0,0.0,0.0,1.0);\n";
         //s<<"}";
-#ifdef WIREFRAME
-        s<<"gl_FragColor.rgb=vec3(1.0,1.0,1.0);\n";
-#endif
         s<<"}\n";
         return s.str();
     }
