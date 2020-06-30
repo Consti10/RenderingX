@@ -73,14 +73,9 @@ void GLProgramTexture::afterDraw() const{
     glDisableVertexAttribArray((GLuint)mPositionHandle);
     glDisableVertexAttribArray((GLuint)mTextureHandle);
     glBindTexture(USE_EXTERNAL_TEXTURE ? GL_TEXTURE_EXTERNAL_OES : GL_TEXTURE_2D,0);
-    //distortionManager.afterDraw();
 }
 
 void GLProgramTexture::loadTexture(GLuint texture,JNIEnv *env, jobject androidContext, const char *name) {
-    /*if(USE_EXTERNAL_TEXTURE){
-        LOGD("ERROR: Should use an external surface texture");
-        return;
-    }*/
     //Load texture, generate mipmaps, set sampling parameters
     glBindTexture(GL_TEXTURE_2D,texture);
     NDKHelper::LoadPngFromAssetManager2(env,androidContext,GL_TEXTURE_2D,name);

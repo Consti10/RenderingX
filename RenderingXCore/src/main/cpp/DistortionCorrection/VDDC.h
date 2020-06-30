@@ -27,7 +27,7 @@
  * For technical details,see https://www.youtube.com/watch?v=yJVkdsZc9YA
  * Update 30.06.2020 : Creates exact same distorted position(s) as in google cardboard https://github.com/googlevr/cardboard
  */
-
+// TODO use namespace instead of class but something goes wrong with linkage when doing so
 class VDDC{
 public:
     // Number of coefficients for the inverse distortion. This value needs to be present at compile time
@@ -101,7 +101,6 @@ public:
      * @param leftEye true if uniforms should be updated for rendering the left eye, false for right eye
      */
     static void updateUnDistortionUniforms(const bool leftEye, const UnDistortionUniformHandles& undistortionHandles, const DataUnDistortion& dataUnDistortion);
-private:
     /**
      * NOTE: Following functions all return GLSL shader code as a string
      */

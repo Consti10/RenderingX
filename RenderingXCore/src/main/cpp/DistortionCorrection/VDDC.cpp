@@ -63,6 +63,7 @@ void VDDC::updateUnDistortionUniforms(const bool leftEye, const UnDistortionUnif
     glUniform1f(undistortionHandles.uTextureParams_y_off,dataUnDistortion.texture_params[i].y_eye_offset);
 }
 
+
 /*if(isNullOrDisabled(distortionManager1))
         return "gl_Position = (uPMatrix*uMVMatrix)* aPosition;\n";;
     const VDDCManager& distortionManager=*distortionManager1;

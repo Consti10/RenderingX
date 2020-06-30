@@ -96,10 +96,6 @@ void DistortionEngine::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     //test3();
 }
 
-//void DistortionEngine::updateDistortionManager(VDDCManager &distortionManager)const {
-//    distortionManager.updateDistortion(mInverse,screen_params,texture_params);
-//}
-
 void DistortionEngine::updateLatestHeadSpaceFromStartSpaceRotation() {
     latestHeadSpaceFromStartSpaceRotation_=gvr_api->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
     latestHeadSpaceFromStartSpaceRotation=toGLM(latestHeadSpaceFromStartSpaceRotation_);
