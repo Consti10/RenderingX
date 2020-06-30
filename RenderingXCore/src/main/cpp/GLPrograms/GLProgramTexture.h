@@ -10,18 +10,18 @@
 #include <jni.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <VDDCManager.h>
+#include <VDDC.h>
 #include <AbstractMesh.hpp>
 
 //#define WIREFRAME
 class GLProgramTexture {
 private:
     const bool USE_EXTERNAL_TEXTURE;
+    const bool ENABLE_VDDC;
     GLuint mProgram;
     GLint mPositionHandle,mTextureHandle,mSamplerHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
-    const VDDCManager* distortionManager;
-    VDDCManager::UndistortionHandles* mUndistortionHandles;
+    VDDC::UnDistortionUniformHandles* mUndistortionHandles;
     static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
     static constexpr auto MY_SAMPLER_UNIT=1;
     const bool MAP_EQUIRECTANGULAR_TO_INSTA360;
@@ -32,7 +32,7 @@ public:
     };
     using INDEX_DATA=GLuint;
     using TexturedMesh=AbstractMesh<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
-    explicit GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const VDDCManager* distortionManager=nullptr, const bool use2dCoordinates=false, const bool mapEquirectangularToInsta360=false);
+    explicit GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const bool ENABLE_VDDC=false, const bool use2dCoordinates=false, const bool mapEquirectangularToInsta360=false);
     void beforeDraw(GLuint buffer,GLuint texture) const;
     void draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLenum mode=GL_TRIANGLES) const;
     void drawIndexed(GLuint indexBuffer,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int indicesOffset, int numberIndices,GLenum mode) const;
@@ -41,6 +41,7 @@ public:
     // convenient methods for drawing a textured mesh with / without indices
     // calls beforeDraw(), draw() and afterDraw() properly
     void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const TexturedMesh& mesh);
+    void updateUnDistortionUniforms(bool leftEye, const VDDC::DataUnDistortion& dataUnDistortion)const;
 private:
     static const std::string VS(){
         std::stringstream s;
@@ -49,14 +50,15 @@ private:
         s<<"attribute vec4 aPosition;\n";
         s<<"attribute vec2 aTexCoord;\n";
         s<<"varying vec2 vTexCoord;\n";
-        //s<<"varying float overwrite;";
-        s<< VDDCManager::writeDistortionUtilFunctionsAndUniforms();
+        s<<"#ifdef ENABLE_VDDC\n";
+        s<< VDDC::writeDistortionUtilFunctionsAndUniforms();
+        s<<"#endif //ENABLE_VDDC\n";
         s<<"void main() {\n";
         // Depending on the selected mode writing gl_Position is different
         s<<"#ifdef USE_2D_COORDINATES\n";
         s<<"gl_Position=vec4(aPosition.xy,0,1);\n";
         s<<"#elif defined(ENABLE_VDDC)\n";
-        s<< VDDCManager::writeDistortedGLPosition();
+        s<< VDDC::writeDistortedGLPosition();
         s<<"#else\n";
         s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition;\n";
         s<<"#endif\n";
@@ -127,7 +129,7 @@ using TexturedMesh=GLProgramTexture::TexturedMesh;
 
 class GLProgramTextureExt: public GLProgramTexture{
 public:
-    GLProgramTextureExt(const VDDCManager* dm=nullptr, const bool mapEquirectangularToInsta360=false): GLProgramTexture(true, dm, false, mapEquirectangularToInsta360){
+    GLProgramTextureExt(const bool ENABLE_VDDC=false, const bool mapEquirectangularToInsta360=false): GLProgramTexture(true, ENABLE_VDDC, false, mapEquirectangularToInsta360){
     }
 };
 

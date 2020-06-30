@@ -7,7 +7,7 @@
 
 #include <glm/mat4x4.hpp>
 #include "MLensDistortion.h"
-#include "VDDCManager.h"
+#include "VDDC.h"
 #include "MatrixHelper.h"
 
 //TODO find better name ?
@@ -39,7 +39,7 @@ public:
     void updateHeadsetParams(const MVrHeadsetParams& mDP);
 
     //Set uniforms of Distortion manager (passed by reference)
-    void updateDistortionManager(VDDCManager& distortionManager)const;
+    //void updateDistortionManager(VDDCManager& distortionManager)const;
 
     //we do not want the view (rotation) to change during rendering of one frame/eye
     //else we could end up with multiple elements rendered in different perspectives

@@ -13,7 +13,7 @@
 constexpr auto TAG="DistortionExample";
 
 RendererDistortion::RendererDistortion(JNIEnv *env, jobject androidContext, gvr_context *gvr_context):
-        vrCompositorRenderer(VDDCManager::RADIAL_CARDBOARD,TrueColor(glm::vec4{1.0f, 0.1, 0.1, 1.0})),
+        vrCompositorRenderer(true,TrueColor(glm::vec4{1.0f, 0.1, 0.1, 1.0})),
         mFPSCalculator("OpenGL FPS", 2000){
     gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
     vrCompositorRenderer.distortionEngine.setGvrApi(gvr_api_.get());

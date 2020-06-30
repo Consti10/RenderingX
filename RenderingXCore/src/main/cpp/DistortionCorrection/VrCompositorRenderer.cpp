@@ -5,17 +5,17 @@
 #include <CardboardViewportOcclusion.hpp>
 #include "VrCompositorRenderer.h"
 
-VrCompositorRenderer::VrCompositorRenderer(const VDDCManager::DISTORTION_MODE distortionMode,const TrueColor occlusionMeshColor1):
-        occlusionMeshColor(occlusionMeshColor1),
-        vddcManager(distortionMode){
+VrCompositorRenderer::VrCompositorRenderer(const bool ENABLE_VDDC,const TrueColor occlusionMeshColor1):
+        ENABLE_VDDC(ENABLE_VDDC),
+        occlusionMeshColor(occlusionMeshColor1){
 }
 
 void VrCompositorRenderer::initializeGL() {
     mGLProgramVC2D=std::make_unique<GLProgramVC2D>();
-    mGLProgramTexture=std::make_unique<GLProgramTexture>(false,&vddcManager);
-    mGLProgramTextureExt=std::make_unique<GLProgramTextureExt>(&vddcManager,false);
+    mGLProgramTexture=std::make_unique<GLProgramTexture>(false,true);
+    mGLProgramTextureExt=std::make_unique<GLProgramTextureExt>(true,false);
     CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(distortionEngine, occlusionMeshColor, mOcclusionMesh);
-    distortionEngine.updateDistortionManager(vddcManager);
+    //distortionEngine.updateDistortionManager(vddcManager);
 }
 
 void VrCompositorRenderer::addLayer(GLProgramTexture::TexturedMesh mesh, GLuint textureId, bool isExternalTexture, HEAD_TRACKING headTracking) {
@@ -25,11 +25,12 @@ void VrCompositorRenderer::addLayer(GLProgramTexture::TexturedMesh mesh, GLuint 
 }
 
 void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
-    distortionEngine.setOpenGLViewport(eye);
-    //TODO once
-    vddcManager.updateDistortion(distortionEngine.mInverse,distortionEngine.screen_params,distortionEngine.texture_params);
+    const auto dataUnDistortion=getDataUnDistortion();
+    const bool leftEye=eye==GVR_LEFT_EYE;
+    mGLProgramTexture->updateUnDistortionUniforms(leftEye, dataUnDistortion);
+    mGLProgramTextureExt->updateUnDistortionUniforms(leftEye, dataUnDistortion);
 
-    vddcManager.setEye(eye==GVR_LEFT_EYE);
+    distortionEngine.setOpenGLViewport(eye);
     const auto rotation = distortionEngine.GetLatestHeadSpaceFromStartSpaceRotation();
 
     for(int i=0;i<mVrLayerList.size();i++){
@@ -92,6 +93,13 @@ void VrCompositorRenderer::createVrRenderbuffer(VrCompositorRenderer::VrRenderbu
     rb.WIDTH_PX=W;
     rb.HEIGH_PX=H;
     GLHelper::checkGlError("createVrRenderbuffer2");
+}
+
+VDDC::DataUnDistortion VrCompositorRenderer::getDataUnDistortion()const {
+    if(!ENABLE_VDDC){
+        return VDDC::DataUnDistortion::identity();
+    }
+    return VDDC::DataUnDistortion{{distortionEngine.mInverse},distortionEngine.screen_params,distortionEngine.texture_params};
 }
 
 /*void VrCompositorRenderer::drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM) {

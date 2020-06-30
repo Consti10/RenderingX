@@ -6,10 +6,10 @@ constexpr auto TAG="GLRenderTexture(-External)";
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
 
-GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const VDDCManager* distortionManager, const bool use2dCoordinates, const bool mapEquirectangularToInsta360)
-        : USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE), distortionManager(distortionManager), MAP_EQUIRECTANGULAR_TO_INSTA360(mapEquirectangularToInsta360) {
+GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const bool ENABLE_VDDC, const bool use2dCoordinates, const bool mapEquirectangularToInsta360)
+        : USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE), ENABLE_VDDC(ENABLE_VDDC), MAP_EQUIRECTANGULAR_TO_INSTA360(mapEquirectangularToInsta360) {
     std::string flags;
-    if(distortionManager!= nullptr){
+    if(ENABLE_VDDC){
         flags="#define ENABLE_VDDC\n";
     }else if(use2dCoordinates){
         flags="#define USE_2D_COORDINATES\n";
@@ -21,8 +21,8 @@ GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const VDDCMa
     mPositionHandle = GLHelper::GlGetAttribLocation(mProgram, "aPosition");
     mTextureHandle = GLHelper::GlGetAttribLocation(mProgram, "aTexCoord");
     mSamplerHandle = GLHelper::GlGetUniformLocation (mProgram, "sTexture" );
-    if(distortionManager){
-        mUndistortionHandles=VDDCManager::getUndistortionUniformHandles(mProgram);
+    if(ENABLE_VDDC){
+        mUndistortionHandles=VDDC::getUndistortionUniformHandles(mProgram);
     }
     GLHelper::checkGlError("GLProgramTexture()");
 }
@@ -39,7 +39,6 @@ void GLProgramTexture::beforeDraw(const GLuint buffer,GLuint texture) const{
     glVertexAttribPointer((GLuint)mPositionHandle, 3/*xyz*/, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
     glEnableVertexAttribArray((GLuint)mTextureHandle);
     glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,u));
-    if(distortionManager)distortionManager->beforeDraw(mUndistortionHandles);
 }
 
 void GLProgramTexture::draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, const int verticesOffset, const int numberVertices,GLenum mode) const{
@@ -105,4 +104,13 @@ void GLProgramTexture::drawX(GLuint texture, const glm::mat4x4 &ViewM, const glm
         draw(ViewM,ProjM,0,mesh.getCount(),mesh.mode);
     }
     afterDraw();
+}
+
+void GLProgramTexture::updateUnDistortionUniforms(bool leftEye, const VDDC::DataUnDistortion &dataUnDistortion) const {
+    if(!ENABLE_VDDC){
+        MLOGE<<"called GLProgramTexture::updateUnDistortion with VDDC disabled";
+        return;
+    }
+    glUseProgram(mProgram);
+    VDDC::updateUnDistortionUniforms(leftEye, *mUndistortionHandles, dataUnDistortion);
 }

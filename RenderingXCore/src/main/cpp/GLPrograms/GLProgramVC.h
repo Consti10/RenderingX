@@ -13,7 +13,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <TrueColor.hpp>
-#include <VDDCManager.h>
 #include <AbstractMesh.hpp>
 
 //#define WIREFRAME
@@ -27,8 +26,6 @@ private:
     GLuint mProgram;
     GLuint mPositionHandle,mColorHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
-    const VDDCManager* distortionManager;
-    VDDCManager::UndistortionHandles* mUndistortionHandles;
 public:
     struct Vertex{
         float x,y,z;
@@ -36,7 +33,7 @@ public:
     };
     using INDEX_DATA=GLushort;
     using ColoredMesh=AbstractMesh<GLProgramVC::Vertex,GLProgramVC::INDEX_DATA>;
-    explicit GLProgramVC(const VDDCManager* distortionManager=nullptr, bool coordinates2D=false);
+    explicit GLProgramVC(bool coordinates2D=false);
     void beforeDraw(GLuint buffer) const;
     void draw(Mat4x4 ViewM, Mat4x4 ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
     void draw(const glm::mat4& ViewM,const glm::mat4& ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
@@ -46,7 +43,6 @@ public:
     //convenient methods for drawing a colored mesh with / without indices
     //calls beforeDraw(), draw() and afterDraw() properly
     void drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const ColoredMesh& mesh)const;
-    void updateVDDCParamsGL()const;
 private:
     static const std::string VS(){
         std::stringstream s;
@@ -56,13 +52,10 @@ private:
         s<<"attribute vec4 aPosition;\n";
         s<<"attribute vec4 aColor;\n";
         s<<"varying vec4 vColor;\n";
-        s<< VDDCManager::writeDistortionUtilFunctionsAndUniforms();
         s<<"void main(){\n";
         // Depending on the selected mode writing gl_Position is different
         s<<"#ifdef USE_2D_COORDINATES\n";
         s<<"gl_Position=vec4(aPosition.xy,0,1);\n";
-        s<<"#elif defined(ENABLE_VDDC)\n";
-        s<< VDDCManager::writeDistortedGLPosition();
         s<<"#else\n";
         s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition;\n";
         s<<"#endif\n";
@@ -93,7 +86,7 @@ using ColoredMesh=GLProgramVC::ColoredMesh;
 
 class GLProgramVC2D: public GLProgramVC{
 public:
-    GLProgramVC2D():GLProgramVC(nullptr,true){
+    GLProgramVC2D():GLProgramVC(true){
     }
 };
 

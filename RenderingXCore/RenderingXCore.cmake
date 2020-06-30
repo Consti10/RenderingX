@@ -50,7 +50,7 @@ include_directories(${RX_CORE_CPP}/GLPrograms)
 include_directories(${RX_CORE_CPP}/NDKHelper)
 include_directories(${RX_CORE_CPP}/Other)
 add_library( GLPrograms SHARED
-        ${RX_CORE_CPP}/DistortionCorrection/VDDCManager.cpp
+        ${RX_CORE_CPP}/DistortionCorrection/VDDC.cpp
         ${RX_CORE_CPP}/DistortionCorrection/PolynomialRadialDistortion/PolynomialRadialDistortion.cpp
         ${RX_CORE_CPP}/DistortionCorrection/PolynomialRadialDistortion/PolynomialRadialInverse.cpp
         ${RX_CORE_CPP}/DistortionCorrection/DistortionEngine.cpp

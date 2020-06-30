@@ -18,15 +18,16 @@
 
 class VrCompositorRenderer {
 public:
-    VDDCManager vddcManager;
     DistortionEngine distortionEngine;
 private:
     static constexpr bool ENABLE_OCCLUSION_MESH=true;
     const TrueColor occlusionMeshColor;
     //One for left and right eye each
     std::array<GLProgramVC::ColoredMesh,2> mOcclusionMesh;
+    const bool ENABLE_VDDC;
+    VDDC::DataUnDistortion getDataUnDistortion()const;
 public:
-    VrCompositorRenderer(const VDDCManager::DISTORTION_MODE distortionMode,const TrueColor occlusionMeshColor1=TrueColor2::BLACK);
+    VrCompositorRenderer(const bool ENABLE_VDDC,const TrueColor occlusionMeshColor1=TrueColor2::BLACK);
     // Call this once when the OpenGL context is available
     void initializeGL();
     // NONE == position is fixed

@@ -7,7 +7,7 @@
 #include <AndroidLogger.hpp>
 #include <MatrixHelper.h>
 #include "DistortionEngine.h"
-#include "VDDCManager.h"
+#include "VDDC.h"
 #include "XTestDistortion.h"
 
 
@@ -57,14 +57,14 @@ void DistortionEngine::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     //never has a deviation higher from x in the range [0..maxRangeInverse]
     float maxRangeInverse=1.0f;
     for(float i=1.0f;i<=2.0f;i+=0.01f){
-        const auto inverse=PolynomialRadialInverse(mDistortion, maxRangeInverse, VDDCManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
+        const auto inverse=PolynomialRadialInverse(mDistortion, maxRangeInverse, VDDC::N_RADIAL_UNDISTORTION_COEFICIENTS);
         const float maxDeviation=PolynomialRadialInverse::calculateMaxDeviation(mDistortion,inverse,maxRangeInverse);
         if(maxDeviation<=0.001f){
             maxRangeInverse=i;
         }
     }
     MLOGD<<"Max value used for getApproximateInverseDistortion()"<<maxRangeInverse;
-    mInverse=PolynomialRadialInverse(mDistortion, maxRangeInverse, VDDCManager::N_RADIAL_UNDISTORTION_COEFICIENTS);
+    mInverse=PolynomialRadialInverse(mDistortion, maxRangeInverse, VDDC::N_RADIAL_UNDISTORTION_COEFICIENTS);
     MLOGD<<"Inverse is:"<<mInverse.toStringX();
 
     //as long as the function is still strict monotonic increasing we can increase the value that will be used for
@@ -96,9 +96,9 @@ void DistortionEngine::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     //test3();
 }
 
-void DistortionEngine::updateDistortionManager(VDDCManager &distortionManager)const {
-    distortionManager.updateDistortion(mInverse,screen_params,texture_params);
-}
+//void DistortionEngine::updateDistortionManager(VDDCManager &distortionManager)const {
+//    distortionManager.updateDistortion(mInverse,screen_params,texture_params);
+//}
 
 void DistortionEngine::updateLatestHeadSpaceFromStartSpaceRotation() {
     latestHeadSpaceFromStartSpaceRotation_=gvr_api->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());

@@ -16,7 +16,7 @@
 class BasicGLPrograms{
 public:
     explicit BasicGLPrograms():
-        vc(nullptr),
+        vc(),
         text(),
         line()
     {}
