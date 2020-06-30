@@ -2,17 +2,19 @@
 #include <NDKHelper.hpp>
 #include "GLProgramTexture.h"
 
-constexpr auto TAG="GLRenderTexture(-External)";
+constexpr auto TAG="GLProgramTexture(Ext)";
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
 
 GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const bool ENABLE_VDDC, const bool use2dCoordinates, const bool mapEquirectangularToInsta360)
         : USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE), ENABLE_VDDC(ENABLE_VDDC), MAP_EQUIRECTANGULAR_TO_INSTA360(mapEquirectangularToInsta360) {
+    // cannot enable VDDC and 2D coordinates at the same time
+    assert(!((ENABLE_VDDC == true) && (use2dCoordinates == true)));
     std::string flags;
     if(ENABLE_VDDC){
-        flags="#define ENABLE_VDDC\n";
+        flags+="#define ENABLE_VDDC\n";
     }else if(use2dCoordinates){
-        flags="#define USE_2D_COORDINATES\n";
+        flags+="#define USE_2D_COORDINATES\n";
     }
     if(USE_EXTERNAL_TEXTURE)flags+="#define USE_EXTERNAL_TEXTURE\n";
     mProgram = GLHelper::createProgram(VS(), FS(mapEquirectangularToInsta360), flags);
@@ -24,7 +26,7 @@ GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const bool EN
     if(ENABLE_VDDC){
         mUndistortionHandles=VDDC::getUndistortionUniformHandles(mProgram);
     }
-    GLHelper::checkGlError("GLProgramTexture()");
+    GLHelper::checkGlError(TAG);
 }
 
 void GLProgramTexture::beforeDraw(const GLuint buffer,GLuint texture) const{
