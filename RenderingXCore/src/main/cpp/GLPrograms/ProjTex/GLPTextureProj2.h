@@ -13,9 +13,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <array>
 #include <GLBuffer.hpp>
-#include <VertexBuffer.hpp>
-#include <VertexIndexBuffer.hpp>
-
 
 class GLPTextureProj2 {
 private:

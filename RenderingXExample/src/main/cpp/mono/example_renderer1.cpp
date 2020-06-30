@@ -71,7 +71,6 @@ GLBuffer<GLProgramText::Character> glBufferText;
 GLBuffer<GLProgramText::Character> glBufferIcons;
 //holds smooth line vertices
 GLBuffer<GLProgramLine::Vertex> glBufferLine;
-VertexBuffer glBufferPyramid;
 const glm::mat4 DEFAULT_MODEL_MATRIX=glm::scale(glm::mat4(1.0f), glm::vec3(1.0,1.0,1.0));
 glm::mat4 modelM;
 
