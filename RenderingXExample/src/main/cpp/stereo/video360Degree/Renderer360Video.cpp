@@ -44,8 +44,8 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
     }
     vrCompositorRenderer.removeLayers();
     vrCompositorRenderer.addLayer(std::move(videoSphere360), mVideoTexture, true, VrCompositorRenderer::HEAD_TRACKING::FULL);
-    float tesselatedRectSize=2.0; //6.2f
-    auto uiMesh=TexturedGeometry::makeTesselatedVideoCanvas(12,{0, 0, -2}, {tesselatedRectSize, tesselatedRectSize},0.0f,1.0f);
+    float tesselatedRectSizeW=2.0; //6.2f
+    auto uiMesh=TexturedGeometry::makeTesselatedVideoCanvas(12,{0, 0, -2}, {tesselatedRectSizeW, tesselatedRectSizeW*1080.0f/2160.0f},0.0f,1.0f);
     vrCompositorRenderer.addLayer(std::move(uiMesh),mExampleUiTexture,false);
 }
 
