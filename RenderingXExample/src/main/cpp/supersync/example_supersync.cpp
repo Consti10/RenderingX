@@ -17,8 +17,6 @@
 #include <TextAssetsHelper.hpp>
 #include <BasicGLPrograms.hpp>
 #include <GLBuffer.hpp>
-#include <VertexBuffer.hpp>
-#include <VertexIndexBuffer.hpp>
 #include <FBRManager.h>
 #include <Extensions.hpp>
 
