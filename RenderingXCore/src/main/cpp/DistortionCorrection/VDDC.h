@@ -23,6 +23,7 @@
 
 /*
  * V.D.D.C stands for Vertex Displacement Distortion Correction.
+ * This file contains everything needed to write a shader with V.D.D.C
  * See GLProgramTexture for an example OpenGL Shader using V.D.D.C
  * For technical details,see https://www.youtube.com/watch?v=yJVkdsZc9YA
  * Update 30.06.2020 : Creates exact same distorted position(s) as in google cardboard https://github.com/googlevr/cardboard
