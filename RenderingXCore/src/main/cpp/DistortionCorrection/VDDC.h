@@ -18,7 +18,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <NDKHelper.hpp>
 #include "android/log.h"
-#include "MLensDistortion.h"
+#include "LensDistortion/MLensDistortion.h"
 
 
 /*

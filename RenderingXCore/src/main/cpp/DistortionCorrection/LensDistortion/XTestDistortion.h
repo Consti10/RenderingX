@@ -5,7 +5,7 @@
 #ifndef RENDERINGX_XTESTDISTORTION_H
 #define RENDERINGX_XTESTDISTORTION_H
 
-#include "PolynomialRadialDistortion/PolynomialRadialDistortion.h"
+#include "../PolynomialRadialDistortion/PolynomialRadialDistortion.h"
 #include <vector>
 #include <array>
 #include "AndroidLogger.hpp"

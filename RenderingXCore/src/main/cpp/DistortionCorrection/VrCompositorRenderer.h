@@ -17,6 +17,18 @@
 #include "MatrixHelper.h"
 
 class VrCompositorRenderer {
+public:
+    /**
+     * Can be constructed without a OpenGL context bound. Don't forget to call initializeGL once context becomes available.
+     * @param gvr_api The gvr_api is used for head tracking only
+     * @param ENABLE_VDDC if V.D.D.C is not enabled, the VR layers are rendered without distortion correction
+     * @param occlusionMeshColor1 Use a custom color for the occlusion mesh for Debugging
+     */
+    VrCompositorRenderer(gvr::GvrApi *gvr_api,const bool ENABLE_VDDC,const TrueColor occlusionMeshColor1=TrueColor2::BLACK);
+    /**
+     *  Call this once the OpenGL context is available
+     */
+    void initializeGL();
 private:
     gvr::GvrApi *gvr_api;
     glm::mat4 eyeFromHead[2];
@@ -37,9 +49,6 @@ private:
     // Sample from 'external' OpenGL texture (aka video texture)
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt;
 public:
-    VrCompositorRenderer(gvr::GvrApi *gvr_api,const bool ENABLE_VDDC,const TrueColor occlusionMeshColor1=TrueColor2::BLACK);
-    // Call this once when the OpenGL context is available
-    void initializeGL();
     // NONE == position is fixed
     enum HEAD_TRACKING{
         NONE,
