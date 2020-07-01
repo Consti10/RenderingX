@@ -15,10 +15,9 @@
 Renderer360Video::Renderer360Video(JNIEnv *env, jobject androidContext, gvr_context *gvr_context, bool RENDER_SCENE_USING_GVR_RENDERBUFFER,
                                        bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT, const int vSPHERE_MODE):
         M_SPHERE_MODE(static_cast<SPHERE_MODE>(vSPHERE_MODE)),
-        vrCompositorRenderer(true,TrueColor(glm::vec4{1.0f, 0.1, 0.1, 1.0})),
+        gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context)),
+        vrCompositorRenderer(gvr_api_.get(),true,TrueColor(glm::vec4{1.0f, 0.1, 0.1, 1.0})),
         mFPSCalculator("OpenGL FPS", 2000){
-    gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
-    vrCompositorRenderer.distortionEngine.setGvrApi(gvr_api_.get());
 }
 
 
@@ -53,7 +52,7 @@ void Renderer360Video::onDrawFrame() {
     //LOGD("FPS: %f",mFPSCalculator.getCurrentFPS());
 
     //Update the head position (rotation) then leave it untouched during the frame
-    vrCompositorRenderer.distortionEngine.updateLatestHeadSpaceFromStartSpaceRotation();
+    vrCompositorRenderer.updateLatestHeadSpaceFromStartSpaceRotation();
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);

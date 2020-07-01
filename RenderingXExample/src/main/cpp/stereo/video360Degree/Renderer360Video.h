@@ -27,7 +27,6 @@
 #include <Chronometer.h>
 #include <FPSCalculator.h>
 #include <BasicGLPrograms.hpp>
-#include <DistortionEngine.h>
 #include <gvr_util/util.h>
 #include <GLBuffer.hpp>
 #include <VrCompositorRenderer.h>

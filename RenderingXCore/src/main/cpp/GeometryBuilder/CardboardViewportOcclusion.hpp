@@ -5,11 +5,10 @@
 #ifndef RENDERINGX_CARDBOARDVIEWPORTOCCLUSION_HPP
 #define RENDERINGX_CARDBOARDVIEWPORTOCCLUSION_HPP
 
-#include "DistortionEngine.h"
 #include <GLProgramVC.h>
 #include <array>
 #include <vector>
-
+#include <VrCompositorRenderer.h>
 
 namespace CardboardViewportOcclusion{
     // V1--V3--V5-- .... VN
@@ -56,7 +55,7 @@ namespace CardboardViewportOcclusion{
     //everything except the part actually visible inside the headset
     //Vertex data can be rendered using GL_TRAINGLE_STRIP
     //TODO: Better documentation of the used algorithm
-    static const std::vector<GLProgramVC::Vertex> makeMesh(const DistortionEngine& params, const int eye, const TrueColor color=TrueColor2::BLACK){
+    static const std::vector<GLProgramVC::Vertex> makeMesh(const VrCompositorRenderer& params, const int eye, const TrueColor color=TrueColor2::BLACK){
 
         const int tessellation=32;
         //create the 4 meshes (left,right,top,bottom) that are
@@ -98,7 +97,7 @@ namespace CardboardViewportOcclusion{
         return ret;
     }
 
-    static const void uploadOcclusionMeshLeftRight(const DistortionEngine& params, TrueColor color, std::array<GLProgramVC::ColoredMesh,2>& vb){
+    static const void uploadOcclusionMeshLeftRight(const VrCompositorRenderer& params, TrueColor color, std::array<GLProgramVC::ColoredMesh,2>& vb){
         vb[0]=GLProgramVC::ColoredMesh(makeMesh(params, 0, color), GL_TRIANGLE_STRIP);
         vb[1]=GLProgramVC::ColoredMesh(makeMesh(params, 1, color), GL_TRIANGLE_STRIP);
     }

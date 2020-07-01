@@ -13,10 +13,9 @@
 constexpr auto TAG="DistortionExample";
 
 RendererDistortion::RendererDistortion(JNIEnv *env, jobject androidContext, gvr_context *gvr_context):
-        vrCompositorRenderer(true,TrueColor(glm::vec4{1.0f, 0.1, 0.1, 1.0})),
+        gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context)),
+        vrCompositorRenderer(gvr_api_.get(),true,TrueColor(glm::vec4{1.0f, 0.1, 0.1, 1.0})),
         mFPSCalculator("OpenGL FPS", 2000){
-    gvr_api_=gvr::GvrApi::WrapNonOwned(gvr_context);
-    vrCompositorRenderer.distortionEngine.setGvrApi(gvr_api_.get());
     buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();
     recommended_buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();
     scratch_viewport = gvr_api_->CreateBufferViewport();
@@ -62,7 +61,7 @@ void RendererDistortion::onDrawFrame() {
     //LOGD("FPS: %f",mFPSCalculator.getCurrentFPS());
 
     //Update the head position (rotation) then leave it untouched during the frame
-    vrCompositorRenderer.distortionEngine.updateLatestHeadSpaceFromStartSpaceRotation();
+    vrCompositorRenderer.updateLatestHeadSpaceFromStartSpaceRotation();
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -80,7 +79,7 @@ void RendererDistortion::onDrawFrame() {
             drawEyeGvrRenderbuffer(static_cast<gvr::Eye>(eye));
         }
         frame.Unbind();
-        frame.Submit(buffer_viewports, vrCompositorRenderer.distortionEngine.GetLatestHeadSpaceFromStartSpaceRotation_());
+        frame.Submit(buffer_viewports, vrCompositorRenderer.GetLatestHeadSpaceFromStartSpaceRotation_());
     }
     if(RENDER_SCENE_USING_VERTEX_DISPLACEMENT){
         glDisable(GL_DEPTH_TEST);
@@ -102,10 +101,10 @@ void RendererDistortion::drawEyeGvrRenderbuffer(gvr::Eye eye) {
     int height = static_cast<int>((rect.top - rect.bottom) * framebuffer_size.height);
     glViewport(left, bottom, width, height);
     const gvr_rectf fov = scratch_viewport.GetSourceFov();
-    const gvr::Mat4f perspective =ndk_hello_vr::PerspectiveMatrixFromView(fov, DistortionEngine::MIN_Z_DISTANCE,DistortionEngine::MAX_Z_DISTANCE);
+    const gvr::Mat4f perspective =ndk_hello_vr::PerspectiveMatrixFromView(fov, VrCompositorRenderer::MIN_Z_DISTANCE,VrCompositorRenderer::MAX_Z_DISTANCE);
     const auto eyeM=gvr_api_->GetEyeFromHeadMatrix(eye==0 ? GVR_LEFT_EYE : GVR_RIGHT_EYE);
     //const auto rotM=gvr_api_->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
-    const auto rotM=vrCompositorRenderer.distortionEngine.GetLatestHeadSpaceFromStartSpaceRotation_();
+    const auto rotM=vrCompositorRenderer.GetLatestHeadSpaceFromStartSpaceRotation_();
     const auto viewM=toGLM(ndk_hello_vr::MatrixMul(eyeM,rotM));
     const auto projectionM=toGLM(perspective);
     glLineWidth(LINE_WIDTH_BIG);
