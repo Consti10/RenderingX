@@ -101,6 +101,12 @@ VDDC::DataUnDistortion VrCompositorRenderer::getDataUnDistortion()const {
     return VDDC::DataUnDistortion{{distortionEngine.mInverse},distortionEngine.screen_params,distortionEngine.texture_params};
 }
 
+void VrCompositorRenderer::addLayer2DCanvas(float z, float width, float height, GLuint textureId,
+                                      bool isExternalTexture) {
+    auto mesh=TexturedGeometry::makeTesselatedVideoCanvas(12,{0, 0,z}, {width, height},0.0f,1.0f);
+    addLayer(std::move(mesh),textureId,isExternalTexture);
+}
+
 /*void VrCompositorRenderer::drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM) {
     const float scale=100.0f;
     const glm::mat4 scaleM=glm::scale(glm::vec3(scale,scale,scale));
