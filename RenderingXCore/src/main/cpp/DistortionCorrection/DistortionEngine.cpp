@@ -42,8 +42,8 @@ void DistortionEngine::updateHeadsetParams(const MVrHeadsetParams &mDP) {
                                                      mDP.screen_width_meters, mDP.screen_height_meters,
                                                      screen_params[1], texture_params[1]);
     MLOGD<<mDistortion.toString();
-    MLOGD<<"Left Eye: "<<MLensDistortion::ViewportParamsAsString(screen_params[0],texture_params[0]);
-    MLOGD<<"Right Eye: "<<MLensDistortion::ViewportParamsAsString(screen_params[1],texture_params[1]);
+    MLOGD<<"Left Eye: "<<MLensDistortion::ViewportParamsNDCAsString(screen_params[0],texture_params[0]);
+    MLOGD<<"Right Eye: "<<MLensDistortion::ViewportParamsNDCAsString(screen_params[1],texture_params[1]);
 
     //TODO calculate right maxRadSq
     /*const float maxX=1*texture_params[0].width+texture_params[0].x_eye_offset;

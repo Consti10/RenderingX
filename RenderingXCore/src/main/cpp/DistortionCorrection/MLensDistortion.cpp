@@ -129,8 +129,8 @@ void MLensDistortion::CalculateViewportParameters_NDC(
         const float screen_to_lens_distance,
         const float inter_lens_distance,
         const std::array<float, 4> &fov, float screen_width_meters,
-        float screen_height_meters, ViewportParams& screen_params,
-        ViewportParams& texture_params) {
+        float screen_height_meters, ViewportParamsNDC& screen_params,
+        ViewportParamsNDC& texture_params) {
     screen_params.width =
             4 / (screen_width_meters / screen_to_lens_distance);
     screen_params.height =
@@ -154,8 +154,8 @@ void MLensDistortion::CalculateViewportParameters_NDC(
 // x*a+b instead of (x+a)/b when transforming back to screen coordinates
 std::array<float, 2> MLensDistortion::UndistortedNDCForDistortedNDC(
         const PolynomialRadialDistortion &inverseDistortion,
-        const MLensDistortion::ViewportParams &screen_params,
-        const MLensDistortion::ViewportParams &texture_params, const std::array<float, 2> &in,const bool isInverse) {
+        const MLensDistortion::ViewportParamsNDC &screen_params,
+        const MLensDistortion::ViewportParamsNDC &texture_params, const std::array<float, 2> &in,const bool isInverse) {
     std::array<float, 2> distorted_ndc_tanangle = {
             in[0] * texture_params.width + texture_params.x_eye_offset,
             in[1] * texture_params.height + texture_params.y_eye_offset};

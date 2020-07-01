@@ -55,11 +55,11 @@ public:
         // same for left and right eye
         DataPolynomialRadialInverse radialDistortionCoefficients;
         // one for Left and right eye each
-        std::array<MLensDistortion::ViewportParams,2> screen_params;
-        std::array<MLensDistortion::ViewportParams,2> texture_params;
+        std::array<MLensDistortion::ViewportParamsNDC,2> screen_params;
+        std::array<MLensDistortion::ViewportParamsNDC,2> texture_params;
         static DataUnDistortion identity(){
             const PolynomialRadialInverse identity(VDDC::N_RADIAL_UNDISTORTION_COEFICIENTS);
-            const MLensDistortion::ViewportParams identityParams{1,1,0,0};
+            const MLensDistortion::ViewportParamsNDC identityParams{1,1,0,0};
             return DataUnDistortion{{identity},{identityParams,identityParams},{identityParams,identityParams}};
         }
     };

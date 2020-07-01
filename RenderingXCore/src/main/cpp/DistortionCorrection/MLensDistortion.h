@@ -68,8 +68,8 @@ public:
                                             const std::array<float, 4> &fov,
                                             float screen_width_meters,
                                             float screen_height_meters,
-                                            ViewportParams& screen_params,
-                                            ViewportParams& texture_params);
+                                            ViewportParamsNDC& screen_params,
+                                            ViewportParamsNDC& texture_params);
 
 
     //Use isInverse==true when passing a distortion that is already a inverse
@@ -84,7 +84,7 @@ public:
     //Uses n*x+t instead of n*x-t (compared to the cardboard original)
     static std::array<float, 2> UndistortedNDCForDistortedNDC(
             const PolynomialRadialDistortion &inverseDistortion,
-            const ViewportParams &screen_params, const ViewportParams &texture_params,
+            const ViewportParamsNDC &screen_params, const ViewportParamsNDC &texture_params,
             const std::array<float, 2> &in,const bool isInverse=true);
 
     static std::string ViewportParamsAsString(const ViewportParams& screen_params,const ViewportParams& texture_params);
