@@ -26,6 +26,12 @@ private:
     std::array<GLProgramVC::ColoredMesh,2> mOcclusionMesh;
     const bool ENABLE_VDDC;
     VDDC::DataUnDistortion getDataUnDistortion()const;
+    //this one is for drawing the occlusion mesh only
+    std::unique_ptr<GLProgramVC2D> mGLProgramVC2D;
+    // Sample from 'normal' OpenGL texture
+    std::unique_ptr<GLProgramTexture> mGLProgramTexture;
+    // Sample from 'external' OpenGL texture (aka video texture)
+    std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt;
 public:
     VrCompositorRenderer(const bool ENABLE_VDDC,const TrueColor occlusionMeshColor1=TrueColor2::BLACK);
     // Call this once when the OpenGL context is available
@@ -49,12 +55,7 @@ public:
 
     void removeLayers();
     void drawLayers(gvr::Eye eye);
-    //this one is for drawing the occlusion mesh only
-    std::unique_ptr<GLProgramVC2D> mGLProgramVC2D;
-    // Sample from 'normal' OpenGL texture
-    std::unique_ptr<GLProgramTexture> mGLProgramTexture;
-    // Sample from 'external' OpenGL texture (aka video texture)
-    std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt;
+
     // Add a 2D layer at position (0,0,Z) in VR 3D space.
     void addLayer2DCanvas(float z,float width,float height,GLuint textureId, bool isExternalTexture);
 public:
