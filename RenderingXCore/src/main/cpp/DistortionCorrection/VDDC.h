@@ -33,7 +33,7 @@ public:
     // Number of coefficients for the inverse distortion. This value needs to be present at compile time
     static constexpr const int N_RADIAL_UNDISTORTION_COEFICIENTS=8;
     /**
-     * These make up a Polynomial radial distortion with input inside interval [0..maxRadSq].
+     * These values make up a Polynomial radial distortion with input inside interval [0..maxRadSq].
      * Note that the N of coefficients is NOT dynamic !
      */
     struct DataPolynomialRadialInverse{
@@ -95,7 +95,6 @@ public:
      * @return String usable inside OpenGL vertex shader
      */
     static std::string writeDistortedGLPosition();
-    // update all the uniforms
     /**
      * Update the uniform values with the UnDistortion data
      * @param leftEye true if uniforms should be updated for rendering the left eye, false for right eye
@@ -116,14 +115,14 @@ public:
         s<<"}\n";
         return s.str();
     }
-    //PolynomialRadialInverse
+    //PolynomialRadialInverse data for GLSL
     static std::string glsl_struct_PolynomialRadialInverse(const int N_COEFICIENTS){
         return "struct PolynomialRadialInverse{\n"
                "float coefficients["+std::to_string(N_COEFICIENTS)+"];\n"
-                                                                   "float maxRadSq;\n"
-                                                                   "};\n";
+                "float maxRadSq;\n"
+                "};\n";
     }
-    //same as PolynomialRadialInverse::Distort (e.g. [0...maxRadSq])
+    //same as PolynomialRadialInverse::Distort (e.g. [0...maxRadSq]) (have to use c-style for GLSL)
     static std::string glsl_PolynomialDistort(){
         return "vec2 PolynomialDistort(const in PolynomialRadialInverse inv,const in vec2 in_pos){\n"
                "float r2=dot(in_pos.xy,in_pos.xy);\n"

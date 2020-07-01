@@ -6,6 +6,7 @@
 #define RENDERINGX_CLASSMEMBERFROMJAVA_H
 
 #include "NDKArrayHelper.hpp"
+#include <AndroidLogger.hpp>
 
 // The purpose of this class is to make it easier to obtain member values of a java class instance
 // Only dependencies are standard libraries and the android java NDK

@@ -9,7 +9,6 @@
 #include <memory>
 #include <math.h>
 #include <jni.h>
-#include <NDKHelper.hpp>
 
 #include <PolynomialRadialDistortion.h>
 #include <PolynomialRadialInverse.h>
