@@ -40,6 +40,7 @@ public:
     // convenient methods for drawing a textured mesh with / without indices
     // calls beforeDraw(), draw() and afterDraw() properly
     void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const TexturedMesh& mesh);
+    // update the uniform values to perform VDDC for left or right eye
     void updateUnDistortionUniforms(bool leftEye, const VDDC::DataUnDistortion& dataUnDistortion)const;
 private:
     static const std::string VS(){

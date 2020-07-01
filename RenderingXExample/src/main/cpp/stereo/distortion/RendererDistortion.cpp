@@ -43,9 +43,7 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     glGenTextures(1,&mGreenTexture);
     GLProgramTexture::loadTexture(mBlueTexture,env,context,"ExampleTexture/blue.png");
     GLProgramTexture::loadTexture(mGreenTexture,env,context,"ExampleTexture/green.png");
-
     vrCompositorRenderer.removeLayers();
-    //vrCompositorRenderer.debug.push_back(VrCompositorRenderer::DebugLayer{greenMeshB});
     vrCompositorRenderer.addLayer(mTestMesh2DWireframe, mGreenTexture, false, VrCompositorRenderer::HEAD_TRACKING::FULL);
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }

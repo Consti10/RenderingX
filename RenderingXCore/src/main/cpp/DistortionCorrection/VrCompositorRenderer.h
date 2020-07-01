@@ -58,6 +58,7 @@ public:
 
     // Add a 2D layer at position (0,0,Z) in VR 3D space.
     void addLayer2DCanvas(float z,float width,float height,GLuint textureId, bool isExternalTexture);
+
 public:
     // NOT VR
     //void drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM);
