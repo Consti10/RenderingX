@@ -34,7 +34,6 @@ private:
     glm::mat4 eyeFromHead[2];
     glm::mat4 mProjectionM[2];
     glm::mat4 latestHeadSpaceFromStartSpaceRotation=glm::mat4(1.0f);
-    gvr::Mat4f latestHeadSpaceFromStartSpaceRotation_=toGVR(latestHeadSpaceFromStartSpaceRotation);
     static constexpr bool ENABLE_OCCLUSION_MESH=true;
     const TrueColor occlusionMeshColor;
     //One for left and right eye each
@@ -90,29 +89,25 @@ public:
     PolynomialRadialDistortion mDistortion{};
     PolynomialRadialInverse mInverse{};
     VDDC::DataUnDistortion mDataUnDistortion=VDDC::DataUnDistortion::identity();
-public:
-    //update with vr headset params
+    // update with vr headset params
     void updateHeadsetParams(const MVrHeadsetParams& mDP);
-
-    //we do not want the view (rotation) to change during rendering of one frame/eye
-    //else we could end up with multiple elements rendered in different perspectives
+public:
+    // we do not want the view (rotation) to change during rendering of one frame/eye
+    // else we could end up with multiple elements rendered in different perspectives
     void updateLatestHeadSpaceFromStartSpaceRotation();
 
-    //returns the latest 'cached' head rotation
+    // returns the latest 'cached' head rotation
     glm::mat4 GetLatestHeadSpaceFromStartSpaceRotation()const;
 
-    //same but return the gvr matrix type
-    gvr::Mat4f GetLatestHeadSpaceFromStartSpaceRotation_()const;
-
-    //returns translation matrix representing half inter-eye-distance
+    // returns translation matrix representing half inter-eye-distance
     glm::mat4 GetEyeFromHeadMatrix(gvr::Eye eye)const;
 
-    //returns projection matrix created using the fov of the headset
+    // returns projection matrix created using the fov of the headset
     glm::mat4 GetProjectionMatrix(gvr::Eye eye)const;
 
 private:
-    //Set the viewport to exactly half framebuffer size
-    //where framebuffer size==screen size
+    // Set the viewport to exactly half framebuffer size
+    // where framebuffer size==screen size
     void setOpenGLViewport(gvr::Eye eye)const;
 
 public:

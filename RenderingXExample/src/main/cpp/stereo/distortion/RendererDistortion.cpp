@@ -79,7 +79,7 @@ void RendererDistortion::onDrawFrame() {
             drawEyeGvrRenderbuffer(static_cast<gvr::Eye>(eye));
         }
         frame.Unbind();
-        frame.Submit(buffer_viewports, vrCompositorRenderer.GetLatestHeadSpaceFromStartSpaceRotation_());
+        frame.Submit(buffer_viewports, toGVR(vrCompositorRenderer.GetLatestHeadSpaceFromStartSpaceRotation()));
     }
     if(RENDER_SCENE_USING_VERTEX_DISPLACEMENT){
         glDisable(GL_DEPTH_TEST);
@@ -104,7 +104,7 @@ void RendererDistortion::drawEyeGvrRenderbuffer(gvr::Eye eye) {
     const gvr::Mat4f perspective =ndk_hello_vr::PerspectiveMatrixFromView(fov, VrCompositorRenderer::MIN_Z_DISTANCE,VrCompositorRenderer::MAX_Z_DISTANCE);
     const auto eyeM=gvr_api_->GetEyeFromHeadMatrix(eye==0 ? GVR_LEFT_EYE : GVR_RIGHT_EYE);
     //const auto rotM=gvr_api_->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
-    const auto rotM=vrCompositorRenderer.GetLatestHeadSpaceFromStartSpaceRotation_();
+    const auto rotM=toGVR(vrCompositorRenderer.GetLatestHeadSpaceFromStartSpaceRotation());
     const auto viewM=toGLM(ndk_hello_vr::MatrixMul(eyeM,rotM));
     const auto projectionM=toGLM(perspective);
     glLineWidth(LINE_WIDTH_BIG);

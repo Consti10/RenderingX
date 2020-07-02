@@ -36,18 +36,9 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         const auto& layer=mVrLayerList[i];
         // Calculate the view matrix for this layer.
         const glm::mat4 viewM= layer.headTracking==NONE ? GetEyeFromHeadMatrix(eye) : GetEyeFromHeadMatrix(eye) * rotation;
-        //
         GLProgramTexture* glProgramTexture=layer.isExternalTexture ? mGLProgramTextureExt.get() : mGLProgramTexture.get();
-        /*if(layer.geometry.index()==0){
-            const VertexBuffer& vb=std::get<0>(layer.geometry);
-            glProgramTexture->drawX(layer.textureId, viewM, distortionEngine.GetProjectionMatrix(eye), vb);
-        }else{
-            const VertexIndexBuffer& vib=std::get<1>(layer.geometry);
-            glProgramTexture->drawX(layer.textureId, viewM, distortionEngine.GetProjectionMatrix(eye), vib);
-        }*/
         glProgramTexture->drawX(layer.textureId,viewM,GetProjectionMatrix(eye),layer.mesh);
     }
-    //
     //Render the mesh that occludes everything except the part actually visible inside the headset
     if (ENABLE_OCCLUSION_MESH) {
         int idx = eye == GVR_LEFT_EYE ? 0 : 1;
@@ -171,17 +162,14 @@ void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
 }
 
 void VrCompositorRenderer::updateLatestHeadSpaceFromStartSpaceRotation() {
-    latestHeadSpaceFromStartSpaceRotation_=gvr_api->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
-    latestHeadSpaceFromStartSpaceRotation=toGLM(latestHeadSpaceFromStartSpaceRotation_);
+    auto tmp=gvr_api->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
+    latestHeadSpaceFromStartSpaceRotation=toGLM(tmp);
 }
 
 glm::mat4 VrCompositorRenderer::GetLatestHeadSpaceFromStartSpaceRotation()const{
     return latestHeadSpaceFromStartSpaceRotation;
 }
 
-gvr::Mat4f VrCompositorRenderer::GetLatestHeadSpaceFromStartSpaceRotation_()const {
-    return latestHeadSpaceFromStartSpaceRotation_;
-}
 
 glm::mat4 VrCompositorRenderer::GetEyeFromHeadMatrix(gvr::Eye eye)const{
     return eyeFromHead[eye];
