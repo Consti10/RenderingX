@@ -18,6 +18,23 @@ void VrCompositorRenderer::initializeGL() {
     CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(*this, occlusionMeshColor, mOcclusionMesh);
 }
 
+void VrCompositorRenderer::updateLatestHeadSpaceFromStartSpaceRotation() {
+    auto tmp=gvr_api->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
+    latestHeadSpaceFromStartSpaceRotation=toGLM(tmp);
+}
+
+glm::mat4 VrCompositorRenderer::GetLatestHeadSpaceFromStartSpaceRotation()const{
+    return latestHeadSpaceFromStartSpaceRotation;
+}
+
+glm::mat4 VrCompositorRenderer::GetEyeFromHeadMatrix(gvr::Eye eye)const{
+    return eyeFromHead[eye];
+}
+
+glm::mat4 VrCompositorRenderer::GetProjectionMatrix(gvr::Eye eye)const{
+    return mProjectionM[eye];
+}
+
 void VrCompositorRenderer::addLayer(GLProgramTexture::TexturedMesh mesh, GLuint textureId, bool isExternalTexture, HEAD_TRACKING headTracking) {
     mesh.uploadGL();
     VRLayer vrLayer{std::move(mesh),textureId,isExternalTexture,headTracking};
@@ -159,24 +176,6 @@ void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     }else{
         mDataUnDistortion=VDDC::DataUnDistortion{{mInverse},screen_params,texture_params};
     }
-}
-
-void VrCompositorRenderer::updateLatestHeadSpaceFromStartSpaceRotation() {
-    auto tmp=gvr_api->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
-    latestHeadSpaceFromStartSpaceRotation=toGLM(tmp);
-}
-
-glm::mat4 VrCompositorRenderer::GetLatestHeadSpaceFromStartSpaceRotation()const{
-    return latestHeadSpaceFromStartSpaceRotation;
-}
-
-
-glm::mat4 VrCompositorRenderer::GetEyeFromHeadMatrix(gvr::Eye eye)const{
-    return eyeFromHead[eye];
-}
-
-glm::mat4 VrCompositorRenderer::GetProjectionMatrix(gvr::Eye eye)const{
-    return mProjectionM[eye];
 }
 
 void VrCompositorRenderer::setOpenGLViewport(gvr::Eye eye)const {
