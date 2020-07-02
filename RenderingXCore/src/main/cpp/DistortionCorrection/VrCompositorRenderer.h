@@ -35,13 +35,11 @@ private:
     glm::mat4 mProjectionM[2];
     glm::mat4 latestHeadSpaceFromStartSpaceRotation=glm::mat4(1.0f);
     gvr::Mat4f latestHeadSpaceFromStartSpaceRotation_=toGVR(latestHeadSpaceFromStartSpaceRotation);
-
     static constexpr bool ENABLE_OCCLUSION_MESH=true;
     const TrueColor occlusionMeshColor;
     //One for left and right eye each
     std::array<GLProgramVC::ColoredMesh,2> mOcclusionMesh;
     const bool ENABLE_VDDC;
-    VDDC::DataUnDistortion getDataUnDistortion()const;
     //this one is for drawing the occlusion mesh only
     std::unique_ptr<GLProgramVC2D> mGLProgramVC2D;
     // Sample from 'normal' OpenGL texture
@@ -77,7 +75,6 @@ public:
     //void drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM);
     //void updateHeadsetParams(const MVrHeadsetParams &mDP);
     //
-    // DistortionEngine
 public:
     //These values must match the surface that is used for rendering VR content
     //E.g. must be created as full screen surface
@@ -85,14 +82,14 @@ public:
     int SCREEN_HEIGHT_PX=1080;
     int EYE_VIEWPORT_W=SCREEN_WIDTH_PX/2;
     int EYE_VIEWPORT_H=SCREEN_HEIGHT_PX;
-    //
+    // Min and Max clip distance
     static constexpr float MIN_Z_DISTANCE=0.1f;
     static constexpr float MAX_Z_DISTANCE=100.0f;
-public:
     std::array<MLensDistortion::ViewportParamsNDC,2> screen_params;
     std::array<MLensDistortion::ViewportParamsNDC,2> texture_params;
     PolynomialRadialDistortion mDistortion{};
     PolynomialRadialInverse mInverse{};
+    VDDC::DataUnDistortion mDataUnDistortion=VDDC::DataUnDistortion::identity();
 public:
     //update with vr headset params
     void updateHeadsetParams(const MVrHeadsetParams& mDP);

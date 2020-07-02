@@ -25,10 +25,9 @@ void VrCompositorRenderer::addLayer(GLProgramTexture::TexturedMesh mesh, GLuint 
 }
 
 void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
-    const auto dataUnDistortion=getDataUnDistortion();
     const bool leftEye=eye==GVR_LEFT_EYE;
-    mGLProgramTexture->updateUnDistortionUniforms(leftEye, dataUnDistortion);
-    mGLProgramTextureExt->updateUnDistortionUniforms(leftEye, dataUnDistortion);
+    mGLProgramTexture->updateUnDistortionUniforms(leftEye,mDataUnDistortion);
+    mGLProgramTextureExt->updateUnDistortionUniforms(leftEye,mDataUnDistortion);
 
     setOpenGLViewport(eye);
     const auto rotation = GetLatestHeadSpaceFromStartSpaceRotation();
@@ -62,13 +61,6 @@ void VrCompositorRenderer::removeLayers() {
         //layer.geometry.deleteGL();
     }
     mVrLayerList.resize(0);
-}
-
-VDDC::DataUnDistortion VrCompositorRenderer::getDataUnDistortion()const {
-    if(!ENABLE_VDDC){
-        return VDDC::DataUnDistortion::identity();
-    }
-    return VDDC::DataUnDistortion{{mInverse},screen_params,texture_params};
 }
 
 void VrCompositorRenderer::addLayer2DCanvas(float z, float width, float height, GLuint textureId,
@@ -171,10 +163,11 @@ void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     const float inter_lens_distance=mDP.inter_lens_distance;
     eyeFromHead[0]=glm::translate(glm::mat4(1.0f),glm::vec3(inter_lens_distance*0.5f,0,0));
     eyeFromHead[1]=glm::translate(glm::mat4(1.0f),glm::vec3(-inter_lens_distance*0.5f,0,0));
-
-    //
-    //test2();
-    //test3();
+    if(!ENABLE_VDDC){
+        mDataUnDistortion=VDDC::DataUnDistortion::identity();
+    }else{
+        mDataUnDistortion=VDDC::DataUnDistortion{{mInverse},screen_params,texture_params};
+    }
 }
 
 void VrCompositorRenderer::updateLatestHeadSpaceFromStartSpaceRotation() {
