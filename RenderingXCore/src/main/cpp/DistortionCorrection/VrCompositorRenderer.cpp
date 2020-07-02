@@ -64,33 +64,6 @@ void VrCompositorRenderer::removeLayers() {
     mVrLayerList.resize(0);
 }
 
-void VrCompositorRenderer::createVrRenderbuffer(VrCompositorRenderer::VrRenderbuffer &rb,int W, int H) {
-    GLHelper::checkGlError("createVrRenderbuffer1");
-    // Create render texture.
-    glGenTextures(1, &rb.texture);
-    glBindTexture(GL_TEXTURE_2D, rb.texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    //  GL_RGBA8_OES
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, W,H, 0,
-                 GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    // Create render target.
-    glGenFramebuffers(1, &rb.framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, rb.framebuffer);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                           rb.texture, 0);
-    auto status=glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if(status!=GL_FRAMEBUFFER_COMPLETE){
-        MLOGE<<"Framebuffer not complete "<<status;
-    }
-    glBindFramebuffer(GL_FRAMEBUFFER,0);
-    rb.WIDTH_PX=W;
-    rb.HEIGH_PX=H;
-    GLHelper::checkGlError("createVrRenderbuffer2");
-}
-
 VDDC::DataUnDistortion VrCompositorRenderer::getDataUnDistortion()const {
     if(!ENABLE_VDDC){
         return VDDC::DataUnDistortion::identity();
@@ -122,8 +95,10 @@ void VrCompositorRenderer::addLayer2DCanvas(float z, float width, float height, 
 }*/
 
 void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
-    this->screenWidthP=mDP.screen_width_pixels;
-    this->screenHeightP=mDP.screen_height_pixels;
+    this->SCREEN_WIDTH_PX=mDP.screen_width_pixels;
+    this->SCREEN_HEIGHT_PX=mDP.screen_height_pixels;
+    EYE_VIEWPORT_W=SCREEN_WIDTH_PX/2;
+    EYE_VIEWPORT_H=SCREEN_HEIGHT_PX;
     MLOGD<<MyVrHeadsetParamsAsString(mDP);
     mDistortion=PolynomialRadialDistortion(mDP.radial_distortion_params);
 
@@ -224,11 +199,9 @@ glm::mat4 VrCompositorRenderer::GetProjectionMatrix(gvr::Eye eye)const{
 }
 
 void VrCompositorRenderer::setOpenGLViewport(gvr::Eye eye)const {
-    const int ViewPortW=(int)(screenWidthP/2.0f);
-    const int ViewPortH=screenHeightP;
-    if(eye==0){
-        glViewport(0,0,ViewPortW,ViewPortH);
+    if(eye==GVR_LEFT_EYE){
+        glViewport(0,0,EYE_VIEWPORT_W,EYE_VIEWPORT_H);
     }else{
-        glViewport(ViewPortW,0,ViewPortW,ViewPortH);
+        glViewport(EYE_VIEWPORT_W,0,EYE_VIEWPORT_W,EYE_VIEWPORT_H);
     }
 }

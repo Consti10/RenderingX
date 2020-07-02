@@ -77,18 +77,14 @@ public:
     //void drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM);
     //void updateHeadsetParams(const MVrHeadsetParams &mDP);
     //
-    struct VrRenderbuffer{
-        GLuint framebuffer;        // framebuffer object. VR applications render into framebuffer
-        GLuint texture;            // texture object. Is distorted / reprojected by the compositor layer renderer
-        GLuint WIDTH_PX=0,HEIGH_PX=0;
-    };
-    static void createVrRenderbuffer(VrRenderbuffer& vrRenderbuffer,int W,int H);
     // DistortionEngine
 public:
     //These values must match the surface that is used for rendering VR content
     //E.g. must be created as full screen surface
-    int screenWidthP=1920;
-    int screenHeightP=1080;
+    int SCREEN_WIDTH_PX=1920;
+    int SCREEN_HEIGHT_PX=1080;
+    int EYE_VIEWPORT_W=SCREEN_WIDTH_PX/2;
+    int EYE_VIEWPORT_H=SCREEN_HEIGHT_PX;
     //
     static constexpr float MIN_Z_DISTANCE=0.1f;
     static constexpr float MAX_Z_DISTANCE=100.0f;
@@ -117,10 +113,12 @@ public:
     //returns projection matrix created using the fov of the headset
     glm::mat4 GetProjectionMatrix(gvr::Eye eye)const;
 
+private:
     //Set the viewport to exactly half framebuffer size
     //where framebuffer size==screen size
     void setOpenGLViewport(gvr::Eye eye)const;
 
+public:
     //This one does not use the inverse and is therefore (relatively) slow compared to when
     //using the approximate inverse
     std::array<float, 2> UndistortedNDCForDistortedNDC(const std::array<float,2>& in_ndc,int eye)const{
