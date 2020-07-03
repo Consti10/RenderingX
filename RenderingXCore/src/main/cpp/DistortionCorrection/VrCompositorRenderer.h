@@ -95,14 +95,15 @@ public:
     };
     // List of layer descriptions
     std::vector<VRLayer> mVrLayerList;
-    void addLayer(GLProgramTexture::TexturedMesh mesh, GLuint textureId, bool isExternalTexture, HEAD_TRACKING headTracking=FULL);
+    void addLayer(GLProgramTexture::TexturedMesh mesh, GLuint textureId, bool isExternalTexture=false, HEAD_TRACKING headTracking=FULL);
 
     void removeLayers();
     void drawLayers(gvr::Eye eye);
 
     // Add a 2D layer at position (0,0,Z) and (width,height) in VR 3D space.
-    void addLayer2DCanvas(float z,float width,float height,GLuint textureId, bool isExternalTexture);
+    void addLayer2DCanvas(float z,float width,float height,GLuint textureId, bool isExternalTexture=false);
     // Add a 360° video sphere
+    void addLayerEquirectangularMonoscopic360(float radius,GLuint textureId, bool isExternalTexture=false);
 public:
     // NOT VR
     //void drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM);

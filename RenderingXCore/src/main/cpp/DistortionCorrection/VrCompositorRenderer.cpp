@@ -3,6 +3,7 @@
 //
 
 #include <CardboardViewportOcclusion.hpp>
+#include <Sphere/SphereBuilder.hpp>
 #include "VrCompositorRenderer.h"
 
 VrCompositorRenderer::VrCompositorRenderer(gvr::GvrApi *gvr_api,const bool ENABLE_VDDC,const TrueColor occlusionMeshColor1):
@@ -117,6 +118,18 @@ void VrCompositorRenderer::addLayer(GLProgramTexture::TexturedMesh mesh, GLuint 
     mVrLayerList.push_back(std::move(vrLayer));
 }
 
+void VrCompositorRenderer::addLayer2DCanvas(float z, float width, float height, GLuint textureId,
+                                            bool isExternalTexture) {
+    auto mesh=TexturedGeometry::makeTesselatedVideoCanvas(12,{0, 0,z}, {width, height},0.0f,1.0f);
+    addLayer(std::move(mesh),textureId,isExternalTexture);
+}
+
+
+void VrCompositorRenderer::addLayerEquirectangularMonoscopic360(float radius,GLuint textureId, bool isExternalTexture) {
+    auto sphere=SphereBuilder::createSphereEquirectangularMonoscopic(radius, 72, 36);
+    addLayer(std::move(sphere),textureId,isExternalTexture,HEAD_TRACKING::FULL);
+}
+
 void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
     const bool leftEye=eye==GVR_LEFT_EYE;
     mGLProgramTextureVDDC->updateUnDistortionUniforms(leftEye, mDataUnDistortion);
@@ -148,12 +161,6 @@ void VrCompositorRenderer::removeLayers() {
     mVrLayerList.resize(0);
 }
 
-void VrCompositorRenderer::addLayer2DCanvas(float z, float width, float height, GLuint textureId,
-                                      bool isExternalTexture) {
-    auto mesh=TexturedGeometry::makeTesselatedVideoCanvas(12,{0, 0,z}, {width, height},0.0f,1.0f);
-    addLayer(std::move(mesh),textureId,isExternalTexture);
-}
-
 /*void VrCompositorRenderer::drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM) {
     const float scale=100.0f;
     const glm::mat4 scaleM=glm::scale(glm::vec3(scale,scale,scale));
@@ -179,3 +186,4 @@ void VrCompositorRenderer::setOpenGLViewport(gvr::Eye eye)const {
         glViewport(EYE_VIEWPORT_W,0,EYE_VIEWPORT_W,EYE_VIEWPORT_H);
     }
 }
+

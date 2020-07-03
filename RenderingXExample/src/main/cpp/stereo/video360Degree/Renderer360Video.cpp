@@ -30,21 +30,15 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
     glGenTextures(1,&mTexture360ImageInsta360);
     GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
     GLProgramTexture::loadTexture(mTexture360ImageInsta360,env,context,"360DegreeImages/insta_360_equirectangular.png");*/
-    GLProgramTexture::TexturedMesh videoSphere360;
-    switch(M_SPHERE_MODE){
-        case SPHERE_MODE_EQUIRECTANGULAR_TEST:{
-            videoSphere360=SphereBuilder::createSphereEquirectangularMonoscopic(1.0, 72, 36);
-        }break;
-        case SPHERE_MODE_INSTA360_TEST2:{
-            videoSphere360=DualFisheyeSphere::createSphereGL(2560, 1280);
-        }break;
-        default:
-            MLOGE<<"Unknown sphere mode";
-    }
     vrCompositorRenderer.removeLayers();
-    vrCompositorRenderer.addLayer(std::move(videoSphere360), mVideoTexture, true, VrCompositorRenderer::HEAD_TRACKING::FULL);
+    if(M_SPHERE_MODE==SPHERE_MODE_EQUIRECTANGULAR_TEST){
+        vrCompositorRenderer.addLayerEquirectangularMonoscopic360(10.0f,mVideoTexture,true);
+    }else{
+        auto sphere=DualFisheyeSphere::createSphereGL(2560, 1280);
+        vrCompositorRenderer.addLayer(std::move(sphere), mVideoTexture, true, VrCompositorRenderer::HEAD_TRACKING::FULL);
+    }
     const float uiElementWidth=2.0;
-    vrCompositorRenderer.addLayer2DCanvas(-2,uiElementWidth,uiElementWidth*1080.0f/2160.0f,mExampleUiTexture,false);
+    vrCompositorRenderer.addLayer2DCanvas(-3,uiElementWidth,uiElementWidth*1080.0f/2160.0f,mExampleUiTexture,false);
 }
 
 void Renderer360Video::onDrawFrame() {
