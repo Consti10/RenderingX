@@ -56,8 +56,8 @@ public:
     static constexpr float MIN_Z_DISTANCE=0.1f;
     static constexpr float MAX_Z_DISTANCE=100.0f;
 private:
-    std::array<MLensDistortion::ViewportParamsNDC,2> screen_params;
-    std::array<MLensDistortion::ViewportParamsNDC,2> texture_params;
+    std::array<MLensDistortion::ViewportParamsHSNDC,2> screen_params;
+    std::array<MLensDistortion::ViewportParamsHSNDC,2> texture_params;
     PolynomialRadialDistortion mDistortion{};
     PolynomialRadialInverse mInverse{};
     VDDC::DataUnDistortion mDataUnDistortion=VDDC::DataUnDistortion::identity();

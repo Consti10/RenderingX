@@ -67,8 +67,6 @@ std::array<float, 4> MLensDistortion::CalculateFov(
     return ret;
 }
 
-
-
 void MLensDistortion::CalculateViewportParameters(
         int eye,
         const float GetYEyeOffsetMeters,
@@ -129,8 +127,8 @@ void MLensDistortion::CalculateViewportParameters_NDC(
         const float screen_to_lens_distance,
         const float inter_lens_distance,
         const std::array<float, 4> &fov, float screen_width_meters,
-        float screen_height_meters, ViewportParamsNDC& screen_params,
-        ViewportParamsNDC& texture_params) {
+        float screen_height_meters, ViewportParamsHSNDC& screen_params,
+        ViewportParamsHSNDC& texture_params) {
     screen_params.width =
             4 / (screen_width_meters / screen_to_lens_distance);
     screen_params.height =
@@ -154,8 +152,8 @@ void MLensDistortion::CalculateViewportParameters_NDC(
 // x*a+b instead of (x+a)/b when transforming back to screen coordinates
 std::array<float, 2> MLensDistortion::UndistortedNDCForDistortedNDC(
         const PolynomialRadialDistortion &inverseDistortion,
-        const MLensDistortion::ViewportParamsNDC &screen_params,
-        const MLensDistortion::ViewportParamsNDC &texture_params, const std::array<float, 2> &in,const bool isInverse) {
+        const MLensDistortion::ViewportParamsHSNDC &screen_params,
+        const MLensDistortion::ViewportParamsHSNDC &texture_params, const std::array<float, 2> &in, const bool isInverse) {
     std::array<float, 2> distorted_ndc_tanangle = {
             in[0] * texture_params.width + texture_params.x_eye_offset,
             in[1] * texture_params.height + texture_params.y_eye_offset};
@@ -187,11 +185,11 @@ MLensDistortion::ViewportParamsAsString(const MLensDistortion::ViewportParams &s
     ss<<"Texture_params offset X:"<<texture_params.x_eye_offset<<" Y:"<<texture_params.y_eye_offset<<"\n";
     return ss.str();
 }
-static const MLensDistortion::ViewportParams convert(const MLensDistortion::ViewportParamsNDC& vp){
+static const MLensDistortion::ViewportParams convert(const MLensDistortion::ViewportParamsHSNDC& vp){
     return {vp.width,vp.height,vp.x_eye_offset,vp.y_eye_offset};
 }
 std::string
-MLensDistortion::ViewportParamsNDCAsString(const MLensDistortion::ViewportParamsNDC &screen_params,
-                                        const MLensDistortion::ViewportParamsNDC &texture_params) {
+MLensDistortion::ViewportParamsNDCAsString(const MLensDistortion::ViewportParamsHSNDC &screen_params,
+                                        const MLensDistortion::ViewportParamsHSNDC &texture_params) {
     return ViewportParamsAsString(convert(screen_params),convert(texture_params));
 }
