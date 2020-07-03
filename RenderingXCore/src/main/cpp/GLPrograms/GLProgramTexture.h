@@ -1,7 +1,3 @@
-/*******************************************************************
- * Abstraction for rendering textured vertices. Optionally samples from 'external texture' aka video texture
- *******************************************************************/
-
 #ifndef GLRENDERTEXTUREEXTERNAL
 #define GLRENDERTEXTUREEXTERNAL
 
@@ -13,6 +9,11 @@
 #include <VDDC.h>
 #include <AbstractMesh.hpp>
 
+/*******************************************************************
+ * Abstraction for rendering textured vertices. Optionally samples from 'external texture' aka video texture.
+ * Optionally applies V.D.D.C ( Vertex displacement distortion correction) to the Vertices
+ *******************************************************************/
+
 class GLProgramTexture {
 private:
     const bool USE_EXTERNAL_TEXTURE;
@@ -20,7 +21,8 @@ private:
     GLuint mProgram;
     GLint mPositionHandle,mTextureHandle,mSamplerHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
-    VDDC::UnDistortionUniformHandles* mUndistortionHandles;
+    // Only active if V.D.D.C is enabled
+    std::optional<VDDC::UnDistortionUniformHandles> mUndistortionHandles;
     static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
     static constexpr auto MY_SAMPLER_UNIT=1;
     const bool MAP_EQUIRECTANGULAR_TO_INSTA360;

@@ -85,7 +85,7 @@ public:
      * @param program OpenGL shader program where the vertex shader contains the uniforms declared in VDDC::writeDistortionUtilFunctionsAndUniforms
      * TODO when using OpenGL ES 3.0 use uniform buffers for that
      */
-    static UnDistortionUniformHandles* getUndistortionUniformHandles(const GLuint program);
+    static UnDistortionUniformHandles getUndistortionUniformHandles(const GLuint program);
     /**
      * Write shader utility functions and the uniforms needed for VDDC
      * @return String usable inside OpenGL vertex shader

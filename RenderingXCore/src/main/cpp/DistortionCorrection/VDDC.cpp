@@ -31,19 +31,19 @@ std::string VDDC::writeDistortedGLPosition() {
     return s.str();
 }
 
-VDDC::UnDistortionUniformHandles*
+VDDC::UnDistortionUniformHandles
 VDDC::getUndistortionUniformHandles(const GLuint program){
-    auto* ret=new UnDistortionUniformHandles();
-    ret->uPolynomialRadialInverse_coefficients=GLHelper::GlGetUniformLocation(program,"uPolynomialRadialInverse.coefficients");
-    ret->uPolynomialRadialInverse_maxRadSq=GLHelper::GlGetUniformLocation(program,"uPolynomialRadialInverse.maxRadSq");
-    ret->uScreenParams_w=GLHelper::GlGetUniformLocation(program,"uScreenParams.width");
-    ret->uScreenParams_h=GLHelper::GlGetUniformLocation(program,"uScreenParams.height");
-    ret->uScreenParams_x_off=GLHelper::GlGetUniformLocation(program,"uScreenParams.x_eye_offset");
-    ret->uScreenParams_y_off=GLHelper::GlGetUniformLocation(program,"uScreenParams.y_eye_offset");
-    ret->uTextureParams_w=GLHelper::GlGetUniformLocation(program,"uTextureParams.width");
-    ret->uTextureParams_h=GLHelper::GlGetUniformLocation(program,"uTextureParams.height");
-    ret->uTextureParams_x_off=GLHelper::GlGetUniformLocation(program,"uTextureParams.x_eye_offset");
-    ret->uTextureParams_y_off=GLHelper::GlGetUniformLocation(program,"uTextureParams.y_eye_offset");
+    UnDistortionUniformHandles ret{};
+    ret.uPolynomialRadialInverse_coefficients=GLHelper::GlGetUniformLocation(program,"uPolynomialRadialInverse.coefficients");
+    ret.uPolynomialRadialInverse_maxRadSq=GLHelper::GlGetUniformLocation(program,"uPolynomialRadialInverse.maxRadSq");
+    ret.uScreenParams_w=GLHelper::GlGetUniformLocation(program,"uScreenParams.width");
+    ret.uScreenParams_h=GLHelper::GlGetUniformLocation(program,"uScreenParams.height");
+    ret.uScreenParams_x_off=GLHelper::GlGetUniformLocation(program,"uScreenParams.x_eye_offset");
+    ret.uScreenParams_y_off=GLHelper::GlGetUniformLocation(program,"uScreenParams.y_eye_offset");
+    ret.uTextureParams_w=GLHelper::GlGetUniformLocation(program,"uTextureParams.width");
+    ret.uTextureParams_h=GLHelper::GlGetUniformLocation(program,"uTextureParams.height");
+    ret.uTextureParams_x_off=GLHelper::GlGetUniformLocation(program,"uTextureParams.x_eye_offset");
+    ret.uTextureParams_y_off=GLHelper::GlGetUniformLocation(program,"uTextureParams.y_eye_offset");
     return ret;
 }
 
