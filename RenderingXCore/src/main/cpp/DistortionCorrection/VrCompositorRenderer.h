@@ -32,24 +32,29 @@ public:
 // Head Tracking begin   ---
 private:
     gvr::GvrApi *gvr_api;
+    //translation matrix representing half inter-eye-distance
     glm::mat4 eyeFromHead[2];
+    //projection matrix created using the fov of the headset
     glm::mat4 mProjectionM[2];
     glm::mat4 latestHeadSpaceFromStartSpaceRotation=glm::mat4(1.0f);
 public:
     // we do not want the view (rotation) to change during rendering of one frame/eye
     // else we could end up with multiple elements rendered in different perspectives
     void updateLatestHeadSpaceFromStartSpaceRotation();
-
     // returns the latest 'cached' head rotation
     glm::mat4 GetLatestHeadSpaceFromStartSpaceRotation()const;
-
-    // returns translation matrix representing half inter-eye-distance
-    glm::mat4 GetEyeFromHeadMatrix(gvr::Eye eye)const;
-
-    // returns projection matrix created using the fov of the headset
-    glm::mat4 GetProjectionMatrix(gvr::Eye eye)const;
 // Head tracking end ---
 // V.D.D.C begin ---
+public:
+    //These values must match the surface that is used for rendering VR content
+    //E.g. must be created as full screen surface
+    int SCREEN_WIDTH_PX=1920;
+    int SCREEN_HEIGHT_PX=1080;
+    int EYE_VIEWPORT_W=SCREEN_WIDTH_PX/2;
+    int EYE_VIEWPORT_H=SCREEN_HEIGHT_PX;
+    // Min and Max clip distance
+    static constexpr float MIN_Z_DISTANCE=0.1f;
+    static constexpr float MAX_Z_DISTANCE=100.0f;
 private:
     std::array<MLensDistortion::ViewportParamsNDC,2> screen_params;
     std::array<MLensDistortion::ViewportParamsNDC,2> texture_params;
@@ -101,16 +106,6 @@ public:
     //void drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM);
     //void updateHeadsetParams(const MVrHeadsetParams &mDP);
     //
-public:
-    //These values must match the surface that is used for rendering VR content
-    //E.g. must be created as full screen surface
-    int SCREEN_WIDTH_PX=1920;
-    int SCREEN_HEIGHT_PX=1080;
-    int EYE_VIEWPORT_W=SCREEN_WIDTH_PX/2;
-    int EYE_VIEWPORT_H=SCREEN_HEIGHT_PX;
-    // Min and Max clip distance
-    static constexpr float MIN_Z_DISTANCE=0.1f;
-    static constexpr float MAX_Z_DISTANCE=100.0f;
 private:
     // Set the viewport to exactly half framebuffer size
     // where framebuffer size==screen size

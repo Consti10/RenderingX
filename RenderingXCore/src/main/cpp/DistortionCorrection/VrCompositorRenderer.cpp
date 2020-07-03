@@ -27,73 +27,6 @@ glm::mat4 VrCompositorRenderer::GetLatestHeadSpaceFromStartSpaceRotation()const{
     return latestHeadSpaceFromStartSpaceRotation;
 }
 
-glm::mat4 VrCompositorRenderer::GetEyeFromHeadMatrix(gvr::Eye eye)const{
-    return eyeFromHead[eye];
-}
-
-glm::mat4 VrCompositorRenderer::GetProjectionMatrix(gvr::Eye eye)const{
-    return mProjectionM[eye];
-}
-
-void VrCompositorRenderer::addLayer(GLProgramTexture::TexturedMesh mesh, GLuint textureId, bool isExternalTexture, HEAD_TRACKING headTracking) {
-    mesh.uploadGL();
-    VRLayer vrLayer{std::move(mesh),textureId,isExternalTexture,headTracking};
-    mVrLayerList.push_back(std::move(vrLayer));
-}
-
-void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
-    const bool leftEye=eye==GVR_LEFT_EYE;
-    mGLProgramTexture->updateUnDistortionUniforms(leftEye,mDataUnDistortion);
-    mGLProgramTextureExt->updateUnDistortionUniforms(leftEye,mDataUnDistortion);
-
-    setOpenGLViewport(eye);
-    const auto rotation = GetLatestHeadSpaceFromStartSpaceRotation();
-
-    for(int i=0;i<mVrLayerList.size();i++){
-        const auto& layer=mVrLayerList[i];
-        // Calculate the view matrix for this layer.
-        const glm::mat4 viewM= layer.headTracking==NONE ? GetEyeFromHeadMatrix(eye) : GetEyeFromHeadMatrix(eye) * rotation;
-        GLProgramTexture* glProgramTexture=layer.isExternalTexture ? mGLProgramTextureExt.get() : mGLProgramTexture.get();
-        glProgramTexture->drawX(layer.textureId,viewM,GetProjectionMatrix(eye),layer.mesh);
-    }
-    //Render the mesh that occludes everything except the part actually visible inside the headset
-    if (ENABLE_OCCLUSION_MESH) {
-        int idx = eye == GVR_LEFT_EYE ? 0 : 1;
-        mGLProgramVC2D->drawX(glm::mat4(1.0f), glm::mat4(1.0f), mOcclusionMesh[idx]);
-    }
-    GLHelper::checkGlError("VrCompositorRenderer::drawLayers");
-}
-
-void VrCompositorRenderer::removeLayers() {
-    for(auto& layer:mVrLayerList){
-        //layer.geometry.deleteGL();
-    }
-    mVrLayerList.resize(0);
-}
-
-void VrCompositorRenderer::addLayer2DCanvas(float z, float width, float height, GLuint textureId,
-                                      bool isExternalTexture) {
-    auto mesh=TexturedGeometry::makeTesselatedVideoCanvas(12,{0, 0,z}, {width, height},0.0f,1.0f);
-    addLayer(std::move(mesh),textureId,isExternalTexture);
-}
-
-/*void VrCompositorRenderer::drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM) {
-    const float scale=100.0f;
-    const glm::mat4 scaleM=glm::scale(glm::vec3(scale,scale,scale));
-    const glm::mat4 modelMatrix=glm::rotate(glm::mat4(1.0F),glm::radians(90.0F), glm::vec3(0,0,-1))*scaleM;
-    for(const auto& layer : mVrLayerList){
-        GLProgramTexture* glProgramTexture=layer.isExternalTexture ? mGLProgramTextureExt.get() : mGLProgramTexture.get();
-        if(layer.geometry.index()==0){
-            const VertexBuffer& vb=std::get<0>(layer.geometry);
-            glProgramTexture->drawX(layer.textureId,ViewM,ProjM,vb);
-        }else{
-            const VertexIndexBuffer& vib=std::get<1>(layer.geometry);
-            glProgramTexture->drawX(layer.textureId,ViewM,ProjM,vib);
-        }
-    }
-    GLHelper::checkGlError("VideoRenderer::drawVideoCanvas360");
-}*/
-
 void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     this->SCREEN_WIDTH_PX=mDP.screen_width_pixels;
     this->SCREEN_HEIGHT_PX=mDP.screen_height_pixels;
@@ -177,6 +110,67 @@ void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
         mDataUnDistortion=VDDC::DataUnDistortion{{mInverse},screen_params,texture_params};
     }
 }
+
+void VrCompositorRenderer::addLayer(GLProgramTexture::TexturedMesh mesh, GLuint textureId, bool isExternalTexture,HEAD_TRACKING headTracking) {
+    mesh.uploadGL();
+    VRLayer vrLayer{std::move(mesh),textureId,isExternalTexture,headTracking};
+    mVrLayerList.push_back(std::move(vrLayer));
+}
+
+void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
+    const bool leftEye=eye==GVR_LEFT_EYE;
+    mGLProgramTexture->updateUnDistortionUniforms(leftEye,mDataUnDistortion);
+    mGLProgramTextureExt->updateUnDistortionUniforms(leftEye,mDataUnDistortion);
+    const int EYE_IDX=eye==GVR_LEFT_EYE ? 0 : 1;
+
+    setOpenGLViewport(eye);
+    const auto rotation = GetLatestHeadSpaceFromStartSpaceRotation();
+
+    for(int i=0;i<mVrLayerList.size();i++){
+        const auto& layer=mVrLayerList[i];
+        // Calculate the view matrix for this layer.
+        const glm::mat4 viewM= layer.headTracking==NONE ? eyeFromHead[EYE_IDX] : eyeFromHead[EYE_IDX] * rotation;
+        GLProgramTexture* glProgramTexture=layer.isExternalTexture ? mGLProgramTextureExt.get() : mGLProgramTexture.get();
+        glProgramTexture->drawX(layer.textureId,viewM,mProjectionM[EYE_IDX],layer.mesh);
+    }
+    // Render the mesh that occludes everything except the part actually visible inside the headset
+    if (ENABLE_OCCLUSION_MESH) {
+        int idx = eye == GVR_LEFT_EYE ? 0 : 1;
+        mGLProgramVC2D->drawX(glm::mat4(1.0f), glm::mat4(1.0f), mOcclusionMesh[idx]);
+    }
+    GLHelper::checkGlError("VrCompositorRenderer::drawLayers");
+}
+
+void VrCompositorRenderer::removeLayers() {
+    for(auto& layer:mVrLayerList){
+        //layer.geometry.deleteGL();
+    }
+    mVrLayerList.resize(0);
+}
+
+void VrCompositorRenderer::addLayer2DCanvas(float z, float width, float height, GLuint textureId,
+                                      bool isExternalTexture) {
+    auto mesh=TexturedGeometry::makeTesselatedVideoCanvas(12,{0, 0,z}, {width, height},0.0f,1.0f);
+    addLayer(std::move(mesh),textureId,isExternalTexture);
+}
+
+/*void VrCompositorRenderer::drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM) {
+    const float scale=100.0f;
+    const glm::mat4 scaleM=glm::scale(glm::vec3(scale,scale,scale));
+    const glm::mat4 modelMatrix=glm::rotate(glm::mat4(1.0F),glm::radians(90.0F), glm::vec3(0,0,-1))*scaleM;
+    for(const auto& layer : mVrLayerList){
+        GLProgramTexture* glProgramTexture=layer.isExternalTexture ? mGLProgramTextureExt.get() : mGLProgramTexture.get();
+        if(layer.geometry.index()==0){
+            const VertexBuffer& vb=std::get<0>(layer.geometry);
+            glProgramTexture->drawX(layer.textureId,ViewM,ProjM,vb);
+        }else{
+            const VertexIndexBuffer& vib=std::get<1>(layer.geometry);
+            glProgramTexture->drawX(layer.textureId,ViewM,ProjM,vib);
+        }
+    }
+    GLHelper::checkGlError("VideoRenderer::drawVideoCanvas360");
+}*/
+
 
 void VrCompositorRenderer::setOpenGLViewport(gvr::Eye eye)const {
     if(eye==GVR_LEFT_EYE){
