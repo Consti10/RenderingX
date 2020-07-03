@@ -71,14 +71,16 @@ private:
     //One for left and right eye each
     std::array<GLProgramVC::ColoredMesh,2> mOcclusionMesh;
     const bool ENABLE_VDDC;
-    //this one is for drawing the occlusion mesh only
+    //this one is for drawing the occlusion mesh only, no V.D.D.C, source mesh holds NDC
     std::unique_ptr<GLProgramVC2D> mGLProgramVC2D;
-    // Sample from 'normal' OpenGL texture
-    std::unique_ptr<GLProgramTexture> mGLProgramTexture;
-    // Sample from 'external' OpenGL texture (aka video texture)
-    std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt;
+    // Sample from 'normal' OpenGL texture, apply V.D.D.C
+    std::unique_ptr<GLProgramTexture> mGLProgramTextureVDDC;
+    // Sample from 'external' OpenGL texture (aka video texture),apply V.D.D.C
+    std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExtVDDC;
 public:
     // NONE == position is fixed
+    // TODO: Pre-calculate vertices for fixed position (Since position relative to head does not change, I can calculate the un-distorted Vertices once
+    // TODO: instead of calculating them dynamically in the Vertex shader
     enum HEAD_TRACKING{
         NONE,
         FULL
@@ -98,9 +100,9 @@ public:
     void removeLayers();
     void drawLayers(gvr::Eye eye);
 
-    // Add a 2D layer at position (0,0,Z) in VR 3D space.
+    // Add a 2D layer at position (0,0,Z) and (width,height) in VR 3D space.
     void addLayer2DCanvas(float z,float width,float height,GLuint textureId, bool isExternalTexture);
-
+    // Add a 360° video sphere
 public:
     // NOT VR
     //void drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM);

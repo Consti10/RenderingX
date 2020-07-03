@@ -13,8 +13,8 @@ VrCompositorRenderer::VrCompositorRenderer(gvr::GvrApi *gvr_api,const bool ENABL
 
 void VrCompositorRenderer::initializeGL() {
     mGLProgramVC2D=std::make_unique<GLProgramVC2D>();
-    mGLProgramTexture=std::make_unique<GLProgramTexture>(false,true);
-    mGLProgramTextureExt=std::make_unique<GLProgramTextureExt>(true,false);
+    mGLProgramTextureVDDC=std::make_unique<GLProgramTexture>(false, true);
+    mGLProgramTextureExtVDDC=std::make_unique<GLProgramTextureExt>(true, false);
     CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(*this, occlusionMeshColor, mOcclusionMesh);
 }
 
@@ -119,8 +119,8 @@ void VrCompositorRenderer::addLayer(GLProgramTexture::TexturedMesh mesh, GLuint 
 
 void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
     const bool leftEye=eye==GVR_LEFT_EYE;
-    mGLProgramTexture->updateUnDistortionUniforms(leftEye,mDataUnDistortion);
-    mGLProgramTextureExt->updateUnDistortionUniforms(leftEye,mDataUnDistortion);
+    mGLProgramTextureVDDC->updateUnDistortionUniforms(leftEye, mDataUnDistortion);
+    mGLProgramTextureExtVDDC->updateUnDistortionUniforms(leftEye, mDataUnDistortion);
     const int EYE_IDX=eye==GVR_LEFT_EYE ? 0 : 1;
 
     setOpenGLViewport(eye);
@@ -130,7 +130,7 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         const auto& layer=mVrLayerList[i];
         // Calculate the view matrix for this layer.
         const glm::mat4 viewM= layer.headTracking==NONE ? eyeFromHead[EYE_IDX] : eyeFromHead[EYE_IDX] * rotation;
-        GLProgramTexture* glProgramTexture=layer.isExternalTexture ? mGLProgramTextureExt.get() : mGLProgramTexture.get();
+        GLProgramTexture* glProgramTexture= layer.isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
         glProgramTexture->drawX(layer.textureId,viewM,mProjectionM[EYE_IDX],layer.mesh);
     }
     // Render the mesh that occludes everything except the part actually visible inside the headset
