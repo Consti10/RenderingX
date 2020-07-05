@@ -31,7 +31,6 @@ namespace TexturedGeometry {
         return ret;
     }
 
-
     static const std::vector<GLProgramTexture::Vertex> makePyramid(){
         return {
                 { 1.0f, -1.0f, 1.0f, 0.0319, 0.4192 }, // face 1

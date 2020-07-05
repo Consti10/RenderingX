@@ -42,16 +42,18 @@ public class AWriteGLESInfo extends AppCompatActivity {
     private static final String SAVED_VERSION_CODE="SAVED_VERSION_CODE";
     private static final String SAVED_BUILD_VERSION="SAVED_BUILD_VERSION";
 
+    private static final int F_BuildConfig_VERSION_CODE=3;//BuildConfig.VERSION_CODE
+
     //write values when either a) the library was updated or b) the os (android) was updated
     static boolean shouldWriteValues(final Context c){
         //return true;
         final SharedPreferences pref = c.getSharedPreferences(PREFERENCES_TAG, MODE_PRIVATE);
-        return pref.getInt(SAVED_VERSION_CODE, 0) != BuildConfig.VERSION_CODE ||
+        return pref.getInt(SAVED_VERSION_CODE, 0) != F_BuildConfig_VERSION_CODE ||
                 pref.getInt(SAVED_BUILD_VERSION, 0) != android.os.Build.VERSION.SDK_INT;
     }
     static void wroteValues(final Context c){
         final SharedPreferences pref = c.getSharedPreferences(PREFERENCES_TAG, MODE_PRIVATE);
-        pref.edit().putInt(SAVED_VERSION_CODE, BuildConfig.VERSION_CODE).putInt(SAVED_BUILD_VERSION,android.os.Build.VERSION.SDK_INT).commit();
+        pref.edit().putInt(SAVED_VERSION_CODE, F_BuildConfig_VERSION_CODE).putInt(SAVED_BUILD_VERSION,android.os.Build.VERSION.SDK_INT).commit();
     }
 
     public static void writeGLESInfoIfNeeded(final Context c){
