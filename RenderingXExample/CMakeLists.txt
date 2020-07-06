@@ -10,6 +10,9 @@ include(${CMAKE_SOURCE_DIR}/../RenderingXCore/RenderingXCore.cmake)
 ##########################################################################################################
 set(BASIC_DEPENDENCIES GLPrograms Time ${log-lib} android log EGL GLESv2)
 
+#find_package(VideoNative REQUIRED CONFIG)
+#find_package(curl REQUIRED CONFIG)
+
 add_library( example-mono
         SHARED
         src/main/cpp/mono/example_renderer1.cpp
