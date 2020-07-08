@@ -113,10 +113,7 @@ void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
 }
 
 void VrCompositorRenderer::addLayer(const GLProgramTexture::TexturedMeshData& meshData, GLuint textureId, bool isExternalTexture,HEAD_TRACKING headTracking) {
-    // TODO mesh.uploadGL();
-    auto texturedMesh=GLProgramTexture::TexturedMesh();
-    texturedMesh.setData(meshData);
-    VRLayer vrLayer{std::move(texturedMesh),textureId,isExternalTexture,headTracking};
+    VRLayer vrLayer{std::move(TexturedMesh{meshData}),textureId,isExternalTexture,headTracking};
     mVrLayerList.push_back(std::move(vrLayer));
 }
 

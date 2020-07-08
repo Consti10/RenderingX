@@ -50,11 +50,15 @@ public:
     int count=0;
     bool alreadyCreatedGLBuffer=false;
     bool alreadyUploaded=false;
-    //GLBuffer()=default;
-    //GLBuffer(const GLBuffer&)=default;
-    //GLBuffer(GLBuffer&&)=default;
+    GLBuffer()=default;
+    // An OpenGL Buffer is not Copy-constructable, since the intention doing so could be either of 2 following:
+    // a) create a new OpenGL buffer, then duplicate the data from the source GL buffer
+    // b) just copy the OpenGL buffer id - now the same OpenGL buffer id is duplicated, which leads to error-prone code
+    GLBuffer(const GLBuffer&)=delete;
+    // Moving an OpenGL buffer is no problem - The new OpenGL buffer just becomes the old one
+    GLBuffer(GLBuffer&&)=default;
 private:
-    std::string getTAG(){
+    const std::string getTAG()const{
         return "GLBuffer"+std::to_string(glBufferId);
     }
     // We have to 'delay' the creation of the buffer until we have a OpenGL context

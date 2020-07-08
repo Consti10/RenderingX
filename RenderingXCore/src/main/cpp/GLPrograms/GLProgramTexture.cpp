@@ -83,7 +83,7 @@ void GLProgramTexture::drawX(GLuint texture, const glm::mat4x4 &ViewM, const glm
     //MLOGD<<mesh.getCount()<<" "<<mesh.glBufferVertices.count<<" "<<mesh.glBufferIndices->count;
     beforeDraw(mesh.glBufferVertices.glBufferId, texture);
     if(mesh.hasIndices()){
-        drawIndexed(mesh.glBufferIndices->glBufferId, ViewM, ProjM, 0, mesh.getCount(), mesh.mode);
+        drawIndexed(mesh.glBufferIndices.first.glBufferId, ViewM, ProjM, 0, mesh.getCount(), mesh.mode);
     }else{
         draw(ViewM,ProjM,0,mesh.getCount(),mesh.mode);
     }

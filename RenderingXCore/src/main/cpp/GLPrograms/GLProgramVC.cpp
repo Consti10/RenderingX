@@ -72,7 +72,7 @@ void GLProgramVC::drawX(const glm::mat4 &ViewM, const glm::mat4 ProjM,
     beforeDraw(mesh.glBufferVertices.glBufferId);
     // MLOGD<<mesh.getCount()<<" "<<mesh.glBufferVertices.count<<" "<<mesh.glBufferIndices->count;
     if(mesh.hasIndices()){
-        drawIndexed(mesh.glBufferIndices->glBufferId,ViewM,ProjM,0,mesh.getCount(),mesh.mode);
+        drawIndexed(mesh.glBufferIndices.first.glBufferId,ViewM,ProjM,0,mesh.getCount(),mesh.mode);
     }else{
         draw(ViewM,ProjM,0,mesh.getCount(),mesh.mode);
     }
