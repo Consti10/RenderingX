@@ -50,6 +50,9 @@ public:
     int count=0;
     bool alreadyCreatedGLBuffer=false;
     bool alreadyUploaded=false;
+    //GLBuffer()=default;
+    //GLBuffer(const GLBuffer&)=default;
+    //GLBuffer(GLBuffer&&)=default;
 private:
     std::string getTAG(){
         return "GLBuffer"+std::to_string(glBufferId);

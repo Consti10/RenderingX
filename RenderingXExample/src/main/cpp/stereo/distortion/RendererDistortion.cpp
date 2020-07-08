@@ -36,14 +36,14 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     mGLProgramTexture=std::make_unique<GLProgramTexture>(false);
     //create the green and blue mesh
     float tesselatedRectSize=2.0; //6.2f
-    mTestMesh2DWireframe=TexturedGeometry::makeTessellatedRectWireframe(LINE_MESH_TESSELATION_FACTOR, {0, 0, -2}, {tesselatedRectSize, tesselatedRectSize});
-
+    const auto tmpData=TexturedGeometry::makeTessellatedRectWireframe(LINE_MESH_TESSELATION_FACTOR, {0, 0, -2}, {tesselatedRectSize, tesselatedRectSize});
+    mTestMesh2DWireframe.setData(tmpData);
     glGenTextures(1,&mBlueTexture);
     glGenTextures(1,&mGreenTexture);
     GLProgramTexture::loadTexture(mBlueTexture,env,context,"ExampleTexture/blue.png");
     GLProgramTexture::loadTexture(mGreenTexture,env,context,"ExampleTexture/green.png");
     vrCompositorRenderer.removeLayers();
-    vrCompositorRenderer.addLayer(mTestMesh2DWireframe, mGreenTexture, false, VrCompositorRenderer::HEAD_TRACKING::FULL);
+    vrCompositorRenderer.addLayer(tmpData, mGreenTexture, false, VrCompositorRenderer::HEAD_TRACKING::FULL);
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 

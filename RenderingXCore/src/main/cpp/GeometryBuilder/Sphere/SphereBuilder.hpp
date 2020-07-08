@@ -6,6 +6,7 @@
 #define RENDERINGX_SPHEREBUILDER_H
 
 #include <Sphere/UvSphere.hpp>
+#include <Sphere/DualFisheyeSphere.hpp>
 #include "GLProgramTexture.h"
 #include "../TexturedGeometry.hpp"
 
@@ -73,9 +74,9 @@ public:
    }
 
     //
-    //And here is the binding for GLProgramTexture::Vertex
+    //And here is the binding for GLProgramTexture
     //
-    static GLProgramTexture::TexturedMesh
+    static TexturedMeshData
     createSphereEquirectangularMonoscopic(float radius=1.0f, int latitudes=64, int longitudes=32) {
         const auto vertexDataAsInGvr=UvSphere::createUvSphere(radius,latitudes,longitudes,180,360,UvSphere::MEDIA_EQUIRECT_MONOSCOPIC,UvSphere::ROTATE_UNKNOWN);
         std::vector<GLProgramTexture::Vertex> ret;
@@ -85,11 +86,11 @@ public:
             };
             ret.push_back(v);
         }
-        return GLProgramTexture::TexturedMesh(ret, GL_TRIANGLE_STRIP);
+        return TexturedMeshData(ret, GL_TRIANGLE_STRIP);
     }
 
     //Use the map function to convert from equirect to dual fisheye insta360 - TODO fix 'black line'
-    static GLProgramTexture::TexturedMesh
+    static TexturedMeshData
     createSphereDualFisheyeInsta360(UvSphere::ROTATION rot=UvSphere::ROTATION::ROTATE_UNKNOWN) {
         float radius=1.0f;
         float latitudes=128;
@@ -103,11 +104,11 @@ public:
             };
             ret.push_back(v);
         }
-        return GLProgramTexture::TexturedMesh(ret, GL_TRIANGLE_STRIP);
+        return TexturedMeshData(ret, GL_TRIANGLE_STRIP);
     }
 
     //Use the map function to convert from equirect to fisheye
-    static GLProgramTexture::TexturedMesh
+    static TexturedMeshData
     createSphereFisheye(UvSphere::ROTATION rot,
 			const float radiusx, const float radiusy, const float fov,
 			const float x_shift, const float y_shift){
@@ -123,7 +124,7 @@ public:
             };
             ret.push_back(v);
         }
-        return GLProgramTexture::TexturedMesh(ret, GL_TRIANGLE_STRIP);
+        return TexturedMeshData(ret, GL_TRIANGLE_STRIP);
     }
 };
 

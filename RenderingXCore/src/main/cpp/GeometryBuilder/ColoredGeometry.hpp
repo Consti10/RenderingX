@@ -47,30 +47,31 @@ namespace ColoredGeometry {
         p2.colorRGBA = color3;
     };
     //Needs at least space for 3 more vertices at array*
-    static const void makeColoredTriangle1(GLProgramVC::Vertex array[],const glm::vec3& point,const float width,const float height,const TrueColor color) {
+    static void makeColoredTriangle1(GLProgramVC::Vertex array[],const glm::vec3& point,const float width,const float height,const TrueColor color) {
         glm::vec3 p1=glm::vec3(point[0],point[1],point[2]);
         glm::vec3 p2=glm::vec3(point[0]+width,point[1],point[2]);
         glm::vec3 p3=glm::vec3(point[0]+width/2.0f,point[1]+height,point[2]);
         makeColoredTriangle(array,p1,p2,p3,color,color,color);
     }
-
-    //GL_TRIANGLES
-    static const std::vector<GLProgramVC::Vertex> makeTessellatedColoredRect(const unsigned int tessellation, const glm::vec3 &translation,const glm::vec2 scale,const TrueColor color){
+    static ColoredMeshData makeTessellatedColoredRect(const unsigned int tessellation, const glm::vec3 &translation,const glm::vec2 scale,const TrueColor color){
         const auto vertices= VerticalPlane::createVerticesPlaneColored(tessellation,translation,scale,color);
         const auto indices=VerticalPlane::createIndicesPlane(tessellation);
+        auto ret=ColoredMeshData(vertices,indices,GL_TRIANGLES);
         //we do not want indices, remove them
-        return IndicesHelper::mergeIndicesIntoVertices(vertices, indices);
+        ret.mergeIndicesIntoVertexBuffer();
+        return ret;
     }
-    //Can be drawn using GL_LINES
-    static const std::vector<GLProgramVC::Vertex> makeTessellatedColoredRectWireframe(const unsigned int tessellation, const glm::vec3 &translation,const glm::vec2 scale,const TrueColor color){
+    static ColoredMeshData makeTessellatedColoredRectWireframe(const unsigned int tessellation, const glm::vec3 &translation,const glm::vec2 scale,const TrueColor color){
         const auto vertices=  VerticalPlane::createVerticesPlaneColored(tessellation,translation,scale,color);
         const auto indices=VerticalPlane::createIndicesWireframe(tessellation);
+        auto ret=ColoredMeshData(vertices,indices,GL_LINES);
         //we do not want indices, remove them
-        return IndicesHelper::mergeIndicesIntoVertices(vertices, indices);
+        ret.mergeIndicesIntoVertexBuffer();
+        return ret;
     }
     //Create a tesselated wireframe mesh that spawns exactly the viewport
     //e.q [-1,1] in x and y direction
-    static const std::vector<GLProgramVC::Vertex> makeTessellatedColoredRectLinesNDC(
+    static const ColoredMeshData makeTessellatedColoredRectLinesNDC(
             const unsigned int tessellation, const TrueColor color){
         return makeTessellatedColoredRectWireframe(tessellation,{-1.0f,-1.0f,0},{2.0f,2.0f},color);
     }

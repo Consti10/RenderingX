@@ -108,8 +108,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     //create all the gl Buffer for later use
     //create the geometry for our simple test scene
     //some colored geometry
-    mMeshColoredGeometry=GLProgramVC::ColoredMesh(ColoredGeometry::makeTessellatedColoredRect(12, glm::vec3(0, 0, 0), {5.0, 5.0}, TrueColor2::RED)
-            , GL_TRIANGLES);
+    mMeshColoredGeometry.setData(ColoredGeometry::makeTessellatedColoredRect(12, glm::vec3(0, 0, 0), {5.0, 5.0}, TrueColor2::RED));
     //some smooth lines
     //create 5 lines of increasing stroke width
     std::vector<GLProgramLine::Vertex> lines(N_LINES*GLProgramLine::VERTICES_PER_LINE);
@@ -147,8 +146,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     glBufferIcons.uploadGL(iconsAsVertices);
     //Textured geometry
     const float wh=5.0f;
-    mMeshTexturedGeometry=TexturedGeometry::makeTesselatedVideoCanvas(10, glm::vec3(0, 0, 0), {wh, wh}, 0.0f, 1.0f);
-    mMeshTexturedGeometry.mergeIndicesIntoVertexBuffer();
+    mMeshTexturedGeometry.setData(TexturedGeometry::makeTesselatedVideoCanvas(10, glm::vec3(0, 0, 0), {wh, wh}, 0.0f, 1.0f));
     /*{
         const auto pyramid=TexturedGeometry::makePyramid();
         const auto modelMatrix= glm::translate(glm::vec3(0,-1,0))*

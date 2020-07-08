@@ -32,7 +32,8 @@ public:
         float u,v;
     };
     using INDEX_DATA=GLuint;
-    using TexturedMesh=AbstractMesh<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
+    using TexturedMeshData=AbstractMeshData<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
+    using TexturedMesh=AbstractGLMesh<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
     explicit GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const bool ENABLE_VDDC=false, const bool use2dCoordinates=false, const bool mapEquirectangularToInsta360=false);
     void beforeDraw(GLuint buffer,GLuint texture) const;
     void draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLenum mode=GL_TRIANGLES) const;
@@ -116,6 +117,7 @@ private:
         return s.str();
     }
 };
+using TexturedMeshData=GLProgramTexture::TexturedMeshData;
 using TexturedMesh=GLProgramTexture::TexturedMesh;
 
 class GLProgramTextureExt: public GLProgramTexture{

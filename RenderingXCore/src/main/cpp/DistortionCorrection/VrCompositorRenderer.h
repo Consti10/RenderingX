@@ -95,7 +95,7 @@ public:
     };
     // List of layer descriptions
     std::vector<VRLayer> mVrLayerList;
-    void addLayer(GLProgramTexture::TexturedMesh mesh, GLuint textureId, bool isExternalTexture=false, HEAD_TRACKING headTracking=FULL);
+    void addLayer(const GLProgramTexture::TexturedMeshData& meshData, GLuint textureId, bool isExternalTexture=false, HEAD_TRACKING headTracking=FULL);
 
     void removeLayers();
     void drawLayers(gvr::Eye eye);
@@ -123,7 +123,6 @@ public:
     static std::array<float,4> reverseFOV(const std::array<float,4>& fov){
         return {fov[1],fov[0],fov[2],fov[3]};
     }
-
 };
 
 

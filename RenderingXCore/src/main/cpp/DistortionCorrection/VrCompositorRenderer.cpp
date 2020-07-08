@@ -112,9 +112,11 @@ void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     }
 }
 
-void VrCompositorRenderer::addLayer(GLProgramTexture::TexturedMesh mesh, GLuint textureId, bool isExternalTexture,HEAD_TRACKING headTracking) {
-    mesh.uploadGL();
-    VRLayer vrLayer{std::move(mesh),textureId,isExternalTexture,headTracking};
+void VrCompositorRenderer::addLayer(const GLProgramTexture::TexturedMeshData& meshData, GLuint textureId, bool isExternalTexture,HEAD_TRACKING headTracking) {
+    // TODO mesh.uploadGL();
+    auto texturedMesh=GLProgramTexture::TexturedMesh();
+    texturedMesh.setData(meshData);
+    VRLayer vrLayer{std::move(texturedMesh),textureId,isExternalTexture,headTracking};
     mVrLayerList.push_back(std::move(vrLayer));
 }
 
@@ -135,10 +137,8 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
     mGLProgramTextureVDDC->updateUnDistortionUniforms(leftEye, mDataUnDistortion);
     mGLProgramTextureExtVDDC->updateUnDistortionUniforms(leftEye, mDataUnDistortion);
     const int EYE_IDX=eye==GVR_LEFT_EYE ? 0 : 1;
-
     setOpenGLViewport(eye);
     const auto rotation = GetLatestHeadSpaceFromStartSpaceRotation();
-
     for(int i=0;i<mVrLayerList.size();i++){
         const auto& layer=mVrLayerList[i];
         // Calculate the view matrix for this layer.

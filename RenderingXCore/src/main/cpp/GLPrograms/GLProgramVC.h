@@ -31,8 +31,9 @@ public:
         float x,y,z;
         TrueColor colorRGBA;
     };
-    using INDEX_DATA=GLushort;
-    using ColoredMesh=AbstractMesh<GLProgramVC::Vertex,GLProgramVC::INDEX_DATA>;
+    using INDEX_DATA=GLuint;
+    using ColoredMeshData=AbstractMeshData<GLProgramVC::Vertex,GLProgramVC::INDEX_DATA>;
+    using ColoredMesh=AbstractGLMesh<GLProgramVC::Vertex,GLProgramVC::INDEX_DATA>;
     explicit GLProgramVC(bool coordinates2D=false);
     void beforeDraw(GLuint buffer) const;
     void draw(Mat4x4 ViewM, Mat4x4 ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
@@ -82,7 +83,9 @@ private:
         return s.str();
     }
 };
+using ColoredMeshData=GLProgramVC::ColoredMeshData;
 using ColoredMesh=GLProgramVC::ColoredMesh;
+
 
 class GLProgramVC2D: public GLProgramVC{
 public:

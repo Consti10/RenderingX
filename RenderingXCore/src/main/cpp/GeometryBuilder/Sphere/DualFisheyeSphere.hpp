@@ -148,11 +148,11 @@ public:
         }
     }
 
-    static GLProgramTexture::TexturedMesh createSphereGL(int surf_w, int surf_h){
+    static TexturedMeshData createSphereGL(int surf_w, int surf_h){
         std::vector<GLProgramTexture::Vertex> vertices;
         std::vector<GLProgramTexture::INDEX_DATA > indices;
         DualFisheyeSphere::create_sphere(vertices,indices,surf_w,surf_h);
-        return GLProgramTexture::TexturedMesh(vertices, indices, GL_TRIANGLE_STRIP);
+        return TexturedMeshData(vertices, indices, GL_TRIANGLE_STRIP);
     }
 
     //Takes a !already initialized! VertexIndex Buffer
