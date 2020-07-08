@@ -45,9 +45,9 @@ namespace GLBufferHelper {
 template<typename T>
 class GLBuffer{
 public:
-    GLuint glBufferId;
     // N of elements of type T stored inside OpenGL buffer.
     int count=0;
+    GLuint glBufferId;
     bool alreadyCreatedGLBuffer=false;
     bool alreadyUploaded=false;
     GLBuffer()=default;
@@ -58,6 +58,7 @@ public:
     // Moving an OpenGL buffer is no problem - The new OpenGL buffer just becomes the old one
     GLBuffer(GLBuffer&&)=default;
 private:
+    // Return the TAG for this OpenGL buffer (glBufferId is unique)
     const std::string getTAG()const{
         return "GLBuffer"+std::to_string(glBufferId);
     }
@@ -79,6 +80,7 @@ private:
         alreadyUploaded=true;
     }
 public:
+    // Calling uploadGL multiple times overrides any previous content
     void uploadGL(const std::vector<T> &vertices){
         createGLBufferIfNeeded();
         checkSetAlreadyUploaded();
@@ -91,9 +93,17 @@ public:
         const auto tmp=std::vector<T>(vertices.begin(),vertices.end());
         GLBuffer::uploadGL(tmp);
     }
-    void deleteGL() {
-        glDeleteBuffers(1, &glBufferId);
+    // Resize the GL Buffer to size 0 / respectively delete its content
+    void freeDataGL(){
+        uploadGL(std::vector<T>());
     }
+    /*void deleteGL() {
+        if(alreadyCreatedGLBuffer){
+            glDeleteBuffers(1, &glBufferId);
+            alreadyCreatedGLBuffer=false;
+        }
+        alreadyUploaded=false;
+    }*/
 };
 
 #endif //FPV_VR_OS_GLBUFFER_HPP

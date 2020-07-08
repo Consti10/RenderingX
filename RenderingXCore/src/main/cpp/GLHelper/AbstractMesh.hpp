@@ -70,6 +70,8 @@ public:
             glBufferIndices.first.uploadGL(*meshData.indices);
             glBufferIndices.second=true;
         }else{
+            // If there exists an old index buffer, remove its content to free space for OpenGL
+            if(glBufferIndices.second)glBufferIndices.first.freeDataGL();
             glBufferIndices.second=false;
         }
         mode=meshData.mode;
