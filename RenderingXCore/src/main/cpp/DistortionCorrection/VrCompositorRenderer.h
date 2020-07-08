@@ -33,9 +33,9 @@ public:
 private:
     gvr::GvrApi *gvr_api;
     //translation matrix representing half inter-eye-distance
-    glm::mat4 eyeFromHead[2];
+    glm::mat4 eyeFromHead[2]{};
     //projection matrix created using the fov of the headset
-    glm::mat4 mProjectionM[2];
+    glm::mat4 mProjectionM[2]{};
     glm::mat4 latestHeadSpaceFromStartSpaceRotation=glm::mat4(1.0f);
 public:
     // we do not want the view (rotation) to change during rendering of one frame/eye
@@ -56,8 +56,8 @@ public:
     static constexpr float MIN_Z_DISTANCE=0.1f;
     static constexpr float MAX_Z_DISTANCE=100.0f;
 private:
-    std::array<MLensDistortion::ViewportParamsHSNDC,2> screen_params;
-    std::array<MLensDistortion::ViewportParamsHSNDC,2> texture_params;
+    std::array<MLensDistortion::ViewportParamsHSNDC,2> screen_params{};
+    std::array<MLensDistortion::ViewportParamsHSNDC,2> texture_params{};
     PolynomialRadialDistortion mDistortion{};
     PolynomialRadialInverse mInverse{};
     VDDC::DataUnDistortion mDataUnDistortion=VDDC::DataUnDistortion::identity();
