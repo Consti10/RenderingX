@@ -119,14 +119,13 @@ void VrCompositorRenderer::addLayer(const GLProgramTexture::TexturedMeshData& me
 
 void VrCompositorRenderer::addLayer2DCanvas(float z, float width, float height, GLuint textureId,
                                             bool isExternalTexture) {
-    auto mesh=TexturedGeometry::makeTesselatedVideoCanvas(12,{0, 0,z}, {width, height},0.0f,1.0f);
-    addLayer(std::move(mesh),textureId,isExternalTexture);
+    const auto mesh=TexturedGeometry::makeTesselatedVideoCanvas(12,{0, 0,z}, {width, height},0.0f,1.0f);
+    addLayer(mesh,textureId,isExternalTexture);
 }
 
-
 void VrCompositorRenderer::addLayerEquirectangularMonoscopic360(float radius,GLuint textureId, bool isExternalTexture) {
-    auto sphere=SphereBuilder::createSphereEquirectangularMonoscopic(radius, 72, 36);
-    addLayer(std::move(sphere),textureId,isExternalTexture,HEAD_TRACKING::FULL);
+    const auto sphere=SphereBuilder::createSphereEquirectangularMonoscopic(radius, 72, 36);
+    addLayer(sphere,textureId,isExternalTexture,HEAD_TRACKING::FULL);
 }
 
 void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
