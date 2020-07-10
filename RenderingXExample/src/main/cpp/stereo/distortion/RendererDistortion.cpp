@@ -12,6 +12,8 @@
 
 constexpr auto TAG="DistortionExample";
 
+//#define ENABLE_HEAD_TRACKING
+
 RendererDistortion::RendererDistortion(JNIEnv *env, jobject androidContext, gvr_context *gvr_context):
         gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context)),
         vrCompositorRenderer(gvr_api_.get(),true,TrueColor(glm::vec4{1.0f, 0.1, 0.1, 1.0})),
@@ -20,7 +22,6 @@ RendererDistortion::RendererDistortion(JNIEnv *env, jobject androidContext, gvr_
     recommended_buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();
     scratch_viewport = gvr_api_->CreateBufferViewport();
 }
-
 
 void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     vrCompositorRenderer.initializeGL();
@@ -43,7 +44,14 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     GLProgramTexture::loadTexture(mBlueTexture,env,context,"ExampleTexture/blue.png");
     GLProgramTexture::loadTexture(mGreenTexture,env,context,"ExampleTexture/green.png");
     vrCompositorRenderer.removeLayers();
-    vrCompositorRenderer.addLayer(tmpData, mGreenTexture, false, VrCompositorRenderer::HEAD_TRACKING::NONE);
+
+    vrCompositorRenderer.addLayer(tmpData, mGreenTexture, false,
+#ifdef ENABLE_HEAD_TRACKING
+VrCompositorRenderer::HEAD_TRACKING::FULL
+#else
+VrCompositorRenderer::HEAD_TRACKING::NONE
+#endif
+    );
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
@@ -105,7 +113,11 @@ void RendererDistortion::drawEyeGvrRenderbuffer(gvr::Eye eye) {
     const auto eyeM=gvr_api_->GetEyeFromHeadMatrix(eye==0 ? GVR_LEFT_EYE : GVR_RIGHT_EYE);
     //const auto rotM=gvr_api_->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
     const auto rotM=toGVR(vrCompositorRenderer.GetLatestHeadSpaceFromStartSpaceRotation());
+#ifdef ENABLE_HEAD_TRACKING
+    const auto viewM=toGLM(ndk_hello_vr::MatrixMul(eyeM,rotM));
+#else
     const auto viewM=toGLM(ndk_hello_vr::MatrixMul(eyeM,toGVR(glm::mat4(1.0f))));
+#endif
     const auto projectionM=toGLM(perspective);
     glLineWidth(LINE_WIDTH_BIG);
     // draw debug mesh:

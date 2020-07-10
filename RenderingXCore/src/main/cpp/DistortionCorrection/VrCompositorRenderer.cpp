@@ -167,6 +167,7 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         TexturedGLMeshBuffer* meshBuffer=layer.headTracking==NONE ?
                 (eye==GVR_LEFT_EYE ? layer.optionalLeftEyeDistortedMesh.get() : layer.optionalRightEyeDistortedMesh.get())
                 : layer.meshLeftAndRightEye.get();
+        glProgramTexture->drawX(layer.textureId,viewM,mProjectionM[EYE_IDX],*meshBuffer);
 #else
         glProgramTexture= layer.isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
         glProgramTexture->drawX(layer.textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye.get());

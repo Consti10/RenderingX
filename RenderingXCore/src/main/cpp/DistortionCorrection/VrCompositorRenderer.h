@@ -132,10 +132,16 @@ public:
     static std::array<float,4> reverseFOV(const std::array<float,4>& fov){
         return {fov[1],fov[0],fov[2],fov[3]};
     }
-    // TODO does not work yet
-    glm::vec2 UndistortedNDCFor3DPoint(const gvr::Eye eye,const glm::vec3 point,const glm::mat4 viewM){
+    /**
+     * @param eye left or right eye
+     * @param point position in 3d space
+     * @param headSpaceFromStartSPaceRotation defaults to identity ( as if you are looking straight forward (level) )
+     * @return the half viewport NDC coordinates for a point rendered from the view m perspective
+     */
+     // TODO something is not quite right yet
+    glm::vec2 UndistortedNDCFor3DPoint(const gvr::Eye eye,const glm::vec3 point,const glm::mat4 headSpaceFromStartSPaceRotation=glm::mat4(1.0f)){
         const int idx=eye==GVR_LEFT_EYE ? 0 : 1;
-        glm::vec4 pos_view=viewM*glm::vec4(point.x,point.y,point.z,1.0f);
+        glm::vec4 pos_view= headSpaceFromStartSPaceRotation * glm::vec4(point.x, point.y, point.z, 1.0f);
         glm::vec4 pos_clip=mProjectionM[idx]*pos_view;
         glm::vec3 ndc=glm::vec3(pos_clip.x,pos_clip.y,pos_clip.z)/pos_clip.w;
         glm::vec2 dist_p=UndistortedNDCForDistortedNDC({ndc.x,ndc.y},eye);
@@ -150,7 +156,7 @@ public:
         }
         for(auto& vertex : tmp.vertices){
             glm::vec3 pos=glm::vec3(vertex.x,vertex.y,vertex.z);
-            glm::vec2 newPos=UndistortedNDCFor3DPoint(eye,pos,glm::mat4(1.0f));
+            glm::vec2 newPos=UndistortedNDCFor3DPoint(eye,pos);
             vertex.x=newPos.x;
             vertex.y=newPos.y;
             vertex.z=0.0f;
