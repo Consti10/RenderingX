@@ -76,6 +76,7 @@ namespace CardboardViewportOcclusion{
                 auto xy=params.UndistortedNDCForDistortedNDC({v.x,v.y},eye);
                 v.x=xy[0];
                 v.y=xy[1];
+                v.z=0.0f;
             }
         }
 
@@ -97,7 +98,7 @@ namespace CardboardViewportOcclusion{
         return ColoredMeshData(ret,GL_TRIANGLE_STRIP);
     }
 
-    static const void uploadOcclusionMeshLeftRight(const VrCompositorRenderer& params, TrueColor color, std::array<GLProgramVC::ColoredMesh,2>& vb){
+    static const void uploadOcclusionMeshLeftRight(const VrCompositorRenderer& params, TrueColor color, std::array<GLProgramVC::ColoredGLMesh,2>& vb){
         vb[0].setData(makeMesh(params, 0, color));
         vb[1].setData(makeMesh(params, 1, color));
     }

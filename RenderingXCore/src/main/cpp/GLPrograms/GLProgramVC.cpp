@@ -67,14 +67,14 @@ void GLProgramVC::afterDraw() const {
 }
 
 void GLProgramVC::drawX(const glm::mat4 &ViewM, const glm::mat4 ProjM,
-                        const GLProgramVC::ColoredMesh &mesh) const {
-    mesh.logWarningWhenDrawnUninitialized();
-    beforeDraw(mesh.glBufferVertices.glBufferId);
+                        const GLProgramVC::ColoredGLMesh &mesh) const {
+    mesh.logWarningWhenDrawingMeshWithoutData();
+    beforeDraw(mesh.getVertexBufferId());
     // MLOGD<<mesh.getCount()<<" "<<mesh.glBufferVertices.count<<" "<<mesh.glBufferIndices->count;
     if(mesh.hasIndices()){
-        drawIndexed(mesh.glBufferIndices.first.glBufferId,ViewM,ProjM,0,mesh.getCount(),mesh.mode);
+        drawIndexed(mesh.getIndexBufferId(),ViewM,ProjM,0,mesh.getCount(),mesh.getMode());
     }else{
-        draw(ViewM,ProjM,0,mesh.getCount(),mesh.mode);
+        draw(ViewM,ProjM,0,mesh.getCount(),mesh.getMode());
     }
     afterDraw();
 }

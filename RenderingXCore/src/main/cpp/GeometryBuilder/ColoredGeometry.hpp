@@ -58,7 +58,7 @@ namespace ColoredGeometry {
         const auto indices=VerticalPlane::createIndicesPlane(tessellation);
         auto ret=ColoredMeshData(vertices,indices,GL_TRIANGLES);
         //we do not want indices, remove them
-        ret.mergeIndicesIntoVertexBuffer();
+        ret.mergeIndicesIntoVertices();
         return ret;
     }
     static ColoredMeshData makeTessellatedColoredRectWireframe(const unsigned int tessellation, const glm::vec3 &translation,const glm::vec2 scale,const TrueColor color){
@@ -66,7 +66,7 @@ namespace ColoredGeometry {
         const auto indices=VerticalPlane::createIndicesWireframe(tessellation);
         auto ret=ColoredMeshData(vertices,indices,GL_LINES);
         //we do not want indices, remove them
-        ret.mergeIndicesIntoVertexBuffer();
+        ret.mergeIndicesIntoVertices();
         return ret;
     }
     //Create a tesselated wireframe mesh that spawns exactly the viewport

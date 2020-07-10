@@ -69,13 +69,15 @@ private:
     static constexpr bool ENABLE_OCCLUSION_MESH=true;
     const TrueColor occlusionMeshColor;
     //One for left and right eye each
-    std::array<GLProgramVC::ColoredMesh,2> mOcclusionMesh;
+    std::array<GLProgramVC::ColoredGLMesh,2> mOcclusionMesh;
     const bool ENABLE_VDDC;
     //this one is for drawing the occlusion mesh only, no V.D.D.C, source mesh holds NDC
     std::unique_ptr<GLProgramVC2D> mGLProgramVC2D;
-    // Sample from 'normal' OpenGL texture, apply V.D.D.C
+    // Use NDC (normalized device coordinates), both for normal and ext texture
+    std::unique_ptr<GLProgramTexture> mGLProgramTexture2D;
+    std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt2D;
+    // Apply V.D.D.C to the 3d coordinates, both for normal and ext texture
     std::unique_ptr<GLProgramTexture> mGLProgramTextureVDDC;
-    // Sample from 'external' OpenGL texture (aka video texture),apply V.D.D.C
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExtVDDC;
 public:
     // NONE == position is fixed
@@ -87,7 +89,8 @@ public:
     };
     // https://developer.oculus.com/documentation/unity/unity-ovroverlay/
     struct VRLayer{
-        GLProgramTexture::TexturedMesh mesh;
+        GLProgramTexture::TexturedGLMesh mesh;
+        std::unique_ptr<GLProgramTexture::TexturedGLMesh> optionalLeftEyeMesh;
         GLuint textureId;
         bool isExternalTexture;
         //
@@ -117,11 +120,37 @@ private:
 public:
     //This one does not use the inverse and is therefore (relatively) slow compared to when
     //using the approximate inverse
-    std::array<float, 2> UndistortedNDCForDistortedNDC(const std::array<float,2>& in_ndc,int eye)const{
-        return MLensDistortion::UndistortedNDCForDistortedNDC(mDistortion,screen_params[eye],texture_params[eye],in_ndc,false);
+    glm::vec2 UndistortedNDCForDistortedNDC(const glm::vec2& in_ndc,int eye)const{
+        const auto ret= MLensDistortion::UndistortedNDCForDistortedNDC(mDistortion,screen_params[eye],texture_params[eye],{in_ndc.x,in_ndc.y},false);
+        return glm::vec2(ret[0],ret[1]);
     }
     static std::array<float,4> reverseFOV(const std::array<float,4>& fov){
         return {fov[1],fov[0],fov[2],fov[3]};
+    }
+    // TODO does not work yet
+    glm::vec2 UndistortedNDCFor3DPoint(const gvr::Eye eye,const glm::vec3 point,const glm::mat4 viewM){
+        const int idx=eye==GVR_LEFT_EYE ? 0 : 1;
+        glm::vec4 pos_view=viewM*glm::vec4(point.x,point.y,point.z,1.0f);
+        glm::vec4 pos_clip=mProjectionM[idx]*pos_view;
+        glm::vec3 ndc=glm::vec3(pos_clip.x,pos_clip.y,pos_clip.z)/pos_clip.w;
+        glm::vec2 dist_p=UndistortedNDCForDistortedNDC({ndc.x,ndc.y},eye);
+        glm::vec4 gl_Position=glm::vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);
+        return glm::vec2(gl_Position.x,gl_Position.y)/gl_Position.w;
+    }
+    TexturedMeshData distortMesh(const gvr::Eye eye,const TexturedMeshData& input){
+        auto tmp=input;
+        if(input.hasIndices()){
+            MLOGD<<"Merging indices into vertices";
+            tmp.mergeIndicesIntoVertices();
+        }
+        for(auto& vertex : tmp.vertices){
+            glm::vec3 pos=glm::vec3(vertex.x,vertex.y,vertex.z);
+            glm::vec2 newPos=UndistortedNDCFor3DPoint(eye,pos,glm::mat4(1.0f));
+            vertex.x=newPos.x;
+            vertex.y=newPos.y;
+            vertex.z=0.0f;
+        }
+        return tmp;
     }
 };
 

@@ -6,14 +6,14 @@ constexpr auto TAG="GLProgramTexture(Ext)";
 constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
 
-GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const bool ENABLE_VDDC, const bool use2dCoordinates, const bool mapEquirectangularToInsta360)
+GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const bool ENABLE_VDDC, const bool USE_2D_COORDINATES, const bool mapEquirectangularToInsta360)
         : USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE), ENABLE_VDDC(ENABLE_VDDC), MAP_EQUIRECTANGULAR_TO_INSTA360(mapEquirectangularToInsta360) {
     // cannot enable VDDC and 2D coordinates at the same time
-    assert(!((ENABLE_VDDC == true) && (use2dCoordinates == true)));
+    assert(!((ENABLE_VDDC == true) && (USE_2D_COORDINATES == true)));
     std::string flags;
     if(ENABLE_VDDC){
         flags+="#define ENABLE_VDDC\n";
-    }else if(use2dCoordinates){
+    }else if(USE_2D_COORDINATES){
         flags+="#define USE_2D_COORDINATES\n";
     }
     if(USE_EXTERNAL_TEXTURE)flags+="#define USE_EXTERNAL_TEXTURE\n";
@@ -78,14 +78,14 @@ void GLProgramTexture::loadTexture(GLuint texture,JNIEnv *env, jobject androidCo
 }
 
 void GLProgramTexture::drawX(GLuint texture, const glm::mat4x4 &ViewM, const glm::mat4x4 &ProjM,
-                             const GLProgramTexture::TexturedMesh &mesh) {
-    mesh.logWarningWhenDrawnUninitialized();
+                             const GLProgramTexture::TexturedGLMesh &mesh) {
+    mesh.logWarningWhenDrawingMeshWithoutData();
     //MLOGD<<mesh.getCount()<<" "<<mesh.glBufferVertices.count<<" "<<mesh.glBufferIndices->count;
-    beforeDraw(mesh.glBufferVertices.glBufferId, texture);
+    beforeDraw(mesh.getVertexBufferId(), texture);
     if(mesh.hasIndices()){
-        drawIndexed(mesh.glBufferIndices.first.glBufferId, ViewM, ProjM, 0, mesh.getCount(), mesh.mode);
+        drawIndexed(mesh.getIndexBufferId(), ViewM, ProjM, 0, mesh.getCount(), mesh.getMode());
     }else{
-        draw(ViewM,ProjM,0,mesh.getCount(),mesh.mode);
+        draw(ViewM,ProjM,0,mesh.getCount(),mesh.getMode());
     }
     afterDraw();
 }

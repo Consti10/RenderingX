@@ -33,7 +33,7 @@ public:
     };
     using INDEX_DATA=GLuint;
     using ColoredMeshData=AbstractMeshData<GLProgramVC::Vertex,GLProgramVC::INDEX_DATA>;
-    using ColoredMesh=AbstractGLMesh<GLProgramVC::Vertex,GLProgramVC::INDEX_DATA>;
+    using ColoredGLMesh=AbstractGLMesh<GLProgramVC::Vertex,GLProgramVC::INDEX_DATA>;
     explicit GLProgramVC(bool coordinates2D=false);
     void beforeDraw(GLuint buffer) const;
     void draw(Mat4x4 ViewM, Mat4x4 ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
@@ -43,7 +43,7 @@ public:
     void afterDraw() const;
     //convenient methods for drawing a colored mesh with / without indices
     //calls beforeDraw(), draw() and afterDraw() properly
-    void drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const ColoredMesh& mesh)const;
+    void drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const ColoredGLMesh& mesh)const;
 private:
     static const std::string VS(){
         std::stringstream s;
@@ -56,7 +56,7 @@ private:
         s<<"void main(){\n";
         // Depending on the selected mode writing gl_Position is different
         s<<"#ifdef USE_2D_COORDINATES\n";
-        s<<"gl_Position=vec4(aPosition.xy,0,1);\n";
+        s<<"gl_Position=vec4(aPosition.xyz,1);\n";
         s<<"#else\n";
         s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition;\n";
         s<<"#endif\n";
@@ -84,7 +84,7 @@ private:
     }
 };
 using ColoredMeshData=GLProgramVC::ColoredMeshData;
-using ColoredMesh=GLProgramVC::ColoredMesh;
+using ColoredGLMesh=GLProgramVC::ColoredGLMesh;
 
 
 class GLProgramVC2D: public GLProgramVC{
