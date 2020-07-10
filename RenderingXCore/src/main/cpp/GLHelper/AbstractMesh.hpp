@@ -10,14 +10,6 @@
 #include <AndroidLogger.hpp>
 #include <IndicesHelper.hpp>
 
-struct LOL{
-    float x,y,z;
-    float u,v;
-};
-
-using OPTIONAL_INT=std::optional<std::vector<LOL>>;
-
-
 // A mesh always has vertices, optionally also has indices.
 // Mode is one of  GL_TRIANGLES, GL_TRIANGLE_STRIP ...
 // Use AbstractMeshData to create an AbstractGLMesh (which should be renderable via OpenGL)
