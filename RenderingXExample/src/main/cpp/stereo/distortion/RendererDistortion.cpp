@@ -43,7 +43,7 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     GLProgramTexture::loadTexture(mBlueTexture,env,context,"ExampleTexture/blue.png");
     GLProgramTexture::loadTexture(mGreenTexture,env,context,"ExampleTexture/green.png");
     vrCompositorRenderer.removeLayers();
-    vrCompositorRenderer.addLayer(tmpData, mGreenTexture, false, VrCompositorRenderer::HEAD_TRACKING::FULL);
+    vrCompositorRenderer.addLayer(tmpData, mGreenTexture, false, VrCompositorRenderer::HEAD_TRACKING::NONE);
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
@@ -105,7 +105,7 @@ void RendererDistortion::drawEyeGvrRenderbuffer(gvr::Eye eye) {
     const auto eyeM=gvr_api_->GetEyeFromHeadMatrix(eye==0 ? GVR_LEFT_EYE : GVR_RIGHT_EYE);
     //const auto rotM=gvr_api_->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
     const auto rotM=toGVR(vrCompositorRenderer.GetLatestHeadSpaceFromStartSpaceRotation());
-    const auto viewM=toGLM(ndk_hello_vr::MatrixMul(eyeM,rotM));
+    const auto viewM=toGLM(ndk_hello_vr::MatrixMul(eyeM,toGVR(glm::mat4(1.0f))));
     const auto projectionM=toGLM(perspective);
     glLineWidth(LINE_WIDTH_BIG);
     // draw debug mesh:

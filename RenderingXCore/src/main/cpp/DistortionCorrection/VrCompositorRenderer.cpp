@@ -116,6 +116,7 @@ void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
 
 void VrCompositorRenderer::addLayer(const GLProgramTexture::TexturedMeshData& meshData, GLuint textureId, bool isExternalTexture,HEAD_TRACKING headTracking) {
     VRLayer vrLayer;
+#ifdef PRECALCULATE_STATIC_LAYER
     if(headTracking==HEAD_TRACKING::NONE){
         TexturedMeshData distortedMeshData1=distortMesh(GVR_LEFT_EYE,meshData);
         TexturedMeshData distortedMeshData2=distortMesh(GVR_RIGHT_EYE,meshData);
@@ -125,6 +126,9 @@ void VrCompositorRenderer::addLayer(const GLProgramTexture::TexturedMeshData& me
     }else{
         vrLayer.meshLeftAndRightEye=std::make_unique<TexturedGLMeshBuffer>(meshData);
     }
+#else
+    vrLayer.meshLeftAndRightEye=std::make_unique<TexturedGLMeshBuffer>(meshData);
+#endif
     vrLayer.textureId=textureId;
     vrLayer.isExternalTexture=isExternalTexture;
     vrLayer.headTracking=headTracking;
@@ -154,6 +158,7 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         // Calculate the view matrix for this layer.
         const glm::mat4 viewM= layer.headTracking==NONE ? eyeFromHead[EYE_IDX] : eyeFromHead[EYE_IDX] * rotation;
         GLProgramTexture* glProgramTexture;
+#ifdef PRECALCULATE_STATIC_LAYER
         if(layer.headTracking==HEAD_TRACKING::NONE){
             glProgramTexture=layer.isExternalTexture ? mGLProgramTextureExt2D.get() : mGLProgramTexture2D.get();
         }else{
@@ -162,7 +167,10 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         TexturedGLMeshBuffer* meshBuffer=layer.headTracking==NONE ?
                 (eye==GVR_LEFT_EYE ? layer.optionalLeftEyeDistortedMesh.get() : layer.optionalRightEyeDistortedMesh.get())
                 : layer.meshLeftAndRightEye.get();
-        glProgramTexture->drawX(layer.textureId,viewM,mProjectionM[EYE_IDX],*meshBuffer);
+#else
+        glProgramTexture= layer.isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
+        glProgramTexture->drawX(layer.textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye.get());
+#endif
     }
     // Render the mesh that occludes everything except the part actually visible inside the headset
     if (ENABLE_OCCLUSION_MESH) {

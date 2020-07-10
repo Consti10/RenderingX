@@ -16,6 +16,8 @@
 #include <variant>
 #include "MatrixHelper.h"
 
+#define PRECALCULATE_STATIC_LAYER
+
 class VrCompositorRenderer {
 public:
     /**
