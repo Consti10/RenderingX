@@ -18,6 +18,8 @@ class GLProgramTexture {
 private:
     const bool USE_EXTERNAL_TEXTURE;
     const bool ENABLE_VDDC;
+    const bool USE_2D_COORDINATES;
+    const bool MAP_EQUIRECTANGULAR_TO_INSTA360;
     GLuint mProgram;
     GLint mPositionHandle,mTextureHandle,mSamplerHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
@@ -25,7 +27,6 @@ private:
     std::optional<VDDC::UnDistortionUniformHandles> mUndistortionHandles;
     static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
     static constexpr auto MY_SAMPLER_UNIT=1;
-    const bool MAP_EQUIRECTANGULAR_TO_INSTA360;
 public:
     struct Vertex{
         float x,y,z;
@@ -42,7 +43,7 @@ public:
     static void loadTexture(GLuint texture,JNIEnv *env, jobject androidContext,const char* name);
     // convenient methods for drawing a textured mesh with / without indices
     // calls beforeDraw(), draw() and afterDraw() properly
-    void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const TexturedGLMeshBuffer& mesh);
+    void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const TexturedGLMeshBuffer& mesh)const;
     // update the uniform values to perform VDDC for left or right eye
     void updateUnDistortionUniforms(bool leftEye, const VDDC::DataUnDistortion& dataUnDistortion)const;
 private:

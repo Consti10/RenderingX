@@ -89,12 +89,15 @@ public:
     };
     // https://developer.oculus.com/documentation/unity/unity-ovroverlay/
     struct VRLayer{
-        GLProgramTexture::TexturedGLMeshBuffer mesh;
-        std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> optionalLeftEyeMesh;
+        HEAD_TRACKING headTracking;
+        // If head tracking is disabled for this layer we can pre-calculate the undistorted vertices
+        // for both the left and right eye. Else, the vertex shader does the undistortion and
+        // we do not touch the mesh data.
+        std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> meshLeftAndRightEye=nullptr;
+        std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> optionalLeftEyeDistortedMesh=nullptr;
+        std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> optionalRightEyeDistortedMesh=nullptr;
         GLuint textureId;
         bool isExternalTexture;
-        //
-        HEAD_TRACKING headTracking;
     };
     // List of layer descriptions
     std::vector<VRLayer> mVrLayerList;

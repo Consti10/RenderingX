@@ -7,7 +7,7 @@ constexpr auto GL_TEXTURE_EXTERNAL_OES=0x00008d65;
 
 
 GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const bool ENABLE_VDDC, const bool USE_2D_COORDINATES, const bool mapEquirectangularToInsta360)
-        : USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE), ENABLE_VDDC(ENABLE_VDDC), MAP_EQUIRECTANGULAR_TO_INSTA360(mapEquirectangularToInsta360) {
+        : USE_EXTERNAL_TEXTURE(USE_EXTERNAL_TEXTURE), ENABLE_VDDC(ENABLE_VDDC),USE_2D_COORDINATES(USE_2D_COORDINATES), MAP_EQUIRECTANGULAR_TO_INSTA360(mapEquirectangularToInsta360) {
     // cannot enable VDDC and 2D coordinates at the same time
     assert(!((ENABLE_VDDC == true) && (USE_2D_COORDINATES == true)));
     std::string flags;
@@ -31,16 +31,15 @@ GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const bool E
 
 void GLProgramTexture::beforeDraw(const GLuint buffer,GLuint texture) const{
     glUseProgram((GLuint)mProgram);
-
     glActiveTexture(MY_TEXTURE_UNIT);
     glBindTexture(USE_EXTERNAL_TEXTURE ? GL_TEXTURE_EXTERNAL_OES : GL_TEXTURE_2D,texture);
     glUniform1i(mSamplerHandle,MY_SAMPLER_UNIT);
-
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glEnableVertexAttribArray((GLuint)mPositionHandle);
     glVertexAttribPointer((GLuint)mPositionHandle, 3/*xyz*/, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
     glEnableVertexAttribArray((GLuint)mTextureHandle);
     glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,u));
+    //MLOGD<<"LOL USE_EXTERNAL_TEXTURE "<<USE_EXTERNAL_TEXTURE<<"ENABLE_VDDC "<<ENABLE_VDDC<<" USE_2D_COORDINATES "<<USE_2D_COORDINATES;
 }
 
 void GLProgramTexture::draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, const int verticesOffset, const int numberVertices,GLenum mode) const{
@@ -78,9 +77,8 @@ void GLProgramTexture::loadTexture(GLuint texture,JNIEnv *env, jobject androidCo
 }
 
 void GLProgramTexture::drawX(GLuint texture, const glm::mat4x4 &ViewM, const glm::mat4x4 &ProjM,
-                             const GLProgramTexture::TexturedGLMeshBuffer &mesh) {
+                             const GLProgramTexture::TexturedGLMeshBuffer &mesh)const {
     mesh.logWarningWhenDrawingMeshWithoutData();
-    //MLOGD<<mesh.getCount()<<" "<<mesh.glBufferVertices.count<<" "<<mesh.glBufferIndices->count;
     beforeDraw(mesh.getVertexBufferId(), texture);
     if(mesh.hasIndices()){
         drawIndexed(mesh.getIndexBufferId(), ViewM, ProjM, 0, mesh.getCount(), mesh.getMode());

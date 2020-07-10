@@ -15,7 +15,7 @@ VrCompositorRenderer::VrCompositorRenderer(gvr::GvrApi *gvr_api,const bool ENABL
 void VrCompositorRenderer::initializeGL() {
     mGLProgramVC2D=std::make_unique<GLProgramVC2D>();
     mGLProgramTexture2D=std::make_unique<GLProgramTexture>(false,false,true);
-    mGLProgramTextureExt2D=std::make_unique<GLProgramTextureExt>(false,false,true);
+    mGLProgramTextureExt2D=std::make_unique<GLProgramTextureExt>(false,true,false);
     mGLProgramTextureVDDC=std::make_unique<GLProgramTexture>(false, true);
     mGLProgramTextureExtVDDC=std::make_unique<GLProgramTextureExt>(true, false);
     CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(*this, occlusionMeshColor, mOcclusionMesh);
@@ -115,13 +115,19 @@ void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
 }
 
 void VrCompositorRenderer::addLayer(const GLProgramTexture::TexturedMeshData& meshData, GLuint textureId, bool isExternalTexture,HEAD_TRACKING headTracking) {
-    TexturedMeshData distortedMeshData;
+    VRLayer vrLayer;
     if(headTracking==HEAD_TRACKING::NONE){
-        distortedMeshData=distortMesh(GVR_LEFT_EYE,meshData);
+        TexturedMeshData distortedMeshData1=distortMesh(GVR_LEFT_EYE,meshData);
+        TexturedMeshData distortedMeshData2=distortMesh(GVR_RIGHT_EYE,meshData);
+        vrLayer.meshLeftAndRightEye=nullptr;
+        vrLayer.optionalLeftEyeDistortedMesh=std::make_unique<TexturedGLMeshBuffer>(distortedMeshData1);
+        vrLayer.optionalRightEyeDistortedMesh=std::make_unique<TexturedGLMeshBuffer>(distortedMeshData2);
     }else{
-        distortedMeshData=meshData;
+        vrLayer.meshLeftAndRightEye=std::make_unique<TexturedGLMeshBuffer>(meshData);
     }
-    VRLayer vrLayer{std::move(TexturedGLMeshBuffer{distortedMeshData}), nullptr, textureId, isExternalTexture, headTracking};
+    vrLayer.textureId=textureId;
+    vrLayer.isExternalTexture=isExternalTexture;
+    vrLayer.headTracking=headTracking;
     mVrLayerList.push_back(std::move(vrLayer));
 }
 
@@ -149,11 +155,14 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         const glm::mat4 viewM= layer.headTracking==NONE ? eyeFromHead[EYE_IDX] : eyeFromHead[EYE_IDX] * rotation;
         GLProgramTexture* glProgramTexture;
         if(layer.headTracking==HEAD_TRACKING::NONE){
-            glProgramTexture= layer.isExternalTexture ? mGLProgramTextureExt2D.get() : mGLProgramTexture2D.get();
+            glProgramTexture=layer.isExternalTexture ? mGLProgramTextureExt2D.get() : mGLProgramTexture2D.get();
         }else{
             glProgramTexture= layer.isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
         }
-        glProgramTexture->drawX(layer.textureId,viewM,mProjectionM[EYE_IDX],layer.mesh);
+        TexturedGLMeshBuffer* meshBuffer=layer.headTracking==NONE ?
+                (eye==GVR_LEFT_EYE ? layer.optionalLeftEyeDistortedMesh.get() : layer.optionalRightEyeDistortedMesh.get())
+                : layer.meshLeftAndRightEye.get();
+        glProgramTexture->drawX(layer.textureId,viewM,mProjectionM[EYE_IDX],*meshBuffer);
     }
     // Render the mesh that occludes everything except the part actually visible inside the headset
     if (ENABLE_OCCLUSION_MESH) {
