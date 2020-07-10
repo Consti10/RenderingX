@@ -33,7 +33,7 @@ public:
     };
     using INDEX_DATA=GLuint;
     using TexturedMeshData=AbstractMeshData<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
-    using TexturedGLMesh=AbstractGLMesh<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
+    using TexturedGLMeshBuffer=AbstractGLMeshBuffer<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
     explicit GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const bool ENABLE_VDDC=false, const bool USE_2D_COORDINATES=false, const bool mapEquirectangularToInsta360=false);
     void beforeDraw(GLuint buffer,GLuint texture) const;
     void draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLenum mode=GL_TRIANGLES) const;
@@ -42,7 +42,7 @@ public:
     static void loadTexture(GLuint texture,JNIEnv *env, jobject androidContext,const char* name);
     // convenient methods for drawing a textured mesh with / without indices
     // calls beforeDraw(), draw() and afterDraw() properly
-    void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const TexturedGLMesh& mesh);
+    void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const TexturedGLMeshBuffer& mesh);
     // update the uniform values to perform VDDC for left or right eye
     void updateUnDistortionUniforms(bool leftEye, const VDDC::DataUnDistortion& dataUnDistortion)const;
 private:
@@ -118,7 +118,7 @@ private:
     }
 };
 using TexturedMeshData=GLProgramTexture::TexturedMeshData;
-using TexturedGLMesh=GLProgramTexture::TexturedGLMesh;
+using TexturedGLMeshBuffer=GLProgramTexture::TexturedGLMeshBuffer;
 
 class GLProgramTextureExt: public GLProgramTexture{
 public:

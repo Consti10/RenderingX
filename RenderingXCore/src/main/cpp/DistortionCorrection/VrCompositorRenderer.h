@@ -69,7 +69,7 @@ private:
     static constexpr bool ENABLE_OCCLUSION_MESH=true;
     const TrueColor occlusionMeshColor;
     //One for left and right eye each
-    std::array<GLProgramVC::ColoredGLMesh,2> mOcclusionMesh;
+    std::array<GLProgramVC::ColoredGLMeshBuffer,2> mOcclusionMesh;
     const bool ENABLE_VDDC;
     //this one is for drawing the occlusion mesh only, no V.D.D.C, source mesh holds NDC
     std::unique_ptr<GLProgramVC2D> mGLProgramVC2D;
@@ -89,8 +89,8 @@ public:
     };
     // https://developer.oculus.com/documentation/unity/unity-ovroverlay/
     struct VRLayer{
-        GLProgramTexture::TexturedGLMesh mesh;
-        std::unique_ptr<GLProgramTexture::TexturedGLMesh> optionalLeftEyeMesh;
+        GLProgramTexture::TexturedGLMeshBuffer mesh;
+        std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> optionalLeftEyeMesh;
         GLuint textureId;
         bool isExternalTexture;
         //

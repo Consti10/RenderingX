@@ -21,7 +21,7 @@ using OPTIONAL_INT=std::optional<std::vector<LOL>>;
 // A mesh always has vertices, optionally also has indices.
 // Mode is one of  GL_TRIANGLES, GL_TRIANGLE_STRIP ...
 // Use AbstractMeshData to create an AbstractGLMesh (which should be renderable via OpenGL)
-template<typename VERTEX,typename INDEX>
+template<class VERTEX,class INDEX>
 class AbstractMeshData{
     using VERTICES=std::vector<VERTEX>;
     using INDICES=std::vector<INDEX>;
@@ -59,11 +59,11 @@ public:
     }
 };
 
-// An abstract GL Mesh (OpenGL Mesh) is a wrapper around
+// An abstract GL Mesh buffer is a wrapper around
 // One GL Vertex buffer and an optional GL Index buffer
 // NOTE: Copy constructor and more have been deleted by purpose - use AbstractMeshData if you want to modify the mesh data
 template<typename VERTEX,typename INDEX>
-class AbstractGLMesh{
+class AbstractGLMeshBuffer{
 private:
     GLBuffer<VERTEX> glBufferVertices;
     //std::optional<GLBuffer<INDEX>> glBufferIndices=std::nullopt;
@@ -72,11 +72,11 @@ private:
     std::pair<GLBuffer<INDEX>,bool> glBufferIndices;
     GLenum mode;
 public:
-    AbstractGLMesh()=default;
+    AbstractGLMeshBuffer()=default;
     // Same as GLBuffer
-    AbstractGLMesh(const AbstractGLMesh&)=delete;
-    AbstractGLMesh( AbstractGLMesh&&)=default;
-    AbstractGLMesh(const AbstractMeshData<VERTEX,INDEX>& meshData){
+    AbstractGLMeshBuffer(const AbstractGLMeshBuffer&)=delete;
+    AbstractGLMeshBuffer(AbstractGLMeshBuffer&&)=default;
+    AbstractGLMeshBuffer(const AbstractMeshData<VERTEX,INDEX>& meshData){
         setData(meshData);
     }
     // Return self for Method chaining ?

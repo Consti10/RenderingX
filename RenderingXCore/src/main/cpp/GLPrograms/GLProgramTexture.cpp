@@ -78,7 +78,7 @@ void GLProgramTexture::loadTexture(GLuint texture,JNIEnv *env, jobject androidCo
 }
 
 void GLProgramTexture::drawX(GLuint texture, const glm::mat4x4 &ViewM, const glm::mat4x4 &ProjM,
-                             const GLProgramTexture::TexturedGLMesh &mesh) {
+                             const GLProgramTexture::TexturedGLMeshBuffer &mesh) {
     mesh.logWarningWhenDrawingMeshWithoutData();
     //MLOGD<<mesh.getCount()<<" "<<mesh.glBufferVertices.count<<" "<<mesh.glBufferIndices->count;
     beforeDraw(mesh.getVertexBufferId(), texture);

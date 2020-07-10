@@ -13,8 +13,8 @@ namespace IndicesHelper{
     // takes a mesh that uses indices and removes indices by duplicating/adding vertices
     // less memory efficient, but easier to draw / debug
     template<class T>
-    static T mergeIndicesIntoVertices(const T& vertices, const std::vector<GLuint>& indices){
-        T ret={};
+    static std::vector<T> mergeIndicesIntoVertices(const std::vector<T>& vertices, const std::vector<GLuint>& indices){
+        std::vector<T> ret={};
         ret.reserve(indices.size());
         for(unsigned int index:indices){
             if(index>=vertices.size()){

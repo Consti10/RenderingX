@@ -62,9 +62,9 @@ GLuint mTextureMonaLisa;
 GLPTextureProj* glProgramTextureProj;
 
 //holds colored geometry vertices
-ColoredGLMesh mMeshColoredGeometry;
+ColoredGLMeshBuffer mMeshColoredGeometry;
 //holds textured vertices
-TexturedGLMesh mMeshTexturedGeometry;
+TexturedGLMeshBuffer mMeshTexturedGeometry;
 //holds text vertices
 GLBuffer<GLProgramText::Character> glBufferText;
 //holds icon vertices (also interpreted as text)

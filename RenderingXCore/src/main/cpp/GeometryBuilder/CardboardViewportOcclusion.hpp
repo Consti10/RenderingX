@@ -98,7 +98,7 @@ namespace CardboardViewportOcclusion{
         return ColoredMeshData(ret,GL_TRIANGLE_STRIP);
     }
 
-    static const void uploadOcclusionMeshLeftRight(const VrCompositorRenderer& params, TrueColor color, std::array<GLProgramVC::ColoredGLMesh,2>& vb){
+    static const void uploadOcclusionMeshLeftRight(const VrCompositorRenderer& params, TrueColor color, std::array<GLProgramVC::ColoredGLMeshBuffer,2>& vb){
         vb[0].setData(makeMesh(params, 0, color));
         vb[1].setData(makeMesh(params, 1, color));
     }

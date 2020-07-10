@@ -67,7 +67,7 @@ void GLProgramVC::afterDraw() const {
 }
 
 void GLProgramVC::drawX(const glm::mat4 &ViewM, const glm::mat4 ProjM,
-                        const GLProgramVC::ColoredGLMesh &mesh) const {
+                        const GLProgramVC::ColoredGLMeshBuffer &mesh) const {
     mesh.logWarningWhenDrawingMeshWithoutData();
     beforeDraw(mesh.getVertexBufferId());
     // MLOGD<<mesh.getCount()<<" "<<mesh.glBufferVertices.count<<" "<<mesh.glBufferIndices->count;

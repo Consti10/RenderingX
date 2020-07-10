@@ -121,7 +121,7 @@ void VrCompositorRenderer::addLayer(const GLProgramTexture::TexturedMeshData& me
     }else{
         distortedMeshData=meshData;
     }
-    VRLayer vrLayer{std::move(TexturedGLMesh{distortedMeshData}), nullptr, textureId, isExternalTexture, headTracking};
+    VRLayer vrLayer{std::move(TexturedGLMeshBuffer{distortedMeshData}), nullptr, textureId, isExternalTexture, headTracking};
     mVrLayerList.push_back(std::move(vrLayer));
 }
 
