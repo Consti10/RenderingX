@@ -60,7 +60,7 @@ public:
         std::array<MLensDistortion::ViewportParamsHSNDC,2> texture_params;
         static DataUnDistortion identity(){
             const PolynomialRadialInverse identity(VDDC::N_RADIAL_UNDISTORTION_COEFICIENTS);
-            const MLensDistortion::ViewportParamsHSNDC identityParams{1, 1, 0, 0};
+            const MLensDistortion::ViewportParamsHSNDC identityParams=MLensDistortion::ViewportParamsHSNDC::identity();
             return DataUnDistortion{{identity},{identityParams,identityParams},{identityParams,identityParams}};
         }
     };

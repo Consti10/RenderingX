@@ -101,7 +101,6 @@ void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
         }
     }
     mInverse.maxRadSq=MAX_RAD_SQ;
-
     mProjectionM[0]=perspective(fovLeft,MIN_Z_DISTANCE,MAX_Z_DISTANCE);
     mProjectionM[1]=perspective(fovRight,MIN_Z_DISTANCE,MAX_Z_DISTANCE);
     const float inter_lens_distance=mDP.inter_lens_distance;
@@ -109,12 +108,15 @@ void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     eyeFromHead[1]=glm::translate(glm::mat4(1.0f),glm::vec3(-inter_lens_distance*0.5f,0,0));
     if(!ENABLE_VDDC){
         mDataUnDistortion=VDDC::DataUnDistortion::identity();
+        mInverse=PolynomialRadialInverse(VDDC::N_RADIAL_UNDISTORTION_COEFICIENTS);
+        mDistortion=PolynomialRadialDistortion();
     }else{
         mDataUnDistortion=VDDC::DataUnDistortion{{mInverse},screen_params,texture_params};
     }
 }
 
 void VrCompositorRenderer::addLayer(const GLProgramTexture::TexturedMeshData& meshData, GLuint textureId, bool isExternalTexture,HEAD_TRACKING headTracking) {
+    //MLOGD<<"Add layer";
     VRLayer vrLayer;
 #ifdef PRECALCULATE_STATIC_LAYER
     if(headTracking==HEAD_TRACKING::NONE){
@@ -157,20 +159,19 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         const auto& layer=mVrLayerList[i];
         // Calculate the view matrix for this layer.
         const glm::mat4 viewM= layer.headTracking==NONE ? eyeFromHead[EYE_IDX] : eyeFromHead[EYE_IDX] * rotation;
-        GLProgramTexture* glProgramTexture;
 #ifdef PRECALCULATE_STATIC_LAYER
         if(layer.headTracking==HEAD_TRACKING::NONE){
-            glProgramTexture=layer.isExternalTexture ? mGLProgramTextureExt2D.get() : mGLProgramTexture2D.get();
+            TexturedGLMeshBuffer* meshBuffer=eye==GVR_LEFT_EYE ?
+                    layer.optionalLeftEyeDistortedMesh.get() : layer.optionalRightEyeDistortedMesh.get();
+            GLProgramTexture* glProgramTexture2D=layer.isExternalTexture ? mGLProgramTextureExt2D.get() : mGLProgramTexture2D.get();
+            glProgramTexture2D->drawX(layer.textureId,glm::mat4(1.0f),glm::mat4(1.0f),*meshBuffer);
         }else{
-            glProgramTexture= layer.isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
+            GLProgramTexture* glProgramTexture= layer.isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
+            glProgramTexture->drawX(layer.textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye);
         }
-        TexturedGLMeshBuffer* meshBuffer=layer.headTracking==NONE ?
-                (eye==GVR_LEFT_EYE ? layer.optionalLeftEyeDistortedMesh.get() : layer.optionalRightEyeDistortedMesh.get())
-                : layer.meshLeftAndRightEye.get();
-        glProgramTexture->drawX(layer.textureId,viewM,mProjectionM[EYE_IDX],*meshBuffer);
 #else
-        glProgramTexture= layer.isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
-        glProgramTexture->drawX(layer.textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye.get());
+        GLProgramTexture* glProgramTexture= layer.isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
+        glProgramTexture->drawX(layer.textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye);
 #endif
     }
     // Render the mesh that occludes everything except the part actually visible inside the headset

@@ -119,8 +119,6 @@ std::array<float, 2> MLensDistortion::UndistortedUvForDistortedUv(
             screen_params.height};
 }
 
-
-
 void MLensDistortion::CalculateViewportParameters_NDC(
         int eye,
         const float GetYEyeOffsetMeters,
@@ -157,13 +155,11 @@ std::array<float, 2> MLensDistortion::UndistortedNDCForDistortedNDC(
     std::array<float, 2> distorted_ndc_tanangle = {
             in[0] * texture_params.width + texture_params.x_eye_offset,
             in[1] * texture_params.height + texture_params.y_eye_offset};
-
-    const float r2=distorted_ndc_tanangle[0]*distorted_ndc_tanangle[0]+
-            distorted_ndc_tanangle[1]*distorted_ndc_tanangle[1];
+    //const float r2=distorted_ndc_tanangle[0]*distorted_ndc_tanangle[0]+
+    //        distorted_ndc_tanangle[1]*distorted_ndc_tanangle[1];
     //if(r2>=3.203659-0.001f){
     //    return std::array<float,2>{0,0};
     //}
-
     std::array<float, 2> undistorted_ndc_tanangle = isInverse ?
             inverseDistortion.Distort(distorted_ndc_tanangle):
             inverseDistortion.DistortInverse(distorted_ndc_tanangle);

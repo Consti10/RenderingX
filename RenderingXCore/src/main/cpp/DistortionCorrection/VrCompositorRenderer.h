@@ -126,7 +126,7 @@ public:
     //This one does not use the inverse and is therefore (relatively) slow compared to when
     //using the approximate inverse
     glm::vec2 UndistortedNDCForDistortedNDC(const glm::vec2& in_ndc,int eye)const{
-        const auto ret= MLensDistortion::UndistortedNDCForDistortedNDC(mDistortion,screen_params[eye],texture_params[eye],{in_ndc.x,in_ndc.y},false);
+        const auto ret= MLensDistortion::UndistortedNDCForDistortedNDC(mDistortion,mDataUnDistortion.screen_params[eye],mDataUnDistortion.texture_params[eye],{in_ndc.x,in_ndc.y},false);
         return glm::vec2(ret[0],ret[1]);
     }
     static std::array<float,4> reverseFOV(const std::array<float,4>& fov){
@@ -139,27 +139,31 @@ public:
      * @return the half viewport NDC coordinates for a point rendered from the view m perspective
      */
      // TODO something is not quite right yet
-    glm::vec2 UndistortedNDCFor3DPoint(const gvr::Eye eye,const glm::vec3 point,const glm::mat4 headSpaceFromStartSPaceRotation=glm::mat4(1.0f)){
-        const int idx=eye==GVR_LEFT_EYE ? 0 : 1;
-        glm::vec4 pos_view= headSpaceFromStartSPaceRotation * glm::vec4(point.x, point.y, point.z, 1.0f);
-        glm::vec4 pos_clip=mProjectionM[idx]*pos_view;
-        glm::vec3 ndc=glm::vec3(pos_clip.x,pos_clip.y,pos_clip.z)/pos_clip.w;
-        glm::vec2 dist_p=UndistortedNDCForDistortedNDC({ndc.x,ndc.y},eye);
-        glm::vec4 gl_Position=glm::vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);
-        return glm::vec2(gl_Position.x,gl_Position.y)/gl_Position.w;
+    glm::vec3 UndistortedNDCFor3DPoint(const gvr::Eye eye,const glm::vec3 point,const glm::mat4 headSpaceFromStartSPaceRotation=glm::mat4(1.0f)){
+        const int EYE_IDX=eye==GVR_LEFT_EYE ? 0 : 1;
+        const glm::vec4 pos_view= headSpaceFromStartSPaceRotation * glm::vec4(point, 1.0f);
+        const glm::vec4 pos_clip=mProjectionM[EYE_IDX]*pos_view;
+        const glm::vec3 ndc=glm::vec3(pos_clip)/pos_clip.w;
+        const glm::vec2 dist_p=UndistortedNDCForDistortedNDC({ndc.x,ndc.y},EYE_IDX);
+        //const glm::vec4 gl_Position=glm::vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);
+        const glm::vec4 lola=glm::vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);
+        return glm::vec4(glm::vec3(lola)/lola.w,1.0);
+        //MLOGD<<"w value"<<gl_Position.w;
+        //return glm::vec2(gl_Position.x,gl_Position.y)/gl_Position.w;
+         //return gl_Position;
     }
     TexturedMeshData distortMesh(const gvr::Eye eye,const TexturedMeshData& input){
         auto tmp=input;
-        if(input.hasIndices()){
-            MLOGD<<"Merging indices into vertices";
-            tmp.mergeIndicesIntoVertices();
-        }
+        //if(input.hasIndices()){
+        //    MLOGD<<"Merging indices into vertices";
+        //    tmp.mergeIndicesIntoVertices();
+        //}
         for(auto& vertex : tmp.vertices){
             glm::vec3 pos=glm::vec3(vertex.x,vertex.y,vertex.z);
-            glm::vec2 newPos=UndistortedNDCFor3DPoint(eye,pos);
+            glm::vec3 newPos=UndistortedNDCFor3DPoint(eye,pos);
             vertex.x=newPos.x;
             vertex.y=newPos.y;
-            vertex.z=0.0f;
+            vertex.z=newPos.z;
         }
         return tmp;
     }

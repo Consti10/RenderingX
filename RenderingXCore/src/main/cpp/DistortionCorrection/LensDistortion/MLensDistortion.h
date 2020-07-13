@@ -37,6 +37,9 @@ public:
         float height;
         float x_eye_offset;
         float y_eye_offset;
+        static ViewportParamsHSNDC identity(){
+            return {1,1,0,0};
+        }
     };
     static float GetYEyeOffsetMeters(const int vertical_alignment,
                                      const float tray_to_lens_distance,

@@ -9,7 +9,7 @@ std::string VDDC::writeDistortionUtilFunctionsAndUniforms() {
     std::stringstream s;
     //Write all shader function(s) needed for VDDC
     const int N_COEFICIENTS=VDDC::N_RADIAL_UNDISTORTION_COEFICIENTS;
-    s<< glsl_struct_PolynomialRadialInverse(N_COEFICIENTS);
+    s<<glsl_struct_PolynomialRadialInverse(N_COEFICIENTS);
     s<<glsl_PolynomialDistortionFactor(N_COEFICIENTS);
     s<<glsl_PolynomialDistort();
     s<<glsl_ViewportParams();
@@ -27,7 +27,9 @@ std::string VDDC::writeDistortedGLPosition() {
     s<<"vec4 pos_clip=uPMatrix*pos_view;\n";
     s<<"vec3 ndc=pos_clip.xyz/pos_clip.w;\n";
     s<<"vec2 dist_p=UndistortedNDCForDistortedNDC(uPolynomialRadialInverse,uScreenParams,uTextureParams,ndc.xy);\n";
-    s<<"gl_Position=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);\n";
+    //s<<"gl_Position=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);\n";
+    s<<"vec4 lola=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);\n";
+    s<<"gl_Position=vec4(lola.xyz/lola.w,1.0);\n";
     return s.str();
 }
 
