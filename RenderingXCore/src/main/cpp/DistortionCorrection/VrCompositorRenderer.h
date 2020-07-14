@@ -26,13 +26,14 @@ public:
      * @param ENABLE_VDDC if V.D.D.C is not enabled, the VR layers are rendered without distortion correction
      * @param occlusionMeshColor1 Use a custom color for the occlusion mesh for Debugging
      */
-    VrCompositorRenderer(gvr::GvrApi *gvr_api,const bool ENABLE_VDDC,const TrueColor occlusionMeshColor1=TrueColor2::BLACK);
+    VrCompositorRenderer(gvr::GvrApi *gvr_api,const bool ENABLE_VDDC,const bool ENABLE_DEBUG1);
     /**
      *  Call this once the OpenGL context is available
      */
     void initializeGL();
 // Head Tracking begin   ---
 private:
+    const bool ENABLE_DEBUG;
     gvr::GvrApi *gvr_api;
     //translation matrix representing half inter-eye-distance
     glm::mat4 eyeFromHead[2]{};
@@ -69,7 +70,6 @@ public:
 // V.D.D.C end ---
 private:
     static constexpr bool ENABLE_OCCLUSION_MESH=true;
-    const TrueColor occlusionMeshColor;
     //One for left and right eye each
     std::array<GLProgramVC::ColoredGLMeshBuffer,2> mOcclusionMesh;
     const bool ENABLE_VDDC;
@@ -131,19 +131,14 @@ public:
     static std::array<float,4> reverseFOV(const std::array<float,4>& fov){
         return {fov[1],fov[0],fov[2],fov[3]};
     }
-    glm::vec3 UndistortedNDCFor3DPoint(const gvr::Eye eye,const glm::vec3 point,const glm::mat4 headSpaceFromStartSPaceRotation=glm::mat4(1.0f)){
+    glm::vec3 UndistortedCoordinatesFor3DPoint(const gvr::Eye eye, const glm::vec3 point, const glm::mat4 headSpaceFromStartSPaceRotation= glm::mat4(1.0f)){
         const int EYE_IDX=eye==GVR_LEFT_EYE ? 0 : 1;
         const auto MVMatrix=eyeFromHead[EYE_IDX]*headSpaceFromStartSPaceRotation;
-        const glm::vec4 pos_view= MVMatrix * glm::vec4(point, 1.0f);
-        const glm::vec4 pos_clip=mProjectionM[EYE_IDX]*pos_view;
-        const glm::vec3 ndc=glm::vec3(pos_clip)/pos_clip.w;
-        const glm::vec2 dist_p=UndistortedNDCForDistortedNDC({ndc.x,ndc.y},EYE_IDX);
-        //const glm::vec4 gl_Position=glm::vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);
-        const glm::vec4 lola=glm::vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);
+        const glm::vec4 lola= VDDC::CalculateVertexPosition(mDataUnDistortion.radialDistortionCoefficients,
+               mDataUnDistortion.screen_params[EYE_IDX],mDataUnDistortion.texture_params[EYE_IDX],MVMatrix,
+                mProjectionM[EYE_IDX],glm::vec4(point,1.0f));
         return glm::vec4(glm::vec3(lola)/lola.w,1.0);
         //MLOGD<<"w value"<<gl_Position.w;
-        //return glm::vec2(gl_Position.x,gl_Position.y)/gl_Position.w;
-        //return gl_Position;
     }
     // Distort the mesh for the selected perspective from either the left or right eye perspective
     TexturedMeshData distortMesh(const gvr::Eye eye,const TexturedMeshData& input){
@@ -155,10 +150,7 @@ public:
         const int EYE_IDX=eye==GVR_LEFT_EYE ? 0 : 1;
         for(auto& vertex : tmp.vertices){
             const glm::vec3 pos=glm::vec3(vertex.x,vertex.y,vertex.z);
-            const glm::vec3 newPos=UndistortedNDCFor3DPoint(eye,pos);
-            //const glm::vec3 newPos=VDDC::CalculateVertexPosition(mDataUnDistortion.radialDistortionCoefficients,
-            //        mDataUnDistortion.screen_params[EYE_IDX],mDataUnDistortion.texture_params[EYE_IDX],eyeFromHead[EYE_IDX]*glm::mat4(1.0f),
-            //        mProjectionM[EYE_IDX],glm::vec4(pos,1.0f));
+            const glm::vec3 newPos= UndistortedCoordinatesFor3DPoint(eye, pos);
             vertex.x=newPos.x;
             vertex.y=newPos.y;
             vertex.z=newPos.z;

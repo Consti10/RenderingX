@@ -6,10 +6,10 @@
 #include <Sphere/SphereBuilder.hpp>
 #include "VrCompositorRenderer.h"
 
-VrCompositorRenderer::VrCompositorRenderer(gvr::GvrApi *gvr_api,const bool ENABLE_VDDC,const TrueColor occlusionMeshColor1):
+VrCompositorRenderer::VrCompositorRenderer(gvr::GvrApi *gvr_api,const bool ENABLE_VDDC,const bool ENABLE_DEBUG1):
+        ENABLE_DEBUG(ENABLE_DEBUG1),
         gvr_api(gvr_api),
-        ENABLE_VDDC(ENABLE_VDDC),
-        occlusionMeshColor(occlusionMeshColor1){
+        ENABLE_VDDC(ENABLE_VDDC){
 }
 
 void VrCompositorRenderer::initializeGL() {
@@ -18,6 +18,7 @@ void VrCompositorRenderer::initializeGL() {
     mGLProgramTextureExt2D=std::make_unique<GLProgramTextureExt>(false,true,false);
     mGLProgramTextureVDDC=std::make_unique<GLProgramTexture>(false, true);
     mGLProgramTextureExtVDDC=std::make_unique<GLProgramTextureExt>(true, false);
+    const TrueColor occlusionMeshColor=ENABLE_DEBUG ? TrueColor2::RED : TrueColor2::BLACK;
     CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(*this, occlusionMeshColor, mOcclusionMesh);
 }
 

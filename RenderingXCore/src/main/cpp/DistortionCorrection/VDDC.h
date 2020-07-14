@@ -189,8 +189,7 @@ public:
         glm::vec4 pos_clip=in_PMatrix*pos_view;
         glm::vec3 ndc=glm::vec3(pos_clip)/pos_clip.w;
         glm::vec2 dist_p=UndistortedNDCForDistortedNDC(in_polynomialRadialInverse,in_screen_params,in_texture_params,ndc);
-        glm::vec4 lola=glm::vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);
-        return glm::vec4(glm::vec3(lola)/lola.w,1.0);
+        return glm::vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);
     }
     static std::string glsl_CalculateVertexPosition(){
         return "vec4 CalculateVertexPosition(const in DataPolynomialRadialInverse in_polynomialRadialInverse,const in ViewportParams in_screen_params,const in ViewportParams in_texture_params,"

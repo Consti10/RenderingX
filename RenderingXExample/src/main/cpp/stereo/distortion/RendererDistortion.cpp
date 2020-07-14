@@ -12,11 +12,11 @@
 
 constexpr auto TAG="DistortionExample";
 
-#define ENABLE_HEAD_TRACKING
+//#define ENABLE_HEAD_TRACKING
 
 RendererDistortion::RendererDistortion(JNIEnv *env, jobject androidContext, gvr_context *gvr_context):
         gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context)),
-        vrCompositorRenderer(gvr_api_.get(),true,TrueColor(glm::vec4{1.0f, 0.1, 0.1, 1.0})),
+        vrCompositorRenderer(gvr_api_.get(),true,true),
         mFPSCalculator("OpenGL FPS", 2000){
     buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();
     recommended_buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();

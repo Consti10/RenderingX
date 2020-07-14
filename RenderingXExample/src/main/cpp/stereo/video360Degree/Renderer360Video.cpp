@@ -16,7 +16,7 @@ Renderer360Video::Renderer360Video(JNIEnv *env, jobject androidContext, gvr_cont
                                        bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT, const int vSPHERE_MODE):
         M_SPHERE_MODE(static_cast<SPHERE_MODE>(vSPHERE_MODE)),
         gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context)),
-        vrCompositorRenderer(gvr_api_.get(),true,TrueColor(glm::vec4{1.0f, 0.1, 0.1, 1.0})),
+        vrCompositorRenderer(gvr_api_.get(),true,true),
         mFPSCalculator("OpenGL FPS", 2000){
 }
 
