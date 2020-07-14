@@ -16,7 +16,7 @@
 #include <variant>
 #include "MatrixHelper.h"
 
-//#define PRECALCULATE_STATIC_LAYER
+#define PRECALCULATE_STATIC_LAYER
 
 class VrCompositorRenderer {
 public:
@@ -131,27 +131,19 @@ public:
     static std::array<float,4> reverseFOV(const std::array<float,4>& fov){
         return {fov[1],fov[0],fov[2],fov[3]};
     }
-    /**
-     * @param eye left or right eye
-     * @param point position in 3d space
-     * @param headSpaceFromStartSPaceRotation defaults to identity ( as if you are looking straight forward (level) )
-     * @return the half viewport NDC coordinates for a point rendered from the view m perspective
-     */
-     // TODO something is not quite right yet
     glm::vec3 UndistortedNDCFor3DPoint(const gvr::Eye eye,const glm::vec3 point,const glm::mat4 headSpaceFromStartSPaceRotation=glm::mat4(1.0f)){
         const int EYE_IDX=eye==GVR_LEFT_EYE ? 0 : 1;
-        const glm::vec4 pos_view= headSpaceFromStartSPaceRotation * glm::vec4(point, 1.0f);
+        const auto MVMatrix=eyeFromHead[EYE_IDX]*headSpaceFromStartSPaceRotation;
+        const glm::vec4 pos_view= MVMatrix * glm::vec4(point, 1.0f);
         const glm::vec4 pos_clip=mProjectionM[EYE_IDX]*pos_view;
         const glm::vec3 ndc=glm::vec3(pos_clip)/pos_clip.w;
-        //const glm::vec2 dist_p=UndistortedNDCForDistortedNDC({ndc.x,ndc.y},EYE_IDX);
-         const glm::vec2 dist_p=VDDC::UndistortedNDCForDistortedNDC(mDataUnDistortion.radialDistortionCoefficients,mDataUnDistortion.screen_params[EYE_IDX],mDataUnDistortion.texture_params[EYE_IDX],ndc);
-
+        const glm::vec2 dist_p=UndistortedNDCForDistortedNDC({ndc.x,ndc.y},EYE_IDX);
         //const glm::vec4 gl_Position=glm::vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);
         const glm::vec4 lola=glm::vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);
         return glm::vec4(glm::vec3(lola)/lola.w,1.0);
         //MLOGD<<"w value"<<gl_Position.w;
         //return glm::vec2(gl_Position.x,gl_Position.y)/gl_Position.w;
-         //return gl_Position;
+        //return gl_Position;
     }
     TexturedMeshData distortMesh(const gvr::Eye eye,const TexturedMeshData& input){
         auto tmp=input;
@@ -162,9 +154,10 @@ public:
         const int EYE_IDX=eye==GVR_LEFT_EYE ? 0 : 1;
         for(auto& vertex : tmp.vertices){
             const glm::vec3 pos=glm::vec3(vertex.x,vertex.y,vertex.z);
-            //const glm::vec3 newPos=UndistortedNDCFor3DPoint(eye,pos);
-            const glm::vec3 newPos=VDDC::CalculateVertexPosition(mDataUnDistortion.radialDistortionCoefficients,mDataUnDistortion.screen_params[EYE_IDX],mDataUnDistortion.texture_params[EYE_IDX],glm::mat4(1.0f),mProjectionM[EYE_IDX],
-                    glm::vec4(pos,1.0f));
+            const glm::vec3 newPos=UndistortedNDCFor3DPoint(eye,pos);
+            //const glm::vec3 newPos=VDDC::CalculateVertexPosition(mDataUnDistortion.radialDistortionCoefficients,
+            //        mDataUnDistortion.screen_params[EYE_IDX],mDataUnDistortion.texture_params[EYE_IDX],eyeFromHead[EYE_IDX]*glm::mat4(1.0f),
+            //        mProjectionM[EYE_IDX],glm::vec4(pos,1.0f));
             vertex.x=newPos.x;
             vertex.y=newPos.y;
             vertex.z=newPos.z;

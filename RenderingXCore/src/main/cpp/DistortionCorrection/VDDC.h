@@ -173,6 +173,16 @@ public:
                "return ret;\n"
                "}\n";
     }
+    /**
+     *
+     * @param in_polynomialRadialInverse the polynomial radial inverse, same for left and right eye
+     * @param in_screen_params left or right eye screen params, as obtained by LensDistortion
+     * @param in_texture_params left or right eye texture params, as obtained by LensDistortion
+     * @param in_MVMatrix model view matrix
+     * @param in_PMatrix projection matrix, as obtained by LensDistortion
+     * @param in_vertex  position in 3d space
+     * @return can be used diretcly for gl_Position - transformed, projected and undistorted position of the input vector
+     */
     static glm::vec4 CalculateVertexPosition(const DataPolynomialRadialInverse in_polynomialRadialInverse,const ViewportParamsHSNDC in_screen_params,const ViewportParamsHSNDC in_texture_params,
         const glm::mat4 in_MVMatrix,const glm::mat4 in_PMatrix,const glm::vec4 in_vertex){
         glm::vec4 pos_view=in_MVMatrix*in_vertex;
