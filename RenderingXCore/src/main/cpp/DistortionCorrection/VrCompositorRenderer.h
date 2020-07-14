@@ -145,6 +145,7 @@ public:
         //return glm::vec2(gl_Position.x,gl_Position.y)/gl_Position.w;
         //return gl_Position;
     }
+    // Distort the mesh for the selected perspective from either the left or right eye perspective
     TexturedMeshData distortMesh(const gvr::Eye eye,const TexturedMeshData& input){
         auto tmp=input;
         //if(input.hasIndices()){
