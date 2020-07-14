@@ -155,7 +155,8 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
     mGLProgramTextureVDDC->updateUnDistortionUniforms(leftEye, mDataUnDistortion);
     mGLProgramTextureExtVDDC->updateUnDistortionUniforms(leftEye, mDataUnDistortion);
     const int EYE_IDX=eye==GVR_LEFT_EYE ? 0 : 1;
-    setOpenGLViewport(eye);
+    const auto viewport=getViewportForEye(eye);
+    glViewport(viewport[0],viewport[1],viewport[2],viewport[3]);
     const auto rotation = GetLatestHeadSpaceFromStartSpaceRotation();
     for(int i=0;i<mVrLayerList.size();i++){
        const auto& layer=mVrLayerList[i];
@@ -207,13 +208,4 @@ void VrCompositorRenderer::removeLayers() {
     }
     GLHelper::checkGlError("VideoRenderer::drawVideoCanvas360");
 }*/
-
-
-void VrCompositorRenderer::setOpenGLViewport(gvr::Eye eye)const {
-    if(eye==GVR_LEFT_EYE){
-        glViewport(0,0,EYE_VIEWPORT_W,EYE_VIEWPORT_H);
-    }else{
-        glViewport(EYE_VIEWPORT_W,0,EYE_VIEWPORT_W,EYE_VIEWPORT_H);
-    }
-}
 

@@ -14,6 +14,7 @@
 #include <EGL/eglext.h>
 #include <GLES2/gl2ext.h>
 #include <AndroidLogger.hpp>
+#include <array>
 
 // https://www.khronos.org/registry/OpenGL/extensions/QCOM/QCOM_tiled_rendering.txt
 namespace QCOM_tiled_rendering{
@@ -26,9 +27,11 @@ namespace QCOM_tiled_rendering{
             MLOGE<<"Cannot initialize QCOM_tiled_rendering";
         }
     }
-    static void HalfFrameStartTilingQCOM(bool rightHalf,int framebufferW,int framebufferH){
-        const int XOFFSET= rightHalf ? framebufferW/2 : 0;
-        glStartTilingQCOM(XOFFSET,0,framebufferW/2,framebufferH,0);
+    static void StartTilingQCOM(int x,int y,int width,int height){
+        glStartTilingQCOM(x,y,width,height,0);
+    }
+    static void StartTilingQCOM(std::array<int,4> rect){
+        glStartTilingQCOM(rect[0],rect[1],rect[2],rect[3],0);
     }
     static void EndTilingQCOM() {
         glEndTilingQCOM(GL_COLOR_BUFFER_BIT0_QCOM);

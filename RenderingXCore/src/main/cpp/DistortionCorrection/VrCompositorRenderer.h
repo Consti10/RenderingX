@@ -117,10 +117,14 @@ public:
     //void drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM);
     //void updateHeadsetParams(const MVrHeadsetParams &mDP);
     //
-private:
-    // Set the viewport to exactly half framebuffer size
-    // where framebuffer size==screen size
-    void setOpenGLViewport(gvr::Eye eye)const;
+    // The left/right eye viewport is exactly the area covered when splitting the screen in half
+    // while holding the device in landscape mode
+    std::array<int,4> getViewportForEye(gvr::Eye eye){
+        if(eye==GVR_LEFT_EYE){
+            return {0,0,EYE_VIEWPORT_W,EYE_VIEWPORT_H};
+        }
+        return {EYE_VIEWPORT_W,0,EYE_VIEWPORT_W,EYE_VIEWPORT_H};
+    }
 public:
     //This one does not use the inverse and is therefore (relatively) slow compared to when
     //using the approximate inverse
