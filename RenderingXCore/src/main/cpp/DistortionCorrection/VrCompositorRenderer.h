@@ -137,6 +137,7 @@ public:
         const glm::vec4 lola= VDDC::CalculateVertexPosition(mDataUnDistortion.radialDistortionCoefficients,
                mDataUnDistortion.screen_params[EYE_IDX],mDataUnDistortion.texture_params[EYE_IDX],MVMatrix,
                 mProjectionM[EYE_IDX],glm::vec4(point,1.0f));
+        // Dang what about w ?
         return glm::vec4(glm::vec3(lola)/lola.w,1.0);
         //MLOGD<<"w value"<<gl_Position.w;
     }
