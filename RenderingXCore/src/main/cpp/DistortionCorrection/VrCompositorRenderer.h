@@ -113,10 +113,6 @@ public:
     // Add a 360° video sphere
     void addLayerEquirectangularMonoscopic360(float radius,GLuint textureId, bool isExternalTexture=false);
 public:
-    // NOT VR
-    //void drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM);
-    //void updateHeadsetParams(const MVrHeadsetParams &mDP);
-    //
     // The left/right eye viewport is exactly the area covered when splitting the screen in half
     // while holding the device in landscape mode
     std::array<int,4> getViewportForEye(gvr::Eye eye){
