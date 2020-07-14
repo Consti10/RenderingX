@@ -14,22 +14,11 @@ std::string VDDC::writeDistortionUtilFunctionsAndUniforms() {
     s<<glsl_PolynomialDistort();
     s<<glsl_ViewportParams();
     s<<glsl_UndistortedNDCForDistortedNDC();
+    s<<glsl_CalculateVertexPosition();
     //The uniforms needed for vddc
-    s<<"uniform PolynomialRadialInverse uPolynomialRadialInverse;";
+    s<<"uniform DataPolynomialRadialInverse uPolynomialRadialInverse;";
     s<<"uniform ViewportParams uScreenParams;\n";
     s<<"uniform ViewportParams uTextureParams;\n";
-    return s.str();
-}
-
-std::string VDDC::writeDistortedGLPosition() {
-    std::stringstream s;
-    s<<"vec4 pos_view=uMVMatrix*aPosition;\n";
-    s<<"vec4 pos_clip=uPMatrix*pos_view;\n";
-    s<<"vec3 ndc=pos_clip.xyz/pos_clip.w;\n";
-    s<<"vec2 dist_p=UndistortedNDCForDistortedNDC(uPolynomialRadialInverse,uScreenParams,uTextureParams,ndc.xy);\n";
-    //s<<"gl_Position=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);\n";
-    s<<"vec4 lola=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);\n";
-    s<<"gl_Position=vec4(lola.xyz/lola.w,1.0);\n";
     return s.str();
 }
 
@@ -53,16 +42,17 @@ VDDC::getUndistortionUniformHandles(const GLuint program){
 void VDDC::updateUnDistortionUniforms(const bool leftEye, const UnDistortionUniformHandles& undistortionHandles, const DataUnDistortion& dataUnDistortion){
     glUniform1f(undistortionHandles.uPolynomialRadialInverse_maxRadSq,dataUnDistortion.radialDistortionCoefficients.maxRadSquared);
     glUniform1fv(undistortionHandles.uPolynomialRadialInverse_coefficients,N_RADIAL_UNDISTORTION_COEFICIENTS,dataUnDistortion.radialDistortionCoefficients.kN.data());
-    const int i=leftEye ? 0 : 1; //update screen params
-    glUniform1f(undistortionHandles.uScreenParams_w,dataUnDistortion.screen_params[i].width);
-    glUniform1f(undistortionHandles.uScreenParams_h,dataUnDistortion.screen_params[i].height);
-    glUniform1f(undistortionHandles.uScreenParams_x_off,dataUnDistortion.screen_params[i].x_eye_offset);
-    glUniform1f(undistortionHandles.uScreenParams_y_off,dataUnDistortion.screen_params[i].y_eye_offset);
+    const int IDX= leftEye ? 0 : 1;
+    //update screen params
+    glUniform1f(undistortionHandles.uScreenParams_w,dataUnDistortion.screen_params[IDX].width);
+    glUniform1f(undistortionHandles.uScreenParams_h,dataUnDistortion.screen_params[IDX].height);
+    glUniform1f(undistortionHandles.uScreenParams_x_off,dataUnDistortion.screen_params[IDX].x_eye_offset);
+    glUniform1f(undistortionHandles.uScreenParams_y_off,dataUnDistortion.screen_params[IDX].y_eye_offset);
     //same for texture params
-    glUniform1f(undistortionHandles.uTextureParams_w,dataUnDistortion.texture_params[i].width);
-    glUniform1f(undistortionHandles.uTextureParams_h,dataUnDistortion.texture_params[i].height);
-    glUniform1f(undistortionHandles.uTextureParams_x_off,dataUnDistortion.texture_params[i].x_eye_offset);
-    glUniform1f(undistortionHandles.uTextureParams_y_off,dataUnDistortion.texture_params[i].y_eye_offset);
+    glUniform1f(undistortionHandles.uTextureParams_w,dataUnDistortion.texture_params[IDX].width);
+    glUniform1f(undistortionHandles.uTextureParams_h,dataUnDistortion.texture_params[IDX].height);
+    glUniform1f(undistortionHandles.uTextureParams_x_off,dataUnDistortion.texture_params[IDX].x_eye_offset);
+    glUniform1f(undistortionHandles.uTextureParams_y_off,dataUnDistortion.texture_params[IDX].y_eye_offset);
 }
 
 

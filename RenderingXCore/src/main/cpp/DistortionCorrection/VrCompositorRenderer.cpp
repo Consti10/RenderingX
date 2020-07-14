@@ -117,6 +117,7 @@ void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
 
 void VrCompositorRenderer::addLayer(const GLProgramTexture::TexturedMeshData& meshData, GLuint textureId, bool isExternalTexture,HEAD_TRACKING headTracking) {
     //MLOGD<<"Add layer";
+    MLOGD<<"VRCR"<<MLensDistortion::ViewportParamsNDCAsString(mDataUnDistortion.screen_params[0],mDataUnDistortion.texture_params[0]);
     VRLayer vrLayer;
 #ifdef PRECALCULATE_STATIC_LAYER
     if(headTracking==HEAD_TRACKING::NONE){
@@ -156,7 +157,7 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
     setOpenGLViewport(eye);
     const auto rotation = GetLatestHeadSpaceFromStartSpaceRotation();
     for(int i=0;i<mVrLayerList.size();i++){
-        const auto& layer=mVrLayerList[i];
+       const auto& layer=mVrLayerList[i];
         // Calculate the view matrix for this layer.
         const glm::mat4 viewM= layer.headTracking==NONE ? eyeFromHead[EYE_IDX] : eyeFromHead[EYE_IDX] * rotation;
 #ifdef PRECALCULATE_STATIC_LAYER

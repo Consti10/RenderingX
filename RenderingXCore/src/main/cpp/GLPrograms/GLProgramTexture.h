@@ -60,9 +60,10 @@ private:
         s<<"void main() {\n";
         // Depending on the selected mode writing gl_Position is different
         s<<"#ifdef USE_2D_COORDINATES\n";
-        s<<"gl_Position=vec4(aPosition.xyz,1);\n";
+        //s<<"gl_Position=vec4(aPosition.xyz,1);\n";
+        s<<"gl_Position=aPosition;\n";
         s<<"#elif defined(ENABLE_VDDC)\n";
-        s<< VDDC::writeDistortedGLPosition();
+        s<<"gl_Position=CalculateVertexPosition(uPolynomialRadialInverse,uScreenParams,uTextureParams,uMVMatrix,uPMatrix,aPosition);\n";
         s<<"#else\n";
         s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition;\n";
         s<<"#endif\n";

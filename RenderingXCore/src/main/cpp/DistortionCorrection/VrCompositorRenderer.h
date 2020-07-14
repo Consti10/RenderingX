@@ -93,7 +93,7 @@ public:
     struct VRLayer{
         HEAD_TRACKING headTracking;
         // If head tracking is disabled for this layer we can pre-calculate the undistorted vertices
-        // for both the left and right eye. Else, the vertex shader does the undistortion and
+        // for both the left and right eye. Else, the vertex shader does the un-distortion and
         // we do not touch the mesh data.
         std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> meshLeftAndRightEye=nullptr;
         std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> optionalLeftEyeDistortedMesh=nullptr;
@@ -121,7 +121,6 @@ private:
     // Set the viewport to exactly half framebuffer size
     // where framebuffer size==screen size
     void setOpenGLViewport(gvr::Eye eye)const;
-
 public:
     //This one does not use the inverse and is therefore (relatively) slow compared to when
     //using the approximate inverse
@@ -144,7 +143,9 @@ public:
         const glm::vec4 pos_view= headSpaceFromStartSPaceRotation * glm::vec4(point, 1.0f);
         const glm::vec4 pos_clip=mProjectionM[EYE_IDX]*pos_view;
         const glm::vec3 ndc=glm::vec3(pos_clip)/pos_clip.w;
-        const glm::vec2 dist_p=UndistortedNDCForDistortedNDC({ndc.x,ndc.y},EYE_IDX);
+        //const glm::vec2 dist_p=UndistortedNDCForDistortedNDC({ndc.x,ndc.y},EYE_IDX);
+         const glm::vec2 dist_p=VDDC::UndistortedNDCForDistortedNDC(mDataUnDistortion.radialDistortionCoefficients,mDataUnDistortion.screen_params[EYE_IDX],mDataUnDistortion.texture_params[EYE_IDX],ndc);
+
         //const glm::vec4 gl_Position=glm::vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);
         const glm::vec4 lola=glm::vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);
         return glm::vec4(glm::vec3(lola)/lola.w,1.0);
@@ -158,9 +159,12 @@ public:
         //    MLOGD<<"Merging indices into vertices";
         //    tmp.mergeIndicesIntoVertices();
         //}
+        const int EYE_IDX=eye==GVR_LEFT_EYE ? 0 : 1;
         for(auto& vertex : tmp.vertices){
-            glm::vec3 pos=glm::vec3(vertex.x,vertex.y,vertex.z);
-            glm::vec3 newPos=UndistortedNDCFor3DPoint(eye,pos);
+            const glm::vec3 pos=glm::vec3(vertex.x,vertex.y,vertex.z);
+            //const glm::vec3 newPos=UndistortedNDCFor3DPoint(eye,pos);
+            const glm::vec3 newPos=VDDC::CalculateVertexPosition(mDataUnDistortion.radialDistortionCoefficients,mDataUnDistortion.screen_params[EYE_IDX],mDataUnDistortion.texture_params[EYE_IDX],glm::mat4(1.0f),mProjectionM[EYE_IDX],
+                    glm::vec4(pos,1.0f));
             vertex.x=newPos.x;
             vertex.y=newPos.y;
             vertex.z=newPos.z;

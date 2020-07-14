@@ -92,11 +92,6 @@ public:
      */
     static std::string writeDistortionUtilFunctionsAndUniforms();
     /**
-     * Write "gl_Position" after applying undistortion
-     * @return String usable inside OpenGL vertex shader
-     */
-    static std::string writeDistortedGLPosition();
-    /**
      * Update the uniform values with the UnDistortion data
      * @param leftEye true if uniforms should be updated for rendering the left eye, false for right eye
      */
@@ -104,6 +99,13 @@ public:
     /**
      * NOTE: Following functions all return GLSL shader code as a string
      */
+    static float PolynomialDistortionFactor(const float r_squared,const std::array<float,N_RADIAL_UNDISTORTION_COEFICIENTS> coefficients){
+        float ret=0.0f;
+        for(int i=N_RADIAL_UNDISTORTION_COEFICIENTS-1;i>=0;i--){
+            ret = r_squared * (ret + coefficients[i]);
+        }
+        return 1.0f+ret;
+    }
     //same as PolynomialRadialDistortion::DistortionFactor but unrolled loop for easier optimization by compiler
     static std::string glsl_PolynomialDistortionFactor(const int N_COEFICIENTS){
         std::stringstream s;
@@ -118,14 +120,21 @@ public:
     }
     //PolynomialRadialInverse data for GLSL
     static std::string glsl_struct_PolynomialRadialInverse(const int N_COEFICIENTS){
-        return "struct PolynomialRadialInverse{\n"
+        return "struct DataPolynomialRadialInverse{\n"
                "float coefficients["+std::to_string(N_COEFICIENTS)+"];\n"
                 "float maxRadSq;\n"
                 "};\n";
     }
+    static glm::vec2 PolynomialDistort(const DataPolynomialRadialInverse data,const glm::vec2 in_pos){
+        float r2=glm::dot(in_pos,in_pos);
+        r2=glm::clamp(r2,0.0f,data.maxRadSquared);
+        float dist_factor=PolynomialDistortionFactor(r2,data.kN);
+        glm::vec2 ret=in_pos*dist_factor;
+        return ret;
+    }
     //same as PolynomialRadialInverse::Distort (e.g. [0...maxRadSq]) (have to use c-style for GLSL)
     static std::string glsl_PolynomialDistort(){
-        return "vec2 PolynomialDistort(const in PolynomialRadialInverse inv,const in vec2 in_pos){\n"
+        return "vec2 PolynomialDistort(const in DataPolynomialRadialInverse inv,const in vec2 in_pos){\n"
                "float r2=dot(in_pos.xy,in_pos.xy);\n"
                "r2=clamp(r2,0.0,inv.maxRadSq);\n"
                "float dist_factor=PolynomialDistortionFactor(r2,inv.coefficients);\n"
@@ -142,10 +151,19 @@ public:
                "  float y_eye_offset;\n"
                "};\n";
     }
+    static glm::vec2 UndistortedNDCForDistortedNDC(const DataPolynomialRadialInverse inv,const ViewportParamsHSNDC screen_params,const ViewportParamsHSNDC texture_params,const glm::vec2 in_ndc){
+        glm::vec2 distorted_ndc_tanangle=glm::vec2(
+        in_ndc.x * texture_params.width+texture_params.x_eye_offset,
+        in_ndc.y * texture_params.height+texture_params.y_eye_offset);
+        glm::vec2 undistorted_ndc_tanangle = PolynomialDistort(inv,distorted_ndc_tanangle);
+        glm::vec2 ret=glm::vec2(undistorted_ndc_tanangle.x*screen_params.width+screen_params.x_eye_offset,
+        undistorted_ndc_tanangle.y*screen_params.height+screen_params.y_eye_offset);
+        return ret;
+    }
     //Same as MLensDistortion::UndistortedNDCForDistortedNDC but with maxRadSq
     static std::string glsl_UndistortedNDCForDistortedNDC(){
         return "vec2 UndistortedNDCForDistortedNDC("
-               "const in PolynomialRadialInverse inv,const in ViewportParams screen_params,const in ViewportParams texture_params,const in vec2 in_ndc){\n"
+               "const in DataPolynomialRadialInverse inv,const in ViewportParams screen_params,const in ViewportParams texture_params,const in vec2 in_ndc){\n"
                "vec2 distorted_ndc_tanangle=vec2("
                "in_ndc.x * texture_params.width+texture_params.x_eye_offset,"
                "in_ndc.y * texture_params.height+texture_params.y_eye_offset);\n"
@@ -154,6 +172,27 @@ public:
                "undistorted_ndc_tanangle.y*screen_params.height+screen_params.y_eye_offset);\n"
                "return ret;\n"
                "}\n";
+    }
+    static glm::vec4 CalculateVertexPosition(const DataPolynomialRadialInverse in_polynomialRadialInverse,const ViewportParamsHSNDC in_screen_params,const ViewportParamsHSNDC in_texture_params,
+        const glm::mat4 in_MVMatrix,const glm::mat4 in_PMatrix,const glm::vec4 in_vertex){
+        glm::vec4 pos_view=in_MVMatrix*in_vertex;
+        glm::vec4 pos_clip=in_PMatrix*pos_view;
+        glm::vec3 ndc=glm::vec3(pos_clip)/pos_clip.w;
+        glm::vec2 dist_p=UndistortedNDCForDistortedNDC(in_polynomialRadialInverse,in_screen_params,in_texture_params,ndc);
+        glm::vec4 lola=glm::vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);
+        return glm::vec4(glm::vec3(lola)/lola.w,1.0);
+    }
+    static std::string glsl_CalculateVertexPosition(){
+        return "vec4 CalculateVertexPosition(const in DataPolynomialRadialInverse in_polynomialRadialInverse,const in ViewportParams in_screen_params,const in ViewportParams in_texture_params,"
+               "const in mat4 in_MVMatrix,const in mat4 in_PMatrix,const in vec4 in_vertex){\n"
+        "vec4 pos_view=in_MVMatrix*in_vertex;\n"
+        "vec4 pos_clip=in_PMatrix*pos_view;\n"
+        "vec3 ndc=pos_clip.xyz/pos_clip.w;\n"
+        "vec2 dist_p=UndistortedNDCForDistortedNDC(in_polynomialRadialInverse,in_screen_params,in_texture_params,ndc.xy);\n"
+        //s<<"gl_Position=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);\n";
+        "vec4 lola=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);\n"
+        "return vec4(lola.xyz/lola.w,1.0);\n"
+        "}\n";
     }
 };
 

@@ -46,6 +46,7 @@ void GLProgramTexture::draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, 
     glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
     glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
     glDrawArrays(mode, verticesOffset, numberVertices);
+
 }
 
 void GLProgramTexture::drawIndexed(GLuint indexBuffer, const glm::mat4x4 &ViewM,
@@ -95,4 +96,5 @@ void GLProgramTexture::updateUnDistortionUniforms(bool leftEye, const VDDC::Data
     }
     glUseProgram(mProgram);
     VDDC::updateUnDistortionUniforms(leftEye, *mUndistortionHandles, dataUnDistortion);
+    //MLOGD<<"GLPT"<<MLensDistortion::ViewportParamsNDCAsString(dataUnDistortion.screen_params[0],dataUnDistortion.texture_params[0]);
 }

@@ -92,7 +92,8 @@ public:
     static std::string ViewportParamsAsString(const ViewportParams& screen_params,const ViewportParams& texture_params);
     static std::string ViewportParamsNDCAsString(const ViewportParamsHSNDC& screen_params, const ViewportParamsHSNDC& texture_params);
 };
-
+using ViewportParams=MLensDistortion::ViewportParams;
+using ViewportParamsHSNDC=MLensDistortion::ViewportParamsHSNDC;
 
 
 
