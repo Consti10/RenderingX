@@ -199,9 +199,9 @@ public:
         "vec4 pos_clip=in_PMatrix*pos_view;\n"
         "vec3 ndc=pos_clip.xyz/pos_clip.w;\n"
         "vec2 dist_p=UndistortedNDCForDistortedNDC(in_polynomialRadialInverse,in_screen_params,in_texture_params,ndc.xy);\n"
-        //s<<"gl_Position=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);\n";
-        "vec4 lola=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);\n"
-        "return vec4(lola.xyz/lola.w,1.0);\n"
+        "return vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);\n";
+        //"vec4 lola=vec4(dist_p*pos_clip.w,pos_clip.z,pos_clip.w);\n"
+        //"return vec4(lola.xyz/lola.w,1.0);\n"
         "}\n";
     }
 };
