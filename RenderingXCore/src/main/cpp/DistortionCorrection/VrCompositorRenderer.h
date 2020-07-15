@@ -16,8 +16,6 @@
 #include <variant>
 #include "MatrixHelper.h"
 
-#define PRECALCULATE_STATIC_LAYER
-
 class VrCompositorRenderer {
 public:
     /**
@@ -103,8 +101,10 @@ public:
     };
     // List of layer descriptions
     std::vector<VRLayer> mVrLayerList;
-    void addLayer(const GLProgramTexture::TexturedMeshData& meshData, GLuint textureId, bool isExternalTexture=false, HEAD_TRACKING headTracking=FULL);
-
+    void addLayer(const GLProgramTexture::TexturedStereoMeshData& meshData, GLuint textureId, bool isExternalTexture=false, HEAD_TRACKING headTracking=FULL);
+    void addLayer(const GLProgramTexture::TexturedMeshData& meshData, GLuint textureId, bool isExternalTexture=false, HEAD_TRACKING headTracking=FULL){
+        addLayer(GLProgramTexture::convert(meshData),textureId,isExternalTexture,headTracking);
+    }
     void removeLayers();
     void drawLayers(gvr::Eye eye);
 
