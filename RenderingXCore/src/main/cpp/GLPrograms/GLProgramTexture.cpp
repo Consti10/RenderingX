@@ -28,7 +28,6 @@ GLProgramTexture::GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const bool E
     }
     GLHelper::checkGlError(TAG);
 }
-
 void GLProgramTexture::beforeDraw(const GLuint buffer,GLuint texture) const{
     glUseProgram((GLuint)mProgram);
     glActiveTexture(MY_TEXTURE_UNIT);
@@ -97,4 +96,31 @@ void GLProgramTexture::updateUnDistortionUniforms(bool leftEye, const VDDC::Data
     glUseProgram(mProgram);
     VDDC::updateUnDistortionUniforms(leftEye, *mUndistortionHandles, dataUnDistortion);
     //MLOGD<<"GLPT"<<MLensDistortion::ViewportParamsNDCAsString(dataUnDistortion.screen_params[0],dataUnDistortion.texture_params[0]);
+}
+
+void GLProgramTexture::beforeDrawStereoVertex(GLuint buffer, GLuint texture,bool useLeftTextureCoords) const {
+    glUseProgram((GLuint)mProgram);
+    glActiveTexture(MY_TEXTURE_UNIT);
+    glBindTexture(USE_EXTERNAL_TEXTURE ? GL_TEXTURE_EXTERNAL_OES : GL_TEXTURE_2D,texture);
+    glUniform1i(mSamplerHandle,MY_SAMPLER_UNIT);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glEnableVertexAttribArray((GLuint)mPositionHandle);
+    glVertexAttribPointer((GLuint)mPositionHandle, 3/*xyz*/, GL_FLOAT, GL_FALSE, sizeof(StereoVertex), nullptr);
+    glEnableVertexAttribArray((GLuint)mTextureHandle);
+    if(useLeftTextureCoords){
+        glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(StereoVertex,u_left));
+    }else{
+        glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(StereoVertex),(GLvoid*)offsetof(StereoVertex,u_right));
+    }
+}
+
+void GLProgramTexture::drawXStereoVertex(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const TexturedStereoGLMeshBuffer& mesh,bool useLeftTextureCoords)const {
+    mesh.logWarningWhenDrawingMeshWithoutData();
+    beforeDrawStereoVertex(mesh.getVertexBufferId(),texture,useLeftTextureCoords);
+    if(mesh.hasIndices()){
+        drawIndexed(mesh.getIndexBufferId(), ViewM, ProjM, 0, mesh.getCount(), mesh.getMode());
+    }else{
+        draw(ViewM,ProjM,0,mesh.getCount(),mesh.getMode());
+    }
+    afterDraw();
 }

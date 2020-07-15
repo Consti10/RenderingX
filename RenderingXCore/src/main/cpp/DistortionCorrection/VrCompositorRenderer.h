@@ -95,7 +95,7 @@ public:
         // If head tracking is disabled for this layer we can pre-calculate the undistorted vertices
         // for both the left and right eye. Else, the vertex shader does the un-distortion and
         // we do not touch the mesh data.
-        std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> meshLeftAndRightEye=nullptr;
+        std::unique_ptr<GLProgramTexture::TexturedStereoGLMeshBuffer> meshLeftAndRightEye=nullptr;
         std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> optionalLeftEyeDistortedMesh=nullptr;
         std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> optionalRightEyeDistortedMesh=nullptr;
         GLuint textureId;
@@ -157,6 +157,16 @@ public:
             vertex.z=newPos.z;
         }
         return tmp;
+    }
+    TexturedStereoMeshData convert(const TexturedMeshData& input){
+        std::vector<GLProgramTexture::StereoVertex> vertices;
+        for(const auto& vertex:input.vertices){
+            vertices.push_back({vertex.x,vertex.y,vertex.z,vertex.u,vertex.v,vertex.u,vertex.v});
+        }
+        if(input.hasIndices()){
+            return TexturedStereoMeshData(vertices,*input.indices,input.mode);
+        }
+        return TexturedStereoMeshData(vertices,input.mode);
     }
 };
 

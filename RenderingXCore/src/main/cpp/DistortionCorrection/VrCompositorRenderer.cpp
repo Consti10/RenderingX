@@ -128,7 +128,8 @@ void VrCompositorRenderer::addLayer(const GLProgramTexture::TexturedMeshData& me
         vrLayer.optionalLeftEyeDistortedMesh=std::make_unique<TexturedGLMeshBuffer>(distortedMeshData1);
         vrLayer.optionalRightEyeDistortedMesh=std::make_unique<TexturedGLMeshBuffer>(distortedMeshData2);
     }else{
-        vrLayer.meshLeftAndRightEye=std::make_unique<TexturedGLMeshBuffer>(meshData);
+        auto tmp=convert(meshData);
+        vrLayer.meshLeftAndRightEye=std::make_unique<TexturedStereoGLMeshBuffer>(tmp);
     }
 #else
     vrLayer.meshLeftAndRightEye=std::make_unique<TexturedGLMeshBuffer>(meshData);
@@ -170,7 +171,8 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
             glProgramTexture2D->drawX(layer.textureId,glm::mat4(1.0f),glm::mat4(1.0f),*meshBuffer);
         }else{
             GLProgramTexture* glProgramTexture= layer.isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
-            glProgramTexture->drawX(layer.textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye);
+            //glProgramTexture->drawX(layer.textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye);
+            glProgramTexture->drawXStereoVertex(layer.textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye,eye==GVR_LEFT_EYE);
         }
 #else
         GLProgramTexture* glProgramTexture= layer.isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();

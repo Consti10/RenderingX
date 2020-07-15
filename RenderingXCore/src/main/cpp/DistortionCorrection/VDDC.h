@@ -81,25 +81,6 @@ public:
         GLuint uTextureParams_y_off;
     };
     /**
-     * Each GLSL program needs to bind its own distortion parameter uniforms.
-     * @param program OpenGL shader program where the vertex shader contains the uniforms declared in VDDC::writeDistortionUtilFunctionsAndUniforms
-     * TODO when using OpenGL ES 3.0 use uniform buffers for that
-     */
-    static UnDistortionUniformHandles getUndistortionUniformHandles(const GLuint program) {
-        UnDistortionUniformHandles ret{};
-        ret.uPolynomialRadialInverse_coefficients=GLHelper::GlGetUniformLocation(program,"uPolynomialRadialInverse.coefficients");
-        ret.uPolynomialRadialInverse_maxRadSq=GLHelper::GlGetUniformLocation(program,"uPolynomialRadialInverse.maxRadSq");
-        ret.uScreenParams_w=GLHelper::GlGetUniformLocation(program,"uScreenParams.width");
-        ret.uScreenParams_h=GLHelper::GlGetUniformLocation(program,"uScreenParams.height");
-        ret.uScreenParams_x_off=GLHelper::GlGetUniformLocation(program,"uScreenParams.x_eye_offset");
-        ret.uScreenParams_y_off=GLHelper::GlGetUniformLocation(program,"uScreenParams.y_eye_offset");
-        ret.uTextureParams_w=GLHelper::GlGetUniformLocation(program,"uTextureParams.width");
-        ret.uTextureParams_h=GLHelper::GlGetUniformLocation(program,"uTextureParams.height");
-        ret.uTextureParams_x_off=GLHelper::GlGetUniformLocation(program,"uTextureParams.x_eye_offset");
-        ret.uTextureParams_y_off=GLHelper::GlGetUniformLocation(program,"uTextureParams.y_eye_offset");
-        return ret;
-    }
-    /**
      * NOTE: Following functions all return GLSL shader code as a string
      */
     static float PolynomialDistortionFactor(const float r_squared,const std::array<float,N_RADIAL_UNDISTORTION_COEFICIENTS> coefficients){
@@ -225,6 +206,25 @@ public:
         s<<"uniform ViewportParams uScreenParams;\n";
         s<<"uniform ViewportParams uTextureParams;\n";
         return s.str();
+    }
+    /**
+    * Each GLSL program needs to bind its own distortion parameter uniforms.
+    * @param program OpenGL shader program where the vertex shader contains the uniforms declared in VDDC::writeDistortionUtilFunctionsAndUniforms
+    * TODO when using OpenGL ES 3.0 use uniform buffers for that
+    */
+    static UnDistortionUniformHandles getUndistortionUniformHandles(const GLuint program) {
+        UnDistortionUniformHandles ret{};
+        ret.uPolynomialRadialInverse_coefficients=GLHelper::GlGetUniformLocation(program,"uPolynomialRadialInverse.coefficients");
+        ret.uPolynomialRadialInverse_maxRadSq=GLHelper::GlGetUniformLocation(program,"uPolynomialRadialInverse.maxRadSq");
+        ret.uScreenParams_w=GLHelper::GlGetUniformLocation(program,"uScreenParams.width");
+        ret.uScreenParams_h=GLHelper::GlGetUniformLocation(program,"uScreenParams.height");
+        ret.uScreenParams_x_off=GLHelper::GlGetUniformLocation(program,"uScreenParams.x_eye_offset");
+        ret.uScreenParams_y_off=GLHelper::GlGetUniformLocation(program,"uScreenParams.y_eye_offset");
+        ret.uTextureParams_w=GLHelper::GlGetUniformLocation(program,"uTextureParams.width");
+        ret.uTextureParams_h=GLHelper::GlGetUniformLocation(program,"uTextureParams.height");
+        ret.uTextureParams_x_off=GLHelper::GlGetUniformLocation(program,"uTextureParams.x_eye_offset");
+        ret.uTextureParams_y_off=GLHelper::GlGetUniformLocation(program,"uTextureParams.y_eye_offset");
+        return ret;
     }
     /**
      * Update the uniform values with the UnDistortion data

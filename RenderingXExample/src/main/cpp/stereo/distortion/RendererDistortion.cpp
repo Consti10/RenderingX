@@ -12,7 +12,7 @@
 
 constexpr auto TAG="DistortionExample";
 
-//#define ENABLE_HEAD_TRACKING
+#define ENABLE_HEAD_TRACKING
 
 RendererDistortion::RendererDistortion(JNIEnv *env, jobject androidContext, gvr_context *gvr_context):
         gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context)),

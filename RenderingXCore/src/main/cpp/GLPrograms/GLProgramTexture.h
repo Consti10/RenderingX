@@ -35,17 +35,40 @@ public:
     using INDEX_DATA=GLuint;
     using TexturedMeshData=AbstractMeshData<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
     using TexturedGLMeshBuffer=AbstractGLMeshBuffer<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
+    /**
+     * Construct a GLProgramTexture which is a c++ representation of an OpenGL shader that renders textured vertices
+     * @param USE_EXTERNAL_TEXTURE Sample from *External texture* ( aka SurfaceTexture, VideoTexture) or not
+     * @param ENABLE_VDDC Enable/Disable V.D.D.C
+     * @param USE_2D_COORDINATES
+     * @param mapEquirectangularToInsta360 Experimental do not use
+     */
     explicit GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const bool ENABLE_VDDC=false, const bool USE_2D_COORDINATES=false, const bool mapEquirectangularToInsta360=false);
+    /*
+     * Call beforeDraw(), draw() or drawIndexed() and afterDraw() to render a textured mesh
+     */
     void beforeDraw(GLuint buffer,GLuint texture) const;
     void draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLenum mode=GL_TRIANGLES) const;
     void drawIndexed(GLuint indexBuffer,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int indicesOffset, int numberIndices,GLenum mode) const;
     void afterDraw() const;
+    // Upload an image as texture to the specified texture unit
     static void loadTexture(GLuint texture,JNIEnv *env, jobject androidContext,const char* name);
     // convenient methods for drawing a textured mesh with / without indices
     // calls beforeDraw(), draw() and afterDraw() properly
     void drawX(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const TexturedGLMeshBuffer& mesh)const;
     // update the uniform values to perform VDDC for left or right eye
     void updateUnDistortionUniforms(bool leftEye, const VDDC::DataUnDistortion& dataUnDistortion)const;
+public:
+    // Same as above, but for a so called 'Stereo Vertex* which is a Vertex with different u,v values for
+    // left and right eye
+    struct StereoVertex{
+        float x,y,z;
+        float u_left,v_left;
+        float u_right,v_right;
+    };
+    using TexturedStereoMeshData=AbstractMeshData<GLProgramTexture::StereoVertex,GLProgramTexture::INDEX_DATA>;
+    using TexturedStereoGLMeshBuffer=AbstractGLMeshBuffer<GLProgramTexture::StereoVertex,GLProgramTexture::INDEX_DATA>;
+    void beforeDrawStereoVertex(GLuint buffer,GLuint texture,bool useLeftTextureCoords=false) const;
+    void drawXStereoVertex(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const TexturedStereoGLMeshBuffer& mesh,bool useLeftTextureCoords=false)const;
 private:
     static const std::string VS(){
         std::stringstream s;
@@ -120,7 +143,8 @@ private:
 };
 using TexturedMeshData=GLProgramTexture::TexturedMeshData;
 using TexturedGLMeshBuffer=GLProgramTexture::TexturedGLMeshBuffer;
-
+using TexturedStereoMeshData=GLProgramTexture::TexturedStereoMeshData;
+using TexturedStereoGLMeshBuffer=GLProgramTexture::TexturedStereoGLMeshBuffer;
 class GLProgramTextureExt: public GLProgramTexture{
 public:
     GLProgramTextureExt(const bool ENABLE_VDDC=false, const bool USE_2D_COORDINATES=false, const bool mapEquirectangularToInsta360=false):
