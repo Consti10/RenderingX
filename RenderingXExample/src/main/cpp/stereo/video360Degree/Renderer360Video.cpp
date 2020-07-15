@@ -35,7 +35,7 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
         vrCompositorRenderer.addLayerEquirectangularMonoscopic360(10.0f,mVideoTexture,true);
     }else{
         auto sphere=DualFisheyeSphere::createSphereGL(2560, 1280);
-        vrCompositorRenderer.addLayer(std::move(sphere), mVideoTexture, true, VrCompositorRenderer::HEAD_TRACKING::FULL);
+        vrCompositorRenderer.addLayer(GLProgramTexture::convert(sphere), mVideoTexture, true, VrCompositorRenderer::HEAD_TRACKING::FULL);
     }
     const float uiElementWidth=2.0;
     vrCompositorRenderer.addLayer2DCanvas(-3,uiElementWidth,uiElementWidth*1080.0f/2160.0f,mExampleUiTexture,false);

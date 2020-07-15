@@ -55,9 +55,9 @@ namespace VerticalPlane{
     //Tessellation 1 : [ ]
     //Tessellation 2 : [ | ]
     //Tessellation 3 : [ | | ]
-    static std::vector<GLProgramVC::Vertex> createVerticesPlaneColored(const unsigned int tessellation,
+    static std::vector<ColoredVertex> createVerticesPlaneColored(const unsigned int tessellation,
             const glm::mat4& modelMatrix= glm::mat4(1.0f),const TrueColor& color= TrueColor2::BLACK){
-        std::vector<GLProgramVC::Vertex> vertices((tessellation+1)*(tessellation+1));
+        std::vector<ColoredVertex> vertices((tessellation+1)*(tessellation+1));
         const int tessellationX=tessellation;
         const int tessellationY=tessellation;
         const float subW=1.0f/(float)tessellationX;
@@ -67,7 +67,7 @@ namespace VerticalPlane{
             for(int j=0;j<tessellationY+1;j++){
                 const glm::vec4 pos={-0.5f+subW*j,-0.5f+subH*i,0.0f,1.0f};
                 const glm::vec4 pos2=modelMatrix*pos;
-                GLProgramVC::Vertex& v=vertices.at(count);
+                ColoredVertex& v=vertices.at(count);
                 v.x=pos2.x;
                 v.y=pos2.y;
                 v.z=pos2.z;
@@ -130,7 +130,7 @@ namespace VerticalPlane{
         return VerticalPlane::createVerticesPlaneTextured(tessellation, modelMatrix, textureMatrix,invertUCoordinates,invertVCoordinates);
     }
     // Reduced / simplified some parameters for FPV_VR, which does not rotate the plane (UI)
-    static std::vector<GLProgramVC::Vertex> createVerticesPlaneColored(const unsigned int tessellation,
+    static std::vector<ColoredVertex> createVerticesPlaneColored(const unsigned int tessellation,
                                                                        const glm::vec3& translation,const glm::vec2& scale,const TrueColor color){
         auto modelMatrix=glm::translate(translation)*glm::scale(glm::vec3(scale.x,scale.y,1));
         return VerticalPlane::createVerticesPlaneColored(tessellation, modelMatrix,color);

@@ -18,7 +18,7 @@ namespace CardboardViewportOcclusion{
     //Creates a construct like drawn above that can be rendered using GL_TRIANGLE_STRIP
     //However, V1==V2 and V3==V4 .. VN==VN+1 or in other words
     //The V2,V4,V6..VN+1 values are not distorted yet
-    static const std::vector<GLProgramVC::Vertex> makeSomething(const glm::vec2 start,const float size,const bool horizontal,const TrueColor color,
+    static const std::vector<ColoredVertex> makeSomething(const glm::vec2 start,const float size,const bool horizontal,const TrueColor color,
                                                                 const int tessellation){
         //create a strip in the form of
         //1   | 0 1
@@ -28,16 +28,16 @@ namespace CardboardViewportOcclusion{
         //-1  | 8 9
         //0.5 0.25 0.125 ...
         const float stepSize=size/tessellation;
-        std::vector<GLProgramVC::Vertex> ret;
+        std::vector<ColoredVertex> ret;
         for(float i=0;i<=size;i+=stepSize){
             if(horizontal){
-                GLProgramVC::Vertex v{
+                ColoredVertex v{
                         start.x+i,start.y,0,color
                 };
                 ret.push_back(v);
                 ret.push_back(v);
             }else{
-                GLProgramVC::Vertex v{
+                ColoredVertex v{
                         start.x,start.y+i,0,color
                 };
                 ret.push_back(v);
@@ -60,7 +60,7 @@ namespace CardboardViewportOcclusion{
         const int tessellation=32;
         //create the 4 meshes (left,right,top,bottom) that are
         //later merged into one big mesh
-        std::array<std::vector<GLProgramVC::Vertex>,4> mesh;
+        std::array<std::vector<ColoredVertex>,4> mesh;
 
         //Make two vertical (left and right)
         mesh.at(0)=makeSomething({-1,-1},2.0f,false,color,tessellation);
@@ -72,7 +72,7 @@ namespace CardboardViewportOcclusion{
         //Distort every second vertex
         for(auto& tmp:mesh){
             for(int i=1;i<tmp.size();i+=2){
-                GLProgramVC::Vertex& v=tmp.at(i);
+                ColoredVertex& v=tmp.at(i);
                 auto xy=params.UndistortedNDCForDistortedNDC({v.x,v.y},eye);
                 v.x=xy[0];
                 v.y=xy[1];
@@ -82,7 +82,7 @@ namespace CardboardViewportOcclusion{
 
         //merge them together
         //using degenerate triangles in between
-        std::vector<GLProgramVC::Vertex> ret;
+        std::vector<ColoredVertex> ret;
         for(int i=0;i<4;i++){
             const auto& tmp=mesh.at(i);
             //add first vertex to degenerate, except first merge
@@ -98,7 +98,7 @@ namespace CardboardViewportOcclusion{
         return ColoredMeshData(ret,GL_TRIANGLE_STRIP);
     }
 
-    static const void uploadOcclusionMeshLeftRight(const VrCompositorRenderer& params, TrueColor color, std::array<GLProgramVC::ColoredGLMeshBuffer,2>& vb){
+    static const void uploadOcclusionMeshLeftRight(const VrCompositorRenderer& params, TrueColor color, std::array<ColoredGLMeshBuffer,2>& vb){
         vb[0].setData(makeMesh(params, 0, color));
         vb[1].setData(makeMesh(params, 1, color));
     }

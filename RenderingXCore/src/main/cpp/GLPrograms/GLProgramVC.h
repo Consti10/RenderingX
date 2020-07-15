@@ -18,6 +18,13 @@
 //#define WIREFRAME
 
 using Mat4x4=const GLfloat*;
+struct ColoredVertex{
+    float x,y,z;
+    TrueColor colorRGBA;
+};
+using COLORED_INDEX_DATA=GLuint;
+using ColoredMeshData=AbstractMeshData<ColoredVertex,COLORED_INDEX_DATA>;
+using ColoredGLMeshBuffer=AbstractGLMeshBuffer<ColoredVertex,COLORED_INDEX_DATA>;
 
 class GLProgramVC {
 private:
@@ -27,13 +34,6 @@ private:
     GLuint mPositionHandle,mColorHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
 public:
-    struct Vertex{
-        float x,y,z;
-        TrueColor colorRGBA;
-    };
-    using INDEX_DATA=GLuint;
-    using ColoredMeshData=AbstractMeshData<GLProgramVC::Vertex,GLProgramVC::INDEX_DATA>;
-    using ColoredGLMeshBuffer=AbstractGLMeshBuffer<GLProgramVC::Vertex,GLProgramVC::INDEX_DATA>;
     explicit GLProgramVC(bool coordinates2D=false);
     void beforeDraw(GLuint buffer) const;
     void draw(Mat4x4 ViewM, Mat4x4 ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
@@ -83,9 +83,6 @@ private:
         return s.str();
     }
 };
-using ColoredMeshData=GLProgramVC::ColoredMeshData;
-using ColoredGLMeshBuffer=GLProgramVC::ColoredGLMeshBuffer;
-
 
 class GLProgramVC2D: public GLProgramVC{
 public:

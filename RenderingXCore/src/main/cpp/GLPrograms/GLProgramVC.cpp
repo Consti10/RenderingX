@@ -19,9 +19,9 @@ void GLProgramVC::beforeDraw(const GLuint buffer) const {
     glUseProgram(mProgram);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glEnableVertexAttribArray((GLuint)mPositionHandle);
-    glVertexAttribPointer((GLuint)mPositionHandle, 3/*xyz*/, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
+    glVertexAttribPointer((GLuint)mPositionHandle, 3/*xyz*/, GL_FLOAT, GL_FALSE, sizeof(ColoredVertex), nullptr);
     glEnableVertexAttribArray((GLuint)mColorHandle);
-    glVertexAttribPointer((GLuint)mColorHandle, 4/*rgba*/,GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex),(GLvoid*)offsetof(Vertex,colorRGBA));
+    glVertexAttribPointer((GLuint)mColorHandle, 4/*rgba*/,GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ColoredVertex),(GLvoid*)offsetof(ColoredVertex,colorRGBA));
 }
 
 void GLProgramVC::draw(const Mat4x4 ViewM, const Mat4x4 ProjM,
@@ -67,7 +67,7 @@ void GLProgramVC::afterDraw() const {
 }
 
 void GLProgramVC::drawX(const glm::mat4 &ViewM, const glm::mat4 ProjM,
-                        const GLProgramVC::ColoredGLMeshBuffer &mesh) const {
+                        const ColoredGLMeshBuffer &mesh) const {
     mesh.logWarningWhenDrawingMeshWithoutData();
     beforeDraw(mesh.getVertexBufferId());
     // MLOGD<<mesh.getCount()<<" "<<mesh.glBufferVertices.count<<" "<<mesh.glBufferIndices->count;

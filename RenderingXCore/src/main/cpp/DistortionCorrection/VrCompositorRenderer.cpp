@@ -116,20 +116,20 @@ void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     }
 }
 
-void VrCompositorRenderer::addLayer(const GLProgramTexture::TexturedMeshData& meshData, GLuint textureId, bool isExternalTexture,HEAD_TRACKING headTracking) {
+void VrCompositorRenderer::addLayer(const GLProgramTexture::TexturedStereoMeshData& meshData, GLuint textureId, bool isExternalTexture,HEAD_TRACKING headTracking) {
     //MLOGD<<"Add layer";
     MLOGD<<"VRCR"<<MLensDistortion::ViewportParamsNDCAsString(mDataUnDistortion.screen_params[0],mDataUnDistortion.texture_params[0]);
     VRLayer vrLayer;
 #ifdef PRECALCULATE_STATIC_LAYER
     if(headTracking==HEAD_TRACKING::NONE){
-        TexturedMeshData distortedMeshData1=distortMesh(GVR_LEFT_EYE,meshData);
-        TexturedMeshData distortedMeshData2=distortMesh(GVR_RIGHT_EYE,meshData);
+        TexturedMeshData distortedMeshData1=distortMesh(GVR_LEFT_EYE,GLProgramTexture::convert(meshData,true));
+        TexturedMeshData distortedMeshData2=distortMesh(GVR_RIGHT_EYE,GLProgramTexture::convert(meshData,false));
         vrLayer.meshLeftAndRightEye=nullptr;
         vrLayer.optionalLeftEyeDistortedMesh=std::make_unique<TexturedGLMeshBuffer>(distortedMeshData1);
         vrLayer.optionalRightEyeDistortedMesh=std::make_unique<TexturedGLMeshBuffer>(distortedMeshData2);
     }else{
-        auto tmp=convert(meshData);
-        vrLayer.meshLeftAndRightEye=std::make_unique<TexturedStereoGLMeshBuffer>(tmp);
+        //auto tmp=GLProgramTexture::convert(meshData);
+        vrLayer.meshLeftAndRightEye=std::make_unique<TexturedStereoGLMeshBuffer>(meshData);
     }
 #else
     vrLayer.meshLeftAndRightEye=std::make_unique<TexturedGLMeshBuffer>(meshData);
@@ -143,12 +143,12 @@ void VrCompositorRenderer::addLayer(const GLProgramTexture::TexturedMeshData& me
 void VrCompositorRenderer::addLayer2DCanvas(float z, float width, float height, GLuint textureId,
                                             bool isExternalTexture) {
     const auto mesh=TexturedGeometry::makeTesselatedVideoCanvas(12,{0, 0,z}, {width, height},0.0f,1.0f);
-    addLayer(mesh,textureId,isExternalTexture);
+    addLayer(GLProgramTexture::convert(mesh),textureId,isExternalTexture);
 }
 
 void VrCompositorRenderer::addLayerEquirectangularMonoscopic360(float radius,GLuint textureId, bool isExternalTexture) {
     const auto sphere=SphereBuilder::createSphereEquirectangularMonoscopic(radius, 72, 36);
-    addLayer(sphere,textureId,isExternalTexture,HEAD_TRACKING::FULL);
+    addLayer(GLProgramTexture::convert(sphere),textureId,isExternalTexture,HEAD_TRACKING::FULL);
 }
 
 void VrCompositorRenderer::drawLayers(gvr::Eye eye) {

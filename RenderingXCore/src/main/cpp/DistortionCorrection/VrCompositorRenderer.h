@@ -71,7 +71,7 @@ public:
 private:
     static constexpr bool ENABLE_OCCLUSION_MESH=true;
     //One for left and right eye each
-    std::array<GLProgramVC::ColoredGLMeshBuffer,2> mOcclusionMesh;
+    std::array<ColoredGLMeshBuffer,2> mOcclusionMesh;
     const bool ENABLE_VDDC;
     //this one is for drawing the occlusion mesh only, no V.D.D.C, source mesh holds NDC
     std::unique_ptr<GLProgramVC2D> mGLProgramVC2D;
@@ -103,7 +103,7 @@ public:
     };
     // List of layer descriptions
     std::vector<VRLayer> mVrLayerList;
-    void addLayer(const GLProgramTexture::TexturedMeshData& meshData, GLuint textureId, bool isExternalTexture=false, HEAD_TRACKING headTracking=FULL);
+    void addLayer(const GLProgramTexture::TexturedStereoMeshData& meshData, GLuint textureId, bool isExternalTexture=false, HEAD_TRACKING headTracking=FULL);
 
     void removeLayers();
     void drawLayers(gvr::Eye eye);
@@ -157,16 +157,6 @@ public:
             vertex.z=newPos.z;
         }
         return tmp;
-    }
-    TexturedStereoMeshData convert(const TexturedMeshData& input){
-        std::vector<GLProgramTexture::StereoVertex> vertices;
-        for(const auto& vertex:input.vertices){
-            vertices.push_back({vertex.x,vertex.y,vertex.z,vertex.u,vertex.v,vertex.u,vertex.v});
-        }
-        if(input.hasIndices()){
-            return TexturedStereoMeshData(vertices,*input.indices,input.mode);
-        }
-        return TexturedStereoMeshData(vertices,input.mode);
     }
 };
 

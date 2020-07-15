@@ -140,6 +140,31 @@ private:
         s<<"}\n";
         return s.str();
     }
+public:
+    static TexturedStereoMeshData convert(const TexturedMeshData& input){
+        std::vector<GLProgramTexture::StereoVertex> vertices;
+        for(const auto& vertex:input.vertices){
+            vertices.push_back({vertex.x,vertex.y,vertex.z,vertex.u,vertex.v,vertex.u,vertex.v});
+        }
+        if(input.hasIndices()){
+            return TexturedStereoMeshData(vertices,*input.indices,input.mode);
+        }
+        return TexturedStereoMeshData(vertices,input.mode);
+    }
+    static TexturedMeshData convert(const TexturedStereoMeshData& input,const bool left){
+        std::vector<GLProgramTexture::Vertex> vertices;
+        for(const auto& vertex:input.vertices){
+            if(left){
+                vertices.push_back({vertex.x,vertex.y,vertex.z,vertex.u_left,vertex.v_left});
+            }else{
+                vertices.push_back({vertex.x,vertex.y,vertex.z,vertex.u_right,vertex.v_right});
+            }
+        }
+        if(input.hasIndices()){
+            return TexturedMeshData (vertices,*input.indices,input.mode);
+        }
+        return TexturedMeshData(vertices,input.mode);
+    }
 };
 using TexturedMeshData=GLProgramTexture::TexturedMeshData;
 using TexturedGLMeshBuffer=GLProgramTexture::TexturedGLMeshBuffer;

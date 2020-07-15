@@ -48,7 +48,7 @@ void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext) {
     leftEyeView=glm::translate(eyeView,glm::vec3(-IPD/2.0f,0,0));
     rightEyeView=glm::translate(eyeView,glm::vec3(IPD/2.0f,0,0));
     //some colored geometry
-    std::vector<GLProgramVC::Vertex> coloredVertices(N_COLOR_VERTICES);
+    std::vector<ColoredVertex> coloredVertices(N_COLOR_VERTICES);
     const float triangleWidth=3.0F;
     for(int i=0;i<N_TRIANGLES;i++){
         ColoredGeometry::makeColoredTriangle1(&coloredVertices[i*3], glm::vec3(-triangleWidth/2,0,0), triangleWidth, triangleWidth, TrueColor2::BLUE);
