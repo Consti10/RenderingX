@@ -38,6 +38,9 @@ public:
     bool hasIndices()const{
         return indices!=std::nullopt;
     }
+    INDICES& getIndicesUnsafe()const{
+        return *indices;
+    }
     // Sometimes we want no indices for simplicity over performance
     // create a new mesh without indices (vertices only)
     void mergeIndicesIntoVertices(){

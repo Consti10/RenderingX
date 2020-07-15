@@ -108,7 +108,7 @@ void GLProgramTexture::beforeDrawStereoVertex(GLuint buffer, GLuint texture,bool
     glVertexAttribPointer((GLuint)mPositionHandle, 3/*xyz*/, GL_FLOAT, GL_FALSE, sizeof(StereoVertex), nullptr);
     glEnableVertexAttribArray((GLuint)mTextureHandle);
     if(useLeftTextureCoords){
-        glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(StereoVertex,u_left));
+        glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(StereoVertex),(GLvoid*)offsetof(StereoVertex,u_left));
     }else{
         glVertexAttribPointer((GLuint)mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(StereoVertex),(GLvoid*)offsetof(StereoVertex,u_right));
     }

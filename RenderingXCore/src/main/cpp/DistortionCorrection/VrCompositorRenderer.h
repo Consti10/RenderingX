@@ -103,7 +103,7 @@ public:
     };
     // List of layer descriptions
     std::vector<VRLayer> mVrLayerList;
-    void addLayer(const GLProgramTexture::TexturedStereoMeshData& meshData, GLuint textureId, bool isExternalTexture=false, HEAD_TRACKING headTracking=FULL);
+    void addLayer(const GLProgramTexture::TexturedMeshData& meshData, GLuint textureId, bool isExternalTexture=false, HEAD_TRACKING headTracking=FULL);
 
     void removeLayers();
     void drawLayers(gvr::Eye eye);

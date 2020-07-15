@@ -45,7 +45,7 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     GLProgramTexture::loadTexture(mGreenTexture,env,context,"ExampleTexture/green.png");
     vrCompositorRenderer.removeLayers();
 
-    vrCompositorRenderer.addLayer(GLProgramTexture::convert(tmpData), mGreenTexture, false,
+    vrCompositorRenderer.addLayer(tmpData, mGreenTexture, false,
 #ifdef ENABLE_HEAD_TRACKING
 VrCompositorRenderer::HEAD_TRACKING::FULL
 #else
