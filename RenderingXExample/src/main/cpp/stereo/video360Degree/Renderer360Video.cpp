@@ -26,6 +26,7 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
     mVideoTexture=(GLuint)videoTexture;
     glGenTextures(1,&mExampleUiTexture);
     GLProgramTexture::loadTexture(mExampleUiTexture,env,context,"ExampleTexture/ui.png");
+    GLProgramTexture::loadTexture(mSomethingTexture,env,context,"ExampleTexture/something.png");
     /*glGenTextures(1,&mTexture360Image);
     glGenTextures(1,&mTexture360ImageInsta360);
     GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
@@ -38,7 +39,9 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
         vrCompositorRenderer.addLayer(sphere, mVideoTexture, true, VrCompositorRenderer::HEAD_TRACKING::FULL);
     }
     const float uiElementWidth=2.0;
-    vrCompositorRenderer.addLayer2DCanvas(-3,uiElementWidth,uiElementWidth*1080.0f/2160.0f,mExampleUiTexture,false,VrCompositorRenderer::NONE);
+    vrCompositorRenderer.addLayer2DCanvas(-3,uiElementWidth,uiElementWidth*1080.0f/2160.0f,mExampleUiTexture,false,VrCompositorRenderer::FULL);
+    // add a static layer to test the pre-distort feature
+    vrCompositorRenderer.addLayer2DCanvas(-3,0.2f,0.2f,mSomethingTexture,false,VrCompositorRenderer::NONE);
 }
 
 void Renderer360Video::onDrawFrame() {

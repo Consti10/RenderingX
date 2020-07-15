@@ -46,6 +46,7 @@ private:
     FPSCalculator mFPSCalculator;
     GLuint mVideoTexture;
     GLuint mExampleUiTexture;
+    GLuint mSomethingTexture;
 public:
     VrCompositorRenderer vrCompositorRenderer;
 };
