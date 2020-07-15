@@ -116,7 +116,7 @@ void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     }
 }
 
-void VrCompositorRenderer::addLayer(const TexturedStereoMeshData &meshData, GLuint textureId,bool isExternalTexture,VrCompositorRenderer::HEAD_TRACKING headTracking) {
+void VrCompositorRenderer::addLayer(const TexturedStereoMeshData &meshData, GLuint textureId,bool isExternalTexture,HEAD_TRACKING headTracking) {
     //MLOGD<<"Add layer";
     VRLayer vrLayer;
     if(headTracking==HEAD_TRACKING::NONE){
@@ -135,9 +135,9 @@ void VrCompositorRenderer::addLayer(const TexturedStereoMeshData &meshData, GLui
 }
 
 void VrCompositorRenderer::addLayer2DCanvas(float z, float width, float height, GLuint textureId,
-                                            bool isExternalTexture) {
+                                            bool isExternalTexture,HEAD_TRACKING headTracking) {
     const auto mesh=TexturedGeometry::makeTesselatedVideoCanvas(12,{0, 0,z}, {width, height},0.0f,1.0f);
-    addLayer(mesh,textureId,isExternalTexture);
+    addLayer(mesh,textureId,isExternalTexture,headTracking);
 }
 
 void VrCompositorRenderer::addLayerEquirectangularMonoscopic360(float radius,GLuint textureId, bool isExternalTexture) {
@@ -158,13 +158,12 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         // Calculate the view matrix for this layer.
         const glm::mat4 viewM= layer.headTracking==NONE ? eyeFromHead[EYE_IDX] : eyeFromHead[EYE_IDX] * rotation;
         if(layer.headTracking==HEAD_TRACKING::NONE){
-            TexturedGLMeshBuffer* meshBuffer=eye==GVR_LEFT_EYE ?
-                                             layer.optionalLeftEyeDistortedMesh.get() : layer.optionalRightEyeDistortedMesh.get();
+            TexturedGLMeshBuffer* distortedMesh= eye == GVR_LEFT_EYE ? layer.optionalLeftEyeDistortedMesh.get() :
+                    layer.optionalRightEyeDistortedMesh.get();
             GLProgramTexture* glProgramTexture2D=layer.isExternalTexture ? mGLProgramTextureExt2D.get() : mGLProgramTexture2D.get();
-            glProgramTexture2D->drawX(layer.textureId,glm::mat4(1.0f),glm::mat4(1.0f),*meshBuffer);
+            glProgramTexture2D->drawX(layer.textureId,glm::mat4(1.0f),glm::mat4(1.0f),*distortedMesh);
         }else{
             GLProgramTexture* glProgramTexture= layer.isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
-            //glProgramTexture->drawX(layer.textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye);
             glProgramTexture->drawXStereoVertex(layer.textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye,eye==GVR_LEFT_EYE);
         }
     }
