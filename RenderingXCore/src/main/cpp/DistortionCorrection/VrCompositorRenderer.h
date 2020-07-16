@@ -82,8 +82,6 @@ private:
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExtVDDC;
 public:
     // NONE == position is fixed
-    // TODO: Pre-calculate vertices for fixed position (Since position relative to head does not change, I can calculate the un-distorted Vertices once
-    // TODO: instead of calculating them dynamically in the Vertex shader
     enum HEAD_TRACKING{
         NONE,
         FULL
@@ -108,7 +106,6 @@ public:
     }
     void removeLayers();
     void drawLayers(gvr::Eye eye);
-
     // Add a 2D layer at position (0,0,Z) and (width,height) in VR 3D space.
     void addLayer2DCanvas(float z,float width,float height,GLuint textureId, bool isExternalTexture=false,HEAD_TRACKING headTracking=FULL);
     // Add a 360° video sphere
