@@ -33,7 +33,7 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
     GLProgramTexture::loadTexture(mTexture360ImageInsta360,env,context,"360DegreeImages/insta_360_equirectangular.png");*/
     vrCompositorRenderer.removeLayers();
     if(M_SPHERE_MODE==SPHERE_MODE_EQUIRECTANGULAR_TEST){
-        vrCompositorRenderer.addLayerEquirectangularMonoscopic360(10.0f,mVideoTexture,true);
+        vrCompositorRenderer.addLayerSphere360(10.0f,UvSphere::MEDIA_EQUIRECT_MONOSCOPIC,videoTexture,true);
     }else{
         auto sphere=DualFisheyeSphere::createSphereGL(2560, 1280);
         vrCompositorRenderer.addLayer(sphere, mVideoTexture, true, VrCompositorRenderer::HEAD_TRACKING::FULL);
@@ -41,7 +41,7 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
     const float uiElementWidth=2.0;
     vrCompositorRenderer.addLayer2DCanvas(-3,uiElementWidth,uiElementWidth*1080.0f/2160.0f,mExampleUiTexture,false,VrCompositorRenderer::FULL);
     // add a static layer to test the pre-distort feature
-    vrCompositorRenderer.addLayer2DCanvas(-3,0.2f,0.2f,mSomethingTexture,false,VrCompositorRenderer::NONE);
+    //vrCompositorRenderer.addLayer2DCanvas(-3,0.2f,0.2f,mSomethingTexture,false,VrCompositorRenderer::NONE);
 }
 
 void Renderer360Video::onDrawFrame() {

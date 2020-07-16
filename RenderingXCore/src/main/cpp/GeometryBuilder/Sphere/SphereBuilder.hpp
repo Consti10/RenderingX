@@ -76,17 +76,12 @@ public:
     //
     //And here is the binding for GLProgramTexture
     //
-    static TexturedMeshData
-    createSphereEquirectangularMonoscopic(float radius=1.0f, int latitudes=64, int longitudes=32) {
-        const auto vertexDataAsInGvr=UvSphere::createUvSphere(radius,latitudes,longitudes,180,360,UvSphere::MEDIA_EQUIRECT_MONOSCOPIC,UvSphere::ROTATE_UNKNOWN);
-        std::vector<GLProgramTexture::Vertex> ret;
-        for(const auto& vertex:vertexDataAsInGvr){
-            GLProgramTexture::Vertex v{
-                    vertex.x,vertex.y,vertex.z,vertex.u_left,vertex.v_left
-            };
-            ret.push_back(v);
-        }
-        return TexturedMeshData(ret, GL_TRIANGLE_STRIP);
+    static TexturedStereoMeshData
+    createSphereEquirectangularMonoscopic(float radius=1.0f, int latitudes=64, int longitudes=32,UvSphere::MEDIA_FORMAT format=UvSphere::MEDIA_EQUIRECT_MONOSCOPIC) {
+        static_assert(sizeof(GLProgramTexture::StereoVertex)==sizeof(UvSphere::Vertex));
+        auto vertexDataAsInGvr=UvSphere::createUvSphere(radius,latitudes,longitudes,180,360,UvSphere::MEDIA_EQUIRECT_MONOSCOPIC,UvSphere::ROTATE_UNKNOWN);
+        auto vertexData= *reinterpret_cast<std::vector<GLProgramTexture::StereoVertex>*>(&vertexDataAsInGvr);
+        return TexturedStereoMeshData(vertexData,GL_TRIANGLE_STRIP);
     }
 
     //Use the map function to convert from equirect to dual fisheye insta360 - TODO fix 'black line'

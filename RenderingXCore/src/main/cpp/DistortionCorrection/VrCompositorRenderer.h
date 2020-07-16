@@ -14,6 +14,7 @@
 #include <GLBuffer.hpp>
 #include <TexturedGeometry.hpp>
 #include <variant>
+#include <Sphere/UvSphere.hpp>
 #include "MatrixHelper.h"
 
 class VrCompositorRenderer {
@@ -111,7 +112,7 @@ public:
     // Add a 2D layer at position (0,0,Z) and (width,height) in VR 3D space.
     void addLayer2DCanvas(float z,float width,float height,GLuint textureId, bool isExternalTexture=false,HEAD_TRACKING headTracking=FULL);
     // Add a 360° video sphere
-    void addLayerEquirectangularMonoscopic360(float radius,GLuint textureId, bool isExternalTexture=false);
+    void addLayerSphere360(float radius,UvSphere::MEDIA_FORMAT format,GLuint textureId, bool isExternalTexture=false);
 public:
     // The left/right eye viewport is exactly the area covered when splitting the screen in half
     // while holding the device in landscape mode

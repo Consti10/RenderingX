@@ -140,8 +140,8 @@ void VrCompositorRenderer::addLayer2DCanvas(float z, float width, float height, 
     addLayer(mesh,textureId,isExternalTexture,headTracking);
 }
 
-void VrCompositorRenderer::addLayerEquirectangularMonoscopic360(float radius,GLuint textureId, bool isExternalTexture) {
-    const auto sphere=SphereBuilder::createSphereEquirectangularMonoscopic(radius, 72, 36);
+void VrCompositorRenderer::addLayerSphere360(float radius,UvSphere::MEDIA_FORMAT format,GLuint textureId, bool isExternalTexture) {
+    const auto sphere=SphereBuilder::createSphereEquirectangularMonoscopic(radius, 72, 36,format);
     addLayer(sphere,textureId,isExternalTexture,HEAD_TRACKING::FULL);
 }
 

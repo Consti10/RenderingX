@@ -33,7 +33,7 @@
             android:id="@+id/button4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="360 Image using VDDC" />
+            android:text="360 video using VDDC" />
 
         <Spinner
             android:id="@+id/spinner_360_video_type"
