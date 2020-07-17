@@ -76,24 +76,42 @@ namespace ANDROID_presentation_time{
     }
 }
 
+// https://www.khronos.org/registry/EGL/extensions/KHR/EGL_KHR_fence_sync.txt
+namespace  KHR_fence_sync{
+    static PFNEGLCREATESYNCKHRPROC eglCreateSyncKHR_=nullptr;
+    static PFNEGLDESTROYSYNCKHRPROC eglDestroySyncKHR_=nullptr;
+    static PFNEGLCLIENTWAITSYNCKHRPROC eglClientWaitSyncKHR_=nullptr;
+    static PFNEGLGETSYNCATTRIBKHRPROC eglGetSyncAttribKHR=nullptr;
+    static void init(){
+        eglCreateSyncKHR_ = (PFNEGLCREATESYNCKHRPROC)eglGetProcAddress("eglCreateSyncKHR" );
+        eglDestroySyncKHR_ = (PFNEGLDESTROYSYNCKHRPROC)eglGetProcAddress("eglDestroySyncKHR" );
+        eglClientWaitSyncKHR_ = (PFNEGLCLIENTWAITSYNCKHRPROC)eglGetProcAddress("eglClientWaitSyncKHR" );
+        eglGetSyncAttribKHR = (PFNEGLGETSYNCATTRIBKHRPROC)eglGetProcAddress( "eglGetSyncAttribKHR" );
+    }
+    class FenceSync{
+    private:
+        EGLSyncKHR sync;
+    public:
+        FenceSync(){
+            sync=eglCreateSyncKHR_(eglGetCurrentDisplay(), EGL_SYNC_FENCE_KHR, nullptr);
+        }
+        ~FenceSync(){
+            eglDestroySyncKHR_(eglGetCurrentDisplay(), sync);
+        }
+        // true if condition was satisfied, false otherwise
+        bool wait(EGLTimeKHR timeout=0){
+            return eglClientWaitSyncKHR_(eglGetCurrentDisplay(),sync,EGL_SYNC_FLUSH_COMMANDS_BIT_KHR,timeout)==EGL_CONDITION_SATISFIED_KHR;
+        }
+    };
+}
+
 // other extensions
 namespace Extensions{
     typedef void (GL_APIENTRYP PFNGLINVALIDATEFRAMEBUFFER_) (GLenum target, GLsizei numAttachments, const GLenum* attachments);
     static PFNGLINVALIDATEFRAMEBUFFER_	glInvalidateFramebuffer_;
 
-    static PFNEGLCREATESYNCKHRPROC eglCreateSyncKHR_;
-    static PFNEGLDESTROYSYNCKHRPROC eglDestroySyncKHR_;
-    static PFNEGLCLIENTWAITSYNCKHRPROC eglClientWaitSyncKHR_;
-    static PFNEGLSIGNALSYNCKHRPROC eglSignalSyncKHR_;
-    static PFNEGLGETSYNCATTRIBKHRPROC eglGetSyncAttribKHR_;
-
     static void initOtherExtensions(){
         glInvalidateFramebuffer_  = (PFNGLINVALIDATEFRAMEBUFFER_)eglGetProcAddress("glInvalidateFramebuffer");
-        eglCreateSyncKHR_ = (PFNEGLCREATESYNCKHRPROC)eglGetProcAddress( "eglCreateSyncKHR" );
-        eglDestroySyncKHR_ = (PFNEGLDESTROYSYNCKHRPROC)eglGetProcAddress( "eglDestroySyncKHR" );
-        eglClientWaitSyncKHR_ = (PFNEGLCLIENTWAITSYNCKHRPROC)eglGetProcAddress( "eglClientWaitSyncKHR" );
-        eglSignalSyncKHR_ = (PFNEGLSIGNALSYNCKHRPROC)eglGetProcAddress( "eglSignalSyncKHR" );
-        eglGetSyncAttribKHR_ = (PFNEGLGETSYNCATTRIBKHRPROC)eglGetProcAddress( "eglGetSyncAttribKHR" );
     }
     static void glInvalidateFramebuffer(){
         int count=3;

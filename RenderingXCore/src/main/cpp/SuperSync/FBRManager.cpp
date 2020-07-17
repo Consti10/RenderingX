@@ -22,6 +22,7 @@ FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailab
         vsyncStartWT("VSYNC start wait time"),
         vsyncMiddleWT("VSYNC middle wait time")
 {
+    KHR_fence_sync::init();
     Extensions::initOtherExtensions();
     switch(directRenderingMode){
         case QCOM_TILED_RENDERING:QCOM_tiled_rendering::init();break;
@@ -78,12 +79,12 @@ int64_t FBRManager::waitUntilVsyncStart() {
     leGPUChrono.nEyes++;
     while(true){
         if(leGPUChrono.eglSyncKHR!= nullptr){
-            const EGLint wait = Extensions::eglClientWaitSyncKHR_( eglGetCurrentDisplay(), leGPUChrono.eglSyncKHR,
-                                                       EGL_SYNC_FLUSH_COMMANDS_BIT_KHR, 0 );
+            const EGLint wait = KHR_fence_sync::eglClientWaitSyncKHR_(eglGetCurrentDisplay(), leGPUChrono.eglSyncKHR,
+                                                                      EGL_SYNC_FLUSH_COMMANDS_BIT_KHR, 0 );
             if(wait==EGL_CONDITION_SATISFIED_KHR){
                 //great ! We can measure the GPU time
                 leGPUChrono.eglSyncSatisfiedT=getSystemTimeNS();
-                Extensions::eglDestroySyncKHR_( eglGetCurrentDisplay(), leGPUChrono.eglSyncKHR );
+                KHR_fence_sync::eglDestroySyncKHR_(eglGetCurrentDisplay(), leGPUChrono.eglSyncKHR );
                 leGPUChrono.eglSyncKHR= nullptr;
                 leGPUChrono.lastDelta=leGPUChrono.eglSyncSatisfiedT-leGPUChrono.eglSyncCreationT;
                 leGPUChrono.deltaSumUS+=leGPUChrono.lastDelta/1000;
@@ -95,7 +96,7 @@ int64_t FBRManager::waitUntilVsyncStart() {
         if(pos<getEyeRefreshTime()){
             //don't forget to delete the sync object if it was not jet signaled. We can't measure the completion time because of the Asynchronousity of glFlush()
             if(leGPUChrono.eglSyncKHR!= nullptr){
-                Extensions::eglDestroySyncKHR_( eglGetCurrentDisplay(), leGPUChrono.eglSyncKHR );
+                KHR_fence_sync::eglDestroySyncKHR_(eglGetCurrentDisplay(), leGPUChrono.eglSyncKHR );
                 leGPUChrono.eglSyncKHR= nullptr;
                 leGPUChrono.eglSyncSatisfiedT=getSystemTimeNS();
                 leGPUChrono.nEyesNotMeasurable++;
@@ -113,12 +114,12 @@ int64_t FBRManager::waitUntilVsyncMiddle() {
     reGPUChrono.nEyes++;
     while(true){
         if(reGPUChrono.eglSyncKHR!= nullptr){
-            const EGLint wait = Extensions::eglClientWaitSyncKHR_( eglGetCurrentDisplay(), reGPUChrono.eglSyncKHR,
-                                                       EGL_SYNC_FLUSH_COMMANDS_BIT_KHR, 0 );
+            const EGLint wait = KHR_fence_sync::eglClientWaitSyncKHR_(eglGetCurrentDisplay(), reGPUChrono.eglSyncKHR,
+                                                                      EGL_SYNC_FLUSH_COMMANDS_BIT_KHR, 0 );
             if(wait==EGL_CONDITION_SATISFIED_KHR){
                 //great ! We can measure the GPU time
                 reGPUChrono.eglSyncSatisfiedT=getSystemTimeNS();
-                Extensions::eglDestroySyncKHR_( eglGetCurrentDisplay(), reGPUChrono.eglSyncKHR );
+                KHR_fence_sync::eglDestroySyncKHR_(eglGetCurrentDisplay(), reGPUChrono.eglSyncKHR );
                 reGPUChrono.eglSyncKHR= nullptr;
                 reGPUChrono.lastDelta=reGPUChrono.eglSyncSatisfiedT-reGPUChrono.eglSyncCreationT;
                 reGPUChrono.deltaSumUS+=reGPUChrono.lastDelta/1000;
@@ -130,7 +131,7 @@ int64_t FBRManager::waitUntilVsyncMiddle() {
         if(pos>getEyeRefreshTime()){
             //don't forget to delete the sync object if it was not jet signaled. We can't measure the completion time because of the Asynchronousity of glFlush()
             if(reGPUChrono.eglSyncKHR!= nullptr){
-                Extensions::eglDestroySyncKHR_( eglGetCurrentDisplay(), reGPUChrono.eglSyncKHR );
+                KHR_fence_sync::eglDestroySyncKHR_(eglGetCurrentDisplay(), reGPUChrono.eglSyncKHR );
                 reGPUChrono.eglSyncKHR= nullptr;
                 reGPUChrono.eglSyncSatisfiedT=getSystemTimeNS();
                 reGPUChrono.nEyesNotMeasurable++;
@@ -204,12 +205,12 @@ void FBRManager::stopDirectRendering(bool whichEye) {
     if(EGL_KHR_Reusable_Sync_Available){
         if(whichEye){
             leGPUChrono.eglSyncCreationT=getSystemTimeNS();
-            leGPUChrono.eglSyncKHR=Extensions::eglCreateSyncKHR_( eglGetCurrentDisplay(), EGL_SYNC_FENCE_KHR,
-                                                      nullptr );
+            leGPUChrono.eglSyncKHR=KHR_fence_sync::eglCreateSyncKHR_(eglGetCurrentDisplay(), EGL_SYNC_FENCE_KHR,
+                                                                     nullptr );
         }else{
             reGPUChrono.eglSyncCreationT=getSystemTimeNS();
-            reGPUChrono.eglSyncKHR=Extensions::eglCreateSyncKHR_( eglGetCurrentDisplay(), EGL_SYNC_FENCE_KHR,
-                                                      nullptr );
+            reGPUChrono.eglSyncKHR=KHR_fence_sync::eglCreateSyncKHR_(eglGetCurrentDisplay(), EGL_SYNC_FENCE_KHR,
+                                                                     nullptr );
         }
     }
     glFlush();

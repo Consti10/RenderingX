@@ -52,6 +52,7 @@
 #include <EGL/eglext.h>
 #include "../Time/Chronometer.h"
 #include "VSYNC.hpp"
+#include "DirectRender.hpp"
 
 using RENDER_NEW_EYE_CALLBACK=std::function<void(JNIEnv*,bool,int64_t)>;
 using ERROR_CALLBACK=std::function<void(JNIEnv*,int)>;
@@ -99,7 +100,6 @@ private:
     void printLog();
     std::chrono::steady_clock::time_point lastLog;
     void resetTS();
-
 };
 
 //While the CPU creates the command buffer it is guaranteed that the Frame Buffer won't be affected. (only as soon as glFinish()/glFlush() is called)

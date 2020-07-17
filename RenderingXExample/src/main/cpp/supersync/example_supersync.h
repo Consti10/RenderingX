@@ -24,6 +24,7 @@
 #include <GLProgramLine.h>
 #include <Chronometer.h>
 #include <FPSCalculator.h>
+#include <VrCompositorRenderer.h>
 
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
@@ -90,6 +91,7 @@ private:
     std::array<int,2> whichColor;
     static constexpr int N_TRIANGLES=5;
     static constexpr int N_COLOR_VERTICES=3*N_TRIANGLES;
+    static constexpr int N_DRAW_CALLS=10;
 };
 
 #endif //RENDERINGX_EXAMPLE_SUPERSYNC_H

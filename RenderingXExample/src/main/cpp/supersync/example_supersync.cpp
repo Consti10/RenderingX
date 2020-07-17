@@ -119,7 +119,7 @@ void GLRSuperSyncExample::drawEye(JNIEnv *env, bool whichEye) {
         glProgramVC->drawX(leftEyeView,projection,solidRectangleYellow);
     }
     //A typical application has way more than 1 draw call only
-    for(int i=0;i<20;i++){
+    for(int i=0;i<N_DRAW_CALLS;i++){
         const glm::mat4 leftOrRightEyeView= whichEye==0 ? leftEyeView : rightEyeView;
         glProgramVC->drawX(leftOrRightEyeView,projection,mVertexBufferVC);
     }
