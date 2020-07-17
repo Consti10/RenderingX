@@ -139,6 +139,8 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
 
     @Override
     public void doFrame(long frameTimeNanos) {
+        //System.out.println("j time "+System.nanoTime());
+        //System.out.println("j delta"+(System.nanoTime()-frameTimeNanos));
         //####google SurfaceFlinger.cpp ##################
         // We add an additional 1ms to allow for processing time and
         // differences between the ideal and actual refresh rate.

@@ -35,7 +35,7 @@ GLRSuperSyncExample::GLRSuperSyncExample(JNIEnv *env, jobject androidContext,
     std::function<void(JNIEnv *env2, bool whichEye, int64_t offsetNS)> f = [this](JNIEnv *env2, bool whichEye, int64_t offsetNS) {
         this->renderNewEyeCallback(env2,whichEye,offsetNS);
     };
-    mFBRManager=std::make_unique<FBRManager>(qcomTiledRenderingAvailable,reusableSyncAvailable,false,f, nullptr);
+    mFBRManager=std::make_unique<FBRManager>(qcomTiledRenderingAvailable,reusableSyncAvailable,f, nullptr);
 }
 
 void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext) {

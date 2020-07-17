@@ -51,26 +51,22 @@
 #include <atomic>
 #include <EGL/eglext.h>
 #include "../Time/Chronometer.h"
-
-using cNanoseconds=uint64_t;
+#include "VSYNC.hpp"
 
 using RENDER_NEW_EYE_CALLBACK=std::function<void(JNIEnv*,bool,int64_t)>;
 using ERROR_CALLBACK=std::function<void(JNIEnv*,int)>;
 
-class FBRManager {
+class FBRManager:public VSYNC {
 public:
-    FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,bool useVSYNC_CALLBACK_ADVANCE_NS,RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,ERROR_CALLBACK onErrorCallback);
+    FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,ERROR_CALLBACK onErrorCallback);
     //has to be called from the OpenGL thread that is bound to the front buffer surface
     //blocks until requestExitSuperSyncLoop() is called (from any thread, e.g. the UI onPauseX )
     void enterDirectRenderingLoop(JNIEnv* env);
     void requestExitSuperSyncLoop();
-    //pass the last vsync timestamp from java (setLastVSYNC) to cpp
-    void setLastVSYNC(int64_t lastVSYNC);
     void startDirectRendering(bool leftEye,int viewPortW,int viewPortH);
     void stopDirectRendering(bool whichEye);
     constexpr static bool LEFT_EYE= true;
     constexpr static bool RIGHT_EYE= false;
-
     static constexpr int QCOM_TILED_RENDERING=0;
     //taken from github (so should be the way to go) but i was unable to confirm it yet beacuse of the lack of a MALI GPU
     //with clear visually working,but takes too much time on my testing QCOM GPU (I don't have a mali gpu).
@@ -80,30 +76,6 @@ public:
     static constexpr int MALI_Consti1=2;
     const int directRenderingMode;
 private:
-    static cNanoseconds getSystemTimeNS();
-    //The lastRegisteredVSYNC TS may be older than 16.6ms or more.
-    // This function also corrects for this. Therefore,it needs the time between 2 VSYNCs, as accurate (ns resolution) as possible
-    int64_t getVsyncBaseNS();
-    int64_t lastRegisteredVSYNC=0;
-    int64_t DISPLAY_REFRESH_TIME=16600000;
-    int64_t EYE_REFRESH_TIME=DISPLAY_REFRESH_TIME/2;
-    uint64_t displayRefreshTimeSum,displayRefreshTimeC;
-    int64_t previousVSYNC;
-    //While the CPU creates the command buffer it is guaranteed that the Frame Buffer won't be affected. (only as soon as glFinish()/glFlush() is called)
-    //Creating the command buffer and updating the external video texture takes at least 2ms (in average much more, about 4-5ms in total.But if there
-    //is no surfaceTexture to update it might take significant less time than 4-5ms)
-    //When VSYNC_CALLBACK_ADVANCE>0, the callback gets invoked earlier, so the GPU has more time to finish rendering before the pixels are read by the rasterizer.
-    //However, VSYNC_CALLBACK_ADVANCE also creates as much latency.
-    //But on my Nexus 5X, with the new change of moving surfaceTextureUpdateImage2D to the beginning of the rendering loop, The renderer can't
-    //create all command buffer data, update surfaceTextureExternal AND render the frame in <8.3ms with 4xMSAA enabled. I don't use it, however,
-    //since this small tearing is barely noticeable
-    //##change 28.12.2017:## Since on daydream-ready phones (e.g. my ZTE axon 7) calc&rendering is consistent way below 8.3ms, i change vsync callback advance
-    //dynamically. If the GPU fails too often, i set callback advance to 2ms (fixed value). If the gpu does not fail, I set the callback advance to
-    //-(VsyncWaitTime-1)
-    //poitive values mean the callback fires earlier
-    int64_t VSYNC_CALLBACK_ADVANCE_NS=(int64_t)(1000.0*1000.0*0.0); //ms (16.666-8.33)
-    //rasterizerPosition range: 0<=position<displayRefreshTime
-    int64_t getVsyncRasterizerPosition();
     //wait until right/left eye is ready to be rendered
     int64_t waitUntilVsyncStart();
     int64_t waitUntilVsyncMiddle();
@@ -127,9 +99,19 @@ private:
     void printLog();
     std::chrono::steady_clock::time_point lastLog;
     void resetTS();
-    const bool useVSYNC_CALLBACK_ADVANCE_NS;
 
 };
 
-
+//While the CPU creates the command buffer it is guaranteed that the Frame Buffer won't be affected. (only as soon as glFinish()/glFlush() is called)
+//Creating the command buffer and updating the external video texture takes at least 2ms (in average much more, about 4-5ms in total.But if there
+//is no surfaceTexture to update it might take significant less time than 4-5ms)
+//When VSYNC_CALLBACK_ADVANCE>0, the callback gets invoked earlier, so the GPU has more time to finish rendering before the pixels are read by the rasterizer.
+//However, VSYNC_CALLBACK_ADVANCE also creates as much latency.
+//But on my Nexus 5X, with the new change of moving surfaceTextureUpdateImage2D to the beginning of the rendering loop, The renderer can't
+//create all command buffer data, update surfaceTextureExternal AND render the frame in <8.3ms with 4xMSAA enabled. I don't use it, however,
+//since this small tearing is barely noticeable
+//##change 28.12.2017:## Since on daydream-ready phones (e.g. my ZTE axon 7) calc&rendering is consistent way below 8.3ms, i change vsync callback advance
+//dynamically. If the GPU fails too often, i set callback advance to 2ms (fixed value). If the gpu does not fail, I set the callback advance to
+//-(VsyncWaitTime-1)
+//poitive values mean the callback fires earlier
 #endif //FPV_VR_FBRMANAGER2_H

@@ -14,19 +14,14 @@ constexpr auto MS_TO_NS=1000*1000;
 
 using namespace std::chrono;
 
-FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,bool useVSYNC_CALLBACK_ADVANCE_NS,const RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,const ERROR_CALLBACK onErrorCallback):
+FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,const RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,const ERROR_CALLBACK onErrorCallback):
         EGL_KHR_Reusable_Sync_Available(reusableSyncAvailable),
         directRenderingMode(qcomTiledRenderingAvailable ? QCOM_TILED_RENDERING : MALI_SoylentGraham),
-        useVSYNC_CALLBACK_ADVANCE_NS(useVSYNC_CALLBACK_ADVANCE_NS),
         onRenderNewEyeCallback(onRenderNewEyeCallback),
         onErrorCallback(onErrorCallback),
         vsyncStartWT("VSYNC start wait time"),
         vsyncMiddleWT("VSYNC middle wait time")
 {
-    lastRegisteredVSYNC=0;
-    previousVSYNC=0;
-    displayRefreshTimeSum=0;
-    displayRefreshTimeC=0;
     Extensions::initOtherExtensions();
     switch(directRenderingMode){
         case QCOM_TILED_RENDERING:QCOM_tiled_rendering::init();break;
@@ -42,7 +37,7 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env) {
     shouldRender= true;
     cNanoseconds before,diff=0;
     while(shouldRender){
-        if(diff>=DISPLAY_REFRESH_TIME){
+        if(diff>=getDisplayRefreshTime()){
             MLOGE<<"WARNING: rendering a eye took longer than displayRefreshTime ! Error. Time: "<<(diff/1000/1000);
         }
         vsyncStartWT.start();
@@ -55,7 +50,7 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env) {
         if(!shouldRender){
             break;
         }
-        if(diff>=DISPLAY_REFRESH_TIME){
+        if(diff>=getDisplayRefreshTime()){
             MLOGE<<"WARNING: rendering a eye took longer than displayRefreshTime ! Error. Time: "<<(diff/1000/1000);
         }
         vsyncMiddleWT.start();
@@ -97,7 +92,7 @@ int64_t FBRManager::waitUntilVsyncStart() {
             }
         }
         int64_t pos=getVsyncRasterizerPosition();
-        if(pos<EYE_REFRESH_TIME){
+        if(pos<getEyeRefreshTime()){
             //don't forget to delete the sync object if it was not jet signaled. We can't measure the completion time because of the Asynchronousity of glFlush()
             if(leGPUChrono.eglSyncKHR!= nullptr){
                 Extensions::eglDestroySyncKHR_( eglGetCurrentDisplay(), leGPUChrono.eglSyncKHR );
@@ -132,7 +127,7 @@ int64_t FBRManager::waitUntilVsyncMiddle() {
             }
         }
         int64_t pos=getVsyncRasterizerPosition();
-        if(pos>EYE_REFRESH_TIME){
+        if(pos>getEyeRefreshTime()){
             //don't forget to delete the sync object if it was not jet signaled. We can't measure the completion time because of the Asynchronousity of glFlush()
             if(reGPUChrono.eglSyncKHR!= nullptr){
                 Extensions::eglDestroySyncKHR_( eglGetCurrentDisplay(), reGPUChrono.eglSyncKHR );
@@ -143,66 +138,10 @@ int64_t FBRManager::waitUntilVsyncMiddle() {
             }
             //the vsync is currently between 0.5 and 1 (scanning the right eye).
             //The left eye framebuffer part can be safely manipulated for eyeRefreshTime-offset ns
-            int64_t offset=pos-EYE_REFRESH_TIME;
+            int64_t offset=pos-getEyeRefreshTime();
             return offset;
         }
     }
-}
-
-int64_t FBRManager::getVsyncBaseNS() {
-    int64_t lVSYNC=lastRegisteredVSYNC;
-    int64_t timestamp=getSystemTimeNS();
-    int64_t diff=timestamp-lVSYNC;
-    if(diff>DISPLAY_REFRESH_TIME){
-        int64_t factor=diff/DISPLAY_REFRESH_TIME;
-        lVSYNC+=factor*DISPLAY_REFRESH_TIME;
-    }
-    return lVSYNC;
-}
-
-int64_t FBRManager::getVsyncRasterizerPosition() {
-    int64_t lVsync=getVsyncBaseNS();
-    int64_t position=getSystemTimeNS()-lVsync;
-    while (position>=DISPLAY_REFRESH_TIME){
-        position-=DISPLAY_REFRESH_TIME;
-    }
-    return position;
-}
-
-void FBRManager::setLastVSYNC(int64_t lastVsync) {
-    int64_t tmp=lastVsync-VSYNC_CALLBACK_ADVANCE_NS;
-    //int c=0;
-    while(getSystemTimeNS()<tmp){
-        //c++;
-        //LOGV("HI %d",c);
-        tmp-=DISPLAY_REFRESH_TIME;
-    }
-    lastRegisteredVSYNC=tmp;
-    //Stop as soon we have 600 samples (that should be more than enough)
-    if(displayRefreshTimeC<600){
-        int64_t delta=lastVsync-previousVSYNC;
-        if(delta>0){
-            //Assumption: There are only displays on the Market with refresh Rates that differ from 16.666ms +-1.0ms
-            //This is needed because i am not sure if the vsync callbacks always get executed in the right order
-            //so delta might be 32ms. In this case delta is not the display refresh time
-            const int64_t minDisplayRR=16666666-1000000;
-            const int64_t maxDisplayRR=16666666+1000000;
-            if(delta>minDisplayRR&&delta<maxDisplayRR){
-                displayRefreshTimeSum+=delta;
-                displayRefreshTimeC++;
-                if(displayRefreshTimeC>120){
-                    //we can start using the average Value for "displayRefreshTime" when we have roughly 120 samples
-                    DISPLAY_REFRESH_TIME=displayRefreshTimeSum/displayRefreshTimeC;
-                    EYE_REFRESH_TIME=displayRefreshTimeSum/(displayRefreshTimeC*2);
-                    //float f1=displayRefreshTime/1000.0f/1000.0f;
-                    //LOGV("Time between frames:%f",f1);
-                    //LOGD("Display refresh time %d",(int)DISPLAY_REFRESH_TIME);
-                }
-            }
-        }
-        previousVSYNC=lastVsync;
-    } //else We have at least 600 samples. This is enough.
-    //LOGV("Hi VSYNC");
 }
 
 void FBRManager::startDirectRendering(bool leftEye, int viewPortW, int viewPortH) {
@@ -316,9 +255,6 @@ void FBRManager::printLog() {
                 advanceMS=0;
             }
         }
-        if(useVSYNC_CALLBACK_ADVANCE_NS){
-            VSYNC_CALLBACK_ADVANCE_NS=(int64_t)(MS_TO_NS*advanceMS);
-        }
         std::ostringstream avgLog;
         avgLog<<"------------------------FBRManager Averages------------------------";
         avgLog<<"\nGPU time:"<<": leftEye:"<<leGPUTimeAvg<<" | rightEye:"<<reGPUTimeAvg<<" | left&right:"<<leAreGPUTimeAvg;
@@ -346,12 +282,6 @@ void FBRManager::resetTS() {
     reGPUChrono.deltaSumUS=0;
     reGPUChrono.nEyes=0;
     reGPUChrono.nEyesNotMeasurable=0;
-}
-
-
-cNanoseconds FBRManager::getSystemTimeNS() {
-    const auto time=system_clock::now().time_since_epoch();
-    return (cNanoseconds)duration_cast<nanoseconds>(time).count();
 }
 
 
