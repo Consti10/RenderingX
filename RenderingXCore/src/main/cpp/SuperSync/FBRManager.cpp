@@ -15,6 +15,7 @@ constexpr auto MS_TO_NS=1000*1000;
 using namespace std::chrono;
 
 FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,const RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,const ERROR_CALLBACK onErrorCallback):
+        directRender{qcomTiledRenderingAvailable},
         EGL_KHR_Reusable_Sync_Available(reusableSyncAvailable),
         directRenderingMode(qcomTiledRenderingAvailable ? QCOM_TILED_RENDERING : MALI_SoylentGraham),
         onRenderNewEyeCallback(onRenderNewEyeCallback),
@@ -24,11 +25,6 @@ FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailab
 {
     KHR_fence_sync::init();
     Extensions::initOtherExtensions();
-    switch(directRenderingMode){
-        case QCOM_TILED_RENDERING:QCOM_tiled_rendering::init();break;
-        default:
-            break;
-    }
     lastLog=steady_clock::now();
     resetTS();
 }
@@ -146,62 +142,11 @@ int64_t FBRManager::waitUntilVsyncMiddle() {
 }
 
 void FBRManager::startDirectRendering(bool leftEye, int viewPortW, int viewPortH) {
-    int x,y,w,h;
-    if(leftEye){
-        x=0;
-        y=0;
-        w=viewPortW;
-        h=viewPortH;
-    }else{
-        x=viewPortW;
-        y=0;
-        w=viewPortW;
-        h=viewPortH;
-    }
-    //NOTE: glClear has to be called from the application, depending on the GPU time (I had to differentiate because of the updateTexImage2D)
-    switch (directRenderingMode){
-        case QCOM_TILED_RENDERING:{
-            QCOM_tiled_rendering::glStartTilingQCOM(x,y,w,h,0);
-            glScissor(x,y,w,h); //glStartTiling should be enough. But just for safety set the scissor rect, too
-            break;
-        }
-        case MALI_SoylentGraham:{
-            const GLenum attachmentsSG[3] = { GL_COLOR_EXT, GL_DEPTH_EXT, GL_STENCIL_EXT};
-            Extensions::glInvalidateFramebuffer_( GL_FRAMEBUFFER, 3, attachmentsSG );
-            glScissor( x, y, w, h);
-            break;
-        }
-        case MALI_Consti1:{
-            const GLenum attachments[3] = { GL_COLOR_EXT,GL_DEPTH_EXT,GL_STENCIL_EXT};
-            Extensions::glInvalidateFramebuffer_( GL_FRAMEBUFFER, 3, attachments);
-            glScissor(x,y,w,h);
-            break;
-        }
-        default:
-            break;
-    }
-    glViewport(x,y,w,h);
+    directRender.begin(leftEye,viewPortW,viewPortH);
 }
 
 void FBRManager::stopDirectRendering(bool whichEye) {
-    switch (directRenderingMode){
-        case QCOM_TILED_RENDERING:{
-            QCOM_tiled_rendering::EndTilingQCOM();
-            break;
-        }
-        case MALI_SoylentGraham:{
-            const GLenum attachmentsSG[2] = { GL_DEPTH_EXT, GL_STENCIL_EXT};
-            Extensions::glInvalidateFramebuffer_( GL_FRAMEBUFFER, 2, attachmentsSG );
-            break;
-        }
-        case MALI_Consti1:{
-            const GLenum attachmentsSG[2] = { GL_DEPTH_EXT, GL_STENCIL_EXT};
-            Extensions::glInvalidateFramebuffer_( GL_FRAMEBUFFER, 2, attachmentsSG );
-            break;
-        }
-        default:
-            break;
-    }
+    directRender.end(whichEye);
     if(EGL_KHR_Reusable_Sync_Available){
         if(whichEye){
             leGPUChrono.eglSyncCreationT=getSystemTimeNS();

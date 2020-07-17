@@ -77,6 +77,7 @@ public:
     static constexpr int MALI_Consti1=2;
     const int directRenderingMode;
 private:
+    const DirectRender directRender;
     //wait until right/left eye is ready to be rendered
     int64_t waitUntilVsyncStart();
     int64_t waitUntilVsyncMiddle();

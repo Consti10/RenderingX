@@ -7,15 +7,19 @@
 
 #include <Extensions.hpp>
 
+// Direct Rendering refers to rendering a specific area ( and the specific area only)
+// This class hides the difference(s) between the two major GPU manufacturer: Qualcomm and MALI (ARM)
 class DirectRender{
 public:
     DirectRender(bool QCOM_TILED_RENDERING_AVAILABLE):QCOM_TILED_RENDERING_AVAILABLE(QCOM_TILED_RENDERING_AVAILABLE){
         if(QCOM_TILED_RENDERING_AVAILABLE){
             QCOM_tiled_rendering::init();
+        }else{
+            Extensions::initOtherExtensions();
         }
     }
     const bool QCOM_TILED_RENDERING_AVAILABLE;
-    void begin(bool leftEye, int viewPortW, int viewPortH){
+    void begin(bool leftEye, int viewPortW, int viewPortH)const{
         int x,y,w,h;
         if(leftEye){
             x=0;
@@ -31,6 +35,7 @@ public:
         //NOTE: glClear has to be called from the application, depending on the GPU time (I had to differentiate because of the updateTexImage2D)
         if(QCOM_TILED_RENDERING_AVAILABLE){
             QCOM_tiled_rendering::glStartTilingQCOM(x,y,w,h,0);
+            glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         }else{
             const GLenum attachmentsSG[3] = { GL_COLOR_EXT, GL_DEPTH_EXT, GL_STENCIL_EXT};
             Extensions::glInvalidateFramebuffer_( GL_FRAMEBUFFER, 3, attachmentsSG );
@@ -38,7 +43,7 @@ public:
         glScissor(x,y,w,h);
         glViewport(x,y,w,h);
     }
-    void end(bool whichEye){
+    void end(bool whichEye)const{
         if(QCOM_TILED_RENDERING_AVAILABLE){
             QCOM_tiled_rendering::EndTilingQCOM();
         }else{
