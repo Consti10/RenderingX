@@ -92,6 +92,7 @@ namespace  KHR_fence_sync{
     private:
         EGLSyncKHR sync;
     public:
+        const std::chrono::steady_clock::time_point creationTime=std::chrono::steady_clock::now();
         FenceSync(){
             sync=eglCreateSyncKHR_(eglGetCurrentDisplay(), EGL_SYNC_FENCE_KHR, nullptr);
         }

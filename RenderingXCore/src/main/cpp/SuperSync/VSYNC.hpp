@@ -15,13 +15,14 @@ using cNanoseconds=int64_t;
 
 // Helper to obtain the current VSYNC position (e.g. which scan line is currently read out)
 // While ideally I would like to use the exact data from the display manufacturer, I have to use the
-// Choreographer as workaround on android
+// Choreographer as workaround on android. This means that more advanced configuration data like
+// *front and back porch* cannot be taken into consideration
 class VSYNC{
 private:
     // last VSYNC set by the callback
     int64_t lastRegisteredVSYNC=0;
-    // display refresh rate becomes more accurately over time
     static constexpr int64_t DEFAULT_REFRESH_TIME=16666666;
+    // display refresh rate becomes more accurately over time
     int64_t displayRefreshTime=DEFAULT_REFRESH_TIME;
     int64_t eyeRefreshTime= displayRefreshTime/2;
     // how many samples of the refresh rate I currently have to determine the accurate refresh rate
@@ -36,7 +37,6 @@ public:
         const auto time=std::chrono::steady_clock::now().time_since_epoch();
         return (cNanoseconds)std::chrono::duration_cast<std::chrono::nanoseconds>(time).count();
     }
-    //pass the last vsync timestamp from java (setLastVSYNC) to cpp
     /**
      * pass the last vsync timestamp from java (setLastVSYNC) to cpp
      * @param lastVSYNC as obtained by Choreographer.doFrame but without the offset(s)
