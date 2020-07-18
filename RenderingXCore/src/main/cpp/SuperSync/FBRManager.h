@@ -68,23 +68,14 @@ public:
     void stopDirectRendering(bool whichEye);
     constexpr static bool LEFT_EYE= true;
     constexpr static bool RIGHT_EYE= false;
-    static constexpr int QCOM_TILED_RENDERING=0;
-    //taken from github (so should be the way to go) but i was unable to confirm it yet beacuse of the lack of a MALI GPU
-    //with clear visually working,but takes too much time on my testing QCOM GPU (I don't have a mali gpu).
-    //without a clear this one has NO 'tearing fails', but obviously the visual problems
-    static constexpr int MALI_SoylentGraham=1;
-    //as with the other one ->with clear: too long, without clear: short enough, but visual problems
-    static constexpr int MALI_Consti1=2;
-    const int directRenderingMode;
+    void drawLeftAndRightEye(JNIEnv* env);
 private:
     const DirectRender directRender;
     //wait until right/left eye is ready to be rendered
     int64_t waitUntilVsyncStart();
     int64_t waitUntilVsyncMiddle();
     struct EyeGPUChrono{
-        int64_t eglSyncCreationT=0;
-        int64_t eglSyncSatisfiedT=0;
-        EGLSyncKHR eglSyncKHR=NULL;
+        std::unique_ptr<FenceSync> fenceSync=nullptr;
         int64_t lastDelta=0;
         uint64_t deltaSumUS=0;
         uint64_t deltaSumUsC=0;

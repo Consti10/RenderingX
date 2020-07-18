@@ -17,7 +17,6 @@ using namespace std::chrono;
 FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,const RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,const ERROR_CALLBACK onErrorCallback):
         directRender{qcomTiledRenderingAvailable},
         EGL_KHR_Reusable_Sync_Available(reusableSyncAvailable),
-        directRenderingMode(qcomTiledRenderingAvailable ? QCOM_TILED_RENDERING : MALI_SoylentGraham),
         onRenderNewEyeCallback(onRenderNewEyeCallback),
         onErrorCallback(onErrorCallback),
         vsyncStartWT("VSYNC start wait time"),
@@ -27,6 +26,11 @@ FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailab
     Extensions::initOtherExtensions();
     lastLog=steady_clock::now();
     resetTS();
+}
+
+void FBRManager::drawLeftAndRightEye(JNIEnv* env) {
+    const auto vsyncPosition=getVsyncRasterizerPosition();
+    // VSYNC is currently scanning the left eye area
 }
 
 
@@ -59,12 +63,6 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env) {
         diff=getSystemTimeNS()-before;
         printLog();
     }
-    //do not forget to clean up for a more pleasant view
-    switch(directRenderingMode){
-        case QCOM_TILED_RENDERING:QCOM_tiled_rendering::EndTilingQCOM();break;
-        default:
-            break;
-    }
 }
 
 void FBRManager::requestExitSuperSyncLoop() {
@@ -74,27 +72,22 @@ void FBRManager::requestExitSuperSyncLoop() {
 int64_t FBRManager::waitUntilVsyncStart() {
     leGPUChrono.nEyes++;
     while(true){
-        if(leGPUChrono.eglSyncKHR!= nullptr){
-            const EGLint wait = KHR_fence_sync::eglClientWaitSyncKHR_(eglGetCurrentDisplay(), leGPUChrono.eglSyncKHR,
-                                                                      EGL_SYNC_FLUSH_COMMANDS_BIT_KHR, 0 );
-            if(wait==EGL_CONDITION_SATISFIED_KHR){
+        if(leGPUChrono.fenceSync!= nullptr){
+            const bool satisfied=leGPUChrono.fenceSync->wait(0);
+            if(satisfied){
                 //great ! We can measure the GPU time
-                leGPUChrono.eglSyncSatisfiedT=getSystemTimeNS();
-                KHR_fence_sync::eglDestroySyncKHR_(eglGetCurrentDisplay(), leGPUChrono.eglSyncKHR );
-                leGPUChrono.eglSyncKHR= nullptr;
-                leGPUChrono.lastDelta=leGPUChrono.eglSyncSatisfiedT-leGPUChrono.eglSyncCreationT;
+                leGPUChrono.lastDelta=leGPUChrono.fenceSync->getDeltaCreationSatisfiedNS();
                 leGPUChrono.deltaSumUS+=leGPUChrono.lastDelta/1000;
                 leGPUChrono.deltaSumUsC++;
+                leGPUChrono.fenceSync.reset(nullptr);
                 //LOGV("leftEye GL: %f",(leGPUChrono.lastDelta/1000)/1000.0);
             }
         }
         int64_t pos=getVsyncRasterizerPosition();
         if(pos<getEyeRefreshTime()){
             //don't forget to delete the sync object if it was not jet signaled. We can't measure the completion time because of the Asynchronousity of glFlush()
-            if(leGPUChrono.eglSyncKHR!= nullptr){
-                KHR_fence_sync::eglDestroySyncKHR_(eglGetCurrentDisplay(), leGPUChrono.eglSyncKHR );
-                leGPUChrono.eglSyncKHR= nullptr;
-                leGPUChrono.eglSyncSatisfiedT=getSystemTimeNS();
+            if(leGPUChrono.fenceSync!= nullptr){
+                leGPUChrono.fenceSync.reset(nullptr);
                 leGPUChrono.nEyesNotMeasurable++;
                 //LOGV("Couldn't measure leftEye GPU time");
             }
@@ -109,27 +102,21 @@ int64_t FBRManager::waitUntilVsyncStart() {
 int64_t FBRManager::waitUntilVsyncMiddle() {
     reGPUChrono.nEyes++;
     while(true){
-        if(reGPUChrono.eglSyncKHR!= nullptr){
-            const EGLint wait = KHR_fence_sync::eglClientWaitSyncKHR_(eglGetCurrentDisplay(), reGPUChrono.eglSyncKHR,
-                                                                      EGL_SYNC_FLUSH_COMMANDS_BIT_KHR, 0 );
-            if(wait==EGL_CONDITION_SATISFIED_KHR){
-                //great ! We can measure the GPU time
-                reGPUChrono.eglSyncSatisfiedT=getSystemTimeNS();
-                KHR_fence_sync::eglDestroySyncKHR_(eglGetCurrentDisplay(), reGPUChrono.eglSyncKHR );
-                reGPUChrono.eglSyncKHR= nullptr;
-                reGPUChrono.lastDelta=reGPUChrono.eglSyncSatisfiedT-reGPUChrono.eglSyncCreationT;
+        if(reGPUChrono.fenceSync!= nullptr){
+            const bool satisfied=reGPUChrono.fenceSync->wait(0);
+            if(satisfied){
+                reGPUChrono.lastDelta=reGPUChrono.fenceSync->getDeltaCreationSatisfiedNS();
                 reGPUChrono.deltaSumUS+=reGPUChrono.lastDelta/1000;
                 reGPUChrono.deltaSumUsC++;
+                reGPUChrono.fenceSync.reset(nullptr);
                 //LOGV("rightEye GL: %f",(reGPUChrono.lastDelta/1000)/1000.0);
             }
         }
         int64_t pos=getVsyncRasterizerPosition();
         if(pos>getEyeRefreshTime()){
             //don't forget to delete the sync object if it was not jet signaled. We can't measure the completion time because of the Asynchronousity of glFlush()
-            if(reGPUChrono.eglSyncKHR!= nullptr){
-                KHR_fence_sync::eglDestroySyncKHR_(eglGetCurrentDisplay(), reGPUChrono.eglSyncKHR );
-                reGPUChrono.eglSyncKHR= nullptr;
-                reGPUChrono.eglSyncSatisfiedT=getSystemTimeNS();
+            if(reGPUChrono.fenceSync!= nullptr){
+                reGPUChrono.fenceSync.reset(nullptr);
                 reGPUChrono.nEyesNotMeasurable++;
                 //LOGV("Couldn't measure rightEye GPU time");
             }
@@ -149,13 +136,9 @@ void FBRManager::stopDirectRendering(bool whichEye) {
     directRender.end(whichEye);
     if(EGL_KHR_Reusable_Sync_Available){
         if(whichEye){
-            leGPUChrono.eglSyncCreationT=getSystemTimeNS();
-            leGPUChrono.eglSyncKHR=KHR_fence_sync::eglCreateSyncKHR_(eglGetCurrentDisplay(), EGL_SYNC_FENCE_KHR,
-                                                                     nullptr );
+            leGPUChrono.fenceSync=std::make_unique<FenceSync>();
         }else{
-            reGPUChrono.eglSyncCreationT=getSystemTimeNS();
-            reGPUChrono.eglSyncKHR=KHR_fence_sync::eglCreateSyncKHR_(eglGetCurrentDisplay(), EGL_SYNC_FENCE_KHR,
-                                                                     nullptr );
+            reGPUChrono.fenceSync=std::make_unique<FenceSync>();
         }
     }
     glFlush();

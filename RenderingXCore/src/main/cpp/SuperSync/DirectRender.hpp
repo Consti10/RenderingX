@@ -52,4 +52,7 @@ public:
         }
     }
 };
+//taken from github (so should be the way to go) but i was unable to confirm it yet beacuse of the lack of a MALI GPU
+//with clear visually working,but takes too much time on my testing QCOM GPU (I don't have a mali gpu).
+//without a clear this one has NO 'tearing fails', but obviously the visual problems
 #endif //RENDERINGX_DIRECTRENDER_HPP

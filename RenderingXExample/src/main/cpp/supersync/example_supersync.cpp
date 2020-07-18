@@ -91,10 +91,10 @@ void GLRSuperSyncExample::renderNewEyeCallback(JNIEnv *env,const bool whichEye,c
     glDisable(GL_DEPTH_TEST);
     VREyeDurations vrEyeTimeStamps{whichEye};
     mFBRManager->startDirectRendering(whichEye,ViewPortW,ViewPortH);
-    if(mFBRManager->directRenderingMode==FBRManager::QCOM_TILED_RENDERING){
-        //so we have to call glClear() before any OpenGL calls that affect framebuffer contents (e.g. draw())
-        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    }
+    //if(mFBRManager->directRenderingMode==FBRManager::QCOM_TILED_RENDERING){
+    //    //so we have to call glClear() before any OpenGL calls that affect framebuffer contents (e.g. draw())
+    //    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    //}
     vrEyeTimeStamps.setTimestamp("startDR");
     drawEye(env,whichEye);
     vrEyeTimeStamps.setTimestamp("drawEye");

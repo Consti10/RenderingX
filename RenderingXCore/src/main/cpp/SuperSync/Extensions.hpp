@@ -83,28 +83,56 @@ namespace  KHR_fence_sync{
     static PFNEGLCLIENTWAITSYNCKHRPROC eglClientWaitSyncKHR_=nullptr;
     static PFNEGLGETSYNCATTRIBKHRPROC eglGetSyncAttribKHR=nullptr;
     static void init(){
-        eglCreateSyncKHR_ = (PFNEGLCREATESYNCKHRPROC)eglGetProcAddress("eglCreateSyncKHR" );
-        eglDestroySyncKHR_ = (PFNEGLDESTROYSYNCKHRPROC)eglGetProcAddress("eglDestroySyncKHR" );
-        eglClientWaitSyncKHR_ = (PFNEGLCLIENTWAITSYNCKHRPROC)eglGetProcAddress("eglClientWaitSyncKHR" );
-        eglGetSyncAttribKHR = (PFNEGLGETSYNCATTRIBKHRPROC)eglGetProcAddress( "eglGetSyncAttribKHR" );
+        eglCreateSyncKHR_ = reinterpret_cast<PFNEGLCREATESYNCKHRPROC>(eglGetProcAddress("eglCreateSyncKHR" ));
+        eglDestroySyncKHR_ = reinterpret_cast<PFNEGLDESTROYSYNCKHRPROC>(eglGetProcAddress("eglDestroySyncKHR" ));
+        eglClientWaitSyncKHR_ = reinterpret_cast<PFNEGLCLIENTWAITSYNCKHRPROC>(eglGetProcAddress("eglClientWaitSyncKHR"));
+        eglGetSyncAttribKHR = reinterpret_cast<PFNEGLGETSYNCATTRIBKHRPROC>(eglGetProcAddress( "eglGetSyncAttribKHR" ));
+        if(eglCreateSyncKHR_==nullptr || eglDestroySyncKHR_==nullptr||eglClientWaitSyncKHR_==nullptr||eglGetSyncAttribKHR==nullptr){
+            MLOGE<<"Cannot init KHR_fence_sync";
+        }
     }
-    class FenceSync{
-    private:
-        EGLSyncKHR sync;
-    public:
-        const std::chrono::steady_clock::time_point creationTime=std::chrono::steady_clock::now();
-        FenceSync(){
-            sync=eglCreateSyncKHR_(eglGetCurrentDisplay(), EGL_SYNC_FENCE_KHR, nullptr);
-        }
-        ~FenceSync(){
-            eglDestroySyncKHR_(eglGetCurrentDisplay(), sync);
-        }
-        // true if condition was satisfied, false otherwise
-        bool wait(EGLTimeKHR timeout=0){
-            return eglClientWaitSyncKHR_(eglGetCurrentDisplay(),sync,EGL_SYNC_FLUSH_COMMANDS_BIT_KHR,timeout)==EGL_CONDITION_SATISFIED_KHR;
-        }
-    };
+    static void log(){
+        MLOGD<<"eglCreateSyncKHR_"<<(int)(KHR_fence_sync::eglCreateSyncKHR_==nullptr)<<" eglDestroySyncKHR_"<<(int)(KHR_fence_sync::eglDestroySyncKHR_==nullptr)<<"  eglClientWaitSyncKHR_"<<(int)(KHR_fence_sync::eglClientWaitSyncKHR_==nullptr);
+    }
 }
+
+class FenceSync{
+private:
+    const EGLDisplay eglDisplay=eglGetCurrentDisplay();
+    EGLSyncKHR sync;
+    bool hasBeenSatisfied=false;
+    std::chrono::steady_clock::time_point satisfiedTime;
+public:
+    const std::chrono::steady_clock::time_point creationTime=std::chrono::steady_clock::now();
+    FenceSync(){
+        //KHR_fence_sync::log();
+        sync=KHR_fence_sync::eglCreateSyncKHR_(eglDisplay, EGL_SYNC_FENCE_KHR, nullptr);
+        if(sync==EGL_NO_SYNC_KHR)MLOGE<<"Cannot create sync";
+    }
+    ~FenceSync(){
+        KHR_fence_sync::init();
+        //KHR_fence_sync::log();
+        KHR_fence_sync::eglDestroySyncKHR_(eglDisplay,sync);
+    }
+    // true if condition was satisfied, false otherwise
+    bool wait(EGLTimeKHR timeoutNS=0){
+        //KHR_fence_sync::init();
+        //KHR_fence_sync::log();
+        if(hasBeenSatisfied)return true;
+        const auto ret=KHR_fence_sync::eglClientWaitSyncKHR_(eglDisplay,sync,EGL_SYNC_FLUSH_COMMANDS_BIT_KHR,timeoutNS);
+        if(ret==EGL_CONDITION_SATISFIED_KHR){
+            hasBeenSatisfied=true;
+            satisfiedTime=std::chrono::steady_clock::now();
+            return true;
+        }
+        return false;
+    }
+    uint64_t getDeltaCreationSatisfiedNS(){
+        if(!hasBeenSatisfied)return 0;
+        return std::chrono::duration_cast<std::chrono::nanoseconds>(satisfiedTime-creationTime).count();
+    }
+};
+
 
 // other extensions
 namespace Extensions{
