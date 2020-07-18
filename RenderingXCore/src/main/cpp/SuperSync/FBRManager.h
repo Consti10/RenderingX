@@ -86,8 +86,9 @@ private:
     const std::function<void(JNIEnv*,bool,int64_t)> onRenderNewEyeCallback;
     const std::function<void(JNIEnv*,int)> onErrorCallback;
     std::atomic<bool> shouldRender{false};
-    Chronometer vsyncStartWT;
-    Chronometer vsyncMiddleWT;
+    std::array<Chronometer,2> vsyncWaitTime={Chronometer{"VSYNC start wait time"},Chronometer{"VSYNC middle wait time"}};
+    //Chronometer vsyncStartWT;
+    //Chronometer vsyncMiddleWT;
     void printLog();
     std::chrono::steady_clock::time_point lastLog;
     void resetTS();

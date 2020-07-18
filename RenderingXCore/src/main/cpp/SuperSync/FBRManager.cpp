@@ -18,9 +18,7 @@ FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailab
         directRender{qcomTiledRenderingAvailable},
         EGL_KHR_Reusable_Sync_Available(reusableSyncAvailable),
         onRenderNewEyeCallback(onRenderNewEyeCallback),
-        onErrorCallback(onErrorCallback),
-        vsyncStartWT("VSYNC start wait time"),
-        vsyncMiddleWT("VSYNC middle wait time")
+        onErrorCallback(onErrorCallback)
 {
     KHR_fence_sync::init();
     Extensions::initOtherExtensions();
@@ -38,29 +36,25 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env) {
     shouldRender= true;
     cNanoseconds before,diff=0;
     while(shouldRender){
-        if(diff>=getDisplayRefreshTime()){
-            MLOGE<<"WARNING: rendering a eye took longer than displayRefreshTime ! Error. Time: "<<(diff/1000/1000);
+        for(int eye=0;eye<2;eye++){
+            if(!shouldRender){
+                break;
+            }
+            vsyncWaitTime[eye].start();
+            if(eye==0){
+                waitUntilVsyncStart();
+            }else{
+                waitUntilVsyncMiddle();
+            }
+            vsyncWaitTime[eye].stop();
+            before=getSystemTimeNS();
+            //render new eye
+            onRenderNewEyeCallback(env,eye,0);
+            diff=getSystemTimeNS()-before;
+            if(diff>=getDisplayRefreshTime()){
+                MLOGE<<"WARNING: rendering a eye took longer than displayRefreshTime ! Error. Time: "<<(diff/1000/1000);
+            }
         }
-        vsyncStartWT.start();
-        int64_t leOffset=waitUntilVsyncStart();
-        vsyncStartWT.stop();
-        before=getSystemTimeNS();
-        //render new eye
-        onRenderNewEyeCallback(env,RIGHT_EYE,leOffset);
-        diff=getSystemTimeNS()-before;
-        if(!shouldRender){
-            break;
-        }
-        if(diff>=getDisplayRefreshTime()){
-            MLOGE<<"WARNING: rendering a eye took longer than displayRefreshTime ! Error. Time: "<<(diff/1000/1000);
-        }
-        vsyncMiddleWT.start();
-        int64_t reOffset=waitUntilVsyncMiddle();
-        vsyncMiddleWT.stop();
-        before=getSystemTimeNS();
-        //render new eye
-        onRenderNewEyeCallback(env,LEFT_EYE,reOffset);
-        diff=getSystemTimeNS()-before;
         printLog();
     }
 }
@@ -163,8 +157,8 @@ void FBRManager::printLog() {
         avgLog<<"------------------------FBRManager Averages------------------------";
         avgLog<<"\nGPU time:"<<": leftEye:"<<leGPUTimeAvg<<" | rightEye:"<<reGPUTimeAvg<<" | left&right:"<<leAreGPUTimeAvg;
         avgLog<<"\nGPU % not measurable:"<<": leftEye:"<<leGPUTimeNotMeasurablePerc<<" | rightEye:"<<reGPUTimeNotMeasurablePerc<<" | left&right:"<<leAreGPUTimeNotMeasurablePerc;
-        avgLog<<"\nVsync waitT:"<<" start:"<< vsyncStartWT.getAvgUS()/1000.0<<" | middle:"<<vsyncMiddleWT.getAvgMS()
-        <<" | start&middle"<<(vsyncStartWT.getAvgMS()+vsyncMiddleWT.getAvgMS())/2.0;
+        avgLog<<"\nVsync waitT:"<<" start:"<< vsyncWaitTime[0].getAvgUS()/1000.0<<" | middle:"<<vsyncWaitTime[1].getAvgMS()
+        <<" | start&middle"<<(vsyncWaitTime[0].getAvgMS()+vsyncWaitTime[1].getAvgMS())/2.0;
         //avgLog<<"\nDisplay refresh time ms:"<<DISPLAY_REFRESH_TIME/1000.0/1000.0;
         avgLog<<"\n----  -----  ----  ----  ----  ----  ----  ----  --- ---";
         MLOGD<<avgLog.str();
@@ -173,8 +167,9 @@ void FBRManager::printLog() {
 }
 
 void FBRManager::resetTS() {
-    vsyncStartWT.reset();
-    vsyncMiddleWT.reset();
+    for(int eye=0;eye<2;eye++){
+        vsyncWaitTime[0].reset();
+    }
     leGPUChrono.avgDelta.reset();
     leGPUChrono.nEyes=0;
     leGPUChrono.nEyesNotMeasurable=0;
