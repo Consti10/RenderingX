@@ -41,6 +41,7 @@ public:
     }
 };
 
+
 class RelativeCalculator{
 private:
     long sum=0;

@@ -77,8 +77,7 @@ private:
     struct EyeGPUChrono{
         std::unique_ptr<FenceSync> fenceSync=nullptr;
         int64_t lastDelta=0;
-        uint64_t deltaSumUS=0;
-        uint64_t deltaSumUsC=0;
+        AvgCalculator avgDelta;
         double nEyes=0;
         double nEyesNotMeasurable=0;
     };

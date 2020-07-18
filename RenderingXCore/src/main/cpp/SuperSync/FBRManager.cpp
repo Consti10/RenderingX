@@ -77,8 +77,7 @@ int64_t FBRManager::waitUntilVsyncStart() {
             if(satisfied){
                 //great ! We can measure the GPU time
                 leGPUChrono.lastDelta=leGPUChrono.fenceSync->getDeltaCreationSatisfiedNS();
-                leGPUChrono.deltaSumUS+=leGPUChrono.lastDelta/1000;
-                leGPUChrono.deltaSumUsC++;
+                leGPUChrono.avgDelta.add(std::chrono::nanoseconds(leGPUChrono.lastDelta));
                 leGPUChrono.fenceSync.reset(nullptr);
                 //LOGV("leftEye GL: %f",(leGPUChrono.lastDelta/1000)/1000.0);
             }
@@ -106,8 +105,7 @@ int64_t FBRManager::waitUntilVsyncMiddle() {
             const bool satisfied=reGPUChrono.fenceSync->wait(0);
             if(satisfied){
                 reGPUChrono.lastDelta=reGPUChrono.fenceSync->getDeltaCreationSatisfiedNS();
-                reGPUChrono.deltaSumUS+=reGPUChrono.lastDelta/1000;
-                reGPUChrono.deltaSumUsC++;
+                reGPUChrono.avgDelta.add(std::chrono::nanoseconds(reGPUChrono.lastDelta));
                 reGPUChrono.fenceSync.reset(nullptr);
                 //LOGV("rightEye GL: %f",(reGPUChrono.lastDelta/1000)/1000.0);
             }
@@ -148,16 +146,9 @@ void FBRManager::printLog() {
     const auto now=steady_clock::now();
     if(duration_cast<std::chrono::milliseconds>(now-lastLog).count()>5*1000){//every 5 seconds
         lastLog=now;
-        double leGPUTimeAvg=0;
-        double reGPUTimeAvg=0;
-        double leAreGPUTimeAvg;
-        if(leGPUChrono.deltaSumUsC>0){
-            leGPUTimeAvg=(leGPUChrono.deltaSumUS/leGPUChrono.deltaSumUsC)/1000.0;
-        }
-        if(reGPUChrono.deltaSumUsC>0){
-            reGPUTimeAvg=(reGPUChrono.deltaSumUS/reGPUChrono.deltaSumUsC)/1000.0;
-        }
-        leAreGPUTimeAvg=(leGPUTimeAvg+reGPUTimeAvg)*0.5;
+        const double leGPUTimeAvg=leGPUChrono.avgDelta.getAvg_ms();
+        const double reGPUTimeAvg=reGPUChrono.avgDelta.getAvg_ms();
+        const double leAreGPUTimeAvg=(leGPUTimeAvg+reGPUTimeAvg)*0.5;
         double leGPUTimeNotMeasurablePerc=0;
         double reGPUTimeNotMeasurablePerc=0;
         double leAreGPUTimeNotMeasurablePerc=0;
@@ -168,30 +159,12 @@ void FBRManager::printLog() {
             reGPUTimeNotMeasurablePerc=(reGPUChrono.nEyesNotMeasurable/reGPUChrono.nEyes)*100.0;
         }
         leAreGPUTimeNotMeasurablePerc=(leGPUTimeNotMeasurablePerc+reGPUTimeNotMeasurablePerc)*0.5;
-        double advanceMS=0;
-        if(leAreGPUTimeNotMeasurablePerc>50){
-            //more than half of all frames took too long to render, increase latency by 2
-            advanceMS=2;
-        }
-        if(leAreGPUTimeNotMeasurablePerc<1){
-            //(almost) no frames failed
-            advanceMS=((vsyncStartWT.getAvgUS()+ vsyncMiddleWT.getAvgUS())/2.0/1000.0)-leAreGPUTimeAvg;
-            //4ms for "safety" (because front and back porch usw) DAFUQ ?!
-            advanceMS-=4;
-            if(advanceMS>0){
-                advanceMS*=-1;
-            }else{
-                advanceMS=0;
-            }
-        }
         std::ostringstream avgLog;
         avgLog<<"------------------------FBRManager Averages------------------------";
         avgLog<<"\nGPU time:"<<": leftEye:"<<leGPUTimeAvg<<" | rightEye:"<<reGPUTimeAvg<<" | left&right:"<<leAreGPUTimeAvg;
         avgLog<<"\nGPU % not measurable:"<<": leftEye:"<<leGPUTimeNotMeasurablePerc<<" | rightEye:"<<reGPUTimeNotMeasurablePerc<<" | left&right:"<<leAreGPUTimeNotMeasurablePerc;
-        avgLog<<"\nVsync waitT:"<<" start:"<< vsyncStartWT.getAvgUS()/1000.0<<" | middle:"<<
-                                                                                       vsyncMiddleWT.getAvgUS()/1000.0<<" | start&middle"<<(vsyncStartWT.getAvgUS()+
-                                                                                                                                            vsyncMiddleWT.getAvgUS())/2.0/1000.0;
-        avgLog<<"\nVsync advance ms:"<< advanceMS;
+        avgLog<<"\nVsync waitT:"<<" start:"<< vsyncStartWT.getAvgUS()/1000.0<<" | middle:"<<vsyncMiddleWT.getAvgMS()
+        <<" | start&middle"<<(vsyncStartWT.getAvgMS()+vsyncMiddleWT.getAvgMS())/2.0;
         //avgLog<<"\nDisplay refresh time ms:"<<DISPLAY_REFRESH_TIME/1000.0/1000.0;
         avgLog<<"\n----  -----  ----  ----  ----  ----  ----  ----  --- ---";
         MLOGD<<avgLog.str();
@@ -202,13 +175,11 @@ void FBRManager::printLog() {
 void FBRManager::resetTS() {
     vsyncStartWT.reset();
     vsyncMiddleWT.reset();
-    leGPUChrono.deltaSumUsC=0;
-    leGPUChrono.deltaSumUS=0;
+    leGPUChrono.avgDelta.reset();
     leGPUChrono.nEyes=0;
     leGPUChrono.nEyesNotMeasurable=0;
     //
-    reGPUChrono.deltaSumUsC=0;
-    reGPUChrono.deltaSumUS=0;
+    reGPUChrono.avgDelta.reset();
     reGPUChrono.nEyes=0;
     reGPUChrono.nEyesNotMeasurable=0;
 }
