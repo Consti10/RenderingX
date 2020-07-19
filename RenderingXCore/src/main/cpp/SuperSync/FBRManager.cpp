@@ -94,7 +94,30 @@ int64_t FBRManager::waitUntilVsyncStart() {
 
 int64_t FBRManager::waitUntilVsyncMiddle() {
     reGPUChrono.nEyes++;
-    while(true){
+    const auto timeLeft=getEyeRefreshTime()-getVsyncRasterizerPosition();
+    MLOGD<<"time left1: "<< MyTimeHelper::ReadableNS(timeLeft);
+    if(timeLeft<0 || timeLeft>=getDisplayRefreshTime()){
+        MLOGE<<"Time left ?"<<timeLeft;
+    }
+    const bool satisfied=reGPUChrono.fenceSync->wait(timeLeft);
+    if(satisfied){
+        reGPUChrono.lastDelta=reGPUChrono.fenceSync->getDeltaCreationSatisfiedNS();
+        reGPUChrono.avgDelta.add(std::chrono::nanoseconds(reGPUChrono.lastDelta));
+        //LOGV("rightEye GL: %f",(reGPUChrono.lastDelta/1000)/1000.0);
+    }else{
+        MLOGE<<"fence sync timed out";
+        reGPUChrono.nEyesNotMeasurable++;
+    }
+    reGPUChrono.fenceSync.reset(nullptr);
+    const auto timeLeft2=getEyeRefreshTime()-getVsyncRasterizerPosition();
+    MLOGD<<"time left 2: "<< MyTimeHelper::ReadableNS(timeLeft2);
+    if(timeLeft2>1000){
+        std::this_thread::sleep_for(std::chrono::nanoseconds(timeLeft2));
+    }
+    const auto offset=getEyeRefreshTime()-getVsyncRasterizerPosition();
+    MLOGD<<"offset (overshoot)"<< MyTimeHelper::ReadableNS(offset);
+    return offset;
+    /*while(true){
         if(reGPUChrono.fenceSync!= nullptr){
             const bool satisfied=reGPUChrono.fenceSync->wait(0);
             if(satisfied){
@@ -117,7 +140,7 @@ int64_t FBRManager::waitUntilVsyncMiddle() {
             int64_t offset=pos-getEyeRefreshTime();
             return offset;
         }
-    }
+    }*/
 }
 
 void FBRManager::startDirectRendering(bool leftEye, int viewPortW, int viewPortH) {

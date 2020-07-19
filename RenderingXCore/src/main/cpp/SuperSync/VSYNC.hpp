@@ -84,6 +84,7 @@ public:
         const int64_t position=getSystemTimeNS()-lastRegisteredVSYNC;
         if(position<0){
            MLOGE<<" getVsyncRasterizerPosition - lastRegisteredVSYNC is in the future"<<getSystemTimeNS()<<" "<<lastRegisteredVSYNC;
+            return 0;
         }
         //auto lastRegisteredVsyncAge=position / DISPLAY_REFRESH_TIME;
         //MLOGD<<"last registered vsync is "<<lastRegisteredVsyncAge<<" events old";

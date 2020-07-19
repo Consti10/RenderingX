@@ -146,10 +146,11 @@ void VrCompositorRenderer::addLayerSphere360(float radius,UvSphere::MEDIA_FORMAT
 }
 
 void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
+    const int EYE_IDX=eye==GVR_LEFT_EYE ? 0 : 1;
     const bool leftEye=eye==GVR_LEFT_EYE;
+   // cpuTime[EYE_IDX].start();
     mGLProgramTextureVDDC->updateUnDistortionUniforms(leftEye, mDataUnDistortion);
     mGLProgramTextureExtVDDC->updateUnDistortionUniforms(leftEye, mDataUnDistortion);
-    const int EYE_IDX=eye==GVR_LEFT_EYE ? 0 : 1;
     const auto viewport=getViewportForEye(eye);
     glViewport(viewport[0],viewport[1],viewport[2],viewport[3]);
     const auto rotation = GetLatestHeadSpaceFromStartSpaceRotation();
@@ -173,6 +174,10 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         mGLProgramVC2D->drawX(glm::mat4(1.0f), glm::mat4(1.0f), mOcclusionMesh[idx]);
     }
     GLHelper::checkGlError("VrCompositorRenderer::drawLayers");
+    //cpuTime[EYE_IDX].stop();
+    if(eye==GVR_LEFT_EYE){
+        //MLOGD<<"Rendering left eye - cpu time "<<
+    }
 }
 
 void VrCompositorRenderer::removeLayers() {

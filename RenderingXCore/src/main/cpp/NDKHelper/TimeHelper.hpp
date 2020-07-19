@@ -83,6 +83,9 @@ public:
         const auto ns=std::chrono::duration_cast<std::chrono::nanoseconds>(dur).count();
         return std::to_string(ns)+" ns ";
     }
+    static std::string ReadableNS(uint64_t nanoseconds){
+        return R(std::chrono::nanoseconds(nanoseconds));
+    }
 };
 
 class MeasureExecutionTime{

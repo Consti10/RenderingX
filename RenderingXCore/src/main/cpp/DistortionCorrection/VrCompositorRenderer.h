@@ -16,6 +16,7 @@
 #include <variant>
 #include <Sphere/UvSphere.hpp>
 #include "MatrixHelper.h"
+#include <Chronometer.h>
 
 class VrCompositorRenderer {
 public:
@@ -156,6 +157,9 @@ public:
         }
         return tmp;
     }
+
+private:
+    std::array<Chronometer,2> cpuTime={Chronometer{"CPU left"},Chronometer{"CPU right"}};
 };
 
 
