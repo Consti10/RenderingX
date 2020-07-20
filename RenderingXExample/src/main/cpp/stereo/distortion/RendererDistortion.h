@@ -26,7 +26,6 @@
 #include <TextAssetsHelper.hpp>
 
 #include <GLProgramLine.h>
-#include <Chronometer.h>
 #include <FPSCalculator.h>
 #include <BasicGLPrograms.hpp>
 #include <gvr_util/util.h>

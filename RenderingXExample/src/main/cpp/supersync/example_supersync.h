@@ -22,7 +22,6 @@
 #include <TextAssetsHelper.hpp>
 
 #include <GLProgramLine.h>
-#include <Chronometer.h>
 #include <FPSCalculator.h>
 #include <VrCompositorRenderer.h>
 

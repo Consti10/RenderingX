@@ -21,7 +21,6 @@
 #include <Extensions.hpp>
 
 #include "GLProgramLine.h"
-#include "Chronometer.h"
 #include "FPSCalculator.h"
 #include "VRFrameCPUChronometer.h"
 #include "example_supersync.h"

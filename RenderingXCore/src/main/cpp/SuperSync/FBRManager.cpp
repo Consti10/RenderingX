@@ -122,11 +122,11 @@ void FBRManager::printLog() {
         leAreGPUTimeNotMeasurablePerc=(leGPUTimeNotMeasurablePerc+reGPUTimeNotMeasurablePerc)*0.5;
         std::ostringstream avgLog;
         avgLog<<"------------------------FBRManager Averages------------------------";
-        avgLog << "\nCPU Time  : " << "leftEye:" << leChrono.avgCPUTime.getAvgMS() << " | rightEye:" << reChrono.avgCPUTime.getAvgMS();
+        avgLog << "\nCPU Time  : " << "leftEye:" << leChrono.avgCPUTime.getAvg_ms() << " | rightEye:" << reChrono.avgCPUTime.getAvg_ms();
         avgLog << "\nGPU time: " << "leftEye:" << leChrono.avgGPUTime.getAvgReadable() << " | rightEye:" << reChrono.avgGPUTime.getAvgReadable() << " | left&right:" << MyTimeHelper::R(leAreGPUTimeAvg);
         avgLog<<"\nGPU % not measurable:"<<": leftEye:"<<leGPUTimeNotMeasurablePerc<<" | rightEye:"<<reGPUTimeNotMeasurablePerc<<" | left&right:"<<leAreGPUTimeNotMeasurablePerc;
-        avgLog<<"\nVsync waitT:"<<" start:"<< vsyncWaitTime[0].getAvgUS()/1000.0<<" | middle:"<<vsyncWaitTime[1].getAvgMS()
-        <<" | start&middle"<<(vsyncWaitTime[0].getAvgMS()+vsyncWaitTime[1].getAvgMS())/2.0;
+        avgLog<<"\nVsync waitT:"<<" start:"<< vsyncWaitTime[0].getAvg_ms()<<" | middle:"<<vsyncWaitTime[1].getAvg_ms()
+        <<" | start&middle"<<(vsyncWaitTime[0].getAvg_ms()+vsyncWaitTime[1].getAvg_ms())/2.0;
         //avgLog<<"\nDisplay refresh time ms:"<<DISPLAY_REFRESH_TIME/1000.0/1000.0;
         avgLog<<"\n----  -----  ----  ----  ----  ----  ----  ----  --- ---";
         MLOGD<<avgLog.str();

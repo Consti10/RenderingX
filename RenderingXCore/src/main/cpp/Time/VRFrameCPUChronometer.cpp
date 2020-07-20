@@ -62,14 +62,14 @@ void VRFrameTimeAccumulator::print() {
     std::stringstream ss;
     ss<<"....................VRFrameTimeAccumulator....................";
     for (auto& currentTS : mFrameCPUTimestamps) {
-        const float leftEyeDelta= currentTS->leftEye.getAvgMS();
-        const float rightEyeDelta= currentTS->rightEye.getAvgMS();
+        const float leftEyeDelta= currentTS->leftEye.getAvg_ms();
+        const float rightEyeDelta= currentTS->rightEye.getAvg_ms();
         const float frameDelta=(leftEyeDelta+rightEyeDelta)/2.0f;
         ss<<"\n";
         ss<<currentTS->name.c_str()<<": leftEye:"<<leftEyeDelta<<" | rightEye:"<<rightEyeDelta<<" | avg:"<<frameDelta;
     }
-    const float leftEyeDelta= leftEyeTotal.getAvgMS();
-    const float rightEyeDelta= rightEyeTotal.getAvgMS();
+    const float leftEyeDelta= leftEyeTotal.getAvg_ms();
+    const float rightEyeDelta= rightEyeTotal.getAvg_ms();
     ss<<"\n"<<"CPUTimeSum:"<<" leftEye:"<<leftEyeDelta<<" | rightEye:"<<rightEyeDelta<<" | avg:"<<(leftEyeDelta+rightEyeDelta)/2.0f;
     ss<<"\n----  -----  ----  ----  ----  ----  ----  ----  ";
     MLOGD<<ss.str();

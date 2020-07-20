@@ -22,7 +22,7 @@
 #include <GLBuffer.hpp>
 #include <GLProgramLine.h>
 #include <GLProgramTexture.h>
-#include <Chronometer.h>
+#include <TimeHelper.hpp>
 #include <FPSCalculator.h>
 #include <ProjTex/GLPTextureProj.h>
 #include "../../../../../RenderingXCore/src/main/cpp/GLPrograms/GLProgramVC.h"

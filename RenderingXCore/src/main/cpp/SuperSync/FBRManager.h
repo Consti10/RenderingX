@@ -50,7 +50,6 @@
 #include <vector>
 #include <atomic>
 #include <EGL/eglext.h>
-#include "../Time/Chronometer.h"
 #include "VSYNC.hpp"
 #include "DirectRender.hpp"
 

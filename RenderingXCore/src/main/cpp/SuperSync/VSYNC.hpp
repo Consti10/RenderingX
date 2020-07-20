@@ -6,7 +6,6 @@
 #define RENDERINGX_VSYNC_HPP
 
 #include <sys/types.h>
-#include <Chronometer.h>
 #include <TimeHelper.hpp>
 
 

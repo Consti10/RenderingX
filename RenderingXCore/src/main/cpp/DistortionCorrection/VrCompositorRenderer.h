@@ -16,7 +16,7 @@
 #include <variant>
 #include <Sphere/UvSphere.hpp>
 #include "MatrixHelper.h"
-#include <Chronometer.h>
+#include <TimeHelper.hpp>
 
 class VrCompositorRenderer {
 public:

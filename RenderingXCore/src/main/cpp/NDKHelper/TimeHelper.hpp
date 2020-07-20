@@ -76,6 +76,9 @@ public:
         if(sumCount==0)return T();
         return sum / sumCount;
     }
+    float getAvg_ms(){
+        return (float)(std::chrono::duration_cast<std::chrono::microseconds>(getAvg()).count())/1000.0f;
+    }
     long getCount()const{
         return sumCount;
     }
@@ -91,9 +94,9 @@ public:
     //}
 };
 
-class Chronometer2 {
+class Chronometer {
 public:
-    explicit Chronometer2(std::string name="Unknown"):mName(std::move(name)){}
+    explicit Chronometer(std::string name="Unknown"):mName(std::move(name)){}
     void start(){
         startTS=std::chrono::steady_clock::now();
     }
@@ -108,12 +111,23 @@ public:
     std::chrono::steady_clock::duration getAvg()const{
         return avgCalculator.getAvg();
     }
+    float getAvg_ms(){
+        return avgCalculator.getAvg_ms();
+    }
+    void printAvg(const std::chrono::steady_clock::duration& interval) {
+        const auto now=std::chrono::steady_clock::now();
+        if(now-lastLog>interval){
+            lastLog=now;
+            MLOGD2(mName)<<"Avg: "<<MyTimeHelper::R(getAvg());
+            reset();
+        }
+    }
 private:
     AvgCalculator<std::chrono::steady_clock::duration> avgCalculator;
     const std::string mName;
     std::chrono::steady_clock::time_point startTS;
+    std::chrono::steady_clock::time_point lastLog;
 };
-
 
 
 

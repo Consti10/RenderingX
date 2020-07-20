@@ -28,7 +28,6 @@ include_directories(${RX_CORE_EXTERNAL_LIBS}/glm)
 ##########################################################################################################
 include_directories(${RX_CORE_CPP}/Time)
 add_library(Time SHARED
-        ${RX_CORE_CPP}/Time/Chronometer.cpp
         ${RX_CORE_CPP}/Time/VRFrameCPUChronometer.cpp
         ${RX_CORE_CPP}/Time/FPSCalculator.cpp)
 target_link_libraries( Time ${log-lib} android)

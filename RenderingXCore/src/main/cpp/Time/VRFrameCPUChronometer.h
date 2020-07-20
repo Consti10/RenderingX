@@ -13,7 +13,7 @@
 #include <chrono>
 #include <sstream>
 #include <android/log.h>
-#include "Chronometer.h"
+#include <TimeHelper.hpp>
 
 /**
  * Helper to measure the time spend by the CPU on various different OpenGL calls
@@ -53,8 +53,8 @@ public:
         rightEye.reset();
     }
     const std::string name;
-    DurationAccumulator leftEye;
-    DurationAccumulator rightEye;
+    AvgCalculator<std::chrono::steady_clock::duration> leftEye;
+    AvgCalculator<std::chrono::steady_clock::duration> rightEye;
 };
 
 //convenient debugging of the time spent on OpenGL calls/ cpp code execution
@@ -68,8 +68,8 @@ public:
     void reset();
 private:
     std::vector<std::unique_ptr<VRFrameDurations>> mFrameCPUTimestamps;
-    DurationAccumulator leftEyeTotal;
-    DurationAccumulator rightEyeTotal;
+    AvgCalculator<std::chrono::steady_clock::duration> leftEyeTotal;
+    AvgCalculator<std::chrono::steady_clock::duration> rightEyeTotal;
     std::chrono::steady_clock::time_point lastLog;
 };
 
