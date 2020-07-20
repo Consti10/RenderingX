@@ -8,29 +8,7 @@
 #include <AndroidLogger.hpp>
 #include <chrono>
 
-
-
-class RelativeCalculator{
-private:
-    long sum=0;
-    long sumAtLastCall=0;
-public:
-    RelativeCalculator() = default;
-    void add(unsigned long x){
-        sum+=x;
-    }
-    long getDeltaSinceLastCall() {
-        long ret = sum - sumAtLastCall;
-        sumAtLastCall = sum;
-        return ret;
-    }
-    long getAbsolute(){
-        return sum;
-    }
-};
-
-class MyTimeHelper{
-public:
+namespace MyTimeHelper{
     // R stands for readable. Convert a std::chrono::duration into a readable format
     static std::string R(const std::chrono::steady_clock::duration& dur){
         const auto durAbsolute=std::chrono::abs(dur);
@@ -54,6 +32,25 @@ public:
     }
     static std::string ReadableNS(uint64_t nanoseconds){
         return R(std::chrono::nanoseconds(nanoseconds));
+    }
+};
+
+class RelativeCalculator{
+private:
+    long sum=0;
+    long sumAtLastCall=0;
+public:
+    RelativeCalculator() = default;
+    void add(unsigned long x){
+        sum+=x;
+    }
+    long getDeltaSinceLastCall() {
+        long ret = sum - sumAtLastCall;
+        sumAtLastCall = sum;
+        return ret;
+    }
+    long getAbsolute(){
+        return sum;
     }
 };
 
@@ -93,6 +90,7 @@ public:
 
     //}
 };
+
 
 class Chronometer {
 public:
