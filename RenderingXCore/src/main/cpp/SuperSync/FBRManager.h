@@ -69,8 +69,8 @@ private:
     const bool EGL_KHR_Reusable_Sync_Available;
     const DirectRender directRender;
     struct EyeGPUChrono{
-        int64_t lastDelta=0;
-        AvgCalculator avgDelta;
+        Chronometer avgCPUTime{};
+        AvgCalculator<CLOCK::duration> avgGPUTime;
         double nEyes=0;
         double nEyesNotMeasurable=0;
     };

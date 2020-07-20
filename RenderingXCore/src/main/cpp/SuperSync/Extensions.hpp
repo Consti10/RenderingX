@@ -130,9 +130,9 @@ public:
     bool wait(const std::chrono::steady_clock::duration& timeout){
         return wait(std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count());
     }
-    uint64_t getDeltaCreationSatisfiedNS(){
-        if(!hasBeenSatisfied)return 0;
-        return std::chrono::duration_cast<std::chrono::nanoseconds>(satisfiedTime-creationTime).count();
+    std::chrono::steady_clock::duration getDeltaCreationSatisfied(){
+        if(!hasBeenSatisfied)return 0ns;
+        return satisfiedTime-creationTime;
     }
     bool hasAlreadyBeenSatisfied()const{
         return hasBeenSatisfied;

@@ -31,7 +31,7 @@ private:
     CLOCK::duration displayRefreshTime=DEFAULT_REFRESH_TIME;
     CLOCK::duration eyeRefreshTime= displayRefreshTime/2;
     // how many samples of the refresh rate I currently have to determine the accurate refresh rate
-    AvgCalculator2<CLOCK::duration> displayRefreshTimeCalculator;
+    AvgCalculator<CLOCK::duration> displayRefreshTimeCalculator;
     CLOCK::time_point previousVSYNCSetByCallback;
     static constexpr const auto N_SAMPLES=600;
 public:

@@ -8,66 +8,6 @@
 #include <AndroidLogger.hpp>
 #include <chrono>
 
-class AvgCalculator{
-private:
-    // provide us (microseconds) resolution
-    unsigned long sumUs=0;
-    long sumCount=0;
-public:
-    AvgCalculator() = default;
-    void add(const std::chrono::steady_clock::duration& duration){
-        const auto us=std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
-        if(us>=0){
-            sumUs+=us;
-            sumCount++;
-        }else{
-            MLOGE<<"Negative duration "<<us<<" us";
-        }
-    }
-    //void addNs(long duration){
-    //    add(std::chrono::nanoseconds(duration));
-    //}
-    long getAvg_us(){
-        if(sumCount==0)return 0;
-        return sumUs / sumCount;
-    }
-    // milliseconds & float is the most readable format
-    float getAvg_ms(){
-        return (float)getAvg_us()/1000.0f;
-    }
-    void reset(){
-        sumUs=0;
-        sumCount=0;
-    }
-};
-
-template<class T>
-class AvgCalculator2{
-private:
-    T sum;
-    long sumCount=0;
-public:
-    AvgCalculator2() = default;
-    void add(T value){
-       if(value<T()){
-           MLOGE<<"Cannot add negative value";
-           return;
-       }
-       sum+=value;
-       sumCount++;
-    }
-    T getAvg()const{
-        if(sumCount==0)return T();
-        return sum / sumCount;
-    }
-    long getCount()const{
-        return sumCount;
-    }
-    void reset(){
-        sum=0;
-        sumCount=0;
-    }
-};
 
 
 class RelativeCalculator{
@@ -116,6 +56,66 @@ public:
         return R(std::chrono::nanoseconds(nanoseconds));
     }
 };
+
+template<class T>
+class AvgCalculator{
+private:
+    T sum;
+    long sumCount=0;
+public:
+    AvgCalculator() = default;
+    void add(T value){
+        if(value<T()){
+            MLOGE<<"Cannot add negative value";
+            return;
+        }
+        sum+=value;
+        sumCount++;
+    }
+    T getAvg()const{
+        if(sumCount==0)return T();
+        return sum / sumCount;
+    }
+    long getCount()const{
+        return sumCount;
+    }
+    void reset(){
+        sum=T();
+        sumCount=0;
+    }
+    std::string getAvgReadable()const{
+        MyTimeHelper::R(getAvg());
+    }
+    //static AvgCalculator median(const AvgCalculator& c1,const AvgCalculator& c2){
+
+    //}
+};
+
+class Chronometer2 {
+public:
+    explicit Chronometer2(std::string name="Unknown"):mName(std::move(name)){}
+    void start(){
+        startTS=std::chrono::steady_clock::now();
+    }
+    void stop(){
+        const auto now=std::chrono::steady_clock::now();
+        const auto delta=(now-startTS);
+        avgCalculator.add(delta);
+    }
+    void reset() {
+        avgCalculator.reset();
+    }
+    std::chrono::steady_clock::duration getAvg()const{
+        return avgCalculator.getAvg();
+    }
+private:
+    AvgCalculator<std::chrono::steady_clock::duration> avgCalculator;
+    const std::string mName;
+    std::chrono::steady_clock::time_point startTS;
+};
+
+
+
 
 class MeasureExecutionTime{
 private:
