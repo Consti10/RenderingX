@@ -9,22 +9,21 @@
 #include <Chronometer.h>
 #include <TimeHelper.hpp>
 
-// https://stackoverflow.com/questions/43451565/store-timestamps-in-nanoseconds-c
-// using int64_t for nanoseconds is safe until we are all dead
-using cNanoseconds=int64_t;
 
 // Helper to obtain the current VSYNC position (e.g. which scan line is currently read out)
 // While ideally I would like to use the exact data from the display manufacturer, I have to use the
 // Choreographer as workaround on android. This means that more advanced configuration data like
-// *front and back porch* cannot be taken into consideration
+// *front and back porch* cannot be taken into consideration. However, even with the assumption
+// that the VSYNC moves from [scan line 0 to SCREEN_WIDTH] in the display refresh time intervall FBR works
 using namespace std::chrono_literals;
 class VSYNC{
 public:
+    // Java System.nanoTime is the same as std::chrono::steady_clock
     using CLOCK=std::chrono::steady_clock;
 private:
     // last registered VSYNC. Indirectly set by the callback, but it is guaranteed that this value
     // is never smaller than the current system time in NS (In other words, the timestamp
-    // always lies in the past, never in the future. However, it is not guaranteed to be the
+    // always lies in the past, never in the future). However, it is not guaranteed to be the
     // 'last' VSYNC - see getLatestVSYNC()
     CLOCK::time_point lastRegisteredVSYNC;
     static constexpr CLOCK::duration DEFAULT_REFRESH_TIME=16666666ns;
@@ -37,14 +36,6 @@ private:
     static constexpr const auto N_SAMPLES=600;
 public:
     /**
-     * Return the current time in ns (same as java System.nanoseconds)
-     */
-    static CLOCK::time_point getSystemTimeNS(){
-        const auto time=std::chrono::steady_clock::now();
-        return time;
-        //return (cNanoseconds)std::chrono::duration_cast<std::chrono::nanoseconds>(time).count();
-    }
-    /**
      * pass the last vsync timestamp from java (setLastVSYNC) to cpp
      * @param lastVSYNC as obtained by Choreographer.doFrame but without the offset(s)
      */
@@ -53,7 +44,7 @@ public:
         // Make sure we do not have a 'future' VSYNC.
         // E.g. a VSYNC that is about to happen (we want the 'latest' or at least a previous VSYNC)
         {
-            const auto systemTime=getSystemTimeNS();
+            const auto systemTime=CLOCK::now();
             auto tmp=lastVSYNC;
             while(tmp>systemTime){
                 tmp-=displayRefreshTime;
@@ -85,6 +76,10 @@ public:
         } //else We have at least n samples. This is enough.
         //MLOGD<<"DISPLAY_REFRESH_TIME"<<MyTimeHelper::R(std::chrono::nanoseconds(DISPLAY_REFRESH_TIME));
     }
+    /**
+     * Java System.nanoTime is the same as std::chrono::steady_clock::time_point
+     * @param lastVSYNC: value in ns as obtained by choreographer without offset(s)
+     */
     void setLastVSYNC(const uint64_t lastVSYNC){
         setLastVSYNC(CLOCK::time_point(std::chrono::nanoseconds(lastVSYNC)));
     }
@@ -93,7 +88,7 @@ public:
      * This value is guaranteed to be in the past and its age is not more than displayRefreshTime
     */
     CLOCK::time_point getLatestVSYNC()const{
-        const auto currTime=getSystemTimeNS();
+        const auto currTime=CLOCK::now();
         const auto currDisplayRefreshTime=displayRefreshTime;
         auto lastVSYNC=lastRegisteredVSYNC;
         const auto delta=currTime-lastVSYNC;
@@ -102,13 +97,12 @@ public:
         return lastVSYNC;
     }
     /**
-     * Rough estimation of the rasterizer position ( I do not know blanking usw)
      * @return The current rasterizer position, with range: 0<=position<DISPLAY_REFRESH_TIME
      * For example, a value of 0 means that the rasterizer is at the most left position of the display in landscape mode
      * and a value of DISPLAY_REFRESH_TIME means the rasterizer is at its right most position
      */
     int64_t getVsyncRasterizerPosition()const{
-        const int64_t position=std::chrono::duration_cast<std::chrono::nanoseconds>(getSystemTimeNS()-lastRegisteredVSYNC).count();
+        const int64_t position=std::chrono::duration_cast<std::chrono::nanoseconds>(CLOCK::now()-lastRegisteredVSYNC).count();
         //auto lastRegisteredVsyncAge=position / DISPLAY_REFRESH_TIME;
         //MLOGD<<"last registered vsync is "<<lastRegisteredVsyncAge<<" events old";
         // It is possible that the last registered VSYNC is not the latest VSYNC, but a number of events in the past

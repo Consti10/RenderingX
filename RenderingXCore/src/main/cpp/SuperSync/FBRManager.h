@@ -68,9 +68,6 @@ public:
 private:
     const bool EGL_KHR_Reusable_Sync_Available;
     const DirectRender directRender;
-    //wait until right/left eye is ready to be rendered
-    int64_t waitUntilVsyncStart();
-    int64_t waitUntilVsyncMiddle(const std::chrono::steady_clock::time_point& nextVSYNCMiddle);
     struct EyeGPUChrono{
         int64_t lastDelta=0;
         AvgCalculator avgDelta;

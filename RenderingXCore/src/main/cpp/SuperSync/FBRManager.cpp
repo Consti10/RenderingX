@@ -40,8 +40,6 @@ void FBRManager::drawLeftAndRightEye(JNIEnv* env) {
 
 void FBRManager::enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H) {
     shouldRender= true;
-    cNanoseconds before,diff=0;
-
     while(shouldRender){
         const auto latestVSYNC=getLatestVSYNC();
         const auto nextVSYNCMiddle=latestVSYNC+getEyeRefreshTime();
@@ -101,81 +99,6 @@ void FBRManager::waitUntilTimePoint(const std::chrono::steady_clock::time_point&
     const auto offset=std::chrono::steady_clock::now()-timePoint;
     //MLOGD<<"offset (overshoot)"<< MyTimeHelper::R(offset);
     //return std::chrono::duration_cast<std::chrono::nanoseconds>(offset).count();
-}
-
-int64_t FBRManager::waitUntilVsyncStart() {
-    /*leGPUChrono.nEyes++;
-    while(true){
-        if(leGPUChrono.fenceSync!= nullptr){
-            const bool satisfied=leGPUChrono.fenceSync->wait(0);
-            if(satisfied){
-                //great ! We can measure the GPU time
-                leGPUChrono.lastDelta=leGPUChrono.fenceSync->getDeltaCreationSatisfiedNS();
-                leGPUChrono.avgDelta.add(std::chrono::nanoseconds(leGPUChrono.lastDelta));
-                leGPUChrono.fenceSync.reset(nullptr);
-                //LOGV("leftEye GL: %f",(leGPUChrono.lastDelta/1000)/1000.0);
-            }
-        }
-        int64_t pos=getVsyncRasterizerPosition();
-        if(pos<getEyeRefreshTime()){
-            //don't forget to delete the sync object if it was not jet signaled. We can't measure the completion time because of the Asynchronousity of glFlush()
-            if(leGPUChrono.fenceSync!= nullptr){
-                leGPUChrono.fenceSync.reset(nullptr);
-                leGPUChrono.nEyesNotMeasurable++;
-                //LOGV("Couldn't measure leftEye GPU time");
-            }
-            //the vsync is currently between 0 and 0.5 (scanning the left eye).
-            //The right eye framebuffer part can be safely manipulated for eyeRefreshTime-offset ns
-            int64_t offset=pos;
-            return offset;
-        }
-    }*/
-}
-
-int64_t FBRManager::waitUntilVsyncMiddle(const std::chrono::steady_clock::time_point& nextVSYNCMiddle) {
-    /*reGPUChrono.nEyes++;
-    const auto timeLeft1=std::chrono::steady_clock::now()-nextVSYNCMiddle;
-    MLOGD<<"time left1: "<<MyTimeHelper::R(timeLeft1);
-    const bool satisfied=reGPUChrono.fenceSync->wait(timeLeft1);
-    if(satisfied){
-        reGPUChrono.lastDelta=reGPUChrono.fenceSync->getDeltaCreationSatisfiedNS();
-        reGPUChrono.avgDelta.add(std::chrono::nanoseconds(reGPUChrono.lastDelta));
-        //LOGV("rightEye GL: %f",(reGPUChrono.lastDelta/1000)/1000.0);
-    }else{
-        MLOGE<<"fence sync timed out";
-        reGPUChrono.nEyesNotMeasurable++;
-    }
-    reGPUChrono.fenceSync.reset(nullptr);
-    const auto timeLeft2=std::chrono::steady_clock::now()-nextVSYNCMiddle;
-    MLOGD<<"time left 2: "<< MyTimeHelper::R(timeLeft2);
-    std::this_thread::sleep_for(timeLeft2);
-    const auto offset=std::chrono::steady_clock::now()-nextVSYNCMiddle;
-    MLOGD<<"offset (overshoot)"<< MyTimeHelper::R(offset);
-    return std::chrono::duration_cast<std::chrono::nanoseconds>(offset).count();*/
-    /*while(true){
-        if(reGPUChrono.fenceSync!= nullptr){
-            const bool satisfied=reGPUChrono.fenceSync->wait(0);
-            if(satisfied){
-                reGPUChrono.lastDelta=reGPUChrono.fenceSync->getDeltaCreationSatisfiedNS();
-                reGPUChrono.avgDelta.add(std::chrono::nanoseconds(reGPUChrono.lastDelta));
-                reGPUChrono.fenceSync.reset(nullptr);
-                //LOGV("rightEye GL: %f",(reGPUChrono.lastDelta/1000)/1000.0);
-            }
-        }
-        int64_t pos=getVsyncRasterizerPosition();
-        if(pos>getEyeRefreshTime()){
-            //don't forget to delete the sync object if it was not jet signaled. We can't measure the completion time because of the Asynchronousity of glFlush()
-            if(reGPUChrono.fenceSync!= nullptr){
-                reGPUChrono.fenceSync.reset(nullptr);
-                reGPUChrono.nEyesNotMeasurable++;
-                //LOGV("Couldn't measure rightEye GPU time");
-            }
-            //the vsync is currently between 0.5 and 1 (scanning the right eye).
-            //The left eye framebuffer part can be safely manipulated for eyeRefreshTime-offset ns
-            int64_t offset=pos-getEyeRefreshTime();
-            return offset;
-        }
-    }*/
 }
 
 
