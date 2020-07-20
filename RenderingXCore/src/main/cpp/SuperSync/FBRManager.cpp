@@ -53,7 +53,7 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H)
         // wait until nextVSYNC
         // Render right eye
         // -> latestVSYNC becomes nextVSYNC
-        MLOGD<<"VSYNC rasterizer position "<<getVsyncRasterizerPositionNormalized();
+        //MLOGD<<"VSYNC rasterizer position "<<getVsyncRasterizerPositionNormalized();
 
         for(int eye=0;eye<2;eye++){
             if(!shouldRender){
@@ -93,13 +93,13 @@ void FBRManager::requestExitSuperSyncLoop() {
 
 void FBRManager::waitUntilTimePoint(const std::chrono::steady_clock::time_point& timePoint,FenceSync& fenceSync) {
     const auto timeLeft1=std::chrono::steady_clock::now()-timePoint;
-    MLOGD<<"time left1: "<<MyTimeHelper::R(timeLeft1);
+    //MLOGD<<"time left1: "<<MyTimeHelper::R(timeLeft1);
     const bool satisfied= fenceSync.wait(timeLeft1);
     const auto timeLeft2=std::chrono::steady_clock::now()-timePoint;
-    MLOGD<<"time left 2: "<< MyTimeHelper::R(timeLeft2);
+    //MLOGD<<"time left 2: "<< MyTimeHelper::R(timeLeft2);
     std::this_thread::sleep_until(timePoint);
     const auto offset=std::chrono::steady_clock::now()-timePoint;
-    MLOGD<<"offset (overshoot)"<< MyTimeHelper::R(offset);
+    //MLOGD<<"offset (overshoot)"<< MyTimeHelper::R(offset);
     //return std::chrono::duration_cast<std::chrono::nanoseconds>(offset).count();
 }
 
