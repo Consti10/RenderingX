@@ -41,6 +41,34 @@ public:
     }
 };
 
+template<class T>
+class AvgCalculator2{
+private:
+    T sum;
+    long sumCount=0;
+public:
+    AvgCalculator2() = default;
+    void add(T value){
+       if(value<T()){
+           MLOGE<<"Cannot add negative value";
+           return;
+       }
+       sum+=value;
+       sumCount++;
+    }
+    T getAvg()const{
+        if(sumCount==0)return T();
+        return sum / sumCount;
+    }
+    long getCount()const{
+        return sumCount;
+    }
+    void reset(){
+        sum=0;
+        sumCount=0;
+    }
+};
+
 
 class RelativeCalculator{
 private:
