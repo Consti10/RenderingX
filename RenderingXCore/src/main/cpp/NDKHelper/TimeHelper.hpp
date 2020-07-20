@@ -84,7 +84,7 @@ public:
         sumCount=0;
     }
     std::string getAvgReadable()const{
-        MyTimeHelper::R(getAvg());
+        return MyTimeHelper::R(getAvg());
     }
     //static AvgCalculator median(const AvgCalculator& c1,const AvgCalculator& c2){
 

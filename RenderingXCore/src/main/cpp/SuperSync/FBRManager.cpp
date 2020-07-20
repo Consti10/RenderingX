@@ -59,11 +59,11 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H)
             }
             const bool LEFT_EYE=eye!=0;
             //render new eye
-           // gpuChrono[eye].avgCPUTime.start();
+            eyeChrono[eye].avgCPUTime.start();
             directRender.begin(getViewportForEye(LEFT_EYE,SCREEN_W,SCREEN_H));
             onRenderNewEyeCallback(env,eye!=0);
             directRender.end();
-            //gpuChrono[eye].avgCPUTime.stop();
+            eyeChrono[eye].avgCPUTime.stop();
             std::unique_ptr<FenceSync> fenceSync=std::make_unique<FenceSync>();
             glFlush();
             vsyncWaitTime[eye].start();
@@ -72,12 +72,12 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H)
             }else{
                 waitUntilTimePoint(nextVSYNC,*fenceSync);
             }
-            gpuChrono[eye].nEyes++;
+            eyeChrono[eye].nEyes++;
             if(fenceSync->hasAlreadyBeenSatisfied()){
-                gpuChrono[eye].avgGPUTime.add(fenceSync->getDeltaCreationSatisfied());
+                eyeChrono[eye].avgGPUTime.add(fenceSync->getDeltaCreationSatisfied());
             }else{
                 MLOGE<<"Couldnt measure GPU time";
-                gpuChrono[eye].nEyesNotMeasurable++;
+                eyeChrono[eye].nEyesNotMeasurable++;
             }
             fenceSync.reset(nullptr);
             vsyncWaitTime[eye].stop();
@@ -107,23 +107,23 @@ void FBRManager::printLog() {
     const auto now=steady_clock::now();
     if(duration_cast<std::chrono::milliseconds>(now-lastLog).count()>5*1000){//every 5 seconds
         lastLog=now;
-        auto& leGPUChrono=gpuChrono[0];
-        auto& reGPUChrono=gpuChrono[1];
-        const auto leAreGPUTimeAvg= (leGPUChrono.avgGPUTime.getAvg() + reGPUChrono.avgGPUTime.getAvg()) / 2;
+        auto& leChrono=eyeChrono[0];
+        auto& reChrono=eyeChrono[1];
+        const auto leAreGPUTimeAvg= (leChrono.avgGPUTime.getAvg() + reChrono.avgGPUTime.getAvg()) / 2;
         double leGPUTimeNotMeasurablePerc=0;
         double reGPUTimeNotMeasurablePerc=0;
         double leAreGPUTimeNotMeasurablePerc=0;
-        if(leGPUChrono.nEyes>0){
-            leGPUTimeNotMeasurablePerc=(leGPUChrono.nEyesNotMeasurable/leGPUChrono.nEyes)*100.0;
+        if(leChrono.nEyes > 0){
+            leGPUTimeNotMeasurablePerc= (leChrono.nEyesNotMeasurable / leChrono.nEyes) * 100.0;
         }
-        if(reGPUChrono.nEyes>0){
-            reGPUTimeNotMeasurablePerc=(reGPUChrono.nEyesNotMeasurable/reGPUChrono.nEyes)*100.0;
+        if(reChrono.nEyes > 0){
+            reGPUTimeNotMeasurablePerc= (reChrono.nEyesNotMeasurable / reChrono.nEyes) * 100.0;
         }
         leAreGPUTimeNotMeasurablePerc=(leGPUTimeNotMeasurablePerc+reGPUTimeNotMeasurablePerc)*0.5;
         std::ostringstream avgLog;
         avgLog<<"------------------------FBRManager Averages------------------------";
-        avgLog<<"\nCPU Time  : "<<"leftEye:" << leGPUChrono.avgCPUTime.getAvgMS() << " | rightEye:" << reGPUChrono.avgCPUTime.getAvgMS();
-        avgLog<<"\nGPU time: "<<"leftEye:" << leGPUChrono.avgGPUTime.getAvgReadable() << " | rightEye:" << reGPUChrono.avgGPUTime.getAvgReadable() << " | left&right:" << MyTimeHelper::R(leAreGPUTimeAvg);
+        avgLog << "\nCPU Time  : " << "leftEye:" << leChrono.avgCPUTime.getAvgMS() << " | rightEye:" << reChrono.avgCPUTime.getAvgMS();
+        avgLog << "\nGPU time: " << "leftEye:" << leChrono.avgGPUTime.getAvgReadable() << " | rightEye:" << reChrono.avgGPUTime.getAvgReadable() << " | left&right:" << MyTimeHelper::R(leAreGPUTimeAvg);
         avgLog<<"\nGPU % not measurable:"<<": leftEye:"<<leGPUTimeNotMeasurablePerc<<" | rightEye:"<<reGPUTimeNotMeasurablePerc<<" | left&right:"<<leAreGPUTimeNotMeasurablePerc;
         avgLog<<"\nVsync waitT:"<<" start:"<< vsyncWaitTime[0].getAvgUS()/1000.0<<" | middle:"<<vsyncWaitTime[1].getAvgMS()
         <<" | start&middle"<<(vsyncWaitTime[0].getAvgMS()+vsyncWaitTime[1].getAvgMS())/2.0;
@@ -139,9 +139,9 @@ void FBRManager::resetTS() {
         vsyncWaitTime[0].reset();
     }
     for(int i=0;i<2;i++){
-        gpuChrono[i].avgGPUTime.reset();
-        gpuChrono[i].nEyes=0;
-        gpuChrono[i].nEyesNotMeasurable=0;
+        eyeChrono[i].avgGPUTime.reset();
+        eyeChrono[i].nEyes=0;
+        eyeChrono[i].nEyesNotMeasurable=0;
     }
 }
 

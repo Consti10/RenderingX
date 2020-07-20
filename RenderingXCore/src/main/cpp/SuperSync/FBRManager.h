@@ -68,14 +68,14 @@ public:
 private:
     const bool EGL_KHR_Reusable_Sync_Available;
     const DirectRender directRender;
-    struct EyeGPUChrono{
+    struct EyeChrono{
         Chronometer avgCPUTime{};
         AvgCalculator<CLOCK::duration> avgGPUTime;
         double nEyes=0;
         double nEyesNotMeasurable=0;
     };
     static void waitUntilTimePoint(const std::chrono::steady_clock::time_point& timePoint,FenceSync& fenceSync);
-    std::array<EyeGPUChrono,2> gpuChrono={};
+    std::array<EyeChrono,2> eyeChrono={};
     const RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback;
     const std::function<void(JNIEnv*,int)> onErrorCallback;
     std::atomic<bool> shouldRender{false};
