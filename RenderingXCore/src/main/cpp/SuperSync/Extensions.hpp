@@ -127,9 +127,15 @@ public:
         }
         return false;
     }
+    bool wait(const std::chrono::steady_clock::duration& timeout){
+        return wait(std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count());
+    }
     uint64_t getDeltaCreationSatisfiedNS(){
         if(!hasBeenSatisfied)return 0;
         return std::chrono::duration_cast<std::chrono::nanoseconds>(satisfiedTime-creationTime).count();
+    }
+    bool hasAlreadyBeenSatisfied()const{
+        return hasBeenSatisfied;
     }
 };
 

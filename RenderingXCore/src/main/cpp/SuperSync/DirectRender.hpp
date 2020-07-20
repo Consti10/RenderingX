@@ -11,6 +11,8 @@
 // This class hides the difference(s) between the two major GPU manufacturer: Qualcomm and MALI (ARM)
 class DirectRender{
 public:
+    using GLViewport=std::array<int,4>;
+
     DirectRender(bool QCOM_TILED_RENDERING_AVAILABLE):QCOM_TILED_RENDERING_AVAILABLE(QCOM_TILED_RENDERING_AVAILABLE){
         if(QCOM_TILED_RENDERING_AVAILABLE){
             QCOM_tiled_rendering::init();
@@ -18,32 +20,26 @@ public:
             Extensions::initOtherExtensions();
         }
     }
+    static void setGlViewport(const GLViewport& viewport){
+        glViewport(viewport[0],viewport[1],viewport[2],viewport[3]);
+    }
+    static void setGlScissor(const GLViewport& viewport){
+        glScissor(viewport[0],viewport[1],viewport[2],viewport[3]);
+    }
     const bool QCOM_TILED_RENDERING_AVAILABLE;
-    void begin(bool leftEye, int viewPortW, int viewPortH)const{
-        int x,y,w,h;
-        if(leftEye){
-            x=0;
-            y=0;
-            w=viewPortW;
-            h=viewPortH;
-        }else{
-            x=viewPortW;
-            y=0;
-            w=viewPortW;
-            h=viewPortH;
-        }
+    void begin(const GLViewport& viewport)const{
         //NOTE: glClear has to be called from the application, depending on the GPU time (I had to differentiate because of the updateTexImage2D)
         if(QCOM_TILED_RENDERING_AVAILABLE){
-            QCOM_tiled_rendering::glStartTilingQCOM(x,y,w,h,0);
+            QCOM_tiled_rendering::StartTilingQCOM(viewport);
             glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         }else{
             const GLenum attachmentsSG[3] = { GL_COLOR_EXT, GL_DEPTH_EXT, GL_STENCIL_EXT};
             Extensions::glInvalidateFramebuffer_( GL_FRAMEBUFFER, 3, attachmentsSG );
         }
-        glScissor(x,y,w,h);
-        glViewport(x,y,w,h);
+        setGlViewport(viewport);
+        setGlScissor(viewport);
     }
-    void end(bool whichEye)const{
+    void end()const{
         if(QCOM_TILED_RENDERING_AVAILABLE){
             QCOM_tiled_rendering::EndTilingQCOM();
         }else{

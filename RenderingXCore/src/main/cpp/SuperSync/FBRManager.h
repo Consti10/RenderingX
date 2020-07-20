@@ -54,7 +54,7 @@
 #include "VSYNC.hpp"
 #include "DirectRender.hpp"
 
-using RENDER_NEW_EYE_CALLBACK=std::function<void(JNIEnv*,bool,int64_t)>;
+using RENDER_NEW_EYE_CALLBACK=std::function<void(JNIEnv*,bool)>;
 using ERROR_CALLBACK=std::function<void(JNIEnv*,int)>;
 
 class FBRManager:public VSYNC {
@@ -62,34 +62,38 @@ public:
     FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,ERROR_CALLBACK onErrorCallback);
     //has to be called from the OpenGL thread that is bound to the front buffer surface
     //blocks until requestExitSuperSyncLoop() is called (from any thread, e.g. the UI onPauseX )
-    void enterDirectRenderingLoop(JNIEnv* env);
+    void enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H);
     void requestExitSuperSyncLoop();
-    void startDirectRendering(bool leftEye,int viewPortW,int viewPortH);
-    void stopDirectRendering(bool whichEye);
-    constexpr static bool LEFT_EYE= true;
-    constexpr static bool RIGHT_EYE= false;
     void drawLeftAndRightEye(JNIEnv* env);
 private:
+    const bool EGL_KHR_Reusable_Sync_Available;
     const DirectRender directRender;
     //wait until right/left eye is ready to be rendered
     int64_t waitUntilVsyncStart();
-    int64_t waitUntilVsyncMiddle();
+    int64_t waitUntilVsyncMiddle(const std::chrono::steady_clock::time_point& nextVSYNCMiddle);
     struct EyeGPUChrono{
-        std::unique_ptr<FenceSync> fenceSync=nullptr;
         int64_t lastDelta=0;
         AvgCalculator avgDelta;
         double nEyes=0;
         double nEyesNotMeasurable=0;
     };
-    const bool EGL_KHR_Reusable_Sync_Available;
-    EyeGPUChrono leGPUChrono,reGPUChrono;
-    const std::function<void(JNIEnv*,bool,int64_t)> onRenderNewEyeCallback;
+    static void waitUntilTimePoint(const std::chrono::steady_clock::time_point& timePoint,FenceSync& fenceSync);
+    std::array<EyeGPUChrono,2> gpuChrono={};
+    const RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback;
     const std::function<void(JNIEnv*,int)> onErrorCallback;
     std::atomic<bool> shouldRender{false};
     std::array<Chronometer,2> vsyncWaitTime={Chronometer{"VSYNC start wait time"},Chronometer{"VSYNC middle wait time"}};
+
     void printLog();
     std::chrono::steady_clock::time_point lastLog;
     void resetTS();
+    static DirectRender::GLViewport getViewportForEye(const bool leftEye,int SCREEN_W,int SCREEN_H){
+        const int HALF_SCREEN_W= SCREEN_W / 2;
+        if(leftEye){
+            return {0, 0, HALF_SCREEN_W, SCREEN_H};
+        }
+        return {HALF_SCREEN_W, 0, HALF_SCREEN_W,SCREEN_H};
+    }
 };
 
 //While the CPU creates the command buffer it is guaranteed that the Frame Buffer won't be affected. (only as soon as glFinish()/glFlush() is called)

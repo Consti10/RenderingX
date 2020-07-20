@@ -19,7 +19,10 @@ using cNanoseconds=int64_t;
 // *front and back porch* cannot be taken into consideration
 class VSYNC{
 private:
-    // last VSYNC set by the callback
+    // last registered VSYNC. Indirectly set by the callback, but it is guaranteed that this value
+    // is never smaller than the current system time in NS (In other words, the timestamp
+    // always lies in the past, never in the future. However, it is not guaranteed to be the
+    // 'last' VSYNC - see getLatestVSYNC()
     int64_t lastRegisteredVSYNC=0;
     static constexpr int64_t DEFAULT_REFRESH_TIME=16666666;
     // display refresh rate becomes more accurately over time
@@ -27,9 +30,10 @@ private:
     int64_t eyeRefreshTime= displayRefreshTime/2;
     // how many samples of the refresh rate I currently have to determine the accurate refresh rate
     uint64_t displayRefreshTimeSum=0,displayRefreshTimeC=0;
-    int64_t previousVSYNC=0;
+    int64_t previousVSYNCSetByCallback=0;
     static constexpr const auto N_SAMPLES=600;
 public:
+    using CLOCK=std::chrono::steady_clock;
     /**
      * Return the current time in ns (same as java System.nanoseconds)
      */
@@ -45,14 +49,19 @@ public:
         //MLOGD<<"setLastVSYNC"<<lastVSYNC;
         // Make sure we do not have a 'future' VSYNC.
         // E.g. a VSYNC that is about to happen (we want the 'latest' or at least a previous VSYNC)
-        int64_t tmp=lastVSYNC;
-        while(getSystemTimeNS()<tmp){
-            tmp-=displayRefreshTime;
+        {
+            const auto systemTime=getSystemTimeNS();
+            int64_t tmp=lastVSYNC;
+            while(tmp>systemTime){
+                tmp-=displayRefreshTime;
+            }
+            lastRegisteredVSYNC=tmp;
+            // Check that the registered VSYNC does not lie in the future
+            assert((systemTime-lastRegisteredVSYNC) >= 0);
         }
-        lastRegisteredVSYNC=tmp;
         //Stop as soon we have n samples (that should be more than enough)
         if(displayRefreshTimeC<N_SAMPLES){
-            const int64_t delta=lastVSYNC-previousVSYNC;
+            const int64_t delta= lastVSYNC - previousVSYNCSetByCallback;
             if(delta>0){
                 //Assumption: There are only displays on the Market with refresh Rates that differ from 16.666ms +-1.0ms
                 //This is needed because i am not sure if the vsync callbacks always get executed in the right order
@@ -69,10 +78,23 @@ public:
                     }
                 }
             }
-            previousVSYNC=lastVSYNC;
+            previousVSYNCSetByCallback=lastVSYNC;
             //MLOGD<<"delta"<<MyTimeHelper::R(std::chrono::nanoseconds(delta));
         } //else We have at least n samples. This is enough.
         //MLOGD<<"DISPLAY_REFRESH_TIME"<<MyTimeHelper::R(std::chrono::nanoseconds(DISPLAY_REFRESH_TIME));
+    }
+    /**
+    * @return The timestamp of EXACTLY the last VSYNC event, or in other words the rasterizer being at 0
+     * This value is guaranteed to be in the past and its age is not more than displayRefreshTime
+    */
+    CLOCK::time_point getLatestVSYNC()const{
+        const auto currTime=getSystemTimeNS();
+        const auto currDisplayRefreshTime=displayRefreshTime;
+        int64_t lastVSYNC=lastRegisteredVSYNC;
+        const auto delta=currTime-lastVSYNC;
+        const int64_t factor=delta/currDisplayRefreshTime;
+        lastVSYNC+=factor*currDisplayRefreshTime;
+        return CLOCK::time_point(std::chrono::nanoseconds(lastVSYNC));
     }
     /**
      * Rough estimation of the rasterizer position ( I do not know blanking usw)
@@ -80,24 +102,25 @@ public:
      * For example, a value of 0 means that the rasterizer is at the most left position of the display in landscape mode
      * and a value of DISPLAY_REFRESH_TIME means the rasterizer is at its right most position
      */
-    int64_t getVsyncRasterizerPosition(){
+    int64_t getVsyncRasterizerPosition()const{
         const int64_t position=getSystemTimeNS()-lastRegisteredVSYNC;
-        if(position<0){
-           MLOGE<<" getVsyncRasterizerPosition - lastRegisteredVSYNC is in the future"<<getSystemTimeNS()<<" "<<lastRegisteredVSYNC;
-            return 0;
-        }
         //auto lastRegisteredVsyncAge=position / DISPLAY_REFRESH_TIME;
         //MLOGD<<"last registered vsync is "<<lastRegisteredVsyncAge<<" events old";
         // It is possible that the last registered VSYNC is not the latest VSYNC, but a number of events in the past
         // The less accurate the DISPLAY_REFRESH_TIME is and the older the last registered VSYNC the more inaccurate this value becomes
         return position % displayRefreshTime;
     }
-public:
-    int64_t getDisplayRefreshTime()const{
-        return displayRefreshTime;
+    // same as above but position is in range ( 0.0f ... 1.0f)
+    float getVsyncRasterizerPositionNormalized()const{
+        const auto pos=getVsyncRasterizerPosition();
+        return (float)pos/displayRefreshTime;
     }
-    int64_t getEyeRefreshTime()const{
-        return eyeRefreshTime;
+public:
+    CLOCK::duration getDisplayRefreshTime()const{
+        return CLOCK::duration(std::chrono::nanoseconds(displayRefreshTime));
+    }
+    CLOCK::duration getEyeRefreshTime()const{
+        return  CLOCK::duration(std::chrono::nanoseconds(eyeRefreshTime));
     }
 };
 

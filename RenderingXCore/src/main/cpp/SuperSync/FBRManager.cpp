@@ -14,6 +14,12 @@ constexpr auto MS_TO_NS=1000*1000;
 
 using namespace std::chrono;
 
+static std::chrono::steady_clock::duration ThisThreadSleepUntil(std::chrono::steady_clock::time_point tp){
+    std::this_thread::sleep_until(tp);
+    const auto now=std::chrono::steady_clock::now();
+    return now-tp;
+}
+
 FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,const RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,const ERROR_CALLBACK onErrorCallback):
         directRender{qcomTiledRenderingAvailable},
         EGL_KHR_Reusable_Sync_Available(reusableSyncAvailable),
@@ -32,28 +38,50 @@ void FBRManager::drawLeftAndRightEye(JNIEnv* env) {
 }
 
 
-void FBRManager::enterDirectRenderingLoop(JNIEnv* env) {
+void FBRManager::enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H) {
     shouldRender= true;
     cNanoseconds before,diff=0;
+
     while(shouldRender){
+        const auto latestVSYNC=getLatestVSYNC();
+        const auto nextVSYNCMiddle=latestVSYNC+getEyeRefreshTime();
+        const auto nextVSYNC=latestVSYNC+getDisplayRefreshTime();
+        //MLOGD<<"latestVSYNC"<<MyTimeHelper::R(CLOCK::now()-latestVSYNC)<<" nextVSYNCMiddle "<<MyTimeHelper::R(CLOCK::now()-nextVSYNCMiddle)<<" nextVSYNC "<<MyTimeHelper::R(CLOCK::now()-nextVSYNC);
+        //
+        // wait until nextVSYNCMiddle
+        // Render left eye
+        // wait until nextVSYNC
+        // Render right eye
+        // -> latestVSYNC becomes nextVSYNC
+        MLOGD<<"VSYNC rasterizer position "<<getVsyncRasterizerPositionNormalized();
+
         for(int eye=0;eye<2;eye++){
             if(!shouldRender){
                 break;
             }
+            const bool LEFT_EYE=eye!=0;
+            //render new eye
+            directRender.begin(getViewportForEye(LEFT_EYE,SCREEN_W,SCREEN_H));
+            onRenderNewEyeCallback(env,eye!=0);
+            directRender.end();
+            std::unique_ptr<FenceSync> fenceSync=std::make_unique<FenceSync>();
+            glFlush();
             vsyncWaitTime[eye].start();
             if(eye==0){
-                waitUntilVsyncStart();
+                waitUntilTimePoint(nextVSYNCMiddle,*fenceSync);
             }else{
-                waitUntilVsyncMiddle();
+                waitUntilTimePoint(nextVSYNC,*fenceSync);
             }
+            gpuChrono[eye].nEyes++;
+            if(fenceSync->hasAlreadyBeenSatisfied()){
+                gpuChrono[eye].lastDelta= fenceSync->getDeltaCreationSatisfiedNS();
+                gpuChrono[eye].avgDelta.add(std::chrono::nanoseconds( gpuChrono[eye].lastDelta));
+            }else{
+                MLOGE<<"Couldnt measure GPU time";
+                gpuChrono[eye].nEyesNotMeasurable++;
+            }
+            fenceSync.reset(nullptr);
             vsyncWaitTime[eye].stop();
-            before=getSystemTimeNS();
-            //render new eye
-            onRenderNewEyeCallback(env,eye,0);
-            diff=getSystemTimeNS()-before;
-            if(diff>=getDisplayRefreshTime()){
-                MLOGE<<"WARNING: rendering a eye took longer than displayRefreshTime ! Error. Time: "<<(diff/1000/1000);
-            }
         }
         printLog();
     }
@@ -63,8 +91,20 @@ void FBRManager::requestExitSuperSyncLoop() {
     shouldRender= false;
 }
 
+void FBRManager::waitUntilTimePoint(const std::chrono::steady_clock::time_point& timePoint,FenceSync& fenceSync) {
+    const auto timeLeft1=std::chrono::steady_clock::now()-timePoint;
+    MLOGD<<"time left1: "<<MyTimeHelper::R(timeLeft1);
+    const bool satisfied= fenceSync.wait(timeLeft1);
+    const auto timeLeft2=std::chrono::steady_clock::now()-timePoint;
+    MLOGD<<"time left 2: "<< MyTimeHelper::R(timeLeft2);
+    std::this_thread::sleep_until(timePoint);
+    const auto offset=std::chrono::steady_clock::now()-timePoint;
+    MLOGD<<"offset (overshoot)"<< MyTimeHelper::R(offset);
+    //return std::chrono::duration_cast<std::chrono::nanoseconds>(offset).count();
+}
+
 int64_t FBRManager::waitUntilVsyncStart() {
-    leGPUChrono.nEyes++;
+    /*leGPUChrono.nEyes++;
     while(true){
         if(leGPUChrono.fenceSync!= nullptr){
             const bool satisfied=leGPUChrono.fenceSync->wait(0);
@@ -89,17 +129,14 @@ int64_t FBRManager::waitUntilVsyncStart() {
             int64_t offset=pos;
             return offset;
         }
-    }
+    }*/
 }
 
-int64_t FBRManager::waitUntilVsyncMiddle() {
-    reGPUChrono.nEyes++;
-    const auto timeLeft=getEyeRefreshTime()-getVsyncRasterizerPosition();
-    MLOGD<<"time left1: "<< MyTimeHelper::ReadableNS(timeLeft);
-    if(timeLeft<0 || timeLeft>=getDisplayRefreshTime()){
-        MLOGE<<"Time left ?"<<timeLeft;
-    }
-    const bool satisfied=reGPUChrono.fenceSync->wait(timeLeft);
+int64_t FBRManager::waitUntilVsyncMiddle(const std::chrono::steady_clock::time_point& nextVSYNCMiddle) {
+    /*reGPUChrono.nEyes++;
+    const auto timeLeft1=std::chrono::steady_clock::now()-nextVSYNCMiddle;
+    MLOGD<<"time left1: "<<MyTimeHelper::R(timeLeft1);
+    const bool satisfied=reGPUChrono.fenceSync->wait(timeLeft1);
     if(satisfied){
         reGPUChrono.lastDelta=reGPUChrono.fenceSync->getDeltaCreationSatisfiedNS();
         reGPUChrono.avgDelta.add(std::chrono::nanoseconds(reGPUChrono.lastDelta));
@@ -109,14 +146,12 @@ int64_t FBRManager::waitUntilVsyncMiddle() {
         reGPUChrono.nEyesNotMeasurable++;
     }
     reGPUChrono.fenceSync.reset(nullptr);
-    const auto timeLeft2=getEyeRefreshTime()-getVsyncRasterizerPosition();
-    MLOGD<<"time left 2: "<< MyTimeHelper::ReadableNS(timeLeft2);
-    if(timeLeft2>1000){
-        std::this_thread::sleep_for(std::chrono::nanoseconds(timeLeft2));
-    }
-    const auto offset=getEyeRefreshTime()-getVsyncRasterizerPosition();
-    MLOGD<<"offset (overshoot)"<< MyTimeHelper::ReadableNS(offset);
-    return offset;
+    const auto timeLeft2=std::chrono::steady_clock::now()-nextVSYNCMiddle;
+    MLOGD<<"time left 2: "<< MyTimeHelper::R(timeLeft2);
+    std::this_thread::sleep_for(timeLeft2);
+    const auto offset=std::chrono::steady_clock::now()-nextVSYNCMiddle;
+    MLOGD<<"offset (overshoot)"<< MyTimeHelper::R(offset);
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(offset).count();*/
     /*while(true){
         if(reGPUChrono.fenceSync!= nullptr){
             const bool satisfied=reGPUChrono.fenceSync->wait(0);
@@ -143,26 +178,13 @@ int64_t FBRManager::waitUntilVsyncMiddle() {
     }*/
 }
 
-void FBRManager::startDirectRendering(bool leftEye, int viewPortW, int viewPortH) {
-    directRender.begin(leftEye,viewPortW,viewPortH);
-}
-
-void FBRManager::stopDirectRendering(bool whichEye) {
-    directRender.end(whichEye);
-    if(EGL_KHR_Reusable_Sync_Available){
-        if(whichEye){
-            leGPUChrono.fenceSync=std::make_unique<FenceSync>();
-        }else{
-            reGPUChrono.fenceSync=std::make_unique<FenceSync>();
-        }
-    }
-    glFlush();
-}
 
 void FBRManager::printLog() {
     const auto now=steady_clock::now();
     if(duration_cast<std::chrono::milliseconds>(now-lastLog).count()>5*1000){//every 5 seconds
         lastLog=now;
+        auto& leGPUChrono=gpuChrono[0];
+        auto& reGPUChrono=gpuChrono[1];
         const double leGPUTimeAvg=leGPUChrono.avgDelta.getAvg_ms();
         const double reGPUTimeAvg=reGPUChrono.avgDelta.getAvg_ms();
         const double leAreGPUTimeAvg=(leGPUTimeAvg+reGPUTimeAvg)*0.5;
@@ -193,13 +215,12 @@ void FBRManager::resetTS() {
     for(int eye=0;eye<2;eye++){
         vsyncWaitTime[0].reset();
     }
-    leGPUChrono.avgDelta.reset();
-    leGPUChrono.nEyes=0;
-    leGPUChrono.nEyesNotMeasurable=0;
-    //
-    reGPUChrono.avgDelta.reset();
-    reGPUChrono.nEyes=0;
-    reGPUChrono.nEyesNotMeasurable=0;
+    for(int i=0;i<2;i++){
+        gpuChrono[i].avgDelta.reset();
+        gpuChrono[i].nEyes=0;
+        gpuChrono[i].nEyesNotMeasurable=0;
+    }
 }
+
 
 

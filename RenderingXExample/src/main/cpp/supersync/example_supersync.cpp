@@ -32,8 +32,8 @@ GLRSuperSyncExample::GLRSuperSyncExample(JNIEnv *env, jobject androidContext,
                                        bool qcomTiledRenderingAvailable,
                                        bool reusableSyncAvailable):
         mFrameTimeAcc(std::vector<std::string>{"startDR","drawEye","stopDR"}){
-    std::function<void(JNIEnv *env2, bool whichEye, int64_t offsetNS)> f = [this](JNIEnv *env2, bool whichEye, int64_t offsetNS) {
-        this->renderNewEyeCallback(env2,whichEye,offsetNS);
+    std::function<void(JNIEnv *env2, bool leftEye)> f = [this](JNIEnv *env2, bool leftEye) {
+        this->renderNewEyeCallback(env2,leftEye,0);
     };
     mFBRManager=std::make_unique<FBRManager>(qcomTiledRenderingAvailable,reusableSyncAvailable,f, nullptr);
 }
@@ -63,6 +63,8 @@ void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext) {
 
 
 void GLRSuperSyncExample::onSurfaceChanged(int width, int height) {
+    SCREEN_W=width;
+    SCREEN_H=height;
     ViewPortW=width/2;
     ViewPortH=height;
     projection=glm::perspective(glm::radians(45.0F),((float) ViewPortW)/((float)ViewPortH), 0.05f, 20.0f);
@@ -71,7 +73,7 @@ void GLRSuperSyncExample::onSurfaceChanged(int width, int height) {
 void GLRSuperSyncExample::enterSuperSyncLoop(JNIEnv *env, jobject obj,int exclusiveVRCore) {
     //Extensions::setAffinity(exclusiveVRCore);
     MLOGD<<"entering superSync loop. GLThread will be blocked";
-    mFBRManager->enterDirectRenderingLoop(env);
+    mFBRManager->enterDirectRenderingLoop(env,SCREEN_W,SCREEN_H);
     MLOGD<<"exited superSync loop. GLThread unblocked";
 }
 
@@ -83,22 +85,20 @@ void GLRSuperSyncExample::setLastVSYNC(int64_t lastVSYNC) {
     mFBRManager->setLastVSYNC(lastVSYNC);
 }
 
-void GLRSuperSyncExample::renderNewEyeCallback(JNIEnv *env,const bool whichEye,const int64_t offsetNS) {
+void GLRSuperSyncExample::renderNewEyeCallback(JNIEnv *env,const bool leftEye,const int64_t offsetNS) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(0.5F,0.5F,0.5F,0.0F);
     glEnable(GL_SCISSOR_TEST);
     glDisable(GL_DEPTH_TEST);
-    VREyeDurations vrEyeTimeStamps{whichEye};
-    mFBRManager->startDirectRendering(whichEye,ViewPortW,ViewPortH);
+    VREyeDurations vrEyeTimeStamps{leftEye};
     //if(mFBRManager->directRenderingMode==FBRManager::QCOM_TILED_RENDERING){
     //    //so we have to call glClear() before any OpenGL calls that affect framebuffer contents (e.g. draw())
     //    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     //}
     vrEyeTimeStamps.setTimestamp("startDR");
-    drawEye(env,whichEye);
+    drawEye(env,leftEye);
     vrEyeTimeStamps.setTimestamp("drawEye");
-    mFBRManager->stopDirectRendering(whichEye);
     vrEyeTimeStamps.setTimestamp("stopDR");
     //
     //vrEyeTimeStamps.print();
@@ -106,9 +106,9 @@ void GLRSuperSyncExample::renderNewEyeCallback(JNIEnv *env,const bool whichEye,c
     mFrameTimeAcc.printEveryXSeconds(5);
 }
 
-void GLRSuperSyncExample::drawEye(JNIEnv *env, bool whichEye) {
+void GLRSuperSyncExample::drawEye(JNIEnv *env, bool leftEye) {
     //Draw the background, which alternates between black and yellow to make tearing observable
-    const int idx=whichEye==0 ? 0 : 1;
+    const int idx=leftEye==0 ? 0 : 1;
     whichColor[idx]++;
     if(whichColor[idx]>1){
         whichColor[idx]=0;
@@ -120,7 +120,7 @@ void GLRSuperSyncExample::drawEye(JNIEnv *env, bool whichEye) {
     }
     //A typical application has way more than 1 draw call only
     for(int i=0;i<N_DRAW_CALLS;i++){
-        const glm::mat4 leftOrRightEyeView= whichEye==0 ? leftEyeView : rightEyeView;
+        const glm::mat4 leftOrRightEyeView= leftEye==0 ? leftEyeView : rightEyeView;
         glProgramVC->drawX(leftOrRightEyeView,projection,mVertexBufferVC);
     }
 }
