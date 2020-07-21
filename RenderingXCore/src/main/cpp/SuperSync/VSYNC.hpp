@@ -30,7 +30,7 @@ private:
     CLOCK::duration displayRefreshTime=DEFAULT_REFRESH_TIME;
     CLOCK::duration eyeRefreshTime= displayRefreshTime/2;
     // how many samples of the refresh rate I currently have to determine the accurate refresh rate
-    AvgCalculator<CLOCK::duration> displayRefreshTimeCalculator;
+    AvgCalculator displayRefreshTimeCalculator;
     CLOCK::time_point previousVSYNCSetByCallback;
     static constexpr const auto N_SAMPLES=600;
 public:
@@ -53,7 +53,7 @@ public:
             assert((systemTime-lastRegisteredVSYNC) >= 0ns);
         }
         //Stop as soon we have n samples (that should be more than enough)
-        if(displayRefreshTimeCalculator.getCount()<N_SAMPLES){
+        if(displayRefreshTimeCalculator.getNSamples() < N_SAMPLES){
             const auto delta= lastVSYNC - previousVSYNCSetByCallback;
             if(delta>0ns){
                 //Assumption: There are only displays on the Market with refresh Rates that differ from 16.666ms +-1.0ms
@@ -64,16 +64,16 @@ public:
                 if(delta>minDisplayRR && delta<maxDisplayRR){
                     displayRefreshTimeCalculator.add(delta);
                     //we can start using the average Value for "displayRefreshTime" when we have roughly n samples
-                    if( displayRefreshTimeCalculator.getCount()>120){
+                    if(displayRefreshTimeCalculator.getNSamples() > 120){
                         displayRefreshTime= displayRefreshTimeCalculator.getAvg();
                         eyeRefreshTime= displayRefreshTime / 2;
                     }
                 }
             }
             previousVSYNCSetByCallback=lastVSYNC;
-            //MLOGD<<"delta"<<MyTimeHelper::R(std::chrono::nanoseconds(delta));
+            //MLOGD<<"delta "<<MyTimeHelper::R(delta);
         } //else We have at least n samples. This is enough.
-        //MLOGD<<"DISPLAY_REFRESH_TIME"<<MyTimeHelper::R(std::chrono::nanoseconds(DISPLAY_REFRESH_TIME));
+        //MLOGD<<"DISPLAY_REFRESH_TIME "<<MyTimeHelper::R(displayRefreshTime);
     }
     /**
      * Java System.nanoTime is the same as std::chrono::steady_clock::time_point

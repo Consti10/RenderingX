@@ -109,7 +109,7 @@ void FBRManager::printLog() {
         lastLog=now;
         auto& leChrono=eyeChrono[0];
         auto& reChrono=eyeChrono[1];
-        const auto leAreGPUTimeAvg= (leChrono.avgGPUTime.getAvg() + reChrono.avgGPUTime.getAvg()) / 2;
+        const auto leAreGPUTimeAvg=Some::median(leChrono.avgGPUTime,reChrono.avgGPUTime);
         double leGPUTimeNotMeasurablePerc=0;
         double reGPUTimeNotMeasurablePerc=0;
         double leAreGPUTimeNotMeasurablePerc=0;
@@ -120,12 +120,13 @@ void FBRManager::printLog() {
             reGPUTimeNotMeasurablePerc= (reChrono.nEyesNotMeasurable / reChrono.nEyes) * 100.0;
         }
         leAreGPUTimeNotMeasurablePerc=(leGPUTimeNotMeasurablePerc+reGPUTimeNotMeasurablePerc)*0.5;
+        auto lol=Some::median(leChrono.avgGPUTime,reChrono.avgGPUTime);
         std::ostringstream avgLog;
         avgLog<<"------------------------FBRManager Averages------------------------";
         avgLog << "\nCPU Time  : " << "leftEye:" << leChrono.avgCPUTime.getAvg_ms() << " | rightEye:" << reChrono.avgCPUTime.getAvg_ms();
-        avgLog << "\nGPU time: " << "leftEye:" << leChrono.avgGPUTime.getAvgReadable() << " | rightEye:" << reChrono.avgGPUTime.getAvgReadable() << " | left&right:" << MyTimeHelper::R(leAreGPUTimeAvg);
+        avgLog << "\nGPU time: " << "leftEye:" << leChrono.avgGPUTime.getAvgReadable() << " | rightEye:" << reChrono.avgGPUTime.getAvgReadable() << " | left&right:" << leAreGPUTimeAvg.getAvgReadable();
         avgLog<<"\nGPU % not measurable:"<<": leftEye:"<<leGPUTimeNotMeasurablePerc<<" | rightEye:"<<reGPUTimeNotMeasurablePerc<<" | left&right:"<<leAreGPUTimeNotMeasurablePerc;
-        avgLog<<"\nVsync waitT:"<<" start:"<< vsyncWaitTime[0].getAvg_ms()<<" | middle:"<<vsyncWaitTime[1].getAvg_ms()
+        avgLog<<"\nVsync waitT:"<<" start:"<< vsyncWaitTime[0].getAvgReadable()<<" | middle:"<<vsyncWaitTime[1].getAvgReadable()
         <<" | start&middle"<<(vsyncWaitTime[0].getAvg_ms()+vsyncWaitTime[1].getAvg_ms())/2.0;
         //avgLog<<"\nDisplay refresh time ms:"<<DISPLAY_REFRESH_TIME/1000.0/1000.0;
         avgLog<<"\n----  -----  ----  ----  ----  ----  ----  ----  --- ---";

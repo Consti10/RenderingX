@@ -54,42 +54,50 @@ public:
     }
 };
 
-template<class T>
 class AvgCalculator{
 private:
-    T sum;
-    long sumCount=0;
+    // do not forget the braces to initalize with 0
+    std::chrono::nanoseconds sum{};
+    long nSamples=0;
 public:
     AvgCalculator() = default;
-    void add(T value){
-        if(value<T()){
+    // typedef duration<long long,         nano> nanoseconds;
+    // I think std::chrono::nanoseconds is a duration
+    void add(const std::chrono::nanoseconds& value){
+        if(value<std::chrono::nanoseconds(0)){
             MLOGE<<"Cannot add negative value";
             return;
         }
         sum+=value;
-        sumCount++;
+        nSamples++;
     }
-    T getAvg()const{
-        if(sumCount==0)return T();
-        return sum / sumCount;
+    std::chrono::nanoseconds getAvg()const{
+        if(nSamples == 0)return std::chrono::nanoseconds(0);
+        return sum / nSamples;
     }
     float getAvg_ms(){
         return (float)(std::chrono::duration_cast<std::chrono::microseconds>(getAvg()).count())/1000.0f;
     }
-    long getCount()const{
-        return sumCount;
+    long getNSamples()const{
+        return nSamples;
     }
     void reset(){
-        sum=T();
-        sumCount=0;
+        sum={};
+        nSamples=0;
     }
     std::string getAvgReadable()const{
         return MyTimeHelper::R(getAvg());
     }
-    //static AvgCalculator median(const AvgCalculator& c1,const AvgCalculator& c2){
-
-    //}
 };
+
+namespace Some{
+    static AvgCalculator median(const AvgCalculator& c1,const AvgCalculator& c2){
+        AvgCalculator ret;
+        ret.add(c1.getAvg());
+        ret.add(c2.getAvg());
+        return ret;
+    }
+}
 
 
 class Chronometer {
@@ -109,6 +117,9 @@ public:
     std::chrono::steady_clock::duration getAvg()const{
         return avgCalculator.getAvg();
     }
+    std::string getAvgReadable(){
+        return MyTimeHelper::R(getAvg());
+    }
     float getAvg_ms(){
         return avgCalculator.getAvg_ms();
     }
@@ -121,7 +132,7 @@ public:
         }
     }
 private:
-    AvgCalculator<std::chrono::steady_clock::duration> avgCalculator;
+    AvgCalculator avgCalculator;
     const std::string mName;
     std::chrono::steady_clock::time_point startTS;
     std::chrono::steady_clock::time_point lastLog;

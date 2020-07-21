@@ -69,7 +69,7 @@ private:
     const DirectRender directRender;
     struct EyeChrono{
         Chronometer avgCPUTime{};
-        AvgCalculator<CLOCK::duration> avgGPUTime;
+        AvgCalculator avgGPUTime;
         double nEyes=0;
         double nEyesNotMeasurable=0;
     };

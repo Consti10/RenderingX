@@ -53,8 +53,8 @@ public:
         rightEye.reset();
     }
     const std::string name;
-    AvgCalculator<std::chrono::steady_clock::duration> leftEye;
-    AvgCalculator<std::chrono::steady_clock::duration> rightEye;
+    AvgCalculator leftEye;
+    AvgCalculator rightEye;
 };
 
 //convenient debugging of the time spent on OpenGL calls/ cpp code execution
@@ -68,8 +68,8 @@ public:
     void reset();
 private:
     std::vector<std::unique_ptr<VRFrameDurations>> mFrameCPUTimestamps;
-    AvgCalculator<std::chrono::steady_clock::duration> leftEyeTotal;
-    AvgCalculator<std::chrono::steady_clock::duration> rightEyeTotal;
+    AvgCalculator leftEyeTotal;
+    AvgCalculator rightEyeTotal;
     std::chrono::steady_clock::time_point lastLog;
 };
 

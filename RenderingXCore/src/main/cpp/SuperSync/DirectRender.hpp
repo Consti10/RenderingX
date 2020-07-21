@@ -28,7 +28,6 @@ public:
     }
     const bool QCOM_TILED_RENDERING_AVAILABLE;
     void begin(const GLViewport& viewport)const{
-        //NOTE: glClear has to be called from the application, depending on the GPU time (I had to differentiate because of the updateTexImage2D)
         if(QCOM_TILED_RENDERING_AVAILABLE){
             QCOM_tiled_rendering::StartTilingQCOM(viewport);
             glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
