@@ -56,7 +56,7 @@
 using RENDER_NEW_EYE_CALLBACK=std::function<void(JNIEnv*,bool)>;
 using ERROR_CALLBACK=std::function<void(JNIEnv*,int)>;
 
-class FBRManager:public VSYNC {
+class FBRManager: public VSYNC {
 public:
     FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,ERROR_CALLBACK onErrorCallback);
     //has to be called from the OpenGL thread that is bound to the front buffer surface
