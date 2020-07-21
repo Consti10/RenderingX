@@ -105,11 +105,10 @@ void FBRManager::waitUntilTimePoint(const std::chrono::steady_clock::time_point&
 
 void FBRManager::printLog() {
     const auto now=steady_clock::now();
-    if(duration_cast<std::chrono::milliseconds>(now-lastLog).count()>5*1000){//every 5 seconds
+    if(now-lastLog>std::chrono::seconds(5)){//every 5 seconds
         lastLog=now;
         auto& leChrono=eyeChrono[0];
         auto& reChrono=eyeChrono[1];
-        const auto leAreGPUTimeAvg=Some::median(leChrono.avgGPUTime,reChrono.avgGPUTime);
         double leGPUTimeNotMeasurablePerc=0;
         double reGPUTimeNotMeasurablePerc=0;
         double leAreGPUTimeNotMeasurablePerc=0;
@@ -120,14 +119,15 @@ void FBRManager::printLog() {
             reGPUTimeNotMeasurablePerc= (reChrono.nEyesNotMeasurable / reChrono.nEyes) * 100.0;
         }
         leAreGPUTimeNotMeasurablePerc=(leGPUTimeNotMeasurablePerc+reGPUTimeNotMeasurablePerc)*0.5;
-        auto lol=Some::median(leChrono.avgGPUTime,reChrono.avgGPUTime);
         std::ostringstream avgLog;
         avgLog<<"------------------------FBRManager Averages------------------------";
-        avgLog << "\nCPU Time  : " << "leftEye:" << leChrono.avgCPUTime.getAvg_ms() << " | rightEye:" << reChrono.avgCPUTime.getAvg_ms();
-        avgLog << "\nGPU time: " << "leftEye:" << leChrono.avgGPUTime.getAvgReadable() << " | rightEye:" << reChrono.avgGPUTime.getAvgReadable() << " | left&right:" << leAreGPUTimeAvg.getAvgReadable();
-        avgLog<<"\nGPU % not measurable:"<<": leftEye:"<<leGPUTimeNotMeasurablePerc<<" | rightEye:"<<reGPUTimeNotMeasurablePerc<<" | left&right:"<<leAreGPUTimeNotMeasurablePerc;
-        avgLog<<"\nVsync waitT:"<<" start:"<< vsyncWaitTime[0].getAvgReadable()<<" | middle:"<<vsyncWaitTime[1].getAvgReadable()
-        <<" | start&middle"<<(vsyncWaitTime[0].getAvg_ms()+vsyncWaitTime[1].getAvg_ms())/2.0;
+        avgLog << "\nCPU Time: "<<"leftEye: " << leChrono.avgCPUTime.getAvgReadable() << " | rightEye:" << reChrono.avgCPUTime.getAvgReadable();
+        avgLog << "\nGPU time: "<<"leftEye: " << leChrono.avgGPUTime.getAvgReadable() << " | rightEye:" << reChrono.avgGPUTime.getAvgReadable()
+        <<" | left&right:" <<AvgCalculator::median(leChrono.avgGPUTime,reChrono.avgGPUTime).getAvgReadable();
+        avgLog<<"\nGPU % not measurable:"<<": leftEye:"<<leGPUTimeNotMeasurablePerc<<" | rightEye:"<<reGPUTimeNotMeasurablePerc
+        <<" | left&right:"<<leAreGPUTimeNotMeasurablePerc;
+        avgLog<<"\nVsync waitT:"<<" start: "<< vsyncWaitTime[0].getAvgReadable()<<" | middle: "<<vsyncWaitTime[1].getAvgReadable()
+        <<" | start&middle "<<AvgCalculator::median(vsyncWaitTime[0],vsyncWaitTime[1]).getAvgReadable();
         //avgLog<<"\nDisplay refresh time ms:"<<DISPLAY_REFRESH_TIME/1000.0/1000.0;
         avgLog<<"\n----  -----  ----  ----  ----  ----  ----  ----  --- ---";
         MLOGD<<avgLog.str();
@@ -140,6 +140,7 @@ void FBRManager::resetTS() {
         vsyncWaitTime[0].reset();
     }
     for(int i=0;i<2;i++){
+        eyeChrono[i].avgCPUTime.reset();
         eyeChrono[i].avgGPUTime.reset();
         eyeChrono[i].nEyes=0;
         eyeChrono[i].nEyesNotMeasurable=0;

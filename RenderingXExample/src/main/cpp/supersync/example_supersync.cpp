@@ -102,7 +102,7 @@ void GLRSuperSyncExample::renderNewEyeCallback(JNIEnv *env,const bool leftEye,co
     //
     //vrEyeTimeStamps.print();
     mFrameTimeAcc.add(vrEyeTimeStamps);
-    mFrameTimeAcc.printEveryXSeconds(5);
+    //mFrameTimeAcc.printEveryXSeconds(5);
 }
 
 void GLRSuperSyncExample::drawEye(JNIEnv *env, bool leftEye) {

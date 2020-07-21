@@ -15,24 +15,120 @@ namespace MyTimeHelper{
         if(durAbsolute>=std::chrono::seconds(1)){
             // More than one second, print as decimal with ms resolution.
             const auto ms=std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
-            return std::to_string(ms/1000.0f)+" s ";
+            return std::to_string(ms/1000.0f)+"s";
         }
         if(durAbsolute>=std::chrono::milliseconds(1)){
             // More than one millisecond, print as decimal with us resolution
             const auto us=std::chrono::duration_cast<std::chrono::microseconds>(dur).count();
-            return std::to_string(us/1000.0f)+" ms ";
+            return std::to_string(us/1000.0f)+"ms";
         }
         if(durAbsolute>=std::chrono::microseconds(1)){
             // More than one microsecond, print as decimal with ns resolution
             const auto ns=std::chrono::duration_cast<std::chrono::nanoseconds>(dur).count();
-            return std::to_string(ns/1000.0f)+" us ";
+            return std::to_string(ns/1000.0f)+"us";
         }
         const auto ns=std::chrono::duration_cast<std::chrono::nanoseconds>(dur).count();
-        return std::to_string(ns)+" ns ";
+        return std::to_string(ns)+"ns";
     }
     static std::string ReadableNS(uint64_t nanoseconds){
         return R(std::chrono::nanoseconds(nanoseconds));
     }
+};
+
+// Use this class to compare many samples of the same kind
+// Saves the minimum,maximum and average of all the samples
+class AvgCalculator{
+private:
+    // do not forget the braces to initalize with 0
+    std::chrono::nanoseconds sum{};
+    long nSamples=0;
+    std::chrono::nanoseconds min=std::chrono::nanoseconds::max();
+    std::chrono::nanoseconds max{};
+public:
+    AvgCalculator() = default;
+    // typedef duration<long long,         nano> nanoseconds;
+    // I think std::chrono::nanoseconds is a duration
+    void add(const std::chrono::nanoseconds& value){
+        if(value<std::chrono::nanoseconds(0)){
+            MLOGE<<"Cannot add negative value";
+            return;
+        }
+        sum+=value;
+        nSamples++;
+        if(value<min){
+            min=value;
+        }
+        if(value>max){
+            max=value;
+        }
+    }
+    std::chrono::nanoseconds getAvg()const{
+        if(nSamples == 0)return std::chrono::nanoseconds(0);
+        return sum / nSamples;
+    }
+    std::chrono::nanoseconds getMin()const{
+        return min;
+    }
+    std::chrono::nanoseconds getMax()const{
+        return max;
+    }
+    float getAvg_ms(){
+        return (float)(std::chrono::duration_cast<std::chrono::microseconds>(getAvg()).count())/1000.0f;
+    }
+    long getNSamples()const{
+        return nSamples;
+    }
+    void reset(){
+        sum={};
+        nSamples=0;
+        min=std::chrono::nanoseconds::max();
+        max={};
+    }
+    std::string getAvgReadable(const bool averageOnly=false)const{
+        std::stringstream ss;
+        if(averageOnly){
+            ss<<"avg="<<MyTimeHelper::R(getAvg());
+            return ss.str();
+        }
+        ss<<"min="<<MyTimeHelper::R(getMin())<<" max="<<MyTimeHelper::R(getMax())<<" avg="<<MyTimeHelper::R(getAvg());
+        return ss.str();
+    }
+    static AvgCalculator median(const AvgCalculator& c1,const AvgCalculator& c2){
+        AvgCalculator ret;
+        ret.add(c1.getAvg());
+        ret.add(c2.getAvg());
+        const auto min=std::min(c1.getMin(),c2.getMin());
+        const auto max=std::max(c1.getMax(),c2.getMax());
+        ret.min=min;
+        ret.max=max;
+        return ret;
+    }
+};
+
+
+class Chronometer:public AvgCalculator {
+public:
+    explicit Chronometer(std::string name="Unknown"):mName(std::move(name)){}
+    void start(){
+        startTS=std::chrono::steady_clock::now();
+    }
+    void stop(){
+        const auto now=std::chrono::steady_clock::now();
+        const auto delta=(now-startTS);
+        AvgCalculator::add(delta);
+    }
+    void printAvg(const std::chrono::steady_clock::duration& interval) {
+        const auto now=std::chrono::steady_clock::now();
+        if(now-lastLog>interval){
+            lastLog=now;
+            MLOGD2(mName)<<"Avg: "<<MyTimeHelper::R(AvgCalculator::getAvg());
+            reset();
+        }
+    }
+private:
+    const std::string mName;
+    std::chrono::steady_clock::time_point startTS;
+    std::chrono::steady_clock::time_point lastLog;
 };
 
 class RelativeCalculator{
@@ -53,92 +149,6 @@ public:
         return sum;
     }
 };
-
-class AvgCalculator{
-private:
-    // do not forget the braces to initalize with 0
-    std::chrono::nanoseconds sum{};
-    long nSamples=0;
-public:
-    AvgCalculator() = default;
-    // typedef duration<long long,         nano> nanoseconds;
-    // I think std::chrono::nanoseconds is a duration
-    void add(const std::chrono::nanoseconds& value){
-        if(value<std::chrono::nanoseconds(0)){
-            MLOGE<<"Cannot add negative value";
-            return;
-        }
-        sum+=value;
-        nSamples++;
-    }
-    std::chrono::nanoseconds getAvg()const{
-        if(nSamples == 0)return std::chrono::nanoseconds(0);
-        return sum / nSamples;
-    }
-    float getAvg_ms(){
-        return (float)(std::chrono::duration_cast<std::chrono::microseconds>(getAvg()).count())/1000.0f;
-    }
-    long getNSamples()const{
-        return nSamples;
-    }
-    void reset(){
-        sum={};
-        nSamples=0;
-    }
-    std::string getAvgReadable()const{
-        return MyTimeHelper::R(getAvg());
-    }
-};
-
-namespace Some{
-    static AvgCalculator median(const AvgCalculator& c1,const AvgCalculator& c2){
-        AvgCalculator ret;
-        ret.add(c1.getAvg());
-        ret.add(c2.getAvg());
-        return ret;
-    }
-}
-
-
-class Chronometer {
-public:
-    explicit Chronometer(std::string name="Unknown"):mName(std::move(name)){}
-    void start(){
-        startTS=std::chrono::steady_clock::now();
-    }
-    void stop(){
-        const auto now=std::chrono::steady_clock::now();
-        const auto delta=(now-startTS);
-        avgCalculator.add(delta);
-    }
-    void reset() {
-        avgCalculator.reset();
-    }
-    std::chrono::steady_clock::duration getAvg()const{
-        return avgCalculator.getAvg();
-    }
-    std::string getAvgReadable(){
-        return MyTimeHelper::R(getAvg());
-    }
-    float getAvg_ms(){
-        return avgCalculator.getAvg_ms();
-    }
-    void printAvg(const std::chrono::steady_clock::duration& interval) {
-        const auto now=std::chrono::steady_clock::now();
-        if(now-lastLog>interval){
-            lastLog=now;
-            MLOGD2(mName)<<"Avg: "<<MyTimeHelper::R(getAvg());
-            reset();
-        }
-    }
-private:
-    AvgCalculator avgCalculator;
-    const std::string mName;
-    std::chrono::steady_clock::time_point startTS;
-    std::chrono::steady_clock::time_point lastLog;
-};
-
-
 
 class MeasureExecutionTime{
 private:
