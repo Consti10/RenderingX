@@ -305,7 +305,7 @@ namespace LOLX{
         pid_t pid=gettid();
         syscallres=syscall(__NR_sched_setaffinity,pid, sizeof(cpuset),&cpuset);
         if(syscallres) {
-            //PrivLOG("Error sched_setaffinity");
+            MLOGE<<"Error setting affinity "<<core;
         }
     }
 }

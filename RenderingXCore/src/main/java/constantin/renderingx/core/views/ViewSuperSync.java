@@ -37,10 +37,12 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
     private boolean doNotEnterAgain=true;
     private int frameC=0;
 
-    private final long choreographerVsyncOffsetNS;
+    private long choreographerVsyncOffsetNS;
+    private Context context;
 
     public ViewSuperSync(Context context){
         super(context);
+        this.context=context;
         //getUiLayout().setTransitionViewEnabled(false);
         //setAsyncReprojectionEnabled(false);
         mGLSurfaceView =new GLSurfaceView(context);
@@ -133,6 +135,11 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
         Process.setThreadPriority(-20);
 
         mRenderer.enterSuperSyncLoop(getExclusiveVRCore());
+        /*try {
+            Thread.sleep(1000*1000*1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
         debug("Exited SS on GL thread");
         doNotEnterAgain=true;
     }
@@ -144,6 +151,14 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
         //####google SurfaceFlinger.cpp ##################
         // We add an additional 1ms to allow for processing time and
         // differences between the ideal and actual refresh rate.
+        /*final Display d=((WindowManager) Objects.requireNonNull(context.getSystemService(Context.WINDOW_SERVICE))).getDefaultDisplay();
+        if(d.getAppVsyncOffsetNanos()!=choreographerVsyncOffsetNS){
+            choreographerVsyncOffsetNS=d.getAppVsyncOffsetNanos();
+            System.out.println("choreographerVsyncOffsetNS changed");
+        }
+        choreographerVsyncOffsetNS=d.getAppVsyncOffsetNanos();*/
+
+
         mRenderer.setLastVSYNC(frameTimeNanos-choreographerVsyncOffsetNS+1000000);
         Choreographer.getInstance().postFrameCallback(this);
     }

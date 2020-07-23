@@ -92,6 +92,7 @@ private:
     static constexpr int N_COLOR_VERTICES=3*N_TRIANGLES;
     static constexpr int N_DRAW_CALLS=10;
     int SCREEN_W=0,SCREEN_H=0;
+public:
 };
 
 #endif //RENDERINGX_EXAMPLE_SUPERSYNC_H

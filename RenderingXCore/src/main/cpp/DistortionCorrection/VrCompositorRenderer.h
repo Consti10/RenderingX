@@ -157,7 +157,6 @@ public:
         }
         return tmp;
     }
-
 private:
     std::array<Chronometer,2> cpuTime={Chronometer{"CPU left"},Chronometer{"CPU right"}};
 };

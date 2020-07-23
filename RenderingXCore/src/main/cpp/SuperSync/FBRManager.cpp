@@ -40,11 +40,19 @@ void FBRManager::drawLeftAndRightEye(JNIEnv* env) {
 
 void FBRManager::enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H) {
     shouldRender= true;
+    CLOCK::time_point lastRenderedVsync=CLOCK::now();
+
     while(shouldRender){
         const auto latestVSYNC=getLatestVSYNC();
-        const auto nextVSYNCMiddle=latestVSYNC+getEyeRefreshTime();
-        const auto nextVSYNC=latestVSYNC+getDisplayRefreshTime();
+        const auto nextVSYNCMiddle=latestVSYNC+getEyeRefreshTime()+std::chrono::milliseconds(0);
+        const auto nextVSYNC=latestVSYNC+getDisplayRefreshTime()+std::chrono::milliseconds(0);
         //MLOGD<<"latestVSYNC"<<MyTimeHelper::R(CLOCK::now()-latestVSYNC)<<" nextVSYNCMiddle "<<MyTimeHelper::R(CLOCK::now()-nextVSYNCMiddle)<<" nextVSYNC "<<MyTimeHelper::R(CLOCK::now()-nextVSYNC);
+        if(getVsyncRasterizerPositionNormalized()>0.1f){
+            MLOGE<<"XYZ VSYNC should be at the beginning "<<getVsyncRasterizerPositionNormalized();
+        }
+        const auto diff=latestVSYNC-lastRenderedVsync;
+        MLOGD<<"VSYNC diff "<<MyTimeHelper::R(diff);
+        lastRenderedVsync=latestVSYNC;
         //
         // wait until nextVSYNCMiddle
         // Render left eye
@@ -53,25 +61,27 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H)
         // -> latestVSYNC becomes nextVSYNC
         //MLOGD<<"VSYNC rasterizer position "<<getVsyncRasterizerPositionNormalized();
 
-        for(int eye=0;eye<2;eye++){
+        // Render right eye (1) first, then left eye(0)
+        for(int eye=1;eye>=0;eye--){
             if(!shouldRender){
                 break;
             }
-            const bool LEFT_EYE=eye!=0;
-            //render new eye
+            const bool isLeftEye=eye==0;
+            //render new eye (right eye first)
             eyeChrono[eye].avgCPUTime.start();
-            directRender.begin(getViewportForEye(LEFT_EYE,SCREEN_W,SCREEN_H));
-            onRenderNewEyeCallback(env,eye!=0);
+            directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
+            onRenderNewEyeCallback(env,isLeftEye);
             directRender.end();
             eyeChrono[eye].avgCPUTime.stop();
             std::unique_ptr<FenceSync> fenceSync=std::make_unique<FenceSync>();
             glFlush();
             vsyncWaitTime[eye].start();
-            if(eye==0){
+            if(eye==1){
                 waitUntilTimePoint(nextVSYNCMiddle,*fenceSync);
             }else{
                 waitUntilTimePoint(nextVSYNC,*fenceSync);
             }
+            //MLOGD<<"Vsync pos "<<getVsyncRasterizerPositionNormalized();
             eyeChrono[eye].nEyes++;
             if(fenceSync->hasAlreadyBeenSatisfied()){
                 eyeChrono[eye].avgGPUTime.add(fenceSync->getDeltaCreationSatisfied());
@@ -81,6 +91,7 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H)
             }
             fenceSync.reset(nullptr);
             vsyncWaitTime[eye].stop();
+            MLOGD<<"VSYNC pos "<<getVsyncRasterizerPositionNormalized();
         }
         printLog();
     }
@@ -91,14 +102,27 @@ void FBRManager::requestExitSuperSyncLoop() {
 }
 
 void FBRManager::waitUntilTimePoint(const std::chrono::steady_clock::time_point& timePoint,FenceSync& fenceSync) {
+    auto diff=std::chrono::steady_clock::now()-timePoint;
+    if(diff>std::chrono::milliseconds(1)){
+        MLOGE<<"offset0 (overshoot)"<< MyTimeHelper::R(diff);
+    }
     const auto timeLeft1=std::chrono::steady_clock::now()-timePoint;
     //MLOGD<<"time left1: "<<MyTimeHelper::R(timeLeft1);
-    const bool satisfied= fenceSync.wait(timeLeft1);
-    const auto timeLeft2=std::chrono::steady_clock::now()-timePoint;
+    fenceSync.wait(timeLeft1);
+    //const auto timeLeft2=std::chrono::steady_clock::now()-timePoint;
     //MLOGD<<"time left 2: "<< MyTimeHelper::R(timeLeft2);
+    diff=std::chrono::steady_clock::now()-timePoint;
+    if(diff>std::chrono::milliseconds(1)){
+        MLOGE<<"offset1 (overshoot)"<< MyTimeHelper::R(diff);
+    }
     std::this_thread::sleep_until(timePoint);
-    const auto offset=std::chrono::steady_clock::now()-timePoint;
-    //MLOGD<<"offset (overshoot)"<< MyTimeHelper::R(offset);
+    //while (CLOCK::now()<timePoint){
+    //    //
+    //}
+    diff=std::chrono::steady_clock::now()-timePoint;
+    if(diff>std::chrono::milliseconds(1)){
+        MLOGE<<"offset2 (overshoot)"<< MyTimeHelper::R(diff);
+    }
     //return std::chrono::duration_cast<std::chrono::nanoseconds>(offset).count();
 }
 

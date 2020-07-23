@@ -38,8 +38,6 @@ GLRSuperSyncExample::GLRSuperSyncExample(JNIEnv *env, jobject androidContext,
 }
 
 void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext) {
-    //mBasicGLPrograms=std::make_unique<BasicGLPrograms>(false,nullptr);
-    //mBasicGLPrograms->text.loadTextRenderingData(env, androidContext,TextAssetsHelper::ARIAL_BOLD);
     glProgramVC=new GLProgramVC();
     mFrameTimeAcc.reset();
     eyeView=glm::lookAt(glm::vec3(0,0,20),glm::vec3(0.0F,0.0F,-1.0F),glm::vec3(0,1,0));
@@ -70,7 +68,7 @@ void GLRSuperSyncExample::onSurfaceChanged(int width, int height) {
 }
 
 void GLRSuperSyncExample::enterSuperSyncLoop(JNIEnv *env, jobject obj,int exclusiveVRCore) {
-    //Extensions::setAffinity(exclusiveVRCore);
+    LOLX::setAffinity(exclusiveVRCore);
     MLOGD<<"entering superSync loop. GLThread will be blocked";
     mFBRManager->enterDirectRenderingLoop(env,SCREEN_W,SCREEN_H);
     MLOGD<<"exited superSync loop. GLThread unblocked";
@@ -81,7 +79,7 @@ void GLRSuperSyncExample::exitSuperSyncLoop() {
 }
 
 void GLRSuperSyncExample::setLastVSYNC(int64_t lastVSYNC) {
-    mFBRManager->setLastVSYNC(lastVSYNC);
+    mFBRManager->setVSYNCSentByChoreographer(lastVSYNC);
 }
 
 void GLRSuperSyncExample::renderNewEyeCallback(JNIEnv *env,const bool leftEye,const int64_t offsetNS) {
@@ -90,19 +88,7 @@ void GLRSuperSyncExample::renderNewEyeCallback(JNIEnv *env,const bool leftEye,co
     glClearColor(0.5F,0.5F,0.5F,0.0F);
     glEnable(GL_SCISSOR_TEST);
     glDisable(GL_DEPTH_TEST);
-    VREyeDurations vrEyeTimeStamps{leftEye};
-    //if(mFBRManager->directRenderingMode==FBRManager::QCOM_TILED_RENDERING){
-    //    //so we have to call glClear() before any OpenGL calls that affect framebuffer contents (e.g. draw())
-    //    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    //}
-    vrEyeTimeStamps.setTimestamp("startDR");
     drawEye(env,leftEye);
-    vrEyeTimeStamps.setTimestamp("drawEye");
-    vrEyeTimeStamps.setTimestamp("stopDR");
-    //
-    //vrEyeTimeStamps.print();
-    mFrameTimeAcc.add(vrEyeTimeStamps);
-    //mFrameTimeAcc.printEveryXSeconds(5);
 }
 
 void GLRSuperSyncExample::drawEye(JNIEnv *env, bool leftEye) {

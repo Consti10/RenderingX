@@ -32,6 +32,7 @@ dependencies {
     //For SuperSync, we rely on the GvrLayout provided by the GoogleVR library
     //But if wanted, this dependency could be removed without too much effort
     //Since we already included gvr here, other projects should not use their own gvr versions, but also use this one (and the native code supplied here)
-    implementation "com.google.vr:sdk-base:$mGvrVersion"
+    // by using api instead of implementation modules that depend on RenderingXCore also get th gvr api
+    api "com.google.vr:sdk-base:$mGvrVersion"
 
 }
