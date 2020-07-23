@@ -72,15 +72,6 @@ public:
         if(!(deltaBetweenVSYNCs>16.2ms && deltaBetweenVSYNCs<16.8ms)){
             MLOGD<<"XYZ out of order delta "<<MyTimeHelper::R(deltaBetweenVSYNCs);
         }
-        /*lastDeltaSetP=newVSYNC;
-        if(mDeltas.size()>60*2){
-            std::stringstream ss;
-            for(const auto d:mDeltas){
-                ss<<std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(d).count()/1000.0f)<<" ";
-            }
-            MLOGD<<"All Deltas:"<<ss.str();
-            mDeltas.resize(0);
-        }*/
         const auto beforeVSYNCPositionNormalized=getVsyncRasterizerPositionNormalized();
         const auto beforeLatestVSYNC=getLatestVSYNC();
         const auto age1= CLOCK::now() - lastVSYNCFromChoreographer;
