@@ -119,7 +119,7 @@ VSYNC::CLOCK::duration  FBRManager::waitUntilTimePoint(const std::chrono::steady
 
 void FBRManager::printLog() {
     const auto now=steady_clock::now();
-    if(now-lastLog>std::chrono::seconds(5)){//every 5 seconds
+    if(now-lastLog>std::chrono::seconds(3)){//every 5 seconds
         lastLog=now;
         auto& leChrono=eyeChrono[0];
         auto& reChrono=eyeChrono[1];
