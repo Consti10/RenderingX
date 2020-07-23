@@ -73,7 +73,8 @@ private:
         double nEyes=0;
         double nEyesNotMeasurable=0;
     };
-    static void waitUntilTimePoint(const std::chrono::steady_clock::time_point& timePoint,FenceSync& fenceSync);
+    // return the overshoot
+    static CLOCK::duration waitUntilTimePoint(const std::chrono::steady_clock::time_point& timePoint,FenceSync& fenceSync);
     std::array<EyeChrono,2> eyeChrono={};
     const RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback;
     const std::function<void(JNIEnv*,int)> onErrorCallback;

@@ -65,29 +65,30 @@ public:
                 if(displayRefreshTimeCalculator.getNSamples()==N_SAMPLES) {
                     displayRefreshTime = displayRefreshTimeCalculator.getAvg();
                     eyeRefreshTime = displayRefreshTime / 2;
-                    MLOGD << "NEW DISPLAY_REFRESH_TIME "<< displayRefreshTimeCalculator.getAvgReadable();
+                    MLOGD<<"NEW DISPLAY_REFRESH_TIME "<<displayRefreshTimeCalculator.getAvgReadable();
                 }
             }
         }
         if(!(deltaBetweenVSYNCs>16.2ms && deltaBetweenVSYNCs<16.8ms)){
-            MLOGD<<"XYZ out of order delta "<<MyTimeHelper::R(deltaBetweenVSYNCs);
+            // MLOGE<<"out of order delta: "<<MyTimeHelper::R(deltaBetweenVSYNCs);
         }
         const auto beforeVSYNCPositionNormalized=getVsyncRasterizerPositionNormalized();
         const auto beforeLatestVSYNC=getLatestVSYNC();
         const auto age1= CLOCK::now() - lastVSYNCFromChoreographer;
         const auto age2= CLOCK::now() - newVSYNC;
-        MLOGD<<"age1 "<<MyTimeHelper::R(age1)<<" age2 "<<MyTimeHelper::R(age2);
+        //MLOGD<<"age1 "<<MyTimeHelper::R(age1)<<" age2 "<<MyTimeHelper::R(age2);
         lastVSYNCFromChoreographer=newVSYNC;
+
         //MLOGD<<"setLastVSYNC"<<lastVSYNC;
         const auto afterVSYNCPosition=getVsyncRasterizerPositionNormalized();
         const auto afterLatestVSYNC=getLatestVSYNC();
         const auto diffVsyncPositionNormalized=std::abs(afterVSYNCPosition - beforeVSYNCPositionNormalized);
         if(diffVsyncPositionNormalized>0.02f){
-            MLOGE<<"XYZ VSYNC changed too much ?! "<<diffVsyncPositionNormalized;
+            // MLOGE<<"VSYNC changed too much: "<<diffVsyncPositionNormalized;
         }
         const auto diffVsyncBeforeAndAFter=afterLatestVSYNC-beforeLatestVSYNC;
         if(diffVsyncBeforeAndAFter> 1ms){
-            MLOGE<<"XYZ VSYNC changed in between "<<MyTimeHelper::R(diffVsyncBeforeAndAFter);
+            // MLOGE<<"VSYNC changed in between: "<<MyTimeHelper::R(diffVsyncBeforeAndAFter);
         }
     }
     /**
