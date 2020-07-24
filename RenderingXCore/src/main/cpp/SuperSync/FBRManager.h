@@ -54,11 +54,10 @@
 #include "DirectRender.hpp"
 
 using RENDER_NEW_EYE_CALLBACK=std::function<void(JNIEnv*,bool)>;
-using ERROR_CALLBACK=std::function<void(JNIEnv*,int)>;
 
 class FBRManager: public VSYNC {
 public:
-    FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,ERROR_CALLBACK onErrorCallback);
+    FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback);
     //has to be called from the OpenGL thread that is bound to the front buffer surface
     //blocks until requestExitSuperSyncLoop() is called (from any thread, e.g. the UI onPauseX )
     void enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H);
@@ -77,7 +76,6 @@ private:
     static CLOCK::duration waitUntilTimePoint(const std::chrono::steady_clock::time_point& timePoint,FenceSync& fenceSync);
     std::array<EyeChrono,2> eyeChrono={};
     const RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback;
-    const std::function<void(JNIEnv*,int)> onErrorCallback;
     std::atomic<bool> shouldRender{false};
     std::array<Chronometer,2> vsyncWaitTime={Chronometer{"VSYNC start wait time"},Chronometer{"VSYNC middle wait time"}};
     void printLog();

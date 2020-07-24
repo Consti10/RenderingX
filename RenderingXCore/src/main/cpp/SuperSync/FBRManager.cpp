@@ -20,11 +20,10 @@ static std::chrono::steady_clock::duration ThisThreadSleepUntil(std::chrono::ste
     return now-tp;
 }
 
-FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,const RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,const ERROR_CALLBACK onErrorCallback):
+FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,const RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback):
         directRender{qcomTiledRenderingAvailable},
         EGL_KHR_Reusable_Sync_Available(reusableSyncAvailable),
-        onRenderNewEyeCallback(onRenderNewEyeCallback),
-        onErrorCallback(onErrorCallback)
+        onRenderNewEyeCallback(onRenderNewEyeCallback)
 {
     KHR_fence_sync::init();
     Extensions::initOtherExtensions();

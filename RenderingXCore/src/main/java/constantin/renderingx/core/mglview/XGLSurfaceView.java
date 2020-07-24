@@ -17,12 +17,13 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import static android.opengl.EGL14.EGL_DEFAULT_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_SURFACE;
 import static android.opengl.EGL14.EGL_NO_CONTEXT;
+
+// TODO in Development
+// First step: Make it usable everywhere haha :)
 
 public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, SurfaceHolder.Callback {
     final AppCompatActivity activity;
@@ -232,12 +233,14 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         // Called as soon as the OpenGL context is created
         // The lifetime of the OpenGL context is tied to the lifetime of the Activity (onCreate / onDestroy)
         // Therefore this callback is called at most once
+        // Also, since the https://www.khronos.org/registry/EGL/extensions/KHR/EGL_KHR_surfaceless_context.txt
+        // extension is not available on all devices, a Surface is always bound when
+        // onContextCreated is called
         void onContextCreated();
         // Called repeatedly in between onResume() / onPause()
         void onDrawFrame();
         // Called once the opengl context has to be destroyed,
         // but here the context is still bound for cleanup operations
         //void onContextDestroyed();
-
     }
 }
