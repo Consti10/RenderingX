@@ -2,14 +2,13 @@ package constantin.renderingx.example.stereo.video360degree;
 
 import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.Surface;
 
 import com.google.vr.ndk.base.GvrApi;
 
 import constantin.renderingx.core.VrActivity;
-import constantin.renderingx.core.views.MyGLSurfaceView;
+import constantin.renderingx.core.mglview.XGLSurfaceView;
 import constantin.renderingx.core.views.MyVRLayout;
 import constantin.renderingx.example.R;
 import constantin.video.core.gl.ISurfaceAvailable;
@@ -46,8 +45,10 @@ public class AExample360Video extends VrActivity {
         final int SPHERE_MODE=bundle.getInt(KEY_SPHERE_MODE,0);
         final String VIDEO_FILENAME=bundle.getString(KEY_VIDEO_FILENAME);
         //start initialization
-        final MyGLSurfaceView gLView = new MyGLSurfaceView(this);
-        gLView.setEGLContextClientVersion(2);
+        final XGLSurfaceView glSurfaceView2=new XGLSurfaceView(this);
+
+        //final MyGLSurfaceView gLView = new MyGLSurfaceView(this);
+        //gLView.setEGLContextClientVersion(2);
         // Use one of both ! Default to the player from VideoCore
         if(USE_ANDROID_MEDIA_PLAYER){
             //TODO doesnt work on mp4 assets because of compression
@@ -74,11 +75,13 @@ public class AExample360Video extends VrActivity {
                 videoPlayer.configure2();
         renderer =new Renderer360Video(this,iSurfaceAvailable, gvrApi,false,
                 true,SPHERE_MODE);
-        gLView.setRenderer(renderer);
-        gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-        gLView.setPreserveEGLContextOnPause(true);
+        //gLView.setRenderer(renderer);
+        //gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+        //gLView.setPreserveEGLContextOnPause(true);
+        glSurfaceView2.setRenderer(renderer);
         setContentView(myVRLayout);
-        myVRLayout.setPresentationView(gLView);
+        //myVRLayout.setPresentationView(gLView);
+        myVRLayout.setPresentationView(glSurfaceView2);
     }
 
     public int getNSurfaceTextureUpdateReturnedTrue(){

@@ -2,8 +2,6 @@ package constantin.renderingx.example.stereo.video360degree;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.SurfaceTexture;
-import android.opengl.GLSurfaceView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,13 +12,14 @@ import javax.microedition.khronos.opengles.GL10;
 
 import constantin.renderingx.core.MVrHeadsetParams;
 import constantin.renderingx.core.STHelper;
+import constantin.renderingx.core.mglview.XGLSurfaceView;
 import constantin.video.core.gl.ISurfaceAvailable;
 import constantin.video.core.gl.VideoSurfaceHolder;
 
 
 //See native code for documentation
 
-public class Renderer360Video implements GLSurfaceView.Renderer {
+public class Renderer360Video implements XGLSurfaceView.Renderer {
     static {
         System.loadLibrary("example-2");
     }

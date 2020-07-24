@@ -1,6 +1,5 @@
 package constantin.renderingx.example.stereo.distortion;
 
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.KeyEvent;
 
@@ -9,7 +8,7 @@ import com.google.vr.ndk.base.GvrLayout;
 
 import constantin.renderingx.core.FullscreenHelper;
 import constantin.renderingx.core.VrActivity;
-import constantin.renderingx.core.views.MyGLSurfaceView;
+import constantin.renderingx.core.mglview.XGLSurfaceView;
 import constantin.renderingx.core.views.MyVRLayout;
 
 //Uses the LiveVideo10ms VideoCore lib which is intended for live streaming, not file playback.
@@ -18,7 +17,7 @@ import constantin.renderingx.core.views.MyVRLayout;
 //See native code (renderer) for documentation
 public class AExampleDistortion extends VrActivity {
     private static final String TAG="AExampleDistortion";
-    private MyGLSurfaceView gLView;
+    private XGLSurfaceView gLView;
     //Use one of both, either GvrLayout or MyVRLayout
     private static final boolean USE_GVR_LAYOUT=false;
     private GvrLayout gvrLayout;
@@ -36,12 +35,12 @@ public class AExampleDistortion extends VrActivity {
             myVRLayout=new MyVRLayout(this);
             gvrApi=myVRLayout.getGvrApi();
         }
-        gLView = new MyGLSurfaceView(this);
-        gLView.setEGLContextClientVersion(2);
+        gLView = new XGLSurfaceView(this);
+        //gLView.setEGLContextClientVersion(2);
         final RendererDistortion renderer=new RendererDistortion(this,gvrApi);
         gLView.setRenderer(renderer);
-        gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-        gLView.setPreserveEGLContextOnPause(true);
+        //gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+       // gLView.setPreserveEGLContextOnPause(true);
         if(USE_GVR_LAYOUT){
             setContentView(gvrLayout);
             gvrLayout.setPresentationView(gLView);

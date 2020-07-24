@@ -1,16 +1,17 @@
 package constantin.renderingx.example.mono;
 
 import android.content.Context;
-import android.opengl.GLSurfaceView;
 
 import com.dinuscxj.gesture.MultiTouchGestureDetector;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import constantin.renderingx.core.mglview.XGLSurfaceView;
+
 
 //See native code for documentation
-public class GLRExample implements GLSurfaceView.Renderer, MultiTouchGestureDetector.OnMultiTouchGestureListener{
+public class GLRExample implements XGLSurfaceView.Renderer, MultiTouchGestureDetector.OnMultiTouchGestureListener{
     static {
         System.loadLibrary("example-mono");
     }

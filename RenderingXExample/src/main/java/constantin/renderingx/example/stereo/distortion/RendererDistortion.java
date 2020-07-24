@@ -2,7 +2,6 @@ package constantin.renderingx.example.stereo.distortion;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.opengl.GLSurfaceView;
 
 import com.google.vr.ndk.base.GvrApi;
 
@@ -10,11 +9,12 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import constantin.renderingx.core.MVrHeadsetParams;
+import constantin.renderingx.core.mglview.XGLSurfaceView;
 
 
 //See native code for documentation
 
-public class RendererDistortion implements GLSurfaceView.Renderer {
+public class RendererDistortion implements XGLSurfaceView.Renderer {
     static {
         System.loadLibrary("example-1");
     }
