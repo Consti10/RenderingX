@@ -1,6 +1,7 @@
 package constantin.renderingx.example.mono;
 
 import android.content.Context;
+import android.opengl.GLSurfaceView;
 
 import com.dinuscxj.gesture.MultiTouchGestureDetector;
 
@@ -11,7 +12,7 @@ import constantin.renderingx.core.mglview.XGLSurfaceView;
 
 
 //See native code for documentation
-public class GLRExample implements XGLSurfaceView.Renderer, MultiTouchGestureDetector.OnMultiTouchGestureListener{
+public class GLRExample implements GLSurfaceView.Renderer, MultiTouchGestureDetector.OnMultiTouchGestureListener{
     static {
         System.loadLibrary("example-mono");
     }

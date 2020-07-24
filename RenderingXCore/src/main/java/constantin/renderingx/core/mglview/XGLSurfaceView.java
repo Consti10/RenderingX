@@ -33,8 +33,10 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     private final Object eglSurfaceAvailable=new Object();
 
     private Thread mOpenGLThread;
-    private Renderer mRenderer;
+    private GLSurfaceView.Renderer mRenderer;
+    private Renderer2 mRenderer2;
     private int SURFACE_W,SURFACE_H;
+    private boolean firstTimeSurfaceBound=true;
 
     public XGLSurfaceView(final Context context){
         super(context);
@@ -51,8 +53,11 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         holder.addCallback(this);
     }
 
-    public void setRenderer(final Renderer renderer){
+    public void setRenderer(final GLSurfaceView.Renderer renderer){
         this.mRenderer=renderer;
+    }
+    public void setRenderer(final Renderer2 renderer2){
+        this.mRenderer2=renderer2;
     }
 
     /**
@@ -85,8 +90,12 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         mOpenGLThread=new Thread(new Runnable() {
             @Override
             public void run() {
-                //startOpenGLOnThread();
-                //System.out.println("Started OpenGL");
+                if(firstTimeSurfaceBound){
+                    if(mRenderer2!=null){
+                        mRenderer2.onContextCreated();
+                    }
+                    firstTimeSurfaceBound=false;
+                }
                 synchronized (eglSurfaceAvailable){
                     if(eglSurface==EGL_NO_SURFACE){
                         try {
@@ -97,26 +106,24 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                         }
                     }
                 }
-                //setWindow(androidSurface);
                 makeCurrent(eglSurface);
-
-                mRenderer.onSurfaceCreated(null,null);
-                mRenderer.onSurfaceChanged(null,SURFACE_W,SURFACE_H);
+                if(mRenderer!=null){
+                    mRenderer.onSurfaceCreated(null,null);
+                    mRenderer.onSurfaceChanged(null,SURFACE_W,SURFACE_H);
+                }
 
                 while (!Thread.currentThread().isInterrupted()){
                     //System.out.println("Render");
-                    mRenderer.onDrawFrame(null);
+                    if(mRenderer!=null){
+                        mRenderer.onDrawFrame(null);
+                    }
+                    if(mRenderer2!=null){
+                        mRenderer2.onDrawFrame();
+                    }
                     if(!EGL14.eglSwapBuffers(eglDisplay,eglSurface)){
                         System.out.println("Cannot swap buffers");
                     }
                 }
-
-                //stopOnOpenGLThread();
-                //System.out.println("Stopped OpenGL");
-
-                //delete window
-                //setWindow(null);
-                //makeCurrent(EGL_NO_SURFACE);
                 boolean result= EGL14.eglMakeCurrent(eglDisplay,EGL_NO_SURFACE,EGL_NO_SURFACE,EGL_NO_CONTEXT);
                 if(!result){
                     throw new AssertionError("Cannot unbind surface");
@@ -221,9 +228,16 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     }
 
 
-    public interface Renderer {
-        void onSurfaceCreated(GL10 gl, javax.microedition.khronos.egl.EGLConfig config);
-        void onSurfaceChanged(GL10 gl, int width, int height);
-        void onDrawFrame(GL10 gl);
+    public interface Renderer2{
+        // Called as soon as the OpenGL context is created
+        // The lifetime of the OpenGL context is tied to the lifetime of the Activity (onCreate / onDestroy)
+        // Therefore this callback is called at most once
+        void onContextCreated();
+        // Called repeatedly in between onResume() / onPause()
+        void onDrawFrame();
+        // Called once the opengl context has to be destroyed,
+        // but here the context is still bound for cleanup operations
+        //void onContextDestroyed();
+
     }
 }
