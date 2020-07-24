@@ -90,12 +90,6 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         mOpenGLThread=new Thread(new Runnable() {
             @Override
             public void run() {
-                if(firstTimeSurfaceBound){
-                    if(mRenderer2!=null){
-                        mRenderer2.onContextCreated();
-                    }
-                    firstTimeSurfaceBound=false;
-                }
                 synchronized (eglSurfaceAvailable){
                     if(eglSurface==EGL_NO_SURFACE){
                         try {
@@ -107,6 +101,12 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                     }
                 }
                 makeCurrent(eglSurface);
+                if(firstTimeSurfaceBound){
+                    if(mRenderer2!=null){
+                        mRenderer2.onContextCreated();
+                    }
+                    firstTimeSurfaceBound=false;
+                }
                 if(mRenderer!=null){
                     mRenderer.onSurfaceCreated(null,null);
                     mRenderer.onSurfaceChanged(null,SURFACE_W,SURFACE_H);

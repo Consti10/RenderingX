@@ -20,7 +20,7 @@ import constantin.video.core.gl.VideoSurfaceHolder;
 
 //See native code for documentation
 
-public class Renderer360Video implements GLSurfaceView.Renderer {
+public class Renderer360Video implements /*GLSurfaceView.Renderer*/XGLSurfaceView.Renderer2 {
     static {
         System.loadLibrary("example-2");
     }
@@ -48,7 +48,7 @@ public class Renderer360Video implements GLSurfaceView.Renderer {
         nativeUpdateHeadsetParams(nativeRenderer,params);
     }
 
-    @Override
+    /*@Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         mVideoSurfaceHolder.createSurfaceTextureGL();
         nativeOnSurfaceCreated(nativeRenderer,mContext,mVideoSurfaceHolder.getTextureId());
@@ -65,7 +65,7 @@ public class Renderer360Video implements GLSurfaceView.Renderer {
             nSurfaceTextureUpdateReturnedTrue++;
         }
         nativeOnDrawFrame(nativeRenderer);
-    }
+    }*/
 
     // For testing the 'check if update was successfully'
     public int getNSurfaceTextureUpdateReturnedTrue(){
@@ -79,5 +79,19 @@ public class Renderer360Video implements GLSurfaceView.Renderer {
         } finally {
             super.finalize();
         }
+    }
+
+    @Override
+    public void onContextCreated() {
+        mVideoSurfaceHolder.createSurfaceTextureGL();
+        nativeOnSurfaceCreated(nativeRenderer,mContext,mVideoSurfaceHolder.getTextureId());
+    }
+
+    @Override
+    public void onDrawFrame() {
+        if(STHelper.updateAndCheck(mVideoSurfaceHolder.getSurfaceTexture())){
+            nSurfaceTextureUpdateReturnedTrue++;
+        }
+        nativeOnDrawFrame(nativeRenderer);
     }
 }

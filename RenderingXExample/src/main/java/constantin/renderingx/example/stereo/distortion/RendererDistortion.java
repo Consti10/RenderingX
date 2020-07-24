@@ -15,7 +15,7 @@ import constantin.renderingx.core.mglview.XGLSurfaceView;
 
 //See native code for documentation
 
-public class RendererDistortion implements GLSurfaceView.Renderer {
+public class RendererDistortion implements /*GLSurfaceView.Renderer,*/XGLSurfaceView.Renderer2 {
     static {
         System.loadLibrary("example-1");
     }
@@ -38,7 +38,7 @@ public class RendererDistortion implements GLSurfaceView.Renderer {
     }
 
 
-    @Override
+    /*@Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         nativeOnSurfaceCreated(nativeRenderer,mContext);
     }
@@ -51,7 +51,7 @@ public class RendererDistortion implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 gl) {
         nativeOnDrawFrame(nativeRenderer);
-    }
+    }*/
 
     @Override
     protected void finalize() throws Throwable {
@@ -60,5 +60,15 @@ public class RendererDistortion implements GLSurfaceView.Renderer {
         } finally {
             super.finalize();
         }
+    }
+
+    @Override
+    public void onContextCreated() {
+        nativeOnSurfaceCreated(nativeRenderer,mContext);
+    }
+
+    @Override
+    public void onDrawFrame() {
+        nativeOnDrawFrame(nativeRenderer);
     }
 }
