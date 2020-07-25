@@ -19,6 +19,9 @@ import java.util.Objects;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import constantin.renderingx.core.mglview.XEGLConfigChooser;
+import constantin.renderingx.core.mglview.XGLSurfaceView;
+
 import static constantin.renderingx.core.views.MyEGLConfigChooser.EGL_ANDROID_front_buffer_auto_refresh;
 
 /**
@@ -28,16 +31,12 @@ import static constantin.renderingx.core.views.MyEGLConfigChooser.EGL_ANDROID_fr
  * Specifying the device as 'Daydream ready'
  */
 
-public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer, Choreographer.FrameCallback{
+public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.Renderer2, Choreographer.FrameCallback{
     private static final String TAG="ViewSuperSync";
-    private final GLSurfaceView mGLSurfaceView;
+    private final XGLSurfaceView mGLSurfaceView;
     private IRendererSuperSync mRenderer;
 
-    private float color=1.0f;
-    private boolean doNotEnterAgain=true;
-    private int frameC=0;
-
-    private long choreographerVsyncOffsetNS;
+    private final long choreographerVsyncOffsetNS;
     private Context context;
 
     public ViewSuperSync(Context context){
@@ -45,12 +44,11 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
         this.context=context;
         //getUiLayout().setTransitionViewEnabled(false);
         //setAsyncReprojectionEnabled(false);
-        mGLSurfaceView =new GLSurfaceView(context);
-        mGLSurfaceView.setEGLContextClientVersion(2);
-        mGLSurfaceView.setEGLConfigChooser(new MyEGLConfigChooser(true,0));
+        mGLSurfaceView =new XGLSurfaceView(context);
+        mGLSurfaceView.setEGLConfigChooser(new XEGLConfigChooser(true,0));
         mGLSurfaceView.setRenderer(this);
-        mGLSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-        mGLSurfaceView.setPreserveEGLContextOnPause(false);
+        mGLSurfaceView.DO_SUPERSYNC_MODS=true;
+
         setPresentationView(mGLSurfaceView);
         //
         final Display d=((WindowManager) Objects.requireNonNull(context.getSystemService(Context.WINDOW_SERVICE))).getDefaultDisplay();
@@ -69,24 +67,12 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
         //FullscreenHelper.setImmersiveSticky(this);
         //FullscreenHelper.enableAndroidVRModeIfPossible(this);
         resumeX();
-        mGLSurfaceView.onResume();
-        mGLSurfaceView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                color=1.0f;
-                frameC=0;
-                doNotEnterAgain=false;
-                debug("Setting frameC and doNotEnterAgain");
-            }
-        });
         Choreographer.getInstance().postFrameCallback(this);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     private void onPause(){
-        mRenderer.requestExitSuperSyncLoop();
         Choreographer.getInstance().removeFrameCallback(this);
-        mGLSurfaceView.onPause();
         pauseX();
         //FullscreenHelper.disableAndroidVRModeIfEnabled(this);
     }
@@ -97,7 +83,7 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
     }
 
 
-    @Override
+    /*@Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         mRenderer.onSurfaceCreated();
     }
@@ -135,14 +121,9 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
         Process.setThreadPriority(-20);
 
         mRenderer.enterSuperSyncLoop(getExclusiveVRCore());
-        /*try {
-            Thread.sleep(1000*1000*1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
         debug("Exited SS on GL thread");
         doNotEnterAgain=true;
-    }
+    }*/
 
     @Override
     public void doFrame(long frameTimeNanos) {
@@ -157,8 +138,6 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
             System.out.println("choreographerVsyncOffsetNS changed");
         }
         choreographerVsyncOffsetNS=d.getAppVsyncOffsetNanos();*/
-
-
         mRenderer.setLastVSYNC(frameTimeNanos-choreographerVsyncOffsetNS+1000000);
         Choreographer.getInstance().postFrameCallback(this);
     }
@@ -186,12 +165,20 @@ public class ViewSuperSync extends MyVRLayout implements GLSurfaceView.Renderer,
     }
 
 
-    public interface IRendererSuperSync {
+    @Override
+    public void onContextCreated(int width, int height) {
+        mRenderer.onContextCreated(width,height);
+    }
 
-        void onSurfaceCreated();
-        void onSurfaceChanged(final int width, final int height);
-        void enterSuperSyncLoop(final int exclusiveVRCore);
-        void requestExitSuperSyncLoop();
+    @Override
+    public void onDrawFrame() {
+        mRenderer.onDrawFrame();
+    }
+
+
+    public interface IRendererSuperSync {
+        void onContextCreated(int width, int height);
+        void onDrawFrame();
         void setLastVSYNC(long lastVSYNC);
     }
 

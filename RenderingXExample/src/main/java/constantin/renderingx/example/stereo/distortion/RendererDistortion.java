@@ -37,21 +37,15 @@ public class RendererDistortion implements /*GLSurfaceView.Renderer,*/XGLSurface
         nativeUpdateHeadsetParams(nativeRenderer,params);
     }
 
-
-    /*@Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+    @Override
+    public void onContextCreated(int width,int height) {
         nativeOnSurfaceCreated(nativeRenderer,mContext);
     }
 
     @Override
-    public void onSurfaceChanged(GL10 gl, int width, int height) {
-        // In VR, the GLSurface is always as big as the screen
-    }
-
-    @Override
-    public void onDrawFrame(GL10 gl) {
+    public void onDrawFrame() {
         nativeOnDrawFrame(nativeRenderer);
-    }*/
+    }
 
     @Override
     protected void finalize() throws Throwable {
@@ -60,15 +54,5 @@ public class RendererDistortion implements /*GLSurfaceView.Renderer,*/XGLSurface
         } finally {
             super.finalize();
         }
-    }
-
-    @Override
-    public void onContextCreated() {
-        nativeOnSurfaceCreated(nativeRenderer,mContext);
-    }
-
-    @Override
-    public void onDrawFrame() {
-        nativeOnDrawFrame(nativeRenderer);
     }
 }

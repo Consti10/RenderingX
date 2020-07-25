@@ -48,17 +48,11 @@ public:
     */
     void enterSuperSyncLoop(JNIEnv * env, jobject obj,int exclusiveVRCore);
     /**
-     * Exit the SuperSync loop. Since the super sync loop blocks the GLThread, this has to be called from another thread, e.g the UI thread
-     * called by the UI's onPause().
-     */
-    void exitSuperSyncLoop();
-    /**
      * Pass trough the last VSYNC from java
      * @param lastVSYNC last reported vsync, in ns
      */
     void setLastVSYNC(int64_t lastVSYNC);
-    void onSurfaceCreated(JNIEnv * env,jobject obj);
-    void onSurfaceChanged(int width, int height);
+    void onSurfaceCreated(JNIEnv * env,jobject obj,int width, int height);
 private:
     /**
      * Called by the SuperSync manager

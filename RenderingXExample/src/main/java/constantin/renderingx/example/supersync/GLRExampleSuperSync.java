@@ -14,8 +14,7 @@ public class GLRExampleSuperSync implements ViewSuperSync.IRendererSuperSync {
     }
     private native long nativeConstruct(Context context,boolean qcomTiledRenderingAvailable, boolean reusableSyncAvailable);
     private native void nativeDelete(long glRendererStereoP);
-    private native void nativeOnSurfaceCreated(long glRendererStereoP,Context androidContext);
-    private native void nativeOnSurfaceChanged(long glRendererStereoP,int width,int height);
+    private native void nativeOnSurfaceCreated(long glRendererStereoP,Context androidContext,int width,int height);
     private native void nativeEnterSuperSyncLoop(long glRendererStereoP, int exclusiveVRCore);
     private native void nativeExitSuperSyncLoop(long glRendererMonoP);
     private native void nativeDoFrame(long glRendererStereoP,long lastVsync);
@@ -32,24 +31,13 @@ public class GLRExampleSuperSync implements ViewSuperSync.IRendererSuperSync {
     }
 
     @Override
-    public void onSurfaceCreated() {
-        nativeOnSurfaceCreated(nativeGLRSuperSync,mContext);
+    public void onContextCreated(int width, int height) {
+        nativeOnSurfaceCreated(nativeGLRSuperSync,mContext,width,height);
     }
 
     @Override
-    public void onSurfaceChanged(int width, int height) {
-        nativeOnSurfaceChanged(nativeGLRSuperSync,width,height);
-    }
-
-    @Override
-    public void enterSuperSyncLoop(final int exclusiveVRCore) {
-        nativeEnterSuperSyncLoop(nativeGLRSuperSync,exclusiveVRCore);
-    }
-
-
-    @Override
-    public void requestExitSuperSyncLoop() {
-        nativeExitSuperSyncLoop(nativeGLRSuperSync);
+    public void onDrawFrame() {
+        nativeEnterSuperSyncLoop(nativeGLRSuperSync,0);
     }
 
     @Override

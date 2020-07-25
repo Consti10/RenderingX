@@ -115,11 +115,10 @@ public class XEGLConfigChooser implements XGLSurfaceView.EGLConfigChooser {
             int a = findConfigAttrib(display, config,
                     EGL14.EGL_ALPHA_SIZE, 0);
             if(!(r >= params.mR && g >= params.mG && b >= params.mB && a >= params.mA )){
-                printDebug("RGBA does not match"+"R: "+r);
+                printDebug("RGBA does not match");
                 continue;
             }
             printDebug("RGBA okay");
-
             int msaaLevel=findConfigAttrib(display,config,EGL10.EGL_SAMPLES,0);
             if(msaaLevel!=params.mWantedMSAALevel){
                 printDebug("MSAA level does not match"+msaaLevel);

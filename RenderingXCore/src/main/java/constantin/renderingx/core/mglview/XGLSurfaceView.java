@@ -7,6 +7,10 @@ import android.opengl.EGLContext;
 import android.opengl.EGLDisplay;
 import android.opengl.EGLSurface;
 import android.opengl.GLSurfaceView;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.MessageQueue;
+import android.os.Process;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -17,10 +21,12 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
+
 import static android.opengl.EGL14.EGL_DEFAULT_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_SURFACE;
 import static android.opengl.EGL14.EGL_NO_CONTEXT;
+import static constantin.renderingx.core.mglview.XEGLConfigChooser.EGL_ANDROID_front_buffer_auto_refresh;
 
 // TODO in Development
 // First step: Make it usable everywhere haha :)
@@ -38,6 +44,9 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     private Renderer2 mRenderer2;
     private int SURFACE_W,SURFACE_H;
     private boolean firstTimeSurfaceBound=true;
+    private XEGLConfigChooser xeglConfigChooser=null;
+
+   public boolean DO_SUPERSYNC_MODS=false;
 
     public XGLSurfaceView(final Context context){
         super(context);
@@ -52,6 +61,9 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         ((AppCompatActivity)context).getLifecycle().addObserver(this);
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
+    }
+    public void setEGLConfigChooser(final XEGLConfigChooser xeglConfigChooser){
+        this.xeglConfigChooser=xeglConfigChooser;
     }
 
     public void setRenderer(final GLSurfaceView.Renderer renderer){
@@ -72,8 +84,10 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         int[] major = new int[]{0};
         int[] minor = new int[]{0};
         EGL14.eglInitialize(eglDisplay, major, 0, minor, 0);
-        final EGLConfigChooser mEGLConfigChooser = new XEGLConfigChooser(false, 0, true);
-        eglConfig = mEGLConfigChooser.chooseConfig(eglDisplay);
+        if(xeglConfigChooser==null){
+            xeglConfigChooser=new XEGLConfigChooser(false, 0, false);
+        }
+        eglConfig = xeglConfigChooser.chooseConfig(eglDisplay);
         final int[] contextAttributes = new int[]{
                 EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
                 EGL14.EGL_NONE
@@ -102,9 +116,16 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                     }
                 }
                 makeCurrent(eglSurface);
+                if(DO_SUPERSYNC_MODS){
+                    XEGLConfigChooser.setEglSurfaceAttrib(EGL14.EGL_RENDER_BUFFER,EGL14.EGL_SINGLE_BUFFER);
+                    XEGLConfigChooser.setEglSurfaceAttrib(EGL_ANDROID_front_buffer_auto_refresh,EGL14.EGL_TRUE);
+                    eglSwapBuffersSafe(eglDisplay,eglSurface);
+                    Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+                    Process.setThreadPriority(-20);
+                }
                 if(firstTimeSurfaceBound){
                     if(mRenderer2!=null){
-                        mRenderer2.onContextCreated();
+                        mRenderer2.onContextCreated(SURFACE_W,SURFACE_H);
                     }
                     firstTimeSurfaceBound=false;
                 }
@@ -121,20 +142,24 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                     if(mRenderer2!=null){
                         mRenderer2.onDrawFrame();
                     }
-                    if(!EGL14.eglSwapBuffers(eglDisplay,eglSurface)){
-                        System.out.println("Cannot swap buffers");
+                    if(!DO_SUPERSYNC_MODS){
+                        eglSwapBuffersSafe(eglDisplay,eglSurface);
                     }
                 }
                 boolean result= EGL14.eglMakeCurrent(eglDisplay,EGL_NO_SURFACE,EGL_NO_SURFACE,EGL_NO_CONTEXT);
                 if(!result){
                     throw new AssertionError("Cannot unbind surface");
                 }
-
             }
         });
         mOpenGLThread.start();
     }
 
+    private static void eglSwapBuffersSafe(final EGLDisplay eglDisplay,final EGLSurface eglSurface){
+        if(!EGL14.eglSwapBuffers(eglDisplay,eglSurface)){
+            System.out.println("Cannot swap buffers");
+        }
+    }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     private void onPause(){
@@ -236,11 +261,13 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         // Also, since the https://www.khronos.org/registry/EGL/extensions/KHR/EGL_KHR_surfaceless_context.txt
         // extension is not available on all devices, a Surface is always bound when
         // onContextCreated is called
-        void onContextCreated();
+        void onContextCreated(int width,int height);
         // Called repeatedly in between onResume() / onPause()
         void onDrawFrame();
         // Called once the opengl context has to be destroyed,
         // but here the context is still bound for cleanup operations
         //void onContextDestroyed();
     }
+
+
 }

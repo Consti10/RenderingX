@@ -47,42 +47,13 @@ public class Renderer360Video implements /*GLSurfaceView.Renderer*/XGLSurfaceVie
         final MVrHeadsetParams params=new MVrHeadsetParams(context);
         nativeUpdateHeadsetParams(nativeRenderer,params);
     }
-
-    /*@Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        mVideoSurfaceHolder.createSurfaceTextureGL();
-        nativeOnSurfaceCreated(nativeRenderer,mContext,mVideoSurfaceHolder.getTextureId());
-    }
-
-    @Override
-    public void onSurfaceChanged(GL10 gl, int width, int height) {
-        //Nothing
-    }
-
-    @Override
-    public void onDrawFrame(GL10 gl) {
-        if(STHelper.updateAndCheck(mVideoSurfaceHolder.getSurfaceTexture())){
-            nSurfaceTextureUpdateReturnedTrue++;
-        }
-        nativeOnDrawFrame(nativeRenderer);
-    }*/
-
     // For testing the 'check if update was successfully'
     public int getNSurfaceTextureUpdateReturnedTrue(){
         return nSurfaceTextureUpdateReturnedTrue;
     }
 
     @Override
-    protected void finalize() throws Throwable {
-        try {
-            nativeDelete(nativeRenderer);
-        } finally {
-            super.finalize();
-        }
-    }
-
-    @Override
-    public void onContextCreated() {
+    public void onContextCreated(int width,int height) {
         mVideoSurfaceHolder.createSurfaceTextureGL();
         nativeOnSurfaceCreated(nativeRenderer,mContext,mVideoSurfaceHolder.getTextureId());
     }
@@ -93,5 +64,14 @@ public class Renderer360Video implements /*GLSurfaceView.Renderer*/XGLSurfaceVie
             nSurfaceTextureUpdateReturnedTrue++;
         }
         nativeOnDrawFrame(nativeRenderer);
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            nativeDelete(nativeRenderer);
+        } finally {
+            super.finalize();
+        }
     }
 }

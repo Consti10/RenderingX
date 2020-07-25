@@ -37,7 +37,7 @@ GLRSuperSyncExample::GLRSuperSyncExample(JNIEnv *env, jobject androidContext,
     mFBRManager=std::make_unique<FBRManager>(qcomTiledRenderingAvailable,reusableSyncAvailable,f);
 }
 
-void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext) {
+void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext,int width, int height) {
     glProgramVC=new GLProgramVC();
     mFrameTimeAcc.reset();
     eyeView=glm::lookAt(glm::vec3(0,0,20),glm::vec3(0.0F,0.0F,-1.0F),glm::vec3(0,1,0));
@@ -56,10 +56,8 @@ void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext) {
             ColoredGeometry::makeTessellatedColoredRect(10, {0,0,0}, {cbs,cbs}, TrueColor2::BLACK));
     solidRectangleYellow.setData(
             ColoredGeometry::makeTessellatedColoredRect(10, {0,0,0}, {cbs,cbs}, TrueColor2::YELLOW));
-}
 
-
-void GLRSuperSyncExample::onSurfaceChanged(int width, int height) {
+    // XX
     SCREEN_W=width;
     SCREEN_H=height;
     ViewPortW=width/2;
@@ -67,15 +65,15 @@ void GLRSuperSyncExample::onSurfaceChanged(int width, int height) {
     projection=glm::perspective(glm::radians(45.0F),((float) ViewPortW)/((float)ViewPortH), 0.05f, 20.0f);
 }
 
+
 void GLRSuperSyncExample::enterSuperSyncLoop(JNIEnv *env, jobject obj,int exclusiveVRCore) {
     LOLX::setAffinity(exclusiveVRCore);
-    MLOGD<<"entering superSync loop. GLThread will be blocked";
     mFBRManager->enterDirectRenderingLoop(env,SCREEN_W,SCREEN_H);
-    MLOGD<<"exited superSync loop. GLThread unblocked";
-}
-
-void GLRSuperSyncExample::exitSuperSyncLoop() {
-    mFBRManager->requestExitSuperSyncLoop();
+    /*glScissor(0,0,SCREEN_W,SCREEN_H);
+    glViewport(0,0,SCREEN_W,SCREEN_H);
+    glClearColor(0,1,0,0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glFlush();*/
 }
 
 void GLRSuperSyncExample::setLastVSYNC(int64_t lastVSYNC) {
@@ -133,27 +131,16 @@ JNI_METHOD(void, nativeDelete)
 }
 
 JNI_METHOD(void, nativeOnSurfaceCreated)
-(JNIEnv *env, jobject obj, jlong glRendererStereo,jobject androidContext) {
-    native(glRendererStereo)->onSurfaceCreated(env,androidContext);
-}
-JNI_METHOD(void, nativeOnSurfaceChanged)
-(JNIEnv *env, jobject obj, jlong glRendererStereo,jint w,jint h) {
-    native(glRendererStereo)->onSurfaceChanged(w, h);
+(JNIEnv *env, jobject obj, jlong glRendererStereo,jobject androidContext,jint width, jint height) {
+    native(glRendererStereo)->onSurfaceCreated(env,androidContext,width,height);
 }
 JNI_METHOD(void, nativeEnterSuperSyncLoop)
 (JNIEnv *env, jobject obj, jlong glRendererStereo,jint exclusiveVRCore) {
-    MLOGD<<"nativeEnterSuperSyncLoop()";
     native(glRendererStereo)->enterSuperSyncLoop(env,obj,(int)exclusiveVRCore);
-}
-JNI_METHOD(void, nativeExitSuperSyncLoop)
-(JNIEnv *env, jobject obj, jlong glRendererStereo) {
-    MLOGD<<"nativeExitSuperSyncLoop()";
-    native(glRendererStereo)->exitSuperSyncLoop();
 }
 JNI_METHOD(void, nativeDoFrame)
 (JNIEnv *env, jobject obj, jlong glRendererStereo,jlong lastVSYNC) {
     native(glRendererStereo)->setLastVSYNC((int64_t) lastVSYNC);
-    //LOGD("nativeDoFrame");
 }
 
 }

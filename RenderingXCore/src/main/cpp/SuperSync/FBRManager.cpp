@@ -38,69 +38,65 @@ void FBRManager::drawLeftAndRightEye(JNIEnv* env) {
 
 
 void FBRManager::enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H) {
-    shouldRender= true;
-    CLOCK::time_point lastRenderedVsync=CLOCK::now();
-
-    while(shouldRender){
-        const auto latestVSYNC=getLatestVSYNC();
-        const auto nextVSYNCMiddle=latestVSYNC+getEyeRefreshTime()+std::chrono::milliseconds(0);
-        const auto nextVSYNC=latestVSYNC+getDisplayRefreshTime()+std::chrono::milliseconds(0);
-        //MLOGD<<"latestVSYNC"<<MyTimeHelper::R(CLOCK::now()-latestVSYNC)<<" nextVSYNCMiddle "<<MyTimeHelper::R(CLOCK::now()-nextVSYNCMiddle)<<" nextVSYNC "<<MyTimeHelper::R(CLOCK::now()-nextVSYNC);
-        //if(getVsyncRasterizerPositionNormalized()>0.1f){
-        //    MLOGE<<"XYZ VSYNC should be at the beginning "<<getVsyncRasterizerPositionNormalized();
-        //}
-        const auto diff=latestVSYNC-lastRenderedVsync;
-        //MLOGD<<"VSYNC diff "<<MyTimeHelper::R(diff);
-        lastRenderedVsync=latestVSYNC;
-        //
-        // wait until nextVSYNCMiddle
-        // Render left eye
-        // wait until nextVSYNC
-        // Render right eye
-        // -> latestVSYNC becomes nextVSYNC
-        //MLOGD<<"VSYNC rasterizer position "<<getVsyncRasterizerPositionNormalized();
-
-        // Render right eye (1) first, then left eye(0)
-        for(int eye=1;eye>=0;eye--){
-            if(!shouldRender){
-                break;
-            }
-            const bool isLeftEye=eye==0;
-            const auto nextEvent=eye==1 ? nextVSYNCMiddle : nextVSYNC;
-            if(CLOCK::now()>nextEvent){
-                MLOGE<<"Event already passed";
-                continue;
-            }
-            //render new eye (right eye first)
-            eyeChrono[eye].avgCPUTime.start();
-            directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
-            onRenderNewEyeCallback(env,isLeftEye);
-            directRender.end();
-            eyeChrono[eye].avgCPUTime.stop();
-            std::unique_ptr<FenceSync> fenceSync=std::make_unique<FenceSync>();
-            glFlush();
-            vsyncWaitTime[eye].start();
-            waitUntilTimePoint(nextEvent,*fenceSync);
-
-            //MLOGD<<"Vsync pos "<<getVsyncRasterizerPositionNormalized();
-            eyeChrono[eye].nEyes++;
-            if(fenceSync->hasAlreadyBeenSatisfied()){
-                eyeChrono[eye].avgGPUTime.add(fenceSync->getDeltaCreationSatisfied());
-            }else{
-                MLOGE<<"Couldnt measure GPU time";
-                eyeChrono[eye].nEyesNotMeasurable++;
-            }
-            fenceSync.reset(nullptr);
-            vsyncWaitTime[eye].stop();
-            //MLOGD<<"VSYNC pos "<<getVsyncRasterizerPositionNormalized();
+    if(endLastFunctionCall!=CLOCK::time_point{}){
+        const auto deltaBetweenFunctionCalls=CLOCK::now()-endLastFunctionCall;
+        if(deltaBetweenFunctionCalls>300us){ //1/10 of a ms
+            MLOGE<<"Stayed too long:"<<MyTimeHelper::R(deltaBetweenFunctionCalls);
         }
-        printLog();
     }
+    const auto latestVSYNC=getLatestVSYNC();
+    const auto nextVSYNCMiddle=latestVSYNC+getEyeRefreshTime()+std::chrono::milliseconds(0);
+    const auto nextVSYNC=latestVSYNC+getDisplayRefreshTime()+std::chrono::milliseconds(0);
+    //MLOGD<<"latestVSYNC"<<MyTimeHelper::R(CLOCK::now()-latestVSYNC)<<" nextVSYNCMiddle "<<MyTimeHelper::R(CLOCK::now()-nextVSYNCMiddle)<<" nextVSYNC "<<MyTimeHelper::R(CLOCK::now()-nextVSYNC);
+    //if(getVsyncRasterizerPositionNormalized()>0.1f){
+    //    MLOGE<<"XYZ VSYNC should be at the beginning "<<getVsyncRasterizerPositionNormalized();
+    //}
+    const auto diff=latestVSYNC-lastRenderedVsync;
+    //MLOGD<<"VSYNC diff "<<MyTimeHelper::R(diff);
+    lastRenderedVsync=latestVSYNC;
+    //
+    // wait until nextVSYNCMiddle
+    // Render left eye
+    // wait until nextVSYNC
+    // Render right eye
+    // -> latestVSYNC becomes nextVSYNC
+    //MLOGD<<"VSYNC rasterizer position "<<getVsyncRasterizerPositionNormalized();
+
+    // Render right eye (1) first, then left eye(0)
+    for(int eye=1;eye>=0;eye--){
+        const bool isLeftEye=eye==0;
+        const auto nextEvent=eye==1 ? nextVSYNCMiddle : nextVSYNC;
+        if(CLOCK::now()>nextEvent){
+            MLOGE<<"Event already passed";
+            continue;
+        }
+        //render new eye (right eye first)
+        eyeChrono[eye].avgCPUTime.start();
+        directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
+        onRenderNewEyeCallback(env,isLeftEye);
+        directRender.end();
+        eyeChrono[eye].avgCPUTime.stop();
+        std::unique_ptr<FenceSync> fenceSync=std::make_unique<FenceSync>();
+        glFlush();
+        vsyncWaitTime[eye].start();
+        waitUntilTimePoint(nextEvent,*fenceSync);
+
+        //MLOGD<<"Vsync pos "<<getVsyncRasterizerPositionNormalized();
+        eyeChrono[eye].nEyes++;
+        if(fenceSync->hasAlreadyBeenSatisfied()){
+            eyeChrono[eye].avgGPUTime.add(fenceSync->getDeltaCreationSatisfied());
+        }else{
+            MLOGE<<"Couldnt measure GPU time";
+            eyeChrono[eye].nEyesNotMeasurable++;
+        }
+        fenceSync.reset(nullptr);
+        vsyncWaitTime[eye].stop();
+        //MLOGD<<"VSYNC pos "<<getVsyncRasterizerPositionNormalized();
+    }
+    printLog();
+    endLastFunctionCall=CLOCK::now();
 }
 
-void FBRManager::requestExitSuperSyncLoop() {
-    shouldRender= false;
-}
 
 VSYNC::CLOCK::duration  FBRManager::waitUntilTimePoint(const std::chrono::steady_clock::time_point& timePoint,FenceSync& fenceSync) {
     const auto timeLeft=timePoint-CLOCK::now();
