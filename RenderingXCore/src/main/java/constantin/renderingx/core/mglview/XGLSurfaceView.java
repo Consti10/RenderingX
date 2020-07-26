@@ -7,9 +7,6 @@ import android.opengl.EGLContext;
 import android.opengl.EGLDisplay;
 import android.opengl.EGLSurface;
 import android.opengl.GLSurfaceView;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.MessageQueue;
 import android.os.Process;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -21,6 +18,9 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import static android.opengl.EGL14.EGL_DEFAULT_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_DISPLAY;
@@ -46,7 +46,10 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     private boolean firstTimeSurfaceBound=true;
     private XEGLConfigChooser xeglConfigChooser=null;
 
-   public boolean DO_SUPERSYNC_MODS=false;
+    public boolean DO_SUPERSYNC_MODS=false;
+
+    enum Message{START_RENDERING_FRAMES,STOP_RENDERING_FRAMES};
+    final BlockingQueue<Message> blockingQueue = new LinkedBlockingQueue<Message>();
 
     public XGLSurfaceView(final Context context){
         super(context);
@@ -102,9 +105,22 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private void onResume(){
         log("onResume");
+        // wait until the EGL Surface has been created
+        // e.g wait until the SurfaceHolder callback is called
+
         mOpenGLThread=new Thread(new Runnable() {
             @Override
             public void run() {
+                /*try{
+                    while (true){
+                        Message message=blockingQueue.take();
+                        if(message==Message.START_RENDERING_FRAMES){
+
+                        }
+                    }
+                }catch (InterruptedException e){
+                    e.printStackTrace();
+                }*/
                 synchronized (eglSurfaceAvailable){
                     if(eglSurface==EGL_NO_SURFACE){
                         try {
@@ -115,7 +131,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                         }
                     }
                 }
-                makeCurrent(eglSurface);
+                eglMakeCurrentSafe(eglDisplay,eglSurface,eglContext);
                 if(DO_SUPERSYNC_MODS){
                     XEGLConfigChooser.setEglSurfaceAttrib(EGL14.EGL_RENDER_BUFFER,EGL14.EGL_SINGLE_BUFFER);
                     XEGLConfigChooser.setEglSurfaceAttrib(EGL_ANDROID_front_buffer_auto_refresh,EGL14.EGL_TRUE);
@@ -133,9 +149,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                     mRenderer.onSurfaceCreated(null,null);
                     mRenderer.onSurfaceChanged(null,SURFACE_W,SURFACE_H);
                 }
-
                 while (!Thread.currentThread().isInterrupted()){
-                    //System.out.println("Render");
                     if(mRenderer!=null){
                         mRenderer.onDrawFrame(null);
                     }
@@ -146,10 +160,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                         eglSwapBuffersSafe(eglDisplay,eglSurface);
                     }
                 }
-                boolean result= EGL14.eglMakeCurrent(eglDisplay,EGL_NO_SURFACE,EGL_NO_SURFACE,EGL_NO_CONTEXT);
-                if(!result){
-                    throw new AssertionError("Cannot unbind surface");
-                }
+                eglMakeCurrentSafe(eglDisplay,EGL_NO_SURFACE,EGL_NO_CONTEXT);
             }
         });
         mOpenGLThread.start();
@@ -157,9 +168,17 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
 
     private static void eglSwapBuffersSafe(final EGLDisplay eglDisplay,final EGLSurface eglSurface){
         if(!EGL14.eglSwapBuffers(eglDisplay,eglSurface)){
-            System.out.println("Cannot swap buffers");
+            log("Cannot swap buffers");
         }
     }
+    private static void eglMakeCurrentSafe(final EGLDisplay eglDisplay, EGLSurface eglSurface, EGLContext eglContext) {
+        //log("makeCurrent");
+        boolean result= EGL14.eglMakeCurrent(eglDisplay,eglSurface,eglSurface,eglContext);
+        if(!result){
+            throw new AssertionError("Cannot make surface current "+eglSurface);
+        }
+    }
+
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     private void onPause(){
@@ -180,33 +199,20 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     }
 
 
-    private void makeCurrent(EGLSurface surface) {
-        log("makeCurrent");
-        boolean result= EGL14.eglMakeCurrent(eglDisplay, surface, surface,eglContext);
-        if(!result){
-            throw new AssertionError("Cannot make surface current "+surface);
-        }
-    }
-
-
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        System.out.println("X surfaceCreated");
+        log("surfaceCreated");
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         SURFACE_W=width;
         SURFACE_H=height;
-        System.out.println("X surfaceChanged");
-
-        //if(activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.CREATED)){
-        //   System.out.println("Got surface before onCreate()");
-        //   createEGLSurface(holder.getSurface());
-        //}
+        log("surfaceChanged");
         if(eglSurface!=EGL_NO_SURFACE){
             throw new AssertionError("Changing Surface is not supported");
         }
+        // We should never get the Surface before onCreate() is called
         if(!activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.CREATED)){
             throw new AssertionError("Got surface before onCreate()");
         }
@@ -221,7 +227,8 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        System.out.println("X surfaceDestroyed");
+        log("surfaceDestroyed");
+        // We should never have to destroy the surface before onPause() is called
         if(activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)){
             throw new AssertionError("Destroyed surface before onPause()");
         }
@@ -231,26 +238,6 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
 
     static void log(String message){
         Log.d("MyGLView",message);
-    }
-
-
-    /**
-     * An interface for choosing an EGLConfig configuration from a list of
-     * potential configurations.
-     * <p>
-     * This interface must be implemented by clients wishing to call
-     * {@link GLSurfaceView#setEGLConfigChooser(GLSurfaceView.EGLConfigChooser)}
-     */
-    public interface EGLConfigChooser {
-        /**
-         * Choose a configuration from the list. Implementors typically
-         * implement this method by calling
-         * {@link EGL14#eglChooseConfig} and iterating through the results. Please consult the
-         * EGL specification available from The Khronos Group to learn how to call eglChooseConfig.
-         * @param display the current display.
-         * @return the chosen configuration.
-         */
-        EGLConfig chooseConfig(EGLDisplay display);
     }
 
 

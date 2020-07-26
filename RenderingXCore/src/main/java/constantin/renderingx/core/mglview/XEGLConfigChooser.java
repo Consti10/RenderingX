@@ -12,7 +12,7 @@ import javax.microedition.khronos.egl.EGL10;
 //EGL10.EGL_SURFACE_TYPE, EGL10.EGL_WINDOW_BIT,
 //Allows setting the 'mutable' flag for changing the frame buffer between single/double buffered
 
-public class XEGLConfigChooser implements XGLSurfaceView.EGLConfigChooser {
+public class XEGLConfigChooser{
     private static final String TAG="MyEGLConfigChooser";
     private static final boolean DEBUG=true;
 
@@ -44,9 +44,8 @@ public class XEGLConfigChooser implements XGLSurfaceView.EGLConfigChooser {
         mParams=new Params(0,wantedMSAALevel,useMutable);
     }
 
-    @Override
-    public EGLConfig chooseConfig(EGLDisplay display) {
 
+    public EGLConfig chooseConfig(EGLDisplay display) {
         try{
             return getExactMatch(display,mParams);
         }catch (IllegalArgumentException unused){
