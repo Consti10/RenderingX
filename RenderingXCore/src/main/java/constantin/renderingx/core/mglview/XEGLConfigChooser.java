@@ -133,7 +133,6 @@ public class XEGLConfigChooser{
             }
             return config;
         }
-
         return null;
     }
 

@@ -20,7 +20,9 @@ import androidx.lifecycle.OnLifecycleEvent;
 
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static android.opengl.EGL14.EGL_DEFAULT_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_DISPLAY;
@@ -48,8 +50,9 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
 
     public boolean DO_SUPERSYNC_MODS=false;
 
-    enum Message{START_RENDERING_FRAMES,STOP_RENDERING_FRAMES};
-    final BlockingQueue<Message> blockingQueue = new LinkedBlockingQueue<Message>();
+    //enum Message{START_RENDERING_FRAMES,STOP_RENDERING_FRAMES};
+    //final BlockingQueue<Message> blockingQueue = new LinkedBlockingQueue<Message>();
+    private final AtomicBoolean shouldRender=new AtomicBoolean(false);
 
     public XGLSurfaceView(final Context context){
         super(context);
@@ -102,67 +105,58 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         }
     }
 
+    private final Runnable mOpenGLRunnable=new Runnable() {
+        @Override
+        public void run() {
+            synchronized (eglSurfaceAvailable){
+                if(eglSurface==EGL_NO_SURFACE){
+                    try {
+                        eglSurfaceAvailable.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                }
+            }
+            eglMakeCurrentSafe(eglDisplay,eglSurface,eglContext);
+            if(DO_SUPERSYNC_MODS){
+                XEGLConfigChooser.setEglSurfaceAttrib(EGL14.EGL_RENDER_BUFFER,EGL14.EGL_SINGLE_BUFFER);
+                XEGLConfigChooser.setEglSurfaceAttrib(EGL_ANDROID_front_buffer_auto_refresh,EGL14.EGL_TRUE);
+                eglSwapBuffersSafe(eglDisplay,eglSurface);
+                Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+                Process.setThreadPriority(-20);
+            }
+            if(firstTimeSurfaceBound){
+                if(mRenderer2!=null){
+                    mRenderer2.onContextCreated(SURFACE_W,SURFACE_H);
+                }
+                firstTimeSurfaceBound=false;
+            }
+            if(mRenderer!=null){
+                mRenderer.onSurfaceCreated(null,null);
+                mRenderer.onSurfaceChanged(null,SURFACE_W,SURFACE_H);
+            }
+            while (!Thread.currentThread().isInterrupted()){
+                if(mRenderer!=null){
+                    mRenderer.onDrawFrame(null);
+                }
+                if(mRenderer2!=null){
+                    mRenderer2.onDrawFrame();
+                }
+                if(!DO_SUPERSYNC_MODS){
+                    eglSwapBuffersSafe(eglDisplay,eglSurface);
+                }
+            }
+            eglMakeCurrentSafe(eglDisplay,EGL_NO_SURFACE,EGL_NO_CONTEXT);
+        }
+    };
+
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private void onResume(){
         log("onResume");
         // wait until the EGL Surface has been created
         // e.g wait until the SurfaceHolder callback is called
-
-        mOpenGLThread=new Thread(new Runnable() {
-            @Override
-            public void run() {
-                /*try{
-                    while (true){
-                        Message message=blockingQueue.take();
-                        if(message==Message.START_RENDERING_FRAMES){
-
-                        }
-                    }
-                }catch (InterruptedException e){
-                    e.printStackTrace();
-                }*/
-                synchronized (eglSurfaceAvailable){
-                    if(eglSurface==EGL_NO_SURFACE){
-                        try {
-                            eglSurfaceAvailable.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                            return;
-                        }
-                    }
-                }
-                eglMakeCurrentSafe(eglDisplay,eglSurface,eglContext);
-                if(DO_SUPERSYNC_MODS){
-                    XEGLConfigChooser.setEglSurfaceAttrib(EGL14.EGL_RENDER_BUFFER,EGL14.EGL_SINGLE_BUFFER);
-                    XEGLConfigChooser.setEglSurfaceAttrib(EGL_ANDROID_front_buffer_auto_refresh,EGL14.EGL_TRUE);
-                    eglSwapBuffersSafe(eglDisplay,eglSurface);
-                    Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
-                    Process.setThreadPriority(-20);
-                }
-                if(firstTimeSurfaceBound){
-                    if(mRenderer2!=null){
-                        mRenderer2.onContextCreated(SURFACE_W,SURFACE_H);
-                    }
-                    firstTimeSurfaceBound=false;
-                }
-                if(mRenderer!=null){
-                    mRenderer.onSurfaceCreated(null,null);
-                    mRenderer.onSurfaceChanged(null,SURFACE_W,SURFACE_H);
-                }
-                while (!Thread.currentThread().isInterrupted()){
-                    if(mRenderer!=null){
-                        mRenderer.onDrawFrame(null);
-                    }
-                    if(mRenderer2!=null){
-                        mRenderer2.onDrawFrame();
-                    }
-                    if(!DO_SUPERSYNC_MODS){
-                        eglSwapBuffersSafe(eglDisplay,eglSurface);
-                    }
-                }
-                eglMakeCurrentSafe(eglDisplay,EGL_NO_SURFACE,EGL_NO_CONTEXT);
-            }
-        });
+        mOpenGLThread=new Thread(mOpenGLRunnable);
         mOpenGLThread.start();
     }
 
@@ -183,11 +177,13 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     private void onPause(){
         log("onPause");
-        mOpenGLThread.interrupt();
-        try {
-            mOpenGLThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if(mOpenGLThread!=null){
+            mOpenGLThread.interrupt();
+            try {
+                mOpenGLThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -215,6 +211,9 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         // We should never get the Surface before onCreate() is called
         if(!activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.CREATED)){
             throw new AssertionError("Got surface before onCreate()");
+        }
+        if(!activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)){
+            throw new AssertionError("Got surface before onResume()");
         }
         synchronized (eglSurfaceAvailable){
             eglSurface = EGL14.eglCreateWindowSurface(eglDisplay, eglConfig,holder.getSurface(),null,0);
