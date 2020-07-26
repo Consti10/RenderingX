@@ -33,6 +33,12 @@ import static constantin.renderingx.core.mglview.XEGLConfigChooser.EGL_ANDROID_f
 // TODO in Development
 // First step: Make it usable everywhere haha :)
 
+/**
+ * This View is intended as an replacement for GLSurfaceView.
+ * The Complexity of GLSurfaceView comes from its compatibility all the way down to Android 2.3.3 (API level 10) where for example EGL14 was not available
+ * By replacing EGL10 with EGL14 and also having not to worry about 'hacks' that were needed on these old api versions I hope to reduce complexity
+ * It is also going to be easier to add more specialized features,for example multiple OpenGL context(s) aka 'Shared context'
+ */
 public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, SurfaceHolder.Callback {
     final AppCompatActivity activity;
     EGLDisplay eglDisplay = EGL_NO_DISPLAY;
@@ -108,16 +114,6 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     private final Runnable mOpenGLRunnable=new Runnable() {
         @Override
         public void run() {
-            synchronized (eglSurfaceAvailable){
-                if(eglSurface==EGL_NO_SURFACE){
-                    try {
-                        eglSurfaceAvailable.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        return;
-                    }
-                }
-            }
             eglMakeCurrentSafe(eglDisplay,eglSurface,eglContext);
             if(DO_SUPERSYNC_MODS){
                 XEGLConfigChooser.setEglSurfaceAttrib(EGL14.EGL_RENDER_BUFFER,EGL14.EGL_SINGLE_BUFFER);
@@ -156,8 +152,6 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         log("onResume");
         // wait until the EGL Surface has been created
         // e.g wait until the SurfaceHolder callback is called
-        mOpenGLThread=new Thread(mOpenGLRunnable);
-        mOpenGLThread.start();
     }
 
     private static void eglSwapBuffersSafe(final EGLDisplay eglDisplay,final EGLSurface eglSurface){
@@ -215,13 +209,12 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         if(!activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)){
             throw new AssertionError("Got surface before onResume()");
         }
-        synchronized (eglSurfaceAvailable){
-            eglSurface = EGL14.eglCreateWindowSurface(eglDisplay, eglConfig,holder.getSurface(),null,0);
-            if(eglSurface==EGL_NO_SURFACE){
-                throw new AssertionError("Cannot create window surface");
-            }
-            eglSurfaceAvailable.notify();
+        eglSurface = EGL14.eglCreateWindowSurface(eglDisplay, eglConfig,holder.getSurface(),null,0);
+        if(eglSurface==EGL_NO_SURFACE){
+            throw new AssertionError("Cannot create window surface");
         }
+        mOpenGLThread=new Thread(mOpenGLRunnable);
+        mOpenGLThread.start();
     }
 
     @Override
