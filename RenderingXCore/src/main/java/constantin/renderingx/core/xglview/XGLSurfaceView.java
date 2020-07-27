@@ -7,12 +7,14 @@ import android.opengl.EGLContext;
 import android.opengl.EGLDisplay;
 import android.opengl.EGLSurface;
 import android.opengl.GLSurfaceView;
+import android.os.Build;
 import android.os.Process;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
@@ -28,7 +30,6 @@ import static android.opengl.EGL14.EGL_NO_CONTEXT;
 import static constantin.renderingx.core.xglview.XEGLConfigChooser.EGL_ANDROID_front_buffer_auto_refresh;
 
 // TODO in Development
-// First step: Make it usable everywhere haha :)
 
 /**
  * This View is intended as an replacement for GLSurfaceView.
@@ -43,20 +44,28 @@ import static constantin.renderingx.core.xglview.XEGLConfigChooser.EGL_ANDROID_f
  * * *surface width/height only once
  * 3) The OpenGL context is preserved between onPause()/onResume().There are no devices anymore that only support one concurrent OpenGL context
  */
+@RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
 public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, SurfaceHolder.Callback {
+    // Reference to the base activity for obtaining lifecycle status and more
     final AppCompatActivity activity;
+    // All these members are created/ destroyed on the UI thread
+    // EGL_NO_DISPLAY is the same as null
     EGLDisplay eglDisplay = EGL_NO_DISPLAY;
     EGLSurface eglSurface = EGL_NO_SURFACE;
     EGLContext eglContext = EGL_NO_CONTEXT;
     EGLConfig eglConfig = null;
-
+    // Thr Thread that renders frames
     private Thread mOpenGLThread;
-    private GLSurfaceView.Renderer mRenderer;
+    // Choose between one of the two interfaces.
+    // For legacy code the older GLSurfaceView.Renderer interface is also supported
     private Renderer2 mRenderer2;
+    private GLSurfaceView.Renderer mLegacyRenderer;
+    // For VR applications the surface width and height is equal to the display w/h and therefore
+    // Does never change
     private int SURFACE_W,SURFACE_H;
+    // Keep track if we should call the onContextCreated callback
     private boolean firstTimeSurfaceBound=true;
-    //private XEGLConfigChooser xeglConfigChooser=null;
-    // Populate with default parameters
+    // Use setEGLConfigPrams to customize the created surface.
     private XEGLConfigChooser.SurfaceParams mWantedSurfaceParams=new XEGLConfigChooser.SurfaceParams(0,0);
 
     public boolean DO_SUPERSYNC_MODS=false;
@@ -69,23 +78,26 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         super(context);
         activity=((AppCompatActivity)context);
         ((AppCompatActivity)context).getLifecycle().addObserver(this);
-        SurfaceHolder holder = getHolder();
-        holder.addCallback(this);
+        init();
     }
     public XGLSurfaceView(Context context, AttributeSet attrs) {
         super(context,attrs);
         activity=((AppCompatActivity)context);
         ((AppCompatActivity)context).getLifecycle().addObserver(this);
+        init();
+    }
+    private void init(){
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
     }
+
 
     public void setEGLConfigPrams(final XEGLConfigChooser.SurfaceParams wantedSurfaceParams){
         this.mWantedSurfaceParams=wantedSurfaceParams;
     }
 
     public void setRenderer(final GLSurfaceView.Renderer renderer){
-        this.mRenderer=renderer;
+        this.mLegacyRenderer =renderer;
     }
     public void setRenderer(final Renderer2 renderer2){
         this.mRenderer2=renderer2;
@@ -131,13 +143,13 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                 }
                 firstTimeSurfaceBound=false;
             }
-            if(mRenderer!=null){
-                mRenderer.onSurfaceCreated(null,null);
-                mRenderer.onSurfaceChanged(null,SURFACE_W,SURFACE_H);
+            if(mLegacyRenderer !=null){
+                mLegacyRenderer.onSurfaceCreated(null,null);
+                mLegacyRenderer.onSurfaceChanged(null,SURFACE_W,SURFACE_H);
             }
             while (!Thread.currentThread().isInterrupted()){
-                if(mRenderer!=null){
-                    mRenderer.onDrawFrame(null);
+                if(mLegacyRenderer !=null){
+                    mLegacyRenderer.onDrawFrame(null);
                 }
                 if(mRenderer2!=null){
                     mRenderer2.onDrawFrame();
@@ -244,6 +256,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         // Also, since the https://www.khronos.org/registry/EGL/extensions/KHR/EGL_KHR_surfaceless_context.txt
         // extension is not available on all devices, a Surface is always bound when
         // onContextCreated is called
+        // For a VR application, screen width and height do not change and are equal to the screen width and height
         void onContextCreated(int width,int height);
         // Called repeatedly in between onResume() / onPause()
         void onDrawFrame();
