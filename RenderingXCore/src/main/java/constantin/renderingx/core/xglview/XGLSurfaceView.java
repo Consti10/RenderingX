@@ -261,7 +261,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         // extension is not available on all devices, a Surface is always bound when
         // onContextCreated is called
         // For a VR application, screen width and height do not change and are equal to the screen width and height
-        void onContextCreated(int width,int height);
+        void onContextCreated(int screenWidth,int screenHeight);
         // Called repeatedly in between onResume() / onPause()
         void onDrawFrame();
         // Called once the opengl context has to be destroyed,
