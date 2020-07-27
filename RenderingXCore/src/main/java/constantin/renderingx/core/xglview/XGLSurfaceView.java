@@ -35,6 +35,12 @@ import static constantin.renderingx.core.xglview.XEGLConfigChooser.EGL_ANDROID_f
  * The Complexity of GLSurfaceView comes from its compatibility all the way down to Android 2.3.3 (API level 10) where for example EGL14 was not available
  * By replacing EGL10 with EGL14 and also having not to worry about 'hacks' that were needed on these old api versions I hope to reduce complexity
  * It is also going to be easier to add more specialized features,for example multiple OpenGL context(s) aka 'Shared context'
+ * Most notable differences:
+ * 1) While rendering frames is obviously decoupled from the UI thread, creating the egl context and surface is done on the UI thread
+ * * *to reduce thread inter-thread synchronization. For example, the egl surface has to be destroyed on the UI thread but cannot be destroyed
+ * * *until the GL thread is guaranteed to not use the surface anymore
+ * 2) The Callbacks have a slightly different naming. By having an onContextCreated callback it is easier to create OpenGL objects that are not affected by the
+ * * *surface width/height only once
  */
 public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, SurfaceHolder.Callback {
     final AppCompatActivity activity;
@@ -42,7 +48,6 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     EGLSurface eglSurface = EGL_NO_SURFACE;
     EGLContext eglContext = EGL_NO_CONTEXT;
     EGLConfig eglConfig = null;
-    private final Object eglSurfaceAvailable=new Object();
 
     private Thread mOpenGLThread;
     private GLSurfaceView.Renderer mRenderer;
