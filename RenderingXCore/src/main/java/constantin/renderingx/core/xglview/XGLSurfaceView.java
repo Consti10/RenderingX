@@ -1,4 +1,4 @@
-package constantin.renderingx.core.mglview;
+package constantin.renderingx.core.xglview;
 
 import android.content.Context;
 import android.opengl.EGL14;
@@ -19,16 +19,13 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static android.opengl.EGL14.EGL_DEFAULT_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_SURFACE;
 import static android.opengl.EGL14.EGL_NO_CONTEXT;
-import static constantin.renderingx.core.mglview.XEGLConfigChooser.EGL_ANDROID_front_buffer_auto_refresh;
+import static constantin.renderingx.core.xglview.XEGLConfigChooser.EGL_ANDROID_front_buffer_auto_refresh;
 
 // TODO in Development
 // First step: Make it usable everywhere haha :)
@@ -52,7 +49,9 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     private Renderer2 mRenderer2;
     private int SURFACE_W,SURFACE_H;
     private boolean firstTimeSurfaceBound=true;
-    private XEGLConfigChooser xeglConfigChooser=null;
+    //private XEGLConfigChooser xeglConfigChooser=null;
+    // Populate with default parameters
+    private XEGLConfigChooser.SurfaceParams mWantedSurfaceParams=new XEGLConfigChooser.SurfaceParams(0,0);
 
     public boolean DO_SUPERSYNC_MODS=false;
 
@@ -74,8 +73,9 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
     }
-    public void setEGLConfigChooser(final XEGLConfigChooser xeglConfigChooser){
-        this.xeglConfigChooser=xeglConfigChooser;
+
+    public void setEGLConfigPrams(final XEGLConfigChooser.SurfaceParams wantedSurfaceParams){
+        this.mWantedSurfaceParams=wantedSurfaceParams;
     }
 
     public void setRenderer(final GLSurfaceView.Renderer renderer){
@@ -96,10 +96,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         int[] major = new int[]{0};
         int[] minor = new int[]{0};
         EGL14.eglInitialize(eglDisplay, major, 0, minor, 0);
-        if(xeglConfigChooser==null){
-            xeglConfigChooser=new XEGLConfigChooser(false, 0, false);
-        }
-        eglConfig = xeglConfigChooser.chooseConfig(eglDisplay);
+        eglConfig = XEGLConfigChooser.chooseConfig(eglDisplay,mWantedSurfaceParams);
         final int[] contextAttributes = new int[]{
                 EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
                 EGL14.EGL_NONE
@@ -167,10 +164,11 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         }
     }
 
-
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     private void onPause(){
         log("onPause");
+        // We have to make sure that the OpenGL thread is not running or the context is not bound since
+        // after onPause() the surface might have to be destroyed
         if(mOpenGLThread!=null){
             mOpenGLThread.interrupt();
             try {

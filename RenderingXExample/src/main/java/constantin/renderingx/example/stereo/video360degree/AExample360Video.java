@@ -8,7 +8,7 @@ import android.view.Surface;
 import com.google.vr.ndk.base.GvrApi;
 
 import constantin.renderingx.core.VrActivity;
-import constantin.renderingx.core.mglview.XGLSurfaceView;
+import constantin.renderingx.core.xglview.XGLSurfaceView;
 import constantin.renderingx.core.views.MyVRLayout;
 import constantin.renderingx.example.R;
 import constantin.video.core.gl.ISurfaceAvailable;

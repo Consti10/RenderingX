@@ -1,4 +1,4 @@
-package constantin.renderingx.core.mglview;
+package constantin.renderingx.core.xglview;
 
 import android.opengl.EGL14;
 import android.opengl.EGLConfig;
@@ -7,10 +7,6 @@ import android.util.Log;
 
 import javax.microedition.khronos.egl.EGL10;
 
-//https://android.googlesource.com/platform/cts/+/347b539/tests/vr/src/android/vr/cts/OpenGLESActivity.java
-//EGL10.EGL_SURFACE_TYPE, EGL10.EGL_WINDOW_BIT | EGL_MUTABLE_RENDER_BUFFER_BIT,
-//EGL10.EGL_SURFACE_TYPE, EGL10.EGL_WINDOW_BIT,
-//Allows setting the 'mutable' flag for changing the frame buffer between single/double buffered
 
 public class XEGLConfigChooser{
     private static final String TAG="MyEGLConfigChooser";
@@ -22,61 +18,56 @@ public class XEGLConfigChooser{
     private static final int EGL_OPENGL_ES3_BIT_KHR = 0x40;
     private static final int EGL_OPENGL_ES2_BIT = 0x0004;
 
-    private final Params mParams;
-
-    private class Params{
+    public static class SurfaceParams {
+        // R,G,B channels, default to 8 bits per channel
         final int mR=8,mG=8,mB=8;
+        // Alpha is optionally, use either RGBA_8888 or RGB_888 with alpha 0
         final int mA;
         int mWantedMSAALevel;
         boolean mUseMutableFlag;
-        Params(final int a,final int msaaLevel,final boolean useMutable){
+        public SurfaceParams(final int a, final int msaaLevel, final boolean useMutable){
             mA=a;
             mWantedMSAALevel=msaaLevel;
             mUseMutableFlag=useMutable;
         }
+        public SurfaceParams(final int alpha,final int msaaLevel){
+            mA=alpha;
+            mWantedMSAALevel=msaaLevel;
+        }
     }
 
-    public XEGLConfigChooser(boolean useMutable, int wantedMSAALevel, boolean needAlpha){
-        mParams=new Params(needAlpha ? 8 : 0,wantedMSAALevel,useMutable);
-    }
-
-    public XEGLConfigChooser(boolean useMutable, int wantedMSAALevel){
-        mParams=new Params(0,wantedMSAALevel,useMutable);
-    }
-
-
-    public EGLConfig chooseConfig(EGLDisplay display) {
+    public static EGLConfig chooseConfig(EGLDisplay display,final SurfaceParams surfaceParams) {
         try{
-            return getExactMatch(display,mParams);
+            return getExactMatch(display,surfaceParams);
         }catch (IllegalArgumentException unused){
             printDebug(unused.toString());
         }
         //first, disable MSAA and try again
         printDebug("Disabling MSAA");
-        mParams.mWantedMSAALevel=0;
+        surfaceParams.mWantedMSAALevel=0;
         try{
-            return getExactMatch(display,mParams);
+            return getExactMatch(display,surfaceParams);
         }catch (IllegalArgumentException unused){
             printDebug(unused.toString());
         }
         //then,disable the mutable flag and try again
         printDebug("Disabling mutable flag");
-        mParams.mUseMutableFlag=false;
-        return getExactMatch(display,mParams);
+        surfaceParams.mUseMutableFlag=false;
+        return getExactMatch(display,surfaceParams);
     }
 
 
-    private static EGLConfig getExactMatch(EGLDisplay display,final Params params) throws IllegalArgumentException{
+    private static EGLConfig getExactMatch(EGLDisplay display,final SurfaceParams surfaceParams) throws IllegalArgumentException{
         final int[] configSpec = new int[] {
-                EGL14.EGL_RED_SIZE, params.mR,
-                EGL14.EGL_GREEN_SIZE, params.mG,
-                EGL14.EGL_BLUE_SIZE, params.mB,
-                EGL14.EGL_ALPHA_SIZE, params.mA,
-                EGL14.EGL_RENDERABLE_TYPE, params.mUseMutableFlag ? EGL_OPENGL_ES3_BIT_KHR : EGL_OPENGL_ES2_BIT, //when using mutable we request OpenGL ES 3.0
-                EGL14.EGL_SURFACE_TYPE,params.mUseMutableFlag  ? (EGL14.EGL_WINDOW_BIT | EGL_KHR_mutable_render_buffer): EGL14.EGL_WINDOW_BIT,
+                EGL14.EGL_RED_SIZE, surfaceParams.mR,
+                EGL14.EGL_GREEN_SIZE, surfaceParams.mG,
+                EGL14.EGL_BLUE_SIZE, surfaceParams.mB,
+                EGL14.EGL_ALPHA_SIZE, surfaceParams.mA,
+                EGL14.EGL_RENDERABLE_TYPE, surfaceParams.mUseMutableFlag ? EGL_OPENGL_ES3_BIT_KHR : EGL_OPENGL_ES2_BIT, //when using mutable we request OpenGL ES 3.0
+                EGL14.EGL_SURFACE_TYPE, surfaceParams.mUseMutableFlag  ? (EGL14.EGL_WINDOW_BIT | EGL_KHR_mutable_render_buffer): EGL14.EGL_WINDOW_BIT,
                 //
-                EGL14.EGL_SAMPLE_BUFFERS, (params.mWantedMSAALevel>0) ? 1 : 0, //if we want msaa use 1, else 0
-                EGL14.EGL_SAMPLES, params.mWantedMSAALevel,
+                EGL14.EGL_SAMPLE_BUFFERS, (surfaceParams.mWantedMSAALevel>0) ? 1 : 0, //if we want msaa use 1, else 0
+                EGL14.EGL_SAMPLES, surfaceParams.mWantedMSAALevel,
                 EGL14.EGL_NONE
         };
         int[] num_config = new int[1];
@@ -93,7 +84,7 @@ public class XEGLConfigChooser{
         if (!EGL14.eglChooseConfig(display,configSpec,0,configs,0,numConfigs,num_config,0)) {
             throw new IllegalArgumentException("eglChooseConfig#2 failed");
         }
-        EGLConfig config = selectConfig(display, configs,params);
+        EGLConfig config = selectConfig(display, configs, surfaceParams);
         if (config == null) {
             throw new IllegalArgumentException("No config chosen");
         }
@@ -101,7 +92,7 @@ public class XEGLConfigChooser{
     }
 
     private static EGLConfig selectConfig(EGLDisplay display,
-                                  EGLConfig[] configs,final Params params) {
+                                  EGLConfig[] configs,final SurfaceParams surfaceParams) {
 
         for (EGLConfig config : configs) {
             // We want at least as much r,g,b,a
@@ -113,13 +104,13 @@ public class XEGLConfigChooser{
                     EGL14.EGL_BLUE_SIZE, 0);
             int a = findConfigAttrib(display, config,
                     EGL14.EGL_ALPHA_SIZE, 0);
-            if(!(r >= params.mR && g >= params.mG && b >= params.mB && a >= params.mA )){
+            if(!(r >= surfaceParams.mR && g >= surfaceParams.mG && b >= surfaceParams.mB && a >= surfaceParams.mA )){
                 printDebug("RGBA does not match");
                 continue;
             }
             printDebug("RGBA okay");
             int msaaLevel=findConfigAttrib(display,config,EGL10.EGL_SAMPLES,0);
-            if(msaaLevel!=params.mWantedMSAALevel){
+            if(msaaLevel!= surfaceParams.mWantedMSAALevel){
                 printDebug("MSAA level does not match"+msaaLevel);
                 continue;
             }else{
@@ -128,7 +119,7 @@ public class XEGLConfigChooser{
             int mask=findConfigAttrib(display,config, EGL10.EGL_SURFACE_TYPE,0);
             final boolean mutableMaskSet=((mask & EGL_KHR_mutable_render_buffer) != 0);
             printDebug("Mutable mask set:"+mutableMaskSet);
-            if(params.mUseMutableFlag && !mutableMaskSet){
+            if(surfaceParams.mUseMutableFlag && !mutableMaskSet){
                 continue;
             }
             return config;

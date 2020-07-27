@@ -25,10 +25,8 @@ public class AExampleRendering extends AppCompatActivity implements SeekBar.OnSe
         super.onCreate(savedInstanceState);
         binding = ActivityExampleRenderingBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        //binding.MyGLSurfaceView.setEGLContextClientVersion(2);
         renderer=new GLRExample(this);
         binding.MyGLSurfaceView.setRenderer(renderer);
-        //binding.MyGLSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         binding.MyGLSurfaceView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

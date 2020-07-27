@@ -8,7 +8,7 @@ import com.google.vr.ndk.base.GvrLayout;
 
 import constantin.renderingx.core.FullscreenHelper;
 import constantin.renderingx.core.VrActivity;
-import constantin.renderingx.core.mglview.XGLSurfaceView;
+import constantin.renderingx.core.xglview.XGLSurfaceView;
 import constantin.renderingx.core.views.MyVRLayout;
 
 //Uses the LiveVideo10ms VideoCore lib which is intended for live streaming, not file playback.

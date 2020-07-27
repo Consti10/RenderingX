@@ -2,18 +2,14 @@ package constantin.renderingx.example.stereo.video360degree;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.opengl.GLSurfaceView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.vr.ndk.base.GvrApi;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
 import constantin.renderingx.core.MVrHeadsetParams;
 import constantin.renderingx.core.STHelper;
-import constantin.renderingx.core.mglview.XGLSurfaceView;
+import constantin.renderingx.core.xglview.XGLSurfaceView;
 import constantin.video.core.gl.ISurfaceAvailable;
 import constantin.video.core.gl.VideoSurfaceHolder;
 

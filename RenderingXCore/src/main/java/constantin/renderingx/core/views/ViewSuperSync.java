@@ -1,9 +1,6 @@
 package constantin.renderingx.core.views;
 
 import android.content.Context;
-import android.opengl.EGL14;
-import android.opengl.GLES20;
-import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Process;
 import android.util.Log;
@@ -16,13 +13,8 @@ import androidx.lifecycle.OnLifecycleEvent;
 
 import java.util.Objects;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
-import constantin.renderingx.core.mglview.XEGLConfigChooser;
-import constantin.renderingx.core.mglview.XGLSurfaceView;
-
-import static constantin.renderingx.core.views.MyEGLConfigChooser.EGL_ANDROID_front_buffer_auto_refresh;
+import constantin.renderingx.core.xglview.XEGLConfigChooser;
+import constantin.renderingx.core.xglview.XGLSurfaceView;
 
 /**
  * Wrapper around GvrLayout/GLSurfaceView that includes its own rendering interface, created for SuperSync
@@ -45,7 +37,7 @@ public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.Renderer
         //getUiLayout().setTransitionViewEnabled(false);
         //setAsyncReprojectionEnabled(false);
         mGLSurfaceView =new XGLSurfaceView(context);
-        mGLSurfaceView.setEGLConfigChooser(new XEGLConfigChooser(true,0));
+        mGLSurfaceView.setEGLConfigPrams(new XEGLConfigChooser.SurfaceParams(0,0,true));
         mGLSurfaceView.setRenderer(this);
         mGLSurfaceView.DO_SUPERSYNC_MODS=true;
 
