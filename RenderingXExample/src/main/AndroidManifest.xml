@@ -27,7 +27,8 @@
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name="constantin.renderingx.example.mono.AExampleRendering"
-            android:theme="@style/MyStyleNoActionBar" />
+            android:theme="@style/MyStyleFullscreen"
+            android:screenOrientation="landscape" />
         <activity android:name="constantin.renderingx.example.stereo.distortion.AExampleDistortion"
             android:theme="@style/MyStyleFullscreen"
             android:screenOrientation="landscape"
