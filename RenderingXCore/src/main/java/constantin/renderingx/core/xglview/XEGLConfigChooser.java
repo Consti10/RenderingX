@@ -33,6 +33,7 @@ public class XEGLConfigChooser{
         public SurfaceParams(final int alpha,final int msaaLevel){
             mA=alpha;
             mWantedMSAALevel=msaaLevel;
+            mUseMutableFlag=false;
         }
     }
 
@@ -118,7 +119,9 @@ public class XEGLConfigChooser{
             }
             int mask=findConfigAttrib(display,config, EGL10.EGL_SURFACE_TYPE,0);
             final boolean mutableMaskSet=((mask & EGL_KHR_mutable_render_buffer) != 0);
-            printDebug("Mutable mask set:"+mutableMaskSet);
+            // It is possible that the mutable mask is set but not needed. This is not a problem !
+            // However, it is a problem if we wanted the mutable flag but didn't get it !
+            printDebug("Mutable mask -needed:"+surfaceParams.mUseMutableFlag+" set:"+mutableMaskSet);
             if(surfaceParams.mUseMutableFlag && !mutableMaskSet){
                 continue;
             }

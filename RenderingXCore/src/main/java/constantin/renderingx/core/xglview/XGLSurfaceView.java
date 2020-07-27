@@ -41,6 +41,7 @@ import static constantin.renderingx.core.xglview.XEGLConfigChooser.EGL_ANDROID_f
  * * *until the GL thread is guaranteed to not use the surface anymore
  * 2) The Callbacks have a slightly different naming. By having an onContextCreated callback it is easier to create OpenGL objects that are not affected by the
  * * *surface width/height only once
+ * 3) The OpenGL context is preserved between onPause()/onResume().There are no devices anymore that only support one concurrent OpenGL context
  */
 public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, SurfaceHolder.Callback {
     final AppCompatActivity activity;

@@ -16,7 +16,7 @@ import constantin.video.core.gl.VideoSurfaceHolder;
 
 //See native code for documentation
 
-public class Renderer360Video implements /*GLSurfaceView.Renderer*/XGLSurfaceView.Renderer2 {
+public class Renderer360Video implements XGLSurfaceView.Renderer2 {
     static {
         System.loadLibrary("example-2");
     }
