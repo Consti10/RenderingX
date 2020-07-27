@@ -33,18 +33,19 @@ import static constantin.renderingx.core.xglview.XEGLConfigChooser.EGL_ANDROID_f
 
 /**
  * This View is intended as an replacement for GLSurfaceView.
+ * https://developer.android.com/reference/android/opengl/GLSurfaceView
  * The Complexity of GLSurfaceView comes from its compatibility all the way down to Android 2.3.3 (API level 10) where for example EGL14 was not available
  * By replacing EGL10 with EGL14 and also having not to worry about 'hacks' that were needed on these old api versions I hope to reduce complexity
  * It is also going to be easier to add more specialized features,for example multiple OpenGL context(s) aka 'Shared context'
- * Most notable differences:
+ * Most notable differences to GLSurfaceView:
  * 1) While rendering frames is obviously decoupled from the UI thread, creating the egl context and surface is done on the UI thread
- * * *to reduce thread inter-thread synchronization. For example, the egl surface has to be destroyed on the UI thread but cannot be destroyed
+ * * *to reduce inter-thread synchronization. For example, the egl surface has to be destroyed on the UI thread but cannot be destroyed
  * * *until the GL thread is guaranteed to not use the surface anymore
  * 2) The Callbacks have a slightly different naming. By having an onContextCreated callback it is easier to create OpenGL objects that are not affected by the
  * * *surface width/height only once
  * 3) The OpenGL context is preserved between onPause()/onResume().There are no devices anymore that only support one concurrent OpenGL context
  */
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
+@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, SurfaceHolder.Callback {
     // Reference to the base activity for obtaining lifecycle status and more
     final AppCompatActivity activity;
@@ -58,7 +59,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     private Thread mOpenGLThread;
     // Choose between one of the two interfaces.
     // For legacy code the older GLSurfaceView.Renderer interface is also supported
-    private Renderer2 mRenderer2;
+    private FullscreenRenderer mRenderer2;
     private GLSurfaceView.Renderer mLegacyRenderer;
     // For VR applications the surface width and height is equal to the display w/h and therefore
     // Does never change
@@ -66,7 +67,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     // Keep track if we should call the onContextCreated callback
     private boolean firstTimeSurfaceBound=true;
     // Use setEGLConfigPrams to customize the created surface.
-    private XEGLConfigChooser.SurfaceParams mWantedSurfaceParams=new XEGLConfigChooser.SurfaceParams(0,0);
+    private XSurfaceParams mWantedSurfaceParams=new XSurfaceParams(0,0);
 
     public boolean DO_SUPERSYNC_MODS=false;
 
@@ -86,20 +87,21 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         ((AppCompatActivity)context).getLifecycle().addObserver(this);
         init();
     }
+
     private void init(){
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
     }
 
 
-    public void setEGLConfigPrams(final XEGLConfigChooser.SurfaceParams wantedSurfaceParams){
+    public void setEGLConfigPrams(final XSurfaceParams wantedSurfaceParams){
         this.mWantedSurfaceParams=wantedSurfaceParams;
     }
 
     public void setRenderer(final GLSurfaceView.Renderer renderer){
         this.mLegacyRenderer =renderer;
     }
-    public void setRenderer(final Renderer2 renderer2){
+    public void setRenderer(final FullscreenRenderer renderer2){
         this.mRenderer2=renderer2;
     }
 
@@ -154,6 +156,8 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                 if(mRenderer2!=null){
                     mRenderer2.onDrawFrame();
                 }
+                // Swap buffers will ensure that onDrawFrame is not called more than 60 times per second
+                // If the surface is NOT single buffered
                 if(!DO_SUPERSYNC_MODS){
                     eglSwapBuffersSafe(eglDisplay,eglSurface);
                 }
@@ -249,7 +253,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     }
 
 
-    public interface Renderer2{
+    public interface FullscreenRenderer {
         // Called as soon as the OpenGL context is created
         // The lifetime of the OpenGL context is tied to the lifetime of the Activity (onCreate / onDestroy)
         // Therefore this callback is called at most once

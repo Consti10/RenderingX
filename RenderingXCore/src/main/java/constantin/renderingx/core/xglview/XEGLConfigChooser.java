@@ -18,26 +18,7 @@ public class XEGLConfigChooser{
     private static final int EGL_OPENGL_ES3_BIT_KHR = 0x40;
     private static final int EGL_OPENGL_ES2_BIT = 0x0004;
 
-    public static class SurfaceParams {
-        // R,G,B channels, default to 8 bits per channel
-        final int mR=8,mG=8,mB=8;
-        // Alpha is optionally, use either RGBA_8888 or RGB_888 with alpha 0
-        final int mA;
-        int mWantedMSAALevel;
-        boolean mUseMutableFlag;
-        public SurfaceParams(final int a, final int msaaLevel, final boolean useMutable){
-            mA=a;
-            mWantedMSAALevel=msaaLevel;
-            mUseMutableFlag=useMutable;
-        }
-        public SurfaceParams(final int alpha,final int msaaLevel){
-            mA=alpha;
-            mWantedMSAALevel=msaaLevel;
-            mUseMutableFlag=false;
-        }
-    }
-
-    public static EGLConfig chooseConfig(EGLDisplay display,final SurfaceParams surfaceParams) {
+    public static EGLConfig chooseConfig(EGLDisplay display,final XSurfaceParams surfaceParams) {
         try{
             return getExactMatch(display,surfaceParams);
         }catch (IllegalArgumentException unused){
@@ -57,8 +38,7 @@ public class XEGLConfigChooser{
         return getExactMatch(display,surfaceParams);
     }
 
-
-    private static EGLConfig getExactMatch(EGLDisplay display,final SurfaceParams surfaceParams) throws IllegalArgumentException{
+    private static EGLConfig getExactMatch(EGLDisplay display,final XSurfaceParams surfaceParams) throws IllegalArgumentException{
         final int[] configSpec = new int[] {
                 EGL14.EGL_RED_SIZE, surfaceParams.mR,
                 EGL14.EGL_GREEN_SIZE, surfaceParams.mG,
@@ -93,7 +73,7 @@ public class XEGLConfigChooser{
     }
 
     private static EGLConfig selectConfig(EGLDisplay display,
-                                  EGLConfig[] configs,final SurfaceParams surfaceParams) {
+                                  EGLConfig[] configs,final XSurfaceParams surfaceParams) {
 
         for (EGLConfig config : configs) {
             // We want at least as much r,g,b,a

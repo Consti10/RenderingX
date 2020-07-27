@@ -11,7 +11,7 @@ import constantin.renderingx.core.xglview.XGLSurfaceView;
 
 //See native code for documentation
 
-public class RendererDistortion implements /*GLSurfaceView.Renderer,*/XGLSurfaceView.Renderer2 {
+public class RendererDistortion implements /*GLSurfaceView.Renderer,*/XGLSurfaceView.FullscreenRenderer {
     static {
         System.loadLibrary("example-1");
     }

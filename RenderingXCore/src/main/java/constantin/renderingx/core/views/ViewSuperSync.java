@@ -13,8 +13,8 @@ import androidx.lifecycle.OnLifecycleEvent;
 
 import java.util.Objects;
 
-import constantin.renderingx.core.xglview.XEGLConfigChooser;
 import constantin.renderingx.core.xglview.XGLSurfaceView;
+import constantin.renderingx.core.xglview.XSurfaceParams;
 
 /**
  * Wrapper around GvrLayout/GLSurfaceView that includes its own rendering interface, created for SuperSync
@@ -23,7 +23,7 @@ import constantin.renderingx.core.xglview.XGLSurfaceView;
  * Specifying the device as 'Daydream ready'
  */
 
-public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.Renderer2, Choreographer.FrameCallback{
+public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.FullscreenRenderer, Choreographer.FrameCallback{
     private static final String TAG="ViewSuperSync";
     private final XGLSurfaceView mGLSurfaceView;
     private IRendererSuperSync mRenderer;
@@ -37,7 +37,7 @@ public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.Renderer
         //getUiLayout().setTransitionViewEnabled(false);
         //setAsyncReprojectionEnabled(false);
         mGLSurfaceView =new XGLSurfaceView(context);
-        mGLSurfaceView.setEGLConfigPrams(new XEGLConfigChooser.SurfaceParams(0,0,true));
+        mGLSurfaceView.setEGLConfigPrams(new XSurfaceParams(0,0,true));
         mGLSurfaceView.setRenderer(this);
         mGLSurfaceView.DO_SUPERSYNC_MODS=true;
 
