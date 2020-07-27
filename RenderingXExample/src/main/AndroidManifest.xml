@@ -16,7 +16,6 @@
         <activity android:name="constantin.renderingx.example.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -37,7 +36,6 @@
             android:theme="@style/MyStyleFullscreen"
             android:screenOrientation="landscape"
             tools:ignore="LockedOrientationActivity" />
-
     </application>
 
 </manifest>
