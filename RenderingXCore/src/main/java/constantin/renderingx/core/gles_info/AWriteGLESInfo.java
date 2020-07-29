@@ -42,7 +42,7 @@ public class AWriteGLESInfo extends AppCompatActivity {
     private static final String SAVED_VERSION_CODE="SAVED_VERSION_CODE";
     private static final String SAVED_BUILD_VERSION="SAVED_BUILD_VERSION";
     //
-    private static final int F_BuildConfig_VERSION_CODE=3;//BuildConfig.VERSION_CODE
+    private static final int F_BuildConfig_VERSION_CODE=4;//BuildConfig.VERSION_CODE
 
     //write values when either a) the library was updated or b) the os (android) was updated
     static boolean shouldWriteValues(final Context c){

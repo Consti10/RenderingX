@@ -11,7 +11,7 @@ import constantin.renderingx.core.xglview.XGLSurfaceView;
 
 //See native code for documentation
 
-public class RendererDistortion implements /*GLSurfaceView.Renderer,*/XGLSurfaceView.FullscreenRenderer {
+public class RendererDistortion implements XGLSurfaceView.FullscreenRenderer {
     static {
         System.loadLibrary("example-1");
     }
@@ -24,7 +24,6 @@ public class RendererDistortion implements /*GLSurfaceView.Renderer,*/XGLSurface
     private final Context mContext;
     private final long nativeRenderer;
 
-    @SuppressLint("ApplySharedPref")
     public RendererDistortion(final Context context, final GvrApi gvrApi){
         mContext=context;
         nativeRenderer=nativeConstruct(context,

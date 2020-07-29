@@ -105,6 +105,10 @@ public:
     void addLayer(const GLProgramTexture::TexturedMeshData& meshData, GLuint textureId, bool isExternalTexture=false, HEAD_TRACKING headTracking=FULL){
         addLayer(GLProgramTexture::convert(meshData),textureId,isExternalTexture,headTracking);
     }
+    void setLayerTextureId(ssize_t idx,GLuint textureId){
+        mVrLayerList.at(idx).textureId=textureId;
+    }
+
     void removeLayers();
     void drawLayers(gvr::Eye eye);
     // Add a 2D layer at position (0,0,Z) and (width,height) in VR 3D space.

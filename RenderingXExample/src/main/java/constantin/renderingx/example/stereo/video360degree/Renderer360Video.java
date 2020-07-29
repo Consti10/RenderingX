@@ -9,6 +9,7 @@ import com.google.vr.ndk.base.GvrApi;
 
 import constantin.renderingx.core.MVrHeadsetParams;
 import constantin.renderingx.core.STHelper;
+import constantin.renderingx.core.xglview.GLContextSurfaceLess;
 import constantin.renderingx.core.xglview.XGLSurfaceView;
 import constantin.video.core.gl.ISurfaceAvailable;
 import constantin.video.core.gl.VideoSurfaceHolder;
@@ -16,7 +17,7 @@ import constantin.video.core.gl.VideoSurfaceHolder;
 
 //See native code for documentation
 
-public class Renderer360Video implements XGLSurfaceView.FullscreenRenderer {
+public class Renderer360Video implements XGLSurfaceView.FullscreenRenderer, GLContextSurfaceLess.SecondarySharedContext {
     static {
         System.loadLibrary("example-2");
     }
@@ -26,6 +27,8 @@ public class Renderer360Video implements XGLSurfaceView.FullscreenRenderer {
     private native void nativeOnSurfaceCreated(long p,final Context context,int videoTexture);
     private native void nativeOnDrawFrame(long p);
     private native void nativeUpdateHeadsetParams(long nativePointer,final MVrHeadsetParams p);
+    private native void nativeOnSecondaryContextCreated(long nativePointer,final Context context);
+    private native void nativeOnSecondaryContextDoWork(long nativePointer);
 
     private final Context mContext;
     private final long nativeRenderer;
@@ -69,5 +72,16 @@ public class Renderer360Video implements XGLSurfaceView.FullscreenRenderer {
         } finally {
             super.finalize();
         }
+    }
+
+
+    @Override
+    public void onSecondaryContextCreated() {
+        nativeOnSecondaryContextCreated(nativeRenderer,mContext);
+    }
+
+    @Override
+    public void onSecondaryContextDoWork() {
+        nativeOnSecondaryContextDoWork(nativeRenderer);
     }
 }

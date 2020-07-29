@@ -3,9 +3,8 @@ package constantin.renderingx.core.xglview;
 import android.opengl.EGL14;
 import android.opengl.EGLConfig;
 import android.opengl.EGLDisplay;
+import android.opengl.EGLSurface;
 import android.util.Log;
-
-import javax.microedition.khronos.egl.EGL10;
 
 
 public class XEGLConfigChooser{
@@ -52,8 +51,6 @@ public class XEGLConfigChooser{
                 EGL14.EGL_NONE
         };
         int[] num_config = new int[1];
-        //EGL10 agl;
-        //agl.eglChooseConfig()
         if (!EGL14.eglChooseConfig(display,configSpec,0,null,0,0,num_config,0)) {
             throw new IllegalArgumentException("eglChooseConfig failed");
         }
@@ -90,15 +87,17 @@ public class XEGLConfigChooser{
                 continue;
             }
             printDebug("RGBA okay");
-            int msaaLevel=findConfigAttrib(display,config,EGL10.EGL_SAMPLES,0);
+            int msaaLevel=findConfigAttrib(display,config,EGL14.EGL_SAMPLES,0);
             if(msaaLevel!= surfaceParams.mWantedMSAALevel){
                 printDebug("MSAA level does not match"+msaaLevel);
                 continue;
             }else{
                 printDebug("MSAA level okay"+msaaLevel);
             }
-            int mask=findConfigAttrib(display,config, EGL10.EGL_SURFACE_TYPE,0);
+            int mask=findConfigAttrib(display,config, EGL14.EGL_SURFACE_TYPE,0);
             final boolean mutableMaskSet=((mask & EGL_KHR_mutable_render_buffer) != 0);
+            final boolean pbufferAllowed=((mask & EGL14.EGL_PBUFFER_BIT) != 0);
+            printDebug("Pixel buffer allowed :"+pbufferAllowed);
             // It is possible that the mutable mask is set but not needed. This is not a problem !
             // However, it is a problem if we wanted the mutable flag but didn't get it !
             printDebug("Mutable mask -needed:"+surfaceParams.mUseMutableFlag+" set:"+mutableMaskSet);
@@ -119,11 +118,11 @@ public class XEGLConfigChooser{
         return defaultValue;
     }
 
-    public static void setEglSurfaceAttrib(int var1, int var2) {
-        android.opengl.EGLDisplay var3 = EGL14.eglGetCurrentDisplay();
-        android.opengl.EGLSurface var4 = EGL14.eglGetCurrentSurface(EGL14.EGL_DRAW);
-        if (!EGL14.eglSurfaceAttrib(var3, var4, var1, var2)) {
-            System.out.println("eglSurfaceAttrib() failed. attribute=" + var1 + " value=" + var2);
+    public static void setEglSurfaceAttrib(int attribute, int value) {
+        EGLDisplay eglDisplay = EGL14.eglGetCurrentDisplay();
+        EGLSurface eglSurface = EGL14.eglGetCurrentSurface(EGL14.EGL_DRAW);
+        if (!EGL14.eglSurfaceAttrib(eglDisplay, eglSurface, attribute, value)) {
+            System.out.println("eglSurfaceAttrib() failed. attribute=" + attribute + " value=" + value);
         }
     }
 

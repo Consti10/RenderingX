@@ -48,13 +48,13 @@ import static constantin.renderingx.core.xglview.XEGLConfigChooser.EGL_ANDROID_f
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, SurfaceHolder.Callback {
     // Reference to the base activity for obtaining lifecycle status and more
-    final AppCompatActivity activity;
+    private final AppCompatActivity activity;
     // All these members are created/ destroyed on the UI thread
     // EGL_NO_DISPLAY is the same as null
-    EGLDisplay eglDisplay = EGL_NO_DISPLAY;
-    EGLSurface eglSurface = EGL_NO_SURFACE;
-    EGLContext eglContext = EGL_NO_CONTEXT;
-    EGLConfig eglConfig = null;
+    private EGLDisplay eglDisplay = EGL_NO_DISPLAY;
+    private EGLSurface eglSurface = EGL_NO_SURFACE;
+    private EGLContext eglContext = EGL_NO_CONTEXT;
+    private EGLConfig eglConfig = null;
     // Thr Thread that renders frames
     private Thread mOpenGLThread;
     // Choose between one of the two interfaces.
@@ -74,6 +74,8 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     //enum Message{START_RENDERING_FRAMES,STOP_RENDERING_FRAMES};
     //final BlockingQueue<Message> blockingQueue = new LinkedBlockingQueue<Message>();
     private final AtomicBoolean shouldRender=new AtomicBoolean(false);
+
+    private GLContextSurfaceLess glContextSurfaceLess=null;
 
     public XGLSurfaceView(final Context context){
         super(context);
@@ -105,6 +107,10 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         this.mRenderer2=renderer2;
     }
 
+    public void setmISecondaryContext(final GLContextSurfaceLess.SecondarySharedContext i){
+        glContextSurfaceLess=new GLContextSurfaceLess(i);
+    }
+
     /**
      * Create the OpenGL context, but not the EGL Surface since I have to wait for the
      * android.view.SurfaceHolder.Callback until the native window is available
@@ -112,17 +118,21 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     private void onCreate() {
         log("onCreate");
+        if(glContextSurfaceLess!=null){
+            glContextSurfaceLess.create();
+        }
         eglDisplay = EGL14.eglGetDisplay(EGL_DEFAULT_DISPLAY);
         int[] major = new int[]{0};
         int[] minor = new int[]{0};
         EGL14.eglInitialize(eglDisplay, major, 0, minor, 0);
         eglConfig = XEGLConfigChooser.chooseConfig(eglDisplay,mWantedSurfaceParams);
+        final int GLESVersion=mWantedSurfaceParams.mUseMutableFlag ? 3 : 2;
         final int[] contextAttributes = new int[]{
-                EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
+                EGL14.EGL_CONTEXT_CLIENT_VERSION, GLESVersion,
                 EGL14.EGL_NONE
         };
         // https://www.khronos.org/registry/EGL/sdk/docs/man/html/eglCreateContext.xhtml
-        eglContext = EGL14.eglCreateContext(eglDisplay, eglConfig, EGL_NO_CONTEXT, contextAttributes, 0);
+        eglContext = EGL14.eglCreateContext(eglDisplay, eglConfig, glContextSurfaceLess==null ? EGL_NO_CONTEXT : glContextSurfaceLess.getEglContext(), contextAttributes, 0);
         if (eglContext==EGL_NO_CONTEXT) {
             throw new AssertionError("Cannot create eglContext");
         }
@@ -148,6 +158,9 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
             if(mLegacyRenderer !=null){
                 mLegacyRenderer.onSurfaceCreated(null,null);
                 mLegacyRenderer.onSurfaceChanged(null,SURFACE_W,SURFACE_H);
+            }
+            if(glContextSurfaceLess!=null){
+                glContextSurfaceLess.resumeWork();
             }
             while (!Thread.currentThread().isInterrupted()){
                 if(mLegacyRenderer !=null){
@@ -178,7 +191,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
             log("Cannot swap buffers");
         }
     }
-    private static void eglMakeCurrentSafe(final EGLDisplay eglDisplay, EGLSurface eglSurface, EGLContext eglContext) {
+    private static void eglMakeCurrentSafe(final EGLDisplay eglDisplay, EGLSurface eglSurface,EGLContext eglContext) {
         //log("makeCurrent");
         boolean result= EGL14.eglMakeCurrent(eglDisplay,eglSurface,eglSurface,eglContext);
         if(!result){
@@ -199,11 +212,17 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                 e.printStackTrace();
             }
         }
+        if(glContextSurfaceLess!=null){
+            glContextSurfaceLess.pauseWork();
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     private void onDestroy(){
         log("onDestroy");
+        if(glContextSurfaceLess!=null){
+            glContextSurfaceLess.destroy();
+        }
         EGL14.eglDestroyContext(eglDisplay, eglContext);
         EGL14.eglTerminate(eglDisplay);
     }

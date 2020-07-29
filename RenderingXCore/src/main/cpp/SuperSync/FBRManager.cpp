@@ -27,6 +27,8 @@ FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailab
 {
     KHR_fence_sync::init();
     Extensions::initOtherExtensions();
+    EXT_disjoint_timer_query::init();
+
     lastLog=steady_clock::now();
     resetTS();
 }

@@ -24,9 +24,10 @@ Renderer360Video::Renderer360Video(JNIEnv *env, jobject androidContext, gvr_cont
 void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoTexture) {
     vrCompositorRenderer.initializeGL();
     mVideoTexture=(GLuint)videoTexture;
-    glGenTextures(1,&mExampleUiTexture);
+    //vrRenderBuffer2.createRenderTextures(1280,720);
+    //glGenTextures(1,&mExampleUiTexture);
     GLProgramTexture::loadTexture(mExampleUiTexture,env,context,"ExampleTexture/ui.png");
-    GLProgramTexture::loadTexture(mSomethingTexture,env,context,"ExampleTexture/something.png");
+    //GLProgramTexture::loadTexture(mSomethingTexture,env,context,"ExampleTexture/something.png");
     /*glGenTextures(1,&mTexture360Image);
     glGenTextures(1,&mTexture360ImageInsta360);
     GLProgramTexture::loadTexture(mTexture360Image,env,context,"360DegreeImages/gvr_testroom_mono.png");
@@ -39,7 +40,7 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
         vrCompositorRenderer.addLayer(sphere, mVideoTexture, true, VrCompositorRenderer::HEAD_TRACKING::FULL);
     }
     const float uiElementWidth=2.0;
-    vrCompositorRenderer.addLayer2DCanvas(-3,uiElementWidth,uiElementWidth*1080.0f/2160.0f,mExampleUiTexture,false,VrCompositorRenderer::FULL);
+    vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,mExampleUiTexture, false, VrCompositorRenderer::FULL);
     // add a static layer to test the pre-distort feature
     //vrCompositorRenderer.addLayer2DCanvas(-3,0.2f,0.2f,mSomethingTexture,false,VrCompositorRenderer::NONE);
 }
@@ -47,6 +48,7 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
 void Renderer360Video::onDrawFrame() {
     mFPSCalculator.tick();
     //LOGD("FPS: %f",mFPSCalculator.getCurrentFPS());
+    vrCompositorRenderer.setLayerTextureId(1, vrRenderBuffer2.getLatestRenderedTexture());
 
     //Update the head position (rotation) then leave it untouched during the frame
     vrCompositorRenderer.updateLatestHeadSpaceFromStartSpaceRotation();
@@ -60,6 +62,28 @@ void Renderer360Video::onDrawFrame() {
         vrCompositorRenderer.drawLayers(static_cast<gvr::Eye>(eye));
     }
     GLHelper::checkGlError("Renderer360Video::onDrawFrame");
+}
+
+void Renderer360Video::onSecondaryContextCreated(JNIEnv* env,jobject context) {
+    //glGenTextures(1,&mExampleUiTexture);
+    //GLProgramTexture::loadTexture(mExampleUiTexture,env,context,"ExampleTexture/ui.png");
+    //glFlush();
+    vrRenderBuffer.initializeGL(1280, 720);
+    vrRenderBuffer2.createRenderTextures(1280,720);
+    vrRenderBuffer2.createFrameBuffers();
+}
+
+void Renderer360Video::onSecondaryContextDoWork(JNIEnv *env) {
+    /*vrRenderBuffer.bind();
+    GLHelper::updateSetClearColor(clearColorIndex);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    vrRenderBuffer.unbind();
+    MLOGD<<"Do work";*/
+    vrRenderBuffer2.bind1();
+    GLHelper::updateSetClearColor(clearColorIndex);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    vrRenderBuffer2.unbindAndSwap();
+    //MLOGD<<"Do work";
 }
 
 
@@ -101,6 +125,15 @@ JNI_METHOD(void, nativeUpdateHeadsetParams)
 (JNIEnv *env, jobject obj, jlong instancePointer,jobject instanceMyVrHeadsetParams) {
     const MVrHeadsetParams deviceParams=createFromJava(env, instanceMyVrHeadsetParams);
     native(instancePointer)->vrCompositorRenderer.updateHeadsetParams(deviceParams);
+}
+
+JNI_METHOD(void, nativeOnSecondaryContextCreated)
+(JNIEnv *env, jobject obj,jlong p,jobject context) {
+    native(p)->onSecondaryContextCreated(env,context);
+}
+JNI_METHOD(void, nativeOnSecondaryContextDoWork)
+(JNIEnv *env, jobject obj,jlong p) {
+    native(p)->onSecondaryContextDoWork(env);
 }
 
 }

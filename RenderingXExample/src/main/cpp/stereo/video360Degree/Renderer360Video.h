@@ -29,6 +29,8 @@
 #include <gvr_util/util.h>
 #include <GLBuffer.hpp>
 #include <VrCompositorRenderer.h>
+#include <VrRenderBuffer.hpp>
+#include <VrRenderBuffer2.hpp>
 
 // Example that renders 360° video with the Vr compositor renderer using VDDC
 class Renderer360Video{
@@ -40,12 +42,18 @@ public:
                        bool RENDER_SCENE_USING_GVR_RENDERBUFFER=true, bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT=true,const int SPHERE_MODE=0);
     void onSurfaceCreated(JNIEnv* env,jobject context,int videoTexture);
     void onDrawFrame();
+    void onSecondaryContextCreated(JNIEnv* env,jobject context);
+    void onSecondaryContextDoWork(JNIEnv* env);
 private:
     std::unique_ptr<gvr::GvrApi> gvr_api_;
     FPSCalculator mFPSCalculator;
     GLuint mVideoTexture;
-    GLuint mExampleUiTexture;
+    GLuint mExampleUiTexture=0;
     GLuint mSomethingTexture;
+
+    VrRenderBuffer vrRenderBuffer;
+    int clearColorIndex=0;
+    VrRenderBuffer2 vrRenderBuffer2;
 public:
     VrCompositorRenderer vrCompositorRenderer;
 };

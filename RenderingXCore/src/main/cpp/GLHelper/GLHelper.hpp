@@ -21,6 +21,9 @@ namespace GLHelper{
             case GL_INVALID_OPERATION:				return "GL_INVALID_OPERATION";
             case GL_INVALID_FRAMEBUFFER_OPERATION:	return "GL_INVALID_FRAMEBUFFER_OPERATION";
             case GL_OUT_OF_MEMORY:					return "GL_OUT_OF_MEMORY";
+            //
+            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: return "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
+            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: return "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
             default: return "unknown";
         }
     }
@@ -40,6 +43,12 @@ namespace GLHelper{
             if(false){
                 std::exit(-1);
             }
+        }
+    }
+    static void checkFramebufferStatus(GLenum target){
+        auto status=glCheckFramebufferStatus(target);
+        if(status!=GL_FRAMEBUFFER_COMPLETE){
+            MLOGE<<"Framebuffer not complete "<<GLHelper::GlErrorString(status);
         }
     }
     // Additional flags: for example "#define ENABLE_SOMETHING"
@@ -104,9 +113,9 @@ namespace GLHelper{
     static void updateSetClearColor(int& index){
         index++;
         if(index % 2){
-            glClearColor(0.0f,0.0f,0.0f,0.0f);
+            glClearColor(0.0f,0.0f,0.0f,1.0f);
         }else{
-            glClearColor(1.0f,1.0f,0.0f,0.0f);
+            glClearColor(1.0f,1.0f,0.0f,1.0f);
         }
     }
 };

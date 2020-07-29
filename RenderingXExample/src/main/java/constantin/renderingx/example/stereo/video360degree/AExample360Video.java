@@ -79,6 +79,8 @@ public class AExample360Video extends VrActivity {
         //gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         //gLView.setPreserveEGLContextOnPause(true);
         glSurfaceView2.setRenderer(renderer);
+        glSurfaceView2.setmISecondaryContext(renderer);
+
         setContentView(myVRLayout);
         //myVRLayout.setPresentationView(gLView);
         myVRLayout.setPresentationView(glSurfaceView2);

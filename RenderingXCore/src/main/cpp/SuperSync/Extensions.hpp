@@ -295,6 +295,35 @@ namespace Extensions2{
     }
 }
 
+namespace EXT_disjoint_timer_query{
+    static PFNGLGENQUERIESEXTPROC glGenQueriesEXT_=nullptr;
+    static PFNGLDELETEQUERIESEXTPROC glDeleteQueriesEXT_=nullptr;
+    static PFNGLISQUERYEXTPROC glIsQueryEXT_=nullptr;
+    static PFNGLBEGINQUERYEXTPROC glBeginQueryEXT_=nullptr;
+    static PFNGLENDQUERYEXTPROC glEndQueryEXT_=nullptr;
+    static PFNGLQUERYCOUNTEREXTPROC glQueryCounterEXT_=nullptr;
+    static PFNGLGETQUERYIVEXTPROC glGetQueryivEXT_=nullptr;
+    static PFNGLGETQUERYOBJECTIVEXTPROC glGetQueryObjectivEXT_=nullptr;
+    static  PFNGLGETQUERYOBJECTUIVEXTPROC glGetQueryObjectuivEXT_=nullptr;
+    static PFNGLGETQUERYOBJECTI64VEXTPROC glGetQueryObjecti64vEXT_=nullptr;
+    static PFNGLGETQUERYOBJECTUI64VEXTPROC glGetQueryObjectui64vEXT_=nullptr;
+    static PFNGLGETINTEGER64VAPPLEPROC glGetInteger64v_=nullptr;
+    static void init(){
+        glGenQueriesEXT_ = (PFNGLGENQUERIESEXTPROC)eglGetProcAddress("glGenQueriesEXT");
+        glDeleteQueriesEXT_ = (PFNGLDELETEQUERIESEXTPROC)eglGetProcAddress("glDeleteQueriesEXT");
+        glIsQueryEXT_ = (PFNGLISQUERYEXTPROC)eglGetProcAddress("glIsQueryEXT");
+        glBeginQueryEXT_ = (PFNGLBEGINQUERYEXTPROC)eglGetProcAddress("glBeginQueryEXT");
+        glEndQueryEXT_ = (PFNGLENDQUERYEXTPROC)eglGetProcAddress("glEndQueryEXT");
+        glQueryCounterEXT_ = (PFNGLQUERYCOUNTEREXTPROC)eglGetProcAddress("glQueryCounterEXT");
+        glGetQueryivEXT_ = (PFNGLGETQUERYIVEXTPROC)eglGetProcAddress("glGetQueryivEXT");
+        glGetQueryObjectivEXT_ = (PFNGLGETQUERYOBJECTIVEXTPROC)eglGetProcAddress("glGetQueryObjectivEXT");
+        glGetQueryObjectuivEXT_ = (PFNGLGETQUERYOBJECTUIVEXTPROC)eglGetProcAddress("glGetQueryObjectuivEXT");
+        glGetQueryObjecti64vEXT_ = (PFNGLGETQUERYOBJECTI64VEXTPROC)eglGetProcAddress("glGetQueryObjecti64vEXT");
+        glGetQueryObjectui64vEXT_  = (PFNGLGETQUERYOBJECTUI64VEXTPROC)eglGetProcAddress("glGetQueryObjectui64vEXT");
+        glGetInteger64v_  = (PFNGLGETINTEGER64VAPPLEPROC)eglGetProcAddress("glGetInteger64v");
+    }
+}
+
 
 namespace LOLX{
     static void setAffinity(int core){

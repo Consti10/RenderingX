@@ -13,7 +13,8 @@ class DirectRender{
 public:
     using GLViewport=std::array<int,4>;
 
-    DirectRender(bool QCOM_TILED_RENDERING_AVAILABLE):QCOM_TILED_RENDERING_AVAILABLE(QCOM_TILED_RENDERING_AVAILABLE){
+    DirectRender(bool QCOM_TILED_RENDERING_AVAILABLE):
+    QCOM_TILED_RENDERING_AVAILABLE(QCOM_TILED_RENDERING_AVAILABLE){
         if(QCOM_TILED_RENDERING_AVAILABLE){
             QCOM_tiled_rendering::init();
         }else{
