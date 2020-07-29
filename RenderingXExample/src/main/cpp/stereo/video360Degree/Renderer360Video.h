@@ -49,8 +49,6 @@ private:
     FPSCalculator mFPSCalculator;
     GLuint mVideoTexture;
     GLuint mExampleUiTexture=0;
-    GLuint mSomethingTexture;
-
     VrRenderBuffer vrRenderBuffer;
     int clearColorIndex=0;
     VrRenderBuffer2 vrRenderBuffer2;
