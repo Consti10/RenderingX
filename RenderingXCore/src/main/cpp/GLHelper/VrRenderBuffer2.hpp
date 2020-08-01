@@ -8,7 +8,7 @@
 #include <GLES2/gl2.h>
 #include <AndroidLogger.hpp>
 #include <GLHelper.hpp>
-#include <Extensions.hpp>
+#include <Extensions.h>
 
 
 class VrRenderBuffer2{

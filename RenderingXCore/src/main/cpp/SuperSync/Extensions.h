@@ -16,6 +16,8 @@
 #include <AndroidLogger.hpp>
 #include <array>
 #include <vector>
+#include <optional>
+#include <TimeHelper.hpp>
 
 
 namespace Extensions{
@@ -25,7 +27,7 @@ namespace Extensions{
     typedef void (GL_APIENTRYP PFNGLINVALIDATEFRAMEBUFFER_) (GLenum target, GLsizei numAttachments, const GLenum* attachments);
 
     // Call this once the OpenGL context becomes available
-    void initialize();
+    void initializeGL();
 
     // https://www.khronos.org/registry/OpenGL/extensions/QCOM/QCOM_tiled_rendering.txt
     extern bool QCOM_tiled_rendering;
@@ -75,12 +77,17 @@ namespace Extensions{
     extern PFNGLGETQUERYOBJECTI64VEXTPROC glGetQueryObjecti64vEXT_;
     extern PFNGLGETQUERYOBJECTUI64VEXTPROC glGetQueryObjectui64vEXT_;
     extern PFNGLGETINTEGER64VAPPLEPROC glGetInteger64v_;
+
+    // https://www.khronos.org/registry/EGL/extensions/ANDROID/EGL_ANDROID_get_frame_timestamps.txt
+    extern bool EGL_ANDROID_get_frame_timestamps_available;
+    extern PFNEGLGETNEXTFRAMEIDANDROIDPROC eglGetNextFrameIdANDROID ;
+    extern PFNEGLGETFRAMETIMESTAMPSANDROIDPROC eglGetFrameTimestampsANDROID;
+    extern PFNEGLGETCOMPOSITORTIMINGANDROIDPROC eglGetCompositorTimingANDROID;
+    extern PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC eglGetFrameTimestampSupportedANDROID;
 }
 
 
-
-// https://www.khronos.org/registry/OpenGL/extensions/KHR/KHR_debug.txt
-namespace KHR_debug{
+namespace HelperKhrDebug{
     static void on_gl_error(unsigned int source,unsigned int type, uint id,unsigned int severity,
                             int length, const char* message,const void *userParam){
         MLOGE2("GL_DEBUG")<<std::string(message);
@@ -139,46 +146,15 @@ public:
 };
 
 
-#include <optional>
-#include <TimeHelper.hpp>
-#include <array>
-
-
 // https://www.khronos.org/registry/EGL/extensions/ANDROID/EGL_ANDROID_get_frame_timestamps.txt
-namespace Extensions2{
-    static PFNEGLGETNEXTFRAMEIDANDROIDPROC eglGetNextFrameIdANDROID = nullptr;
-    static PFNEGLGETFRAMETIMESTAMPSANDROIDPROC eglGetFrameTimestampsANDROID = nullptr;
-    static PFNEGLGETCOMPOSITORTIMINGANDROIDPROC eglGetCompositorTimingANDROID=nullptr;
-    static PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC eglGetFrameTimestampSupportedANDROID=nullptr;
-    static void init(){
-        eglGetNextFrameIdANDROID = reinterpret_cast<PFNEGLGETNEXTFRAMEIDANDROIDPROC>(
-                eglGetProcAddress("eglGetNextFrameIdANDROID"));
-        if (eglGetNextFrameIdANDROID == nullptr) {
-            MLOGE<<"Failed to load eglGetNextFrameIdANDROID";
-        }
-        eglGetFrameTimestampsANDROID = reinterpret_cast<PFNEGLGETFRAMETIMESTAMPSANDROIDPROC>(
-                eglGetProcAddress("eglGetFrameTimestampsANDROID"));
-        if (eglGetFrameTimestampsANDROID == nullptr) {
-            MLOGE<<"Failed to load eglGetFrameTimestampsANDROID";
-        }
-        eglGetCompositorTimingANDROID= reinterpret_cast<PFNEGLGETCOMPOSITORTIMINGANDROIDPROC >(
-                eglGetProcAddress("eglGetCompositorTimingANDROID"));
-        if (eglGetFrameTimestampsANDROID == nullptr) {
-            MLOGE<<"Failed to load eglGetCompositorTimingANDROID";
-        }
-        eglGetFrameTimestampSupportedANDROID=reinterpret_cast<PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC>(
-                eglGetProcAddress("eglGetFrameTimestampSupportedANDROID"));
-        if (eglGetFrameTimestampsANDROID == nullptr) {
-            MLOGE<<"Failed to load eglGetFrameTimestampSupportedANDROID";
-        }
-    }
+namespace FrameTimestamps{
     static std::optional<EGLuint64KHR> getNextFrameId(EGLDisplay dpy, EGLSurface surface){
-        if (eglGetNextFrameIdANDROID == nullptr) {
+        if (Extensions::eglGetNextFrameIdANDROID == nullptr) {
             MLOGE<<"stats are not supported on this platform";
             return std::nullopt;
         }
         EGLuint64KHR frameId;
-        EGLBoolean result = eglGetNextFrameIdANDROID(dpy, surface, &frameId);
+        EGLBoolean result = Extensions::eglGetNextFrameIdANDROID(dpy, surface, &frameId);
         if (result == EGL_FALSE) {
             MLOGE<<"Failed to get next frame ID";
             return std::nullopt;
@@ -211,7 +187,7 @@ namespace Extensions2{
                 EGL_READS_DONE_TIME_ANDROID
         };
         std::vector<EGLnsecsANDROID> values(timestamps.size());
-        EGLBoolean result = eglGetFrameTimestampsANDROID(dpy, surface, frameId,
+        EGLBoolean result = Extensions::eglGetFrameTimestampsANDROID(dpy, surface, frameId,
                 timestamps.size(), timestamps.data(),values.data());
         if (result == EGL_FALSE) {
             EGLint reason = eglGetError();
@@ -244,7 +220,7 @@ namespace Extensions2{
                 EGL_COMPOSITE_TO_PRESENT_LATENCY_ANDROID
         };
         CompositorTiming compositorTiming;
-        EGLBoolean result = eglGetCompositorTimingANDROID(dpy, surface,names.size(),names.data(),(EGLnsecsANDROID*)&compositorTiming);
+        EGLBoolean result = Extensions::eglGetCompositorTimingANDROID(dpy, surface,names.size(),names.data(),(EGLnsecsANDROID*)&compositorTiming);
         MLOGD<<"eglGetCompositorTimingANDROID returned "<<result;
         MLOGD2("CompositorTiming")
         <<"COMPOSITE_DEADLINE_ANDROID "<<MyTimeHelper::R(std::chrono::nanoseconds(compositorTiming.COMPOSITE_DEADLINE_ANDROID)-std::chrono::steady_clock::now().time_since_epoch())
@@ -281,6 +257,9 @@ public:
         assert(Extensions::GL_EXT_disjoint_timer_query_available);
         Extensions::glGenQueriesEXT_(1,&query);
     }
+    ~TimerQuery(){
+        Extensions::glDeleteQueriesEXT_(1,&query);
+    }
     void begin(){
         Extensions::glBeginQueryEXT_(GL_TIME_ELAPSED_EXT,query);
     }
@@ -303,10 +282,6 @@ public:
         }else{
             MLOGD<<"Cannot measure time";
         }
-    }
-
-    ~TimerQuery(){
-        Extensions::glDeleteQueriesEXT_(1,&query);
     }
 };
 

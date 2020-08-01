@@ -6,7 +6,7 @@
 #include <EGL/eglext.h>
 #include <sstream>
 #include "FBRManager.h"
-#include "Extensions.hpp"
+#include "Extensions.h"
 #include <AndroidLogger.hpp>
 
 //#define RELEASE

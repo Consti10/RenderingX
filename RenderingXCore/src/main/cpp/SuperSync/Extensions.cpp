@@ -2,7 +2,7 @@
 // Created by geier on 31/07/2020.
 //
 
-#include "Extensions.hpp"
+#include "Extensions.h"
 #include <string>
 
 
@@ -49,8 +49,14 @@ PFNGLGETQUERYOBJECTUIVEXTPROC Extensions::glGetQueryObjectuivEXT_;
 PFNGLGETQUERYOBJECTI64VEXTPROC Extensions::glGetQueryObjecti64vEXT_;
 PFNGLGETQUERYOBJECTUI64VEXTPROC Extensions::glGetQueryObjectui64vEXT_;
 PFNGLGETINTEGER64VAPPLEPROC Extensions::glGetInteger64v_;
+//
+bool Extensions::EGL_ANDROID_get_frame_timestamps_available;
+PFNEGLGETNEXTFRAMEIDANDROIDPROC Extensions::eglGetNextFrameIdANDROID ;
+PFNEGLGETFRAMETIMESTAMPSANDROIDPROC Extensions::eglGetFrameTimestampsANDROID;
+PFNEGLGETCOMPOSITORTIMINGANDROIDPROC Extensions::eglGetCompositorTimingANDROID;
+PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC Extensions::eglGetFrameTimestampSupportedANDROID;
 
-void Extensions::initialize(){
+void Extensions::initializeGL(){
     const char* glExtensionsC=(const char*)glGetString(GL_EXTENSIONS);
     if (glExtensionsC==nullptr){
         MLOGE<<"glGetString(GL_EXTENSIONS) returned NULL";
@@ -66,48 +72,56 @@ void Extensions::initialize(){
     const std::string eglExtensions=std::string(eglExtensionsC);
     MLOGD<<"All extensions "<<glExtensions;
     if(ExtensionStringPresent("GL_QCOM_tiled_rendering",glExtensions)){
-        Extensions::QCOM_tiled_rendering=true;
-        Extensions::glStartTilingQCOM= reinterpret_cast<PFNGLSTARTTILINGQCOMPROC>(eglGetProcAddress("glStartTilingQCOM"));
-        Extensions::glEndTilingQCOM = reinterpret_cast<PFNGLENDTILINGQCOMPROC>(eglGetProcAddress("glEndTilingQCOM"));
-        assert(Extensions::glStartTilingQCOM!=nullptr && Extensions::glEndTilingQCOM!=nullptr);
+        QCOM_tiled_rendering=true;
+        glStartTilingQCOM= reinterpret_cast<PFNGLSTARTTILINGQCOMPROC>(eglGetProcAddress("glStartTilingQCOM"));
+        glEndTilingQCOM = reinterpret_cast<PFNGLENDTILINGQCOMPROC>(eglGetProcAddress("glEndTilingQCOM"));
+        assert(glStartTilingQCOM!=nullptr && glEndTilingQCOM!=nullptr);
     }
     if(ExtensionStringPresent("GL_OES_EGL_sync",glExtensions)){
-        Extensions::GL_OES_EGL_sync=true;
-        Extensions::eglCreateSyncKHR =  reinterpret_cast<PFNEGLCREATESYNCKHRPROC>(eglGetProcAddress( "eglCreateSyncKHR"));
-        Extensions::eglDestroySyncKHR =  reinterpret_cast<PFNEGLDESTROYSYNCKHRPROC>(eglGetProcAddress( "eglDestroySyncKHR"));
-        Extensions::eglClientWaitSyncKHR =  reinterpret_cast<PFNEGLCLIENTWAITSYNCKHRPROC>(eglGetProcAddress( "eglClientWaitSyncKHR"));
-        Extensions::eglSignalSyncKHR =  reinterpret_cast<PFNEGLSIGNALSYNCKHRPROC>(eglGetProcAddress( "eglSignalSyncKHR"));
-        Extensions::eglGetSyncAttribKHR =  reinterpret_cast<PFNEGLGETSYNCATTRIBKHRPROC>(eglGetProcAddress( "eglGetSyncAttribKHR"));
-        assert(Extensions::eglCreateSyncKHR!=nullptr && Extensions::eglDestroySyncKHR!=nullptr && Extensions::eglClientWaitSyncKHR!=nullptr && Extensions::eglSignalSyncKHR!=nullptr && Extensions::eglGetSyncAttribKHR!=nullptr);
+        GL_OES_EGL_sync=true;
+        eglCreateSyncKHR =  reinterpret_cast<PFNEGLCREATESYNCKHRPROC>(eglGetProcAddress( "eglCreateSyncKHR"));
+        eglDestroySyncKHR =  reinterpret_cast<PFNEGLDESTROYSYNCKHRPROC>(eglGetProcAddress( "eglDestroySyncKHR"));
+        eglClientWaitSyncKHR =  reinterpret_cast<PFNEGLCLIENTWAITSYNCKHRPROC>(eglGetProcAddress( "eglClientWaitSyncKHR"));
+        eglSignalSyncKHR =  reinterpret_cast<PFNEGLSIGNALSYNCKHRPROC>(eglGetProcAddress( "eglSignalSyncKHR"));
+        eglGetSyncAttribKHR =  reinterpret_cast<PFNEGLGETSYNCATTRIBKHRPROC>(eglGetProcAddress( "eglGetSyncAttribKHR"));
+        assert(eglCreateSyncKHR!=nullptr && eglDestroySyncKHR!=nullptr && eglClientWaitSyncKHR!=nullptr && eglSignalSyncKHR!=nullptr && eglGetSyncAttribKHR!=nullptr);
     }
     if(ExtensionStringPresent("GL_KHR_debug",glExtensions)){
-        Extensions::KHR_debug=true;
-        Extensions::glDebugMessageCallbackKHR =(PFNGLDEBUGMESSAGECALLBACKKHRPROC)eglGetProcAddress("glDebugMessageCallbackKHR");
-        Extensions::glGetDebugMessageLogKHR =(PFNGLGETDEBUGMESSAGELOGKHRPROC)eglGetProcAddress("glGetDebugMessageLogKHR");
-        assert(Extensions::glDebugMessageCallbackKHR!=nullptr && Extensions::glGetDebugMessageLogKHR!=nullptr);
+        KHR_debug=true;
+        glDebugMessageCallbackKHR =(PFNGLDEBUGMESSAGECALLBACKKHRPROC)eglGetProcAddress("glDebugMessageCallbackKHR");
+        glGetDebugMessageLogKHR =(PFNGLGETDEBUGMESSAGELOGKHRPROC)eglGetProcAddress("glGetDebugMessageLogKHR");
+        assert(glDebugMessageCallbackKHR!=nullptr && glGetDebugMessageLogKHR!=nullptr);
     }
     if(ExtensionStringPresent("EGL_ANDROID_presentation_time",eglExtensions)){
-        Extensions::EGL_ANDROID_presentation_time_available=true;
-        Extensions::eglPresentationTimeANDROID=reinterpret_cast<PFNEGLPRESENTATIONTIMEANDROIDPROC>(eglGetProcAddress("eglPresentationTimeANDROID"));
-        assert(Extensions::eglPresentationTimeANDROID!=nullptr);
+        EGL_ANDROID_presentation_time_available=true;
+        eglPresentationTimeANDROID=reinterpret_cast<PFNEGLPRESENTATIONTIMEANDROIDPROC>(eglGetProcAddress("eglPresentationTimeANDROID"));
+        assert(eglPresentationTimeANDROID!=nullptr);
     }
     if(ExtensionStringPresent("GL_EXT_disjoint_timer_query",glExtensions)){
-        Extensions::GL_EXT_disjoint_timer_query_available=true;
-        Extensions::glGenQueriesEXT_ = (PFNGLGENQUERIESEXTPROC)eglGetProcAddress("glGenQueriesEXT");
-        Extensions::glDeleteQueriesEXT_ = (PFNGLDELETEQUERIESEXTPROC)eglGetProcAddress("glDeleteQueriesEXT");
-        Extensions::glIsQueryEXT_ = (PFNGLISQUERYEXTPROC)eglGetProcAddress("glIsQueryEXT");
-        Extensions::glBeginQueryEXT_ = (PFNGLBEGINQUERYEXTPROC)eglGetProcAddress("glBeginQueryEXT");
-        Extensions::glEndQueryEXT_ = (PFNGLENDQUERYEXTPROC)eglGetProcAddress("glEndQueryEXT");
-        Extensions::glQueryCounterEXT_ = (PFNGLQUERYCOUNTEREXTPROC)eglGetProcAddress("glQueryCounterEXT");
-        Extensions::glGetQueryivEXT_ = (PFNGLGETQUERYIVEXTPROC)eglGetProcAddress("glGetQueryivEXT");
-        Extensions::glGetQueryObjectivEXT_ = (PFNGLGETQUERYOBJECTIVEXTPROC)eglGetProcAddress("glGetQueryObjectivEXT");
-        Extensions::glGetQueryObjectuivEXT_ = (PFNGLGETQUERYOBJECTUIVEXTPROC)eglGetProcAddress("glGetQueryObjectuivEXT");
-        Extensions::glGetQueryObjecti64vEXT_ = (PFNGLGETQUERYOBJECTI64VEXTPROC)eglGetProcAddress("glGetQueryObjecti64vEXT");
-        Extensions::glGetQueryObjectui64vEXT_  = (PFNGLGETQUERYOBJECTUI64VEXTPROC)eglGetProcAddress("glGetQueryObjectui64vEXT");
-        Extensions::glGetInteger64v_  = (PFNGLGETINTEGER64VAPPLEPROC)eglGetProcAddress("glGetInteger64v");
-        assert(Extensions::glGenQueriesEXT_!=nullptr && Extensions::glDeleteQueriesEXT_!=nullptr);
+        GL_EXT_disjoint_timer_query_available=true;
+        glGenQueriesEXT_ = (PFNGLGENQUERIESEXTPROC)eglGetProcAddress("glGenQueriesEXT");
+        glDeleteQueriesEXT_ = (PFNGLDELETEQUERIESEXTPROC)eglGetProcAddress("glDeleteQueriesEXT");
+        glIsQueryEXT_ = (PFNGLISQUERYEXTPROC)eglGetProcAddress("glIsQueryEXT");
+        glBeginQueryEXT_ = (PFNGLBEGINQUERYEXTPROC)eglGetProcAddress("glBeginQueryEXT");
+        glEndQueryEXT_ = (PFNGLENDQUERYEXTPROC)eglGetProcAddress("glEndQueryEXT");
+        glQueryCounterEXT_ = (PFNGLQUERYCOUNTEREXTPROC)eglGetProcAddress("glQueryCounterEXT");
+        glGetQueryivEXT_ = (PFNGLGETQUERYIVEXTPROC)eglGetProcAddress("glGetQueryivEXT");
+        glGetQueryObjectivEXT_ = (PFNGLGETQUERYOBJECTIVEXTPROC)eglGetProcAddress("glGetQueryObjectivEXT");
+        glGetQueryObjectuivEXT_ = (PFNGLGETQUERYOBJECTUIVEXTPROC)eglGetProcAddress("glGetQueryObjectuivEXT");
+        glGetQueryObjecti64vEXT_ = (PFNGLGETQUERYOBJECTI64VEXTPROC)eglGetProcAddress("glGetQueryObjecti64vEXT");
+        glGetQueryObjectui64vEXT_  = (PFNGLGETQUERYOBJECTUI64VEXTPROC)eglGetProcAddress("glGetQueryObjectui64vEXT");
+        glGetInteger64v_  = (PFNGLGETINTEGER64VAPPLEPROC)eglGetProcAddress("glGetInteger64v");
+        assert(glGenQueriesEXT_!=nullptr && glDeleteQueriesEXT_!=nullptr);
+    }
+    if(ExtensionStringPresent("EGL_ANDROID_get_frame_timestamps",eglExtensions)){
+        EGL_ANDROID_get_frame_timestamps_available=true;
+        eglGetNextFrameIdANDROID = reinterpret_cast<PFNEGLGETNEXTFRAMEIDANDROIDPROC>(eglGetProcAddress("eglGetNextFrameIdANDROID"));
+        eglGetFrameTimestampsANDROID = reinterpret_cast<PFNEGLGETFRAMETIMESTAMPSANDROIDPROC>(eglGetProcAddress("eglGetFrameTimestampsANDROID"));
+        eglGetCompositorTimingANDROID= reinterpret_cast<PFNEGLGETCOMPOSITORTIMINGANDROIDPROC >(eglGetProcAddress("eglGetCompositorTimingANDROID"));
+        eglGetFrameTimestampSupportedANDROID=reinterpret_cast<PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC>(eglGetProcAddress("eglGetFrameTimestampSupportedANDROID"));
+        assert(eglGetNextFrameIdANDROID!=nullptr && eglGetFrameTimestampsANDROID!=nullptr);
     }
     //other
-    Extensions::glInvalidateFramebuffer_  = (Extensions::PFNGLINVALIDATEFRAMEBUFFER_)eglGetProcAddress("glInvalidateFramebuffer");
+    glInvalidateFramebuffer_  = (PFNGLINVALIDATEFRAMEBUFFER_)eglGetProcAddress("glInvalidateFramebuffer");
 }
 

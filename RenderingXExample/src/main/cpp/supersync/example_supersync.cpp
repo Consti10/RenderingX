@@ -18,7 +18,7 @@
 #include <BasicGLPrograms.hpp>
 #include <GLBuffer.hpp>
 #include <FBRManager.h>
-#include <Extensions.hpp>
+#include <Extensions.h>
 
 #include "GLProgramLine.h"
 #include "FPSCalculator.h"
@@ -38,7 +38,7 @@ GLRSuperSyncExample::GLRSuperSyncExample(JNIEnv *env, jobject androidContext,
 }
 
 void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext,int width, int height) {
-    Extensions::initialize();
+    Extensions::initializeGL();
     glProgramVC=new GLProgramVC();
     mFrameTimeAcc.reset();
     eyeView=glm::lookAt(glm::vec3(0,0,20),glm::vec3(0.0F,0.0F,-1.0F),glm::vec3(0,1,0));

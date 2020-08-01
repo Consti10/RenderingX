@@ -5,7 +5,7 @@
 #ifndef RENDERINGX_DIRECTRENDER_HPP
 #define RENDERINGX_DIRECTRENDER_HPP
 
-#include <Extensions.hpp>
+#include <Extensions.h>
 
 // Direct Rendering refers to rendering a specific area ( and the specific area only)
 // This class hides the difference(s) between the two major GPU manufacturer: Qualcomm and MALI (ARM)
