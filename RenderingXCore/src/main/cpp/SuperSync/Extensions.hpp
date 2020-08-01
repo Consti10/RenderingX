@@ -15,18 +15,22 @@
 #include <GLES2/gl2ext.h>
 #include <AndroidLogger.hpp>
 #include <array>
+#include <vector>
 
-// https://www.khronos.org/registry/OpenGL/extensions/QCOM/QCOM_tiled_rendering.txt
-namespace QCOM_tiled_rendering{
-    static PFNGLSTARTTILINGQCOMPROC	glStartTilingQCOM=nullptr;
-    static PFNGLENDTILINGQCOMPROC glEndTilingQCOM=nullptr;
-    static void init(){
-        glStartTilingQCOM= reinterpret_cast<PFNGLSTARTTILINGQCOMPROC>(eglGetProcAddress("glStartTilingQCOM"));
-        glEndTilingQCOM = reinterpret_cast<PFNGLENDTILINGQCOMPROC>(eglGetProcAddress("glEndTilingQCOM"));
-        if(glStartTilingQCOM== nullptr || glEndTilingQCOM==nullptr){
-            MLOGE<<"Cannot initialize QCOM_tiled_rendering";
-        }
-    }
+
+namespace Extensions{
+    //
+    static constexpr auto GL_QUERY_RESULT=0x8866;
+    static constexpr auto GL_QUERY_RESULT_AVAILABLE=0x8867;
+    typedef void (GL_APIENTRYP PFNGLINVALIDATEFRAMEBUFFER_) (GLenum target, GLsizei numAttachments, const GLenum* attachments);
+
+    // Call this once the OpenGL context becomes available
+    void initialize();
+
+    // https://www.khronos.org/registry/OpenGL/extensions/QCOM/QCOM_tiled_rendering.txt
+    extern bool QCOM_tiled_rendering;
+    extern PFNGLSTARTTILINGQCOMPROC	glStartTilingQCOM;
+    extern PFNGLENDTILINGQCOMPROC glEndTilingQCOM;
     static void StartTilingQCOM(int x,int y,int width,int height){
         glStartTilingQCOM(x,y,width,height,0);
     }
@@ -36,63 +40,60 @@ namespace QCOM_tiled_rendering{
     static void EndTilingQCOM() {
         glEndTilingQCOM(GL_COLOR_BUFFER_BIT0_QCOM);
     }
+    // https://www.khronos.org/registry/EGL/extensions/KHR/EGL_KHR_fence_sync.txt
+    extern bool GL_OES_EGL_sync;
+    extern PFNEGLCREATESYNCKHRPROC eglCreateSyncKHR;
+    extern PFNEGLDESTROYSYNCKHRPROC eglDestroySyncKHR;
+    extern PFNEGLCLIENTWAITSYNCKHRPROC eglClientWaitSyncKHR;
+    extern PFNEGLSIGNALSYNCKHRPROC eglSignalSyncKHR;
+    extern PFNEGLGETSYNCATTRIBKHRPROC eglGetSyncAttribKHR;
+
+    // https://www.khronos.org/registry/OpenGL/extensions/KHR/KHR_debug.txt
+    extern bool KHR_debug;
+    extern PFNGLDEBUGMESSAGECALLBACKKHRPROC glDebugMessageCallbackKHR;
+    extern PFNGLGETDEBUGMESSAGELOGKHRPROC glGetDebugMessageLogKHR;
+
+    // other
+    extern PFNGLINVALIDATEFRAMEBUFFER_	glInvalidateFramebuffer_;
+
+    //EGL
+    // https://www.khronos.org/registry/EGL/extensions/ANDROID/EGL_ANDROID_presentation_time.txt
+    extern bool EGL_ANDROID_presentation_time_available;
+    extern PFNEGLPRESENTATIONTIMEANDROIDPROC eglPresentationTimeANDROID;
+
+    //https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_disjoint_timer_query.txt
+    extern bool GL_EXT_disjoint_timer_query_available;
+    extern PFNGLGENQUERIESEXTPROC glGenQueriesEXT_;
+    extern PFNGLDELETEQUERIESEXTPROC glDeleteQueriesEXT_;
+    extern PFNGLISQUERYEXTPROC glIsQueryEXT_;
+    extern PFNGLBEGINQUERYEXTPROC glBeginQueryEXT_;
+    extern PFNGLENDQUERYEXTPROC glEndQueryEXT_;
+    extern PFNGLQUERYCOUNTEREXTPROC glQueryCounterEXT_;
+    extern PFNGLGETQUERYIVEXTPROC glGetQueryivEXT_;
+    extern PFNGLGETQUERYOBJECTIVEXTPROC glGetQueryObjectivEXT_;
+    extern  PFNGLGETQUERYOBJECTUIVEXTPROC glGetQueryObjectuivEXT_;
+    extern PFNGLGETQUERYOBJECTI64VEXTPROC glGetQueryObjecti64vEXT_;
+    extern PFNGLGETQUERYOBJECTUI64VEXTPROC glGetQueryObjectui64vEXT_;
+    extern PFNGLGETINTEGER64VAPPLEPROC glGetInteger64v_;
 }
+
+
 
 // https://www.khronos.org/registry/OpenGL/extensions/KHR/KHR_debug.txt
 namespace KHR_debug{
-    static PFNGLDEBUGMESSAGECALLBACKKHRPROC glDebugMessageCallbackKHR=nullptr;
-    static PFNGLGETDEBUGMESSAGELOGKHRPROC glGetDebugMessageLogKHR= nullptr;
     static void on_gl_error(unsigned int source,unsigned int type, uint id,unsigned int severity,
                             int length, const char* message,const void *userParam){
         MLOGE2("GL_DEBUG")<<std::string(message);
     }
     static void enable(){
-        glDebugMessageCallbackKHR =(PFNGLDEBUGMESSAGECALLBACKKHRPROC)eglGetProcAddress(
-                "glDebugMessageCallbackKHR");
-        glGetDebugMessageLogKHR =(PFNGLGETDEBUGMESSAGELOGKHRPROC)eglGetProcAddress(
-                "glGetDebugMessageLogKHR");
-        if(glDebugMessageCallbackKHR==nullptr){
-            MLOGE<<"GL_KHR_DEBUG functions not found";
-            return;
-        }
+        assert(Extensions::KHR_debug);
         // callback is thread safe
         glEnable(GL_DEBUG_OUTPUT_KHR);
         if(!glIsEnabled(GL_DEBUG_OUTPUT_KHR)){
             MLOGE<<"Cannot enable GL_DEBUG_OUTPUT_KHR";
             return;
         }
-        glDebugMessageCallbackKHR(on_gl_error, NULL);
-    }
-}
-
-// https://www.khronos.org/registry/EGL/extensions/ANDROID/EGL_ANDROID_presentation_time.txt
-namespace ANDROID_presentation_time{
-    static PFNEGLPRESENTATIONTIMEANDROIDPROC eglPresentationTimeANDROID=nullptr;
-    static void init(){
-        eglPresentationTimeANDROID=reinterpret_cast<PFNEGLPRESENTATIONTIMEANDROIDPROC>(eglGetProcAddress("eglPresentationTimeANDROID"));
-        if(eglPresentationTimeANDROID== nullptr){
-            MLOGE<<"Cannot initialize ANDROID_presentation_time";
-        }
-    }
-}
-
-// https://www.khronos.org/registry/EGL/extensions/KHR/EGL_KHR_fence_sync.txt
-namespace  KHR_fence_sync{
-    static PFNEGLCREATESYNCKHRPROC eglCreateSyncKHR_=nullptr;
-    static PFNEGLDESTROYSYNCKHRPROC eglDestroySyncKHR_=nullptr;
-    static PFNEGLCLIENTWAITSYNCKHRPROC eglClientWaitSyncKHR_=nullptr;
-    static PFNEGLGETSYNCATTRIBKHRPROC eglGetSyncAttribKHR=nullptr;
-    static void init(){
-        eglCreateSyncKHR_ = reinterpret_cast<PFNEGLCREATESYNCKHRPROC>(eglGetProcAddress("eglCreateSyncKHR" ));
-        eglDestroySyncKHR_ = reinterpret_cast<PFNEGLDESTROYSYNCKHRPROC>(eglGetProcAddress("eglDestroySyncKHR" ));
-        eglClientWaitSyncKHR_ = reinterpret_cast<PFNEGLCLIENTWAITSYNCKHRPROC>(eglGetProcAddress("eglClientWaitSyncKHR"));
-        eglGetSyncAttribKHR = reinterpret_cast<PFNEGLGETSYNCATTRIBKHRPROC>(eglGetProcAddress( "eglGetSyncAttribKHR" ));
-        if(eglCreateSyncKHR_==nullptr || eglDestroySyncKHR_==nullptr||eglClientWaitSyncKHR_==nullptr||eglGetSyncAttribKHR==nullptr){
-            MLOGE<<"Cannot init KHR_fence_sync";
-        }
-    }
-    static void log(){
-        MLOGD<<"eglCreateSyncKHR_"<<(int)(KHR_fence_sync::eglCreateSyncKHR_==nullptr)<<" eglDestroySyncKHR_"<<(int)(KHR_fence_sync::eglDestroySyncKHR_==nullptr)<<"  eglClientWaitSyncKHR_"<<(int)(KHR_fence_sync::eglClientWaitSyncKHR_==nullptr);
+        Extensions::glDebugMessageCallbackKHR(on_gl_error, NULL);
     }
 }
 
@@ -105,21 +106,19 @@ private:
 public:
     const std::chrono::steady_clock::time_point creationTime=std::chrono::steady_clock::now();
     FenceSync(){
-        //KHR_fence_sync::log();
-        sync=KHR_fence_sync::eglCreateSyncKHR_(eglDisplay, EGL_SYNC_FENCE_KHR, nullptr);
+        assert(Extensions::GL_OES_EGL_sync);
+        sync=Extensions::eglCreateSyncKHR(eglDisplay, EGL_SYNC_FENCE_KHR, nullptr);
         if(sync==EGL_NO_SYNC_KHR)MLOGE<<"Cannot create sync";
     }
     ~FenceSync(){
-        KHR_fence_sync::init();
-        //KHR_fence_sync::log();
-        KHR_fence_sync::eglDestroySyncKHR_(eglDisplay,sync);
+        Extensions::eglDestroySyncKHR(eglDisplay,sync);
     }
     // true if condition was satisfied, false otherwise
     bool wait(EGLTimeKHR timeoutNS=0){
         //KHR_fence_sync::init();
         //KHR_fence_sync::log();
         if(hasBeenSatisfied)return true;
-        const auto ret=KHR_fence_sync::eglClientWaitSyncKHR_(eglDisplay,sync,EGL_SYNC_FLUSH_COMMANDS_BIT_KHR,timeoutNS);
+        const auto ret=Extensions::eglClientWaitSyncKHR(eglDisplay,sync,EGL_SYNC_FLUSH_COMMANDS_BIT_KHR,timeoutNS);
         if(ret==EGL_CONDITION_SATISFIED_KHR){
             hasBeenSatisfied=true;
             satisfiedTime=std::chrono::steady_clock::now();
@@ -140,31 +139,10 @@ public:
 };
 
 
-// other extensions
-namespace Extensions{
-    typedef void (GL_APIENTRYP PFNGLINVALIDATEFRAMEBUFFER_) (GLenum target, GLsizei numAttachments, const GLenum* attachments);
-    static PFNGLINVALIDATEFRAMEBUFFER_	glInvalidateFramebuffer_;
-
-    static void initOtherExtensions(){
-        glInvalidateFramebuffer_  = (PFNGLINVALIDATEFRAMEBUFFER_)eglGetProcAddress("glInvalidateFramebuffer");
-    }
-    static void glInvalidateFramebuffer(){
-        int count=3;
-        const GLenum attachments[3] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT };
-        glInvalidateFramebuffer_( GL_FRAMEBUFFER, count, attachments);
-    }
-}
-
 #include <optional>
 #include <TimeHelper.hpp>
 #include <array>
 
-/*namespace EGLExtensionsHelper{
-    template<typename T>
-    static void eglGetProcAddress(const char* name){
-        T f= eglGetProcAddress(name);
-    }
-}*/
 
 // https://www.khronos.org/registry/EGL/extensions/ANDROID/EGL_ANDROID_get_frame_timestamps.txt
 namespace Extensions2{
@@ -295,34 +273,42 @@ namespace Extensions2{
     }
 }
 
-namespace EXT_disjoint_timer_query{
-    static PFNGLGENQUERIESEXTPROC glGenQueriesEXT_=nullptr;
-    static PFNGLDELETEQUERIESEXTPROC glDeleteQueriesEXT_=nullptr;
-    static PFNGLISQUERYEXTPROC glIsQueryEXT_=nullptr;
-    static PFNGLBEGINQUERYEXTPROC glBeginQueryEXT_=nullptr;
-    static PFNGLENDQUERYEXTPROC glEndQueryEXT_=nullptr;
-    static PFNGLQUERYCOUNTEREXTPROC glQueryCounterEXT_=nullptr;
-    static PFNGLGETQUERYIVEXTPROC glGetQueryivEXT_=nullptr;
-    static PFNGLGETQUERYOBJECTIVEXTPROC glGetQueryObjectivEXT_=nullptr;
-    static  PFNGLGETQUERYOBJECTUIVEXTPROC glGetQueryObjectuivEXT_=nullptr;
-    static PFNGLGETQUERYOBJECTI64VEXTPROC glGetQueryObjecti64vEXT_=nullptr;
-    static PFNGLGETQUERYOBJECTUI64VEXTPROC glGetQueryObjectui64vEXT_=nullptr;
-    static PFNGLGETINTEGER64VAPPLEPROC glGetInteger64v_=nullptr;
-    static void init(){
-        glGenQueriesEXT_ = (PFNGLGENQUERIESEXTPROC)eglGetProcAddress("glGenQueriesEXT");
-        glDeleteQueriesEXT_ = (PFNGLDELETEQUERIESEXTPROC)eglGetProcAddress("glDeleteQueriesEXT");
-        glIsQueryEXT_ = (PFNGLISQUERYEXTPROC)eglGetProcAddress("glIsQueryEXT");
-        glBeginQueryEXT_ = (PFNGLBEGINQUERYEXTPROC)eglGetProcAddress("glBeginQueryEXT");
-        glEndQueryEXT_ = (PFNGLENDQUERYEXTPROC)eglGetProcAddress("glEndQueryEXT");
-        glQueryCounterEXT_ = (PFNGLQUERYCOUNTEREXTPROC)eglGetProcAddress("glQueryCounterEXT");
-        glGetQueryivEXT_ = (PFNGLGETQUERYIVEXTPROC)eglGetProcAddress("glGetQueryivEXT");
-        glGetQueryObjectivEXT_ = (PFNGLGETQUERYOBJECTIVEXTPROC)eglGetProcAddress("glGetQueryObjectivEXT");
-        glGetQueryObjectuivEXT_ = (PFNGLGETQUERYOBJECTUIVEXTPROC)eglGetProcAddress("glGetQueryObjectuivEXT");
-        glGetQueryObjecti64vEXT_ = (PFNGLGETQUERYOBJECTI64VEXTPROC)eglGetProcAddress("glGetQueryObjecti64vEXT");
-        glGetQueryObjectui64vEXT_  = (PFNGLGETQUERYOBJECTUI64VEXTPROC)eglGetProcAddress("glGetQueryObjectui64vEXT");
-        glGetInteger64v_  = (PFNGLGETINTEGER64VAPPLEPROC)eglGetProcAddress("glGetInteger64v");
+class TimerQuery{
+private:
+    GLuint query;
+public:
+    TimerQuery(){
+        assert(Extensions::GL_EXT_disjoint_timer_query_available);
+        Extensions::glGenQueriesEXT_(1,&query);
     }
-}
+    void begin(){
+        Extensions::glBeginQueryEXT_(GL_TIME_ELAPSED_EXT,query);
+    }
+    void end(){
+        Extensions::glEndQueryEXT_(GL_TIME_ELAPSED_EXT);
+    }
+    void print(){
+        GLint available=0;
+        Extensions::glGetQueryObjectivEXT_(query, Extensions::GL_QUERY_RESULT_AVAILABLE, &available);
+        if(!available){
+            MLOGD<<"Query not available";
+        }
+
+        GLint disjointOccurred=0;
+        glGetIntegerv(GL_GPU_DISJOINT_EXT, &disjointOccurred);
+        if(!disjointOccurred){
+            GLuint64 timeElapsed;
+            Extensions::glGetQueryObjectui64vEXT_(query, Extensions::GL_QUERY_RESULT, &timeElapsed);
+            MLOGD<<"Time"<<MyTimeHelper::ReadableNS(timeElapsed);
+        }else{
+            MLOGD<<"Cannot measure time";
+        }
+    }
+
+    ~TimerQuery(){
+        Extensions::glDeleteQueriesEXT_(1,&query);
+    }
+};
 
 
 namespace LOLX{

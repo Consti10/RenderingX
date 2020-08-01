@@ -9,6 +9,7 @@
 #include <Sphere/DualFisheyeSphere.hpp>
 #include <Sphere/UvSphere.hpp>
 #include <Sphere/SphereBuilder.hpp>
+#include <Extensions.hpp>
 
 constexpr auto TAG="DistortionExample";
 
@@ -24,6 +25,7 @@ RendererDistortion::RendererDistortion(JNIEnv *env, jobject androidContext, gvr_
 }
 
 void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
+    Extensions::initialize();
     vrCompositorRenderer.initializeGL();
     gvr_api_->InitializeGl();
     std::vector<gvr::BufferSpec> specs;

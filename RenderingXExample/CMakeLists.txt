@@ -8,7 +8,7 @@ include(${CMAKE_SOURCE_DIR}/../RenderingXCore/RenderingXCore.cmake)
 ##########################################################################################################
 # build the example renderer
 ##########################################################################################################
-set(BASIC_DEPENDENCIES GLPrograms Time ${log-lib} android log EGL GLESv2)
+set(BASIC_DEPENDENCIES GLPrograms Time ${log-lib} android log EGL GLESv2 Extensions)
 
 #find_package(VideoNative REQUIRED CONFIG)
 #find_package(curl REQUIRED CONFIG)

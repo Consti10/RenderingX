@@ -4,6 +4,7 @@
 
 #include <CardboardViewportOcclusion.hpp>
 #include <Sphere/SphereBuilder.hpp>
+#include <android/trace.h>
 #include "VrCompositorRenderer.h"
 
 VrCompositorRenderer::VrCompositorRenderer(gvr::GvrApi *gvr_api,const bool ENABLE_VDDC,const bool ENABLE_DEBUG1):
@@ -146,6 +147,7 @@ void VrCompositorRenderer::addLayerSphere360(float radius,UvSphere::MEDIA_FORMAT
 }
 
 void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
+    //ATrace_beginSection((eye==GVR_LEFT_EYE ? "VrCompositorRenderer::drawLayers LEFT" : "VrCompositorRenderer::drawLayers RIGHT"));
     const int EYE_IDX=eye==GVR_LEFT_EYE ? 0 : 1;
     cpuTime[EYE_IDX].start();
     const bool leftEye=eye==GVR_LEFT_EYE;
@@ -175,6 +177,7 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
     }
     GLHelper::checkGlError("VrCompositorRenderer::drawLayers");
     cpuTime[EYE_IDX].stop();
+    //ATrace_endSection();
 }
 
 void VrCompositorRenderer::removeLayers() {

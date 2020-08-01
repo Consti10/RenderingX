@@ -22,6 +22,7 @@ Renderer360Video::Renderer360Video(JNIEnv *env, jobject androidContext, gvr_cont
 
 
 void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoTexture) {
+    Extensions::initialize();
     vrCompositorRenderer.initializeGL();
     mVideoTexture=(GLuint)videoTexture;
     //vrRenderBuffer2.createRenderTextures(1280,720);

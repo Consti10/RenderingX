@@ -62,10 +62,10 @@ public:
 
     void unbindAndSwap() {
         GLHelper::checkGlError("before U");
-        //FenceSync fenceSync;
+        FenceSync fenceSync;
         // wait until rendering complete
-        glFlush();
-        glFinish();
+        fenceSync.wait(EGL_FOREVER_KHR);
+        //
         // Now it is safe to swap buffers
         currentRenderTexture=incrementAndModulo(currentRenderTexture);
         GLHelper::checkGlError("after U");

@@ -16,9 +16,8 @@ public:
     DirectRender(bool QCOM_TILED_RENDERING_AVAILABLE):
     QCOM_TILED_RENDERING_AVAILABLE(QCOM_TILED_RENDERING_AVAILABLE){
         if(QCOM_TILED_RENDERING_AVAILABLE){
-            QCOM_tiled_rendering::init();
+            //QCOM_tiled_rendering::init();
         }else{
-            Extensions::initOtherExtensions();
         }
     }
     static void setGlViewport(const GLViewport& viewport){
@@ -30,7 +29,7 @@ public:
     const bool QCOM_TILED_RENDERING_AVAILABLE;
     void begin(const GLViewport& viewport)const{
         if(QCOM_TILED_RENDERING_AVAILABLE){
-            QCOM_tiled_rendering::StartTilingQCOM(viewport);
+            Extensions::StartTilingQCOM(viewport);
             glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         }else{
             const GLenum attachmentsSG[3] = { GL_COLOR_EXT, GL_DEPTH_EXT, GL_STENCIL_EXT};
@@ -41,7 +40,7 @@ public:
     }
     void end()const{
         if(QCOM_TILED_RENDERING_AVAILABLE){
-            QCOM_tiled_rendering::EndTilingQCOM();
+            Extensions::EndTilingQCOM();
         }else{
             const GLenum attachmentsSG[2] = { GL_DEPTH_EXT, GL_STENCIL_EXT};
             Extensions::glInvalidateFramebuffer_( GL_FRAMEBUFFER, 2, attachmentsSG );

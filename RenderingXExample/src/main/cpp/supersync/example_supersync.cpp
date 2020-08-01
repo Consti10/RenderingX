@@ -38,6 +38,7 @@ GLRSuperSyncExample::GLRSuperSyncExample(JNIEnv *env, jobject androidContext,
 }
 
 void GLRSuperSyncExample::onSurfaceCreated(JNIEnv *env,jobject androidContext,int width, int height) {
+    Extensions::initialize();
     glProgramVC=new GLProgramVC();
     mFrameTimeAcc.reset();
     eyeView=glm::lookAt(glm::vec3(0,0,20),glm::vec3(0.0F,0.0F,-1.0F),glm::vec3(0,1,0));

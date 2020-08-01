@@ -25,10 +25,6 @@ FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailab
         EGL_KHR_Reusable_Sync_Available(reusableSyncAvailable),
         onRenderNewEyeCallback(onRenderNewEyeCallback)
 {
-    KHR_fence_sync::init();
-    Extensions::initOtherExtensions();
-    EXT_disjoint_timer_query::init();
-
     lastLog=steady_clock::now();
     resetTS();
 }
@@ -74,14 +70,19 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H)
         }
         //render new eye (right eye first)
         eyeChrono[eye].avgCPUTime.start();
+        //TimerQuery timerQuery;
+        //timerQuery.begin();
         directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
         onRenderNewEyeCallback(env,isLeftEye);
         directRender.end();
         eyeChrono[eye].avgCPUTime.stop();
         std::unique_ptr<FenceSync> fenceSync=std::make_unique<FenceSync>();
         glFlush();
+        //timerQuery.end();
         vsyncWaitTime[eye].start();
         waitUntilTimePoint(nextEvent,*fenceSync);
+        //timerQuery.print();
+        //MLOGD<<"Time from fence "<<MyTimeHelper::R(fenceSync->getDeltaCreationSatisfied());
 
         //MLOGD<<"Vsync pos "<<getVsyncRasterizerPositionNormalized();
         eyeChrono[eye].nEyes++;
