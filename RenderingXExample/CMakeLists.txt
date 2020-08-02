@@ -36,7 +36,7 @@ target_link_libraries( example-2 ${BASIC_DEPENDENCIES} gvr-lib)
 
 add_library( example-supersync
         SHARED
-        src/main/cpp/supersync/example_supersync.cpp
+        src/main/cpp/supersync/RendererSuperSync.cpp
         )
 target_link_libraries( example-supersync ${BASIC_DEPENDENCIES} SuperSync)
 

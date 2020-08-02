@@ -19,8 +19,6 @@ public:
     GLuint textures[2];
     int currentRenderTexture=0;
 
-    std::unique_ptr<FenceSync> mLastFenceSync;
-
     void createRenderTextures(int W,int H){
         WIDTH_PX=W;
         HEIGH_PX=H;
@@ -65,6 +63,7 @@ public:
         FenceSync fenceSync;
         // wait until rendering complete
         fenceSync.wait(EGL_FOREVER_KHR);
+        //MLOGD<<"OSD fence sync took "<<MyTimeHelper::R(fenceSync.getDeltaCreationSatisfied());
         //
         // Now it is safe to swap buffers
         currentRenderTexture=incrementAndModulo(currentRenderTexture);

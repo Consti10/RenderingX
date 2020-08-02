@@ -7,10 +7,13 @@
 #include <android/trace.h>
 #include "VrCompositorRenderer.h"
 
-VrCompositorRenderer::VrCompositorRenderer(gvr::GvrApi *gvr_api,const bool ENABLE_VDDC,const bool ENABLE_DEBUG1):
+VrCompositorRenderer::VrCompositorRenderer(JNIEnv* env,jobject androidContext,gvr::GvrApi *gvr_api,const bool ENABLE_VDDC,const bool ENABLE_DEBUG1,const bool ENABLE_VIGNETTE):
         ENABLE_DEBUG(ENABLE_DEBUG1),
+        ENABLE_VIGNETTE(ENABLE_VIGNETTE),
         gvr_api(gvr_api),
         ENABLE_VDDC(ENABLE_VDDC){
+    const MVrHeadsetParams deviceParams=createFromJava2(env,androidContext);
+    updateHeadsetParams(deviceParams);
 }
 
 void VrCompositorRenderer::initializeGL() {
@@ -171,7 +174,7 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         }
     }
     // Render the mesh that occludes everything except the part actually visible inside the headset
-    if (ENABLE_OCCLUSION_MESH) {
+    if (ENABLE_VIGNETTE) {
         int idx = eye == GVR_LEFT_EYE ? 0 : 1;
         mGLProgramVC2D->drawX(glm::mat4(1.0f), glm::mat4(1.0f), mOcclusionMesh[idx]);
     }
@@ -187,21 +190,4 @@ void VrCompositorRenderer::removeLayers() {
     mVrLayerList.resize(0);
 }
 
-
-/*void VrCompositorRenderer::drawLayersMono(glm::mat4 ViewM, glm::mat4 ProjM) {
-    const float scale=100.0f;
-    const glm::mat4 scaleM=glm::scale(glm::vec3(scale,scale,scale));
-    const glm::mat4 modelMatrix=glm::rotate(glm::mat4(1.0F),glm::radians(90.0F), glm::vec3(0,0,-1))*scaleM;
-    for(const auto& layer : mVrLayerList){
-        GLProgramTexture* glProgramTexture=layer.isExternalTexture ? mGLProgramTextureExt.get() : mGLProgramTexture.get();
-        if(layer.geometry.index()==0){
-            const VertexBuffer& vb=std::get<0>(layer.geometry);
-            glProgramTexture->drawX(layer.textureId,ViewM,ProjM,vb);
-        }else{
-            const VertexIndexBuffer& vib=std::get<1>(layer.geometry);
-            glProgramTexture->drawX(layer.textureId,ViewM,ProjM,vib);
-        }
-    }
-    GLHelper::checkGlError("VideoRenderer::drawVideoCanvas360");
-}*/
 

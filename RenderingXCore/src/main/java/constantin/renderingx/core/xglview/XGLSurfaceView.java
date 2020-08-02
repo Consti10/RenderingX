@@ -141,6 +141,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     private final Runnable mOpenGLRunnable=new Runnable() {
         @Override
         public void run() {
+            Thread.currentThread().setName("XGLRendererM");
             eglMakeCurrentSafe(eglDisplay,eglSurface,eglContext);
             if(DO_SUPERSYNC_MODS){
                 XEGLConfigChooser.setEglSurfaceAttrib(EGL14.EGL_RENDER_BUFFER,EGL14.EGL_SINGLE_BUFFER);
@@ -171,9 +172,9 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                 }
                 // Swap buffers will ensure that onDrawFrame is not called more than 60 times per second
                 // If the surface is NOT single buffered
-                if(!DO_SUPERSYNC_MODS){
+                //if(!DO_SUPERSYNC_MODS){
                     eglSwapBuffersSafe(eglDisplay,eglSurface);
-                }
+                //}
             }
             eglMakeCurrentSafe(eglDisplay,EGL_NO_SURFACE,EGL_NO_CONTEXT);
         }

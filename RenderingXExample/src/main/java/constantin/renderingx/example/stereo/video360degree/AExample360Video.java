@@ -10,6 +10,7 @@ import com.google.vr.ndk.base.GvrApi;
 import constantin.renderingx.core.VrActivity;
 import constantin.renderingx.core.xglview.XGLSurfaceView;
 import constantin.renderingx.core.views.MyVRLayout;
+import constantin.renderingx.core.xglview.XSurfaceParams;
 import constantin.renderingx.example.R;
 import constantin.video.core.gl.ISurfaceAvailable;
 import constantin.video.core.video_player.VideoPlayer;
@@ -46,6 +47,8 @@ public class AExample360Video extends VrActivity {
         final String VIDEO_FILENAME=bundle.getString(KEY_VIDEO_FILENAME);
         //start initialization
         final XGLSurfaceView glSurfaceView2=new XGLSurfaceView(this);
+        //glSurfaceView2.setEGLConfigPrams(new XSurfaceParams(0,0,true));
+        //glSurfaceView2.DO_SUPERSYNC_MODS=true;
 
         //final MyGLSurfaceView gLView = new MyGLSurfaceView(this);
         //gLView.setEGLContextClientVersion(2);

@@ -57,13 +57,12 @@ using RENDER_NEW_EYE_CALLBACK=std::function<void(JNIEnv*,bool)>;
 
 class FBRManager: public VSYNC {
 public:
-    FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback);
+    FBRManager(RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback);
     //has to be called from the OpenGL thread that is bound to the front buffer surface
     //blocks until requestExitSuperSyncLoop() is called (from any thread, e.g. the UI onPauseX )
     void enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H);
     void drawLeftAndRightEye(JNIEnv* env);
 private:
-    const bool EGL_KHR_Reusable_Sync_Available;
     const DirectRender directRender;
     struct EyeChrono{
         Chronometer avgCPUTime{};

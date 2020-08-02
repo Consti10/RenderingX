@@ -8,6 +8,7 @@
 #include "FBRManager.h"
 #include "Extensions.h"
 #include <AndroidLogger.hpp>
+#include <utility>
 
 //#define RELEASE
 constexpr auto MS_TO_NS=1000*1000;
@@ -20,10 +21,8 @@ static std::chrono::steady_clock::duration ThisThreadSleepUntil(std::chrono::ste
     return now-tp;
 }
 
-FBRManager::FBRManager(bool qcomTiledRenderingAvailable,bool reusableSyncAvailable,const RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback):
-        directRender{qcomTiledRenderingAvailable},
-        EGL_KHR_Reusable_Sync_Available(reusableSyncAvailable),
-        onRenderNewEyeCallback(onRenderNewEyeCallback)
+FBRManager::FBRManager(RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback):
+        onRenderNewEyeCallback(std::move(onRenderNewEyeCallback))
 {
     lastLog=steady_clock::now();
     resetTS();
@@ -70,19 +69,19 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H)
         }
         //render new eye (right eye first)
         eyeChrono[eye].avgCPUTime.start();
-        //TimerQuery timerQuery;
-        //timerQuery.begin();
+        TimerQuery timerQuery;
+        timerQuery.begin();
         directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
         onRenderNewEyeCallback(env,isLeftEye);
         directRender.end();
         eyeChrono[eye].avgCPUTime.stop();
         std::unique_ptr<FenceSync> fenceSync=std::make_unique<FenceSync>();
         glFlush();
-        //timerQuery.end();
+        timerQuery.end();
         vsyncWaitTime[eye].start();
         waitUntilTimePoint(nextEvent,*fenceSync);
-        //timerQuery.print();
-        //MLOGD<<"Time from fence "<<MyTimeHelper::R(fenceSync->getDeltaCreationSatisfied());
+        timerQuery.print();
+        MLOGD<<"Time from fence "<<MyTimeHelper::R(fenceSync->getDeltaCreationSatisfied());
 
         //MLOGD<<"Vsync pos "<<getVsyncRasterizerPositionNormalized();
         eyeChrono[eye].nEyes++;

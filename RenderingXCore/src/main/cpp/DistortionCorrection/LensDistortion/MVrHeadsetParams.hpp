@@ -25,7 +25,15 @@ struct MVrHeadsetParams{
     const int screen_height_pixels;
 };
 
-static MVrHeadsetParams createFromJava(JNIEnv *env, jobject instanceMVrHeadsetParams){
+static MVrHeadsetParams createFromJava2(JNIEnv *env, jobject androidContext){
+    // First, Construct an instance of the java class to obtain values from
+    jclass jcMVrHeadsetParams = env->FindClass("constantin/renderingx/core/MVrHeadsetParams");
+    assert(jcMVrHeadsetParams!=nullptr);
+    // find the constructor that takes an context
+    jmethodID constructor = env->GetMethodID( jcMVrHeadsetParams, "<init>", "(Landroid/content/Context;)V" );
+    assert(constructor!=nullptr);
+    jobject instanceMVrHeadsetParams = env->NewObject(jcMVrHeadsetParams,constructor,androidContext);
+    assert(instanceMVrHeadsetParams!= nullptr);
     ClassMemberFromJava helper(env, instanceMVrHeadsetParams);
     return {
             helper.get<float>("ScreenWidthMeters"),

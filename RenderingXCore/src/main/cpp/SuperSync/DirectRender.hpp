@@ -13,12 +13,7 @@ class DirectRender{
 public:
     using GLViewport=std::array<int,4>;
 
-    DirectRender(bool QCOM_TILED_RENDERING_AVAILABLE):
-    QCOM_TILED_RENDERING_AVAILABLE(QCOM_TILED_RENDERING_AVAILABLE){
-        if(QCOM_TILED_RENDERING_AVAILABLE){
-            //QCOM_tiled_rendering::init();
-        }else{
-        }
+    DirectRender(){
     }
     static void setGlViewport(const GLViewport& viewport){
         glViewport(viewport[0],viewport[1],viewport[2],viewport[3]);
@@ -26,9 +21,8 @@ public:
     static void setGlScissor(const GLViewport& viewport){
         glScissor(viewport[0],viewport[1],viewport[2],viewport[3]);
     }
-    const bool QCOM_TILED_RENDERING_AVAILABLE;
     void begin(const GLViewport& viewport)const{
-        if(QCOM_TILED_RENDERING_AVAILABLE){
+        if(Extensions::QCOM_tiled_rendering){
             Extensions::StartTilingQCOM(viewport);
             glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         }else{
@@ -39,7 +33,7 @@ public:
         setGlScissor(viewport);
     }
     void end()const{
-        if(QCOM_TILED_RENDERING_AVAILABLE){
+        if(Extensions::QCOM_tiled_rendering){
             Extensions::EndTilingQCOM();
         }else{
             const GLenum attachmentsSG[2] = { GL_DEPTH_EXT, GL_STENCIL_EXT};

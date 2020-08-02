@@ -2,8 +2,8 @@
 // Created by Consti10 on 30/08/2019.
 //
 
-#ifndef RENDERINGX_EXAMPLE_SUPERSYNC_H
-#define RENDERINGX_EXAMPLE_SUPERSYNC_H
+#ifndef RENDERINGX_RENDERERSUPERSYNC_H
+#define RENDERINGX_RENDERERSUPERSYNC_H
 
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
@@ -40,9 +40,9 @@
 //It only clears the screen and renders a triangle from the left and right eye view
 
 
-class GLRSuperSyncExample{
+class RendererSuperSync{
 public:
-    GLRSuperSyncExample(JNIEnv* env,jobject androidContext,bool qcomTiledRenderingAvailable,bool reusableSyncAvailable);
+    RendererSuperSync(JNIEnv* env, jobject androidContext, gvr_context *gvr_context);
     /**
      * WARNING: does not return until exitSuperSyncLoop is called. Basically it blocks the GL thread.
     */
@@ -63,30 +63,17 @@ private:
     void renderNewEyeCallback(JNIEnv* env,bool whichEye,int64_t offsetNS);
     void drawEye(JNIEnv* env,bool whichEye);
 private:
-    VRFrameTimeAccumulator mFrameTimeAcc;
-    //std::unique_ptr<BasicGLPrograms> mBasicGLPrograms=nullptr;
-    GLProgramVC* glProgramVC;
+    GLProgramVC* glProgramVC2D;
     std::unique_ptr<FBRManager> mFBRManager= nullptr;
-    int ViewPortW=0,ViewPortH=0;
-    //
-    //Camera/Projection matrix constants
-    static constexpr float CAMERA_DISTANCE=-5.0f;
-    //the projection matrix. Should be re calculated in each onSurfaceChanged with new width and height
-    glm::mat4 projection;
-    //the view matrix, with ipd
-    glm::mat4 eyeView;
-    glm::mat4 leftEyeView,rightEyeView;
-    //holds colored geometry vertices
-    ColoredGLMeshBuffer mVertexBufferVC;
-    //
     ColoredGLMeshBuffer solidRectangleYellow;
     ColoredGLMeshBuffer solidRectangleBlack;
     std::array<int,2> whichColor;
-    static constexpr int N_TRIANGLES=5;
-    static constexpr int N_COLOR_VERTICES=3*N_TRIANGLES;
-    static constexpr int N_DRAW_CALLS=10;
-    int SCREEN_W=0,SCREEN_H=0;
+    std::unique_ptr<gvr::GvrApi> gvr_api_;
 public:
+    VrCompositorRenderer vrCompositorRenderer;
+    GLuint mGreenTexture;
+    GLuint mBlueTexture;
+    GLuint mExampleUITexture;
 };
 
-#endif //RENDERINGX_EXAMPLE_SUPERSYNC_H
+#endif //RENDERINGX_RENDERERSUPERSYNC_H

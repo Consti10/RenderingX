@@ -75,6 +75,7 @@ public class GLContextSurfaceLess {
     private final Runnable mOpenGLRunnable=new Runnable() {
         @Override
         public void run() {
+            Thread.currentThread().setName("SecondRenderer");
             eglMakeCurrentSafe(eglDisplay,eglSurface,eglContext);
             secondarySharedContext.onSecondaryContextCreated();
             while(!Thread.currentThread().isInterrupted()){

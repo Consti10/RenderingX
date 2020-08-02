@@ -76,7 +76,7 @@ glm::mat4 modelM;
 
 //simplifies debugging/benchmarking
 Chronometer cpuFrameTime{"CPU frame time"};
-FPSCalculator fpsCalculator{"OpenGL FPS",2000}; //print every 2 seconds
+FPSCalculator fpsCalculator{"OpenGL FPS",std::chrono::seconds(2)}; //print every 2 seconds
 
 constexpr auto EXAMPLE_TEXT=L"HELLO,World";
 constexpr int EXAMPLE_TEXT_LENGTH=11;

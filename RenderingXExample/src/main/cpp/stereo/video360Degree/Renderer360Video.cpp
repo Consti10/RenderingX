@@ -16,8 +16,8 @@ Renderer360Video::Renderer360Video(JNIEnv *env, jobject androidContext, gvr_cont
                                        bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT, const int vSPHERE_MODE):
         M_SPHERE_MODE(static_cast<SPHERE_MODE>(vSPHERE_MODE)),
         gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context)),
-        vrCompositorRenderer(gvr_api_.get(),true,true),
-        mFPSCalculator("OpenGL FPS", 2000){
+        vrCompositorRenderer(env,androidContext,gvr_api_.get(),true,true),
+        mFPSCalculator("OpenGL FPS", std::chrono::seconds(2)){
 }
 
 
@@ -48,7 +48,7 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
 
 void Renderer360Video::onDrawFrame() {
     mFPSCalculator.tick();
-    //LOGD("FPS: %f",mFPSCalculator.getCurrentFPS());
+    //MLOGD<<"FPS: "<<mFPSCalculator.getCurrentFPS();
     vrCompositorRenderer.setLayerTextureId(1, vrRenderBuffer2.getLatestRenderedTexture());
 
     //Update the head position (rotation) then leave it untouched during the frame
@@ -120,12 +120,6 @@ JNI_METHOD(void, nativeOnSurfaceCreated)
 JNI_METHOD(void, nativeOnDrawFrame)
 (JNIEnv *env, jobject obj,jlong p) {
     native(p)->onDrawFrame();
-}
-
-JNI_METHOD(void, nativeUpdateHeadsetParams)
-(JNIEnv *env, jobject obj, jlong instancePointer,jobject instanceMyVrHeadsetParams) {
-    const MVrHeadsetParams deviceParams=createFromJava(env, instanceMyVrHeadsetParams);
-    native(instancePointer)->vrCompositorRenderer.updateHeadsetParams(deviceParams);
 }
 
 JNI_METHOD(void, nativeOnSecondaryContextCreated)

@@ -272,7 +272,6 @@ public:
         if(!available){
             MLOGD<<"Query not available";
         }
-
         GLint disjointOccurred=0;
         glGetIntegerv(GL_GPU_DISJOINT_EXT, &disjointOccurred);
         if(!disjointOccurred){

@@ -19,17 +19,13 @@ public class RendererDistortion implements XGLSurfaceView.FullscreenRenderer {
     private native void nativeDelete(long p);
     private native void nativeOnSurfaceCreated(long p,final Context context);
     private native void nativeOnDrawFrame(long p);
-    private native void nativeUpdateHeadsetParams(long nativePointer,final MVrHeadsetParams p);
 
     private final Context mContext;
     private final long nativeRenderer;
 
     public RendererDistortion(final Context context, final GvrApi gvrApi){
         mContext=context;
-        nativeRenderer=nativeConstruct(context,
-                gvrApi.getNativeGvrContext());
-        final MVrHeadsetParams params=new MVrHeadsetParams(context);
-        nativeUpdateHeadsetParams(nativeRenderer,params);
+        nativeRenderer=nativeConstruct(context, gvrApi.getNativeGvrContext());
     }
 
     @Override

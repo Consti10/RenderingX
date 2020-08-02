@@ -12,14 +12,14 @@
 class FPSCalculator {
 private:
     const std::string NAME;
-    const int LOG_INTERVAL_MS;
+    const std::chrono::steady_clock::duration LOG_INTERVAL;
     std::chrono::steady_clock::time_point lastFPSCalculation=std::chrono::steady_clock::now();
     double ticksSinceLastFPSCalculation=0;
-    double currFPS;
+    double currFPS=0;
 public:
-    FPSCalculator(const std::string& name,int printIntervalMS);
+    FPSCalculator(std::string name="FPSCalculator",std::chrono::steady_clock::duration intervall=std::chrono::seconds(1));
     void tick();
-    float getCurrentFPS();
+    float getCurrentFPS()const;
 };
 
 

@@ -17,8 +17,8 @@ constexpr auto TAG="DistortionExample";
 
 RendererDistortion::RendererDistortion(JNIEnv *env, jobject androidContext, gvr_context *gvr_context):
         gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context)),
-        vrCompositorRenderer(gvr_api_.get(),true,true),
-        mFPSCalculator("OpenGL FPS", 2000){
+        vrCompositorRenderer(env,androidContext,gvr_api_.get(),true,true),
+        mFPSCalculator("OpenGL FPS",std::chrono::seconds(2)){
     buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();
     recommended_buffer_viewports = gvr_api_->CreateEmptyBufferViewportList();
     scratch_viewport = gvr_api_->CreateBufferViewport();
@@ -163,12 +163,6 @@ JNI_METHOD(void, nativeOnSurfaceCreated)
 JNI_METHOD(void, nativeOnDrawFrame)
 (JNIEnv *env, jobject obj,jlong p) {
     native(p)->onDrawFrame();
-}
-
-JNI_METHOD(void, nativeUpdateHeadsetParams)
-(JNIEnv *env, jobject obj, jlong instancePointer,jobject instanceMyVrHeadsetParams) {
-    const MVrHeadsetParams deviceParams=createFromJava(env, instanceMyVrHeadsetParams);
-    native(instancePointer)->vrCompositorRenderer.updateHeadsetParams(deviceParams);
 }
 
 }

@@ -26,7 +26,7 @@ public:
      * @param ENABLE_VDDC if V.D.D.C is not enabled, the VR layers are rendered without distortion correction
      * @param occlusionMeshColor1 Use a custom color for the occlusion mesh for Debugging
      */
-    VrCompositorRenderer(gvr::GvrApi *gvr_api,const bool ENABLE_VDDC,const bool ENABLE_DEBUG1);
+    VrCompositorRenderer(JNIEnv* env,jobject androidContext,gvr::GvrApi *gvr_api,const bool ENABLE_VDDC,const bool ENABLE_DEBUG1,const bool ENABLE_VIGNETTE=true);
     /**
      *  Call this once the OpenGL context is available
      */
@@ -34,6 +34,7 @@ public:
 // Head Tracking begin   ---
 private:
     const bool ENABLE_DEBUG;
+    const bool ENABLE_VIGNETTE;
     gvr::GvrApi *gvr_api;
     //translation matrix representing half inter-eye-distance
     glm::mat4 eyeFromHead[2]{};
@@ -69,7 +70,6 @@ public:
     void updateHeadsetParams(const MVrHeadsetParams& mDP);
 // V.D.D.C end ---
 private:
-    static constexpr bool ENABLE_OCCLUSION_MESH=true;
     //One for left and right eye each
     std::array<ColoredGLMeshBuffer,2> mOcclusionMesh;
     const bool ENABLE_VDDC;

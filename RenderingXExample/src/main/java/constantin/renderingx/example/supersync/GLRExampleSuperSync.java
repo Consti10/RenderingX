@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.vr.ndk.base.GvrApi;
 
+import constantin.renderingx.core.MVrHeadsetParams;
 import constantin.renderingx.core.gles_info.Extensions;
 import constantin.renderingx.core.views.ViewSuperSync;
 
@@ -12,11 +13,10 @@ public class GLRExampleSuperSync implements ViewSuperSync.IRendererSuperSync {
     static {
         System.loadLibrary("example-supersync");
     }
-    private native long nativeConstruct(Context context,boolean qcomTiledRenderingAvailable, boolean reusableSyncAvailable);
+    private native long nativeConstruct(Context context,long nativeGvrContext);
     private native void nativeDelete(long glRendererStereoP);
     private native void nativeOnSurfaceCreated(long glRendererStereoP,Context androidContext,int width,int height);
     private native void nativeEnterSuperSyncLoop(long glRendererStereoP, int exclusiveVRCore);
-    private native void nativeExitSuperSyncLoop(long glRendererMonoP);
     private native void nativeDoFrame(long glRendererStereoP,long lastVsync);
 
     private final Context mContext;
@@ -25,9 +25,7 @@ public class GLRExampleSuperSync implements ViewSuperSync.IRendererSuperSync {
 
     public GLRExampleSuperSync(final Context context, GvrApi gvrApi){
         mContext=context;
-        final boolean qcomTiledRenderingAvailable= Extensions.available(context,Extensions.GL_QCOM_tiled_rendering);
-        final boolean reusableSyncAvailable= Extensions.available(context,Extensions.EGL_KHR_reusable_sync);
-        nativeGLRSuperSync=nativeConstruct(context,qcomTiledRenderingAvailable,reusableSyncAvailable);
+        nativeGLRSuperSync=nativeConstruct(context,gvrApi.getNativeGvrContext());
     }
 
     @Override

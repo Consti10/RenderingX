@@ -26,7 +26,6 @@ public class Renderer360Video implements XGLSurfaceView.FullscreenRenderer, GLCo
     private native void nativeDelete(long p);
     private native void nativeOnSurfaceCreated(long p,final Context context,int videoTexture);
     private native void nativeOnDrawFrame(long p);
-    private native void nativeUpdateHeadsetParams(long nativePointer,final MVrHeadsetParams p);
     private native void nativeOnSecondaryContextCreated(long nativePointer,final Context context);
     private native void nativeOnSecondaryContextDoWork(long nativePointer);
 
@@ -43,8 +42,6 @@ public class Renderer360Video implements XGLSurfaceView.FullscreenRenderer, GLCo
         mVideoSurfaceHolder.setCallBack(iSurfaceAvailable);
         nativeRenderer=nativeConstruct(context,
                 gvrApi.getNativeGvrContext(),RENDER_SCENE_USING_GVR_RENDERBUFFER,RENDER_SCENE_USING_VERTEX_DISPLACEMENT,SPHERE_MODE);
-        final MVrHeadsetParams params=new MVrHeadsetParams(context);
-        nativeUpdateHeadsetParams(nativeRenderer,params);
     }
     // For testing the 'check if update was successfully'
     public int getNSurfaceTextureUpdateReturnedTrue(){
