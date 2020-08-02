@@ -80,8 +80,8 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H)
         timerQuery.end();
         vsyncWaitTime[eye].start();
         waitUntilTimePoint(nextEvent,*fenceSync);
-        timerQuery.print();
-        MLOGD<<"Time from fence "<<MyTimeHelper::R(fenceSync->getDeltaCreationSatisfied());
+        //timerQuery.print();
+        //MLOGD<<"Time from fence "<<MyTimeHelper::R(fenceSync->getDeltaCreationSatisfied());
 
         //MLOGD<<"Vsync pos "<<getVsyncRasterizerPositionNormalized();
         eyeChrono[eye].nEyes++;

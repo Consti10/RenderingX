@@ -33,6 +33,7 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     specs[0].SetSize(framebuffer_size);
     specs[0].SetColorFormat(GVR_COLOR_FORMAT_RGBA_8888);
     swap_chain = std::make_unique<gvr::SwapChain>(gvr_api_->CreateSwapChain(specs));
+    //MLOGD<<"N buff in swap chain"<<swap_chain->GetBufferCount();
 
     mGLProgramVC=std::make_unique<GLProgramVC>();
     mGLProgramTexture=std::make_unique<GLProgramTexture>(false);

@@ -10,6 +10,21 @@
 #include <GLHelper.hpp>
 #include <Extensions.h>
 
+/*struct Frame{
+    GLuint framebuffer;
+    GLuint texture;
+    GLuint WIDTH_PX=0,HEIGH_PX=0;
+    void bind();
+    void unbindAndSubmit();
+    std::chrono::steady_clock::time_point renderingStart;
+    std::chrono::steady_clock::time_point rendringFinished;
+};
+
+class SwapChain{
+
+};*/
+
+
 
 class VrRenderBuffer2{
 public:
@@ -18,6 +33,7 @@ public:
     //bool texturesCreated=false;
     GLuint textures[2];
     int currentRenderTexture=0;
+    std::chrono::steady_clock::time_point timeFrameWasBound[2]={{},{}};
 
     void createRenderTextures(int W,int H){
         WIDTH_PX=W;
@@ -49,6 +65,7 @@ public:
 
     void bind1(){
         GLHelper::checkGlError("before B");
+        timeFrameWasBound[currentRenderTexture]=std::chrono::steady_clock::now();
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[currentRenderTexture]);
         GLHelper::checkFramebufferStatus(GL_FRAMEBUFFER);
         glScissor(0,0,WIDTH_PX,HEIGH_PX);

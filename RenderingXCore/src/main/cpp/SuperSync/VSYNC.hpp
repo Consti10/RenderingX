@@ -6,6 +6,9 @@
 #define RENDERINGX_VSYNC_HPP
 
 #include <sys/types.h>
+#include <queue>
+#include <list>
+#include <deque>
 #include <TimeHelper.hpp>
 
 
@@ -32,6 +35,8 @@ private:
     // how many samples of the refresh rate I currently have to determine the accurate refresh rate
     AvgCalculator displayRefreshTimeCalculator;
     static constexpr const auto N_SAMPLES=60;
+    std::deque<CLOCK::time_point> lastVSYNCs;
+    int vsyncCount;
 public:
     /**
      * pass the last vsync timestamp from java (setLastVSYNC) to cpp
@@ -51,26 +56,47 @@ public:
 
         const auto deltaBetweenVSYNCs= newVSYNC-lastVSYNCFromChoreographer;
 
+
+        lastVSYNCs.push_back(newVSYNC);
+        if(lastVSYNCs.size()>4){
+            lastVSYNCs.pop_front();
+        }
+        AvgCalculator lulatsch;
+        const auto currTime=CLOCK::now();
+        for(int i=0;i<lastVSYNCs.size();i++){
+            const auto & vsync=lastVSYNCs.at(i);
+            auto latestVSYNC=calculateLatestVSYNC(currTime,vsync,displayRefreshTime);
+            auto age=currTime-latestVSYNC;
+            MLOGD<<"VSYNC from sample "<<i<<" is old:"<<MyTimeHelper::R(age);
+            lulatsch.add(age);
+        }
+        if(lulatsch.getMaxDifferenceMinMaxAvg()>std::chrono::microseconds(100)){
+            MLOGD<<"Exceeded: "<<lulatsch.getAvgReadable()<<" "<<MyTimeHelper::R(lulatsch.getMaxDifferenceMinMaxAvg());
+        }
+
+        MLOGD<<"X";
+
+
         // use the delta between VSYNC events to calculate the display refresh rate more accurately
         //Stop as soon we have n samples (that should be more than enough)
         if(displayRefreshTimeCalculator.getNSamples() < N_SAMPLES){
-            //Assumption: There are only displays on the Market with refresh Rates that differ from 16.666ms +-1.0ms
+            //Assumption: There are only displays on the Market with refresh Rates that differ from 16.666ms +-n ms
             //This is needed because i am not sure if the vsync callbacks always get executed in the right order
             //so delta might be 32ms. In this case delta is not the display refresh time
-            const auto minDisplayRR=DEFAULT_REFRESH_TIME-1ms;
-            const auto maxDisplayRR=DEFAULT_REFRESH_TIME+1ms;
+            const auto minDisplayRR=DEFAULT_REFRESH_TIME-0.5ms;
+            const auto maxDisplayRR=DEFAULT_REFRESH_TIME+0.5ms;
             if(deltaBetweenVSYNCs>minDisplayRR && deltaBetweenVSYNCs<maxDisplayRR){
                 displayRefreshTimeCalculator.add(deltaBetweenVSYNCs);
                 //we can use the average Value for "displayRefreshTime" when we have n samples
-                if(displayRefreshTimeCalculator.getNSamples()==N_SAMPLES) {
+                if(displayRefreshTimeCalculator.getNSamples()==N_SAMPLES ) {
                     displayRefreshTime = displayRefreshTimeCalculator.getAvg();
                     eyeRefreshTime = displayRefreshTime / 2;
                     MLOGD<<"NEW DISPLAY_REFRESH_TIME "<<displayRefreshTimeCalculator.getAvgReadable();
                 }
             }
         }
-        if(!(deltaBetweenVSYNCs>16.2ms && deltaBetweenVSYNCs<16.8ms)){
-            // MLOGE<<"out of order delta: "<<MyTimeHelper::R(deltaBetweenVSYNCs);
+        if(!(deltaBetweenVSYNCs>16.4ms && deltaBetweenVSYNCs<16.8ms)){
+             MLOGE<<"out of order delta: "<<MyTimeHelper::R(deltaBetweenVSYNCs);
         }
         const auto beforeVSYNCPositionNormalized=getVsyncRasterizerPositionNormalized();
         const auto beforeLatestVSYNC=getLatestVSYNC();
@@ -103,13 +129,15 @@ public:
      * This value is guaranteed to be in the past and its age is not more than displayRefreshTime
     */
     CLOCK::time_point getLatestVSYNC()const{
-        const auto currTime=CLOCK::now();
-        const std::chrono::nanoseconds currDisplayRefreshTime=displayRefreshTime;
-        auto lastVSYNC=lastVSYNCFromChoreographer;
-        const std::chrono::nanoseconds delta=currTime-lastVSYNC;
-        const int64_t factor=delta.count()/currDisplayRefreshTime.count();
-        lastVSYNC+=factor*currDisplayRefreshTime;
-        return lastVSYNC;
+        return calculateLatestVSYNC(CLOCK::now(),lastVSYNCFromChoreographer,displayRefreshTime);
+    }
+    // return the latest VSYNC that happened before currTime
+    static CLOCK::time_point calculateLatestVSYNC(const CLOCK::time_point currTime,const CLOCK::time_point vsync,const CLOCK::duration displayRefreshTime){
+        auto vsyncBase=vsync;
+        const std::chrono::nanoseconds delta=currTime-vsyncBase;
+        const int64_t factor=delta.count()/displayRefreshTime.count();
+        vsyncBase+=factor*displayRefreshTime;
+        return vsyncBase;
     }
     /**
      * @return The current rasterizer position, with range: 0<=position<DISPLAY_REFRESH_TIME
