@@ -112,7 +112,8 @@ namespace GLHelper{
     static constexpr auto ALL_GL_BUFFERS=GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT;
     static void updateSetClearColor(int& index){
         index++;
-        if(index % 2){
+        index=index%2;
+        if(index==0){
             glClearColor(0.0f,0.0f,0.0f,1.0f);
         }else{
             glClearColor(1.0f,1.0f,0.0f,1.0f);
