@@ -93,10 +93,10 @@ public:
         return glBufferIndices.second;
     }
     int getCount()const{
-        return hasIndices() ? glBufferIndices.first.count : glBufferVertices.count;
+        return hasIndices() ? glBufferIndices.first.getCount() : glBufferVertices.getCount();
     }
     void logWarningWhenDrawingMeshWithoutData()const{
-        if(glBufferVertices.count==0 || (glBufferIndices.second && glBufferIndices.first.count == 0)){
+        if(glBufferVertices.getCount()==0 || (glBufferIndices.second && glBufferIndices.first.getCount() == 0)){
             MLOGD<<"Drawing Mesh without proper data";
         }
     }
@@ -104,10 +104,10 @@ public:
         return mode;
     }
     GLuint getVertexBufferId()const{
-        return glBufferVertices.glBufferId;
+        return glBufferVertices.getGLBufferId();
     }
     GLuint getIndexBufferId()const{
-        return glBufferIndices.first.glBufferId;
+        return glBufferIndices.first.getGLBufferId();
     }
 };
 

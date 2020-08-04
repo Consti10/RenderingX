@@ -24,6 +24,7 @@
 #include <GLProgramLine.h>
 #include <FPSCalculator.h>
 #include <VrCompositorRenderer.h>
+#include <SurfaceTextureUpdate.hpp>
 
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
@@ -52,7 +53,7 @@ public:
      * @param lastVSYNC last reported vsync, in ns
      */
     void setLastVSYNC(int64_t lastVSYNC);
-    void onSurfaceCreated(JNIEnv * env,jobject obj,int width, int height);
+    void onSurfaceCreated(JNIEnv * env,jobject obj,jobject videoSurfaceTexture,jint videoSurfaceTextureId,int width, int height);
 private:
     /**
      * Called by the SuperSync manager
@@ -69,6 +70,8 @@ private:
     ColoredGLMeshBuffer solidRectangleBlack;
     std::array<int,2> whichColor;
     std::unique_ptr<gvr::GvrApi> gvr_api_;
+    GLuint mVideoTexture;
+    SurfaceTextureUpdate mSurfaceTextureUpdate;
 public:
     VrCompositorRenderer vrCompositorRenderer;
     GLuint mGreenTexture;

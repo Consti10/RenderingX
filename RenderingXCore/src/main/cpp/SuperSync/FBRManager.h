@@ -52,16 +52,17 @@
 #include <EGL/eglext.h>
 #include "VSYNC.hpp"
 #include "DirectRender.hpp"
+#include <SurfaceTextureUpdate.hpp>
 
 using RENDER_NEW_EYE_CALLBACK=std::function<void(JNIEnv*,bool)>;
 
 class FBRManager: public VSYNC {
 public:
-    FBRManager(RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback);
+    FBRManager(RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,SurfaceTextureUpdate& surfaceTextureUpdate);
     //has to be called from the OpenGL thread that is bound to the front buffer surface
     //blocks until requestExitSuperSyncLoop() is called (from any thread, e.g. the UI onPauseX )
     void enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H);
-    void drawLeftAndRightEye(JNIEnv* env);
+    void drawLeftAndRightEye(JNIEnv* env,int SCREEN_W,int SCREEN_H);
 private:
     const DirectRender directRender;
     struct EyeChrono{
@@ -87,6 +88,7 @@ private:
     }
     CLOCK::time_point endLastFunctionCall;
     CLOCK::time_point lastRenderedVsync=CLOCK::now();
+    SurfaceTextureUpdate& surfaceTextureUpdate;
 };
 
 //While the CPU creates the command buffer it is guaranteed that the Frame Buffer won't be affected. (only as soon as glFinish()/glFlush() is called)

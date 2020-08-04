@@ -27,19 +27,22 @@
 
 
 RendererSuperSync::RendererSuperSync(JNIEnv *env, jobject androidContext, gvr_context *gvr_context):
+        mSurfaceTextureUpdate(env),
         gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context))
         ,vrCompositorRenderer(env,androidContext,gvr_api_.get(),true,false,false)
         {
     std::function<void(JNIEnv *env2, bool leftEye)> f = [this](JNIEnv *env2, bool leftEye) {
         this->renderNewEyeCallback(env2,leftEye,0);
     };
-    mFBRManager=std::make_unique<FBRManager>(f);
+    mFBRManager=std::make_unique<FBRManager>(f,mSurfaceTextureUpdate);
 }
 
-void RendererSuperSync::onSurfaceCreated(JNIEnv *env, jobject androidContext, int width, int height) {
+void RendererSuperSync::onSurfaceCreated(JNIEnv *env, jobject androidContext,jobject videoSurfaceTexture,jint videoSurfaceTextureId, int width, int height) {
     Extensions::initializeGL();
     vrCompositorRenderer.initializeGL();
     gvr_api_->InitializeGl();
+    mVideoTexture=videoSurfaceTextureId;
+    mSurfaceTextureUpdate.setSurfaceTexture(env,videoSurfaceTexture);
     glGenTextures(1,&mBlueTexture);
     glGenTextures(1,&mGreenTexture);
     glGenTextures(1,&mExampleUITexture);
@@ -48,7 +51,9 @@ void RendererSuperSync::onSurfaceCreated(JNIEnv *env, jobject androidContext, in
     GLProgramTexture::loadTexture(mExampleUITexture,env,androidContext,"ExampleTexture/ui.png");
     vrCompositorRenderer.removeLayers();
 
-    const float uiElementWidth=2.0;
+    float uiElementWidth=3.0;
+    //vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,mVideoTexture, true, VrCompositorRenderer::NONE);
+    uiElementWidth=1.5;
     vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,mExampleUITexture, false, VrCompositorRenderer::NONE);
 
     glProgramVC2D=new GLProgramVC(true);
@@ -61,6 +66,7 @@ void RendererSuperSync::onSurfaceCreated(JNIEnv *env, jobject androidContext, in
 void RendererSuperSync::enterSuperSyncLoop(JNIEnv *env, jobject obj, int exclusiveVRCore) {
     LOLX::setAffinity(exclusiveVRCore);
     mFBRManager->enterDirectRenderingLoop(env,vrCompositorRenderer.SCREEN_WIDTH_PX,vrCompositorRenderer.SCREEN_HEIGHT_PX);
+    //mFBRManager->drawLeftAndRightEye(env,vrCompositorRenderer.SCREEN_WIDTH_PX,vrCompositorRenderer.SCREEN_HEIGHT_PX);
 }
 
 void RendererSuperSync::setLastVSYNC(int64_t lastVSYNC) {
@@ -68,15 +74,17 @@ void RendererSuperSync::setLastVSYNC(int64_t lastVSYNC) {
 }
 
 void RendererSuperSync::renderNewEyeCallback(JNIEnv *env, const bool leftEye, const int64_t offsetNS) {
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+    ATrace_beginSection("renderNewEyeCallback");
+    //if(const auto delay=mSurfaceTextureUpdate.updateAndCheck(env)){
+    //    //MLOGD<<"avg Latency until opengl is "<<MyTimeHelper::R(*delay);
+    //}
     glClearColor(0.5F,0.5F,0.5F,0.0F);
-    glEnable(GL_SCISSOR_TEST);
-    glDisable(GL_DEPTH_TEST);
     drawEye(env,leftEye);
+    ATrace_endSection();
 }
 
 void RendererSuperSync::drawEye(JNIEnv *env, bool leftEye) {
+    ATrace_beginSection("drawEye()");
     //Draw the background, which alternates between black and yellow to make tearing observable
     const int idx=leftEye==0 ? 0 : 1;
     whichColor[idx]++;
@@ -89,6 +97,7 @@ void RendererSuperSync::drawEye(JNIEnv *env, bool leftEye) {
         glProgramVC2D->drawX(glm::mat4(),glm::mat4(), solidRectangleYellow);
     }
     vrCompositorRenderer.drawLayers(leftEye ? GVR_LEFT_EYE : GVR_RIGHT_EYE);
+    ATrace_endSection();
 }
 
 #define JNI_METHOD(return_type, method_name) \
@@ -114,8 +123,8 @@ JNI_METHOD(void, nativeDelete)
 }
 
 JNI_METHOD(void, nativeOnSurfaceCreated)
-(JNIEnv *env, jobject obj, jlong glRendererStereo,jobject androidContext,jint width, jint height) {
-    native(glRendererStereo)->onSurfaceCreated(env,androidContext,width,height);
+(JNIEnv *env, jobject obj, jlong glRendererStereo,jobject androidContext,jobject videoSurfaceTexture,jint videoSurfaceTextureId,jint width, jint height) {
+    native(glRendererStereo)->onSurfaceCreated(env,androidContext,videoSurfaceTexture,videoSurfaceTextureId,width,height);
 }
 JNI_METHOD(void, nativeEnterSuperSyncLoop)
 (JNIEnv *env, jobject obj, jlong glRendererStereo,jint exclusiveVRCore) {

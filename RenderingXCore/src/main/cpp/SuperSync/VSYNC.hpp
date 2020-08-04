@@ -10,6 +10,7 @@
 #include <list>
 #include <deque>
 #include <TimeHelper.hpp>
+#include <android/trace.h>
 
 
 // Helper to obtain the current VSYNC position (e.g. which scan line is currently read out)
@@ -37,12 +38,19 @@ private:
     static constexpr const auto N_SAMPLES=60;
     std::deque<CLOCK::time_point> lastVSYNCs;
     int vsyncCount;
+    CLOCK::time_point lastTimeSetVsyncWasCalled=CLOCK::now();
 public:
     /**
      * pass the last vsync timestamp from java (setLastVSYNC) to cpp
      * @param newVSYNC as obtained by Choreographer.doFrame but without the offset(s)
      */
     void setVSYNCSentByChoreographer(const CLOCK::time_point newVSYNC){
+        ATrace_beginSection("setVSYNCSentByChoreographer");
+        if(CLOCK::now()-lastTimeSetVsyncWasCalled>displayRefreshTime){
+            //MLOGE<<"Was not called "<<MyTimeHelper::R(CLOCK::now()-lastTimeSetVsyncWasCalled);
+        }
+        lastTimeSetVsyncWasCalled=CLOCK::now();
+
         // on the first call the lastRegisteredVSYNC is unknown
         if(lastVSYNCFromChoreographer==CLOCK::time_point{}){
             lastVSYNCFromChoreographer=newVSYNC;
@@ -67,14 +75,14 @@ public:
             const auto & vsync=lastVSYNCs.at(i);
             auto latestVSYNC=calculateLatestVSYNC(currTime,vsync,displayRefreshTime);
             auto age=currTime-latestVSYNC;
-            MLOGD<<"VSYNC from sample "<<i<<" is old:"<<MyTimeHelper::R(age);
+            //MLOGD<<"VSYNC from sample "<<i<<" is old:"<<MyTimeHelper::R(age);
             lulatsch.add(age);
         }
         if(lulatsch.getMaxDifferenceMinMaxAvg()>std::chrono::microseconds(100)){
-            MLOGD<<"Exceeded: "<<lulatsch.getAvgReadable()<<" "<<MyTimeHelper::R(lulatsch.getMaxDifferenceMinMaxAvg());
+            //MLOGD<<"Exceeded: "<<lulatsch.getAvgReadable()<<" "<<MyTimeHelper::R(lulatsch.getMaxDifferenceMinMaxAvg());
         }
 
-        MLOGD<<"X";
+        //MLOGD<<"X";
 
 
         // use the delta between VSYNC events to calculate the display refresh rate more accurately
@@ -110,12 +118,13 @@ public:
         const auto afterLatestVSYNC=getLatestVSYNC();
         const auto diffVsyncPositionNormalized=std::abs(afterVSYNCPosition - beforeVSYNCPositionNormalized);
         if(diffVsyncPositionNormalized>0.02f){
-            // MLOGE<<"VSYNC changed too much: "<<diffVsyncPositionNormalized;
+            MLOGE<<"VSYNC changed too much: "<<diffVsyncPositionNormalized;
         }
         const auto diffVsyncBeforeAndAFter=afterLatestVSYNC-beforeLatestVSYNC;
         if(diffVsyncBeforeAndAFter> 1ms){
             // MLOGE<<"VSYNC changed in between: "<<MyTimeHelper::R(diffVsyncBeforeAndAFter);
         }
+        ATrace_endSection();
     }
     /**
      * Java System.nanoTime is the same as std::chrono::steady_clock::time_point

@@ -59,9 +59,9 @@ void GLProgramLine::afterDraw() const {
     //distortionManager.afterDraw();
 }
 
-void GLProgramLine::drawX(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM,const GLBuffer<Vertex>& vb){
-    beforeDraw(vb.glBufferId);
-    draw(ViewM,ProjM,0,vb.count);
+void GLProgramLine::drawX(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM,const GLBuffer<Vertex>& vb)const{
+    beforeDraw(vb.getGLBufferId());
+    draw(ViewM,ProjM,0,vb.getCount());
     afterDraw();
 }
 

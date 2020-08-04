@@ -76,10 +76,10 @@ dependencies {
 
     //Use either the artifacts from jitpack or provide a path directly
     //(Requires also changes to the settings.gradle file)
-    implementation 'com.github.Consti10:LiveVideo10ms:v8.0'
+    //implementation 'com.github.Consti10:LiveVideo10ms:v8.0'
     //implementation 'com.github.Consti10:LiveVideo10ms:8.0.3'
     //implementation 'com.github.Consti10:LiveVideo10ms:master-SNAPSHOT'
-    //implementation project(path: ':VideoCore')
+    implementation project(path: ':VideoCore')
 
     //Do not update the Gvr version, since the native code does not compile with the newer one
     //(This bug won't be fixed by google since they abandoned the lib)

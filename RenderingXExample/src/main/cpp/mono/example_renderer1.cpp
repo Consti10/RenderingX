@@ -235,21 +235,21 @@ static void onDrawFrame(){
     }
     //Drawing with the OpenGL Programs is easy - call beforeDraw() with the right OpenGL Buffer and then draw until done
     if(currentRenderingMode==0){ //Smooth text
-        glProgramText->beforeDraw(glBufferText.glBufferId);
+        glProgramText->beforeDraw(glBufferText.getGLBufferId());
         glProgramText->updateOutline(TrueColor2::RED, seekBarValue1 / 100.0f);
         glProgramText->setOtherUniforms(seekBarValue2/100.0f,seekBarValue3/100.0f);
-        glProgramText->draw(projection*eyeView,0,glBufferText.count*GLProgramText::INDICES_PER_CHARACTER);
+        glProgramText->draw(projection*eyeView,0,glBufferText.getCount()*GLProgramText::INDICES_PER_CHARACTER);
         glProgramText->afterDraw();
     } else if(currentRenderingMode==1){
-        glProgramText->beforeDraw(glBufferIcons.glBufferId);
+        glProgramText->beforeDraw(glBufferIcons.getGLBufferId());
         glProgramText->updateOutline(TrueColor2::RED, seekBarValue1 / 100.0f);
         glProgramText->setOtherUniforms(seekBarValue2/100.0f,seekBarValue3/100.0f);
-        glProgramText->draw(projection*eyeView,0,glBufferIcons.count*GLProgramText::INDICES_PER_CHARACTER);
+        glProgramText->draw(projection*eyeView,0,glBufferIcons.getCount()*GLProgramText::INDICES_PER_CHARACTER);
         glProgramText->afterDraw();
     }else if(currentRenderingMode==2){
-        glProgramLine->beforeDraw(glBufferLine.glBufferId);
+        glProgramLine->beforeDraw(glBufferLine.getGLBufferId());
         glProgramLine->setOtherUniforms(seekBarValue1/100.0F,seekBarValue2/100.0F,seekBarValue3/100.0F);
-        glProgramLine->draw(eyeView,projection,0,glBufferLine.count);
+        glProgramLine->draw(eyeView,projection,0,glBufferLine.getCount());
         glProgramLine->afterDraw();
     }else if(currentRenderingMode==3){
         glProgramVC->drawX(eyeView, projection, mMeshColoredGeometry);

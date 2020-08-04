@@ -108,7 +108,6 @@ public:
     void setLayerTextureId(ssize_t idx,GLuint textureId){
         mVrLayerList.at(idx).textureId=textureId;
     }
-
     void removeLayers();
     void drawLayers(gvr::Eye eye);
     // Add a 2D layer at position (0,0,Z) and (width,height) in VR 3D space.
@@ -160,6 +159,14 @@ public:
             vertex.z=newPos.z;
         }
         return tmp;
+    }
+    // When Rendering the OpenGL layers the following OpenGL params
+    // have to be set
+    static void setGLParamsWhenRenderingLayers(){
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_SCISSOR_TEST);
+        glDisable(GL_DEPTH_TEST);
     }
 private:
     std::array<Chronometer,2> cpuTime={Chronometer{"CPU left"},Chronometer{"CPU right"}};

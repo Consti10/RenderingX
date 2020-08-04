@@ -144,6 +144,40 @@ public:
         return hasBeenSatisfied;
     }
 };
+class TimerQuery{
+private:
+    GLuint query;
+public:
+    TimerQuery(){
+        assert(Extensions::GL_EXT_disjoint_timer_query_available);
+        Extensions::glGenQueriesEXT_(1,&query);
+    }
+    ~TimerQuery(){
+        Extensions::glDeleteQueriesEXT_(1,&query);
+    }
+    void begin(){
+        Extensions::glBeginQueryEXT_(GL_TIME_ELAPSED_EXT,query);
+    }
+    void end(){
+        Extensions::glEndQueryEXT_(GL_TIME_ELAPSED_EXT);
+    }
+    void print(){
+        GLint available=0;
+        Extensions::glGetQueryObjectivEXT_(query, Extensions::GL_QUERY_RESULT_AVAILABLE, &available);
+        if(!available){
+            MLOGD<<"Query not available";
+        }
+        GLint disjointOccurred=0;
+        glGetIntegerv(GL_GPU_DISJOINT_EXT, &disjointOccurred);
+        if(!disjointOccurred){
+            GLuint64 timeElapsed;
+            Extensions::glGetQueryObjectui64vEXT_(query, Extensions::GL_QUERY_RESULT, &timeElapsed);
+            MLOGD<<"Time"<<MyTimeHelper::ReadableNS(timeElapsed);
+        }else{
+            MLOGD<<"Cannot measure time";
+        }
+    }
+};
 
 
 // https://www.khronos.org/registry/EGL/extensions/ANDROID/EGL_ANDROID_get_frame_timestamps.txt
@@ -248,41 +282,6 @@ namespace FrameTimestamps{
         //logger<<"READS_DONE_TIME_ANDROID "<<MyTimeHelper::R(std::chrono::nanoseconds(timestamps.READS_DONE_TIME_ANDROID-timestamps.DISPLAY_PRESENT_TIME_ANDROID));
     }
 }
-
-class TimerQuery{
-private:
-    GLuint query;
-public:
-    TimerQuery(){
-        assert(Extensions::GL_EXT_disjoint_timer_query_available);
-        Extensions::glGenQueriesEXT_(1,&query);
-    }
-    ~TimerQuery(){
-        Extensions::glDeleteQueriesEXT_(1,&query);
-    }
-    void begin(){
-        Extensions::glBeginQueryEXT_(GL_TIME_ELAPSED_EXT,query);
-    }
-    void end(){
-        Extensions::glEndQueryEXT_(GL_TIME_ELAPSED_EXT);
-    }
-    void print(){
-        GLint available=0;
-        Extensions::glGetQueryObjectivEXT_(query, Extensions::GL_QUERY_RESULT_AVAILABLE, &available);
-        if(!available){
-            MLOGD<<"Query not available";
-        }
-        GLint disjointOccurred=0;
-        glGetIntegerv(GL_GPU_DISJOINT_EXT, &disjointOccurred);
-        if(!disjointOccurred){
-            GLuint64 timeElapsed;
-            Extensions::glGetQueryObjectui64vEXT_(query, Extensions::GL_QUERY_RESULT, &timeElapsed);
-            MLOGD<<"Time"<<MyTimeHelper::ReadableNS(timeElapsed);
-        }else{
-            MLOGD<<"Cannot measure time";
-        }
-    }
-};
 
 
 namespace LOLX{

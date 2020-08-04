@@ -21,16 +21,64 @@ static std::chrono::steady_clock::duration ThisThreadSleepUntil(std::chrono::ste
     return now-tp;
 }
 
-FBRManager::FBRManager(RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback):
+FBRManager::FBRManager(RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,SurfaceTextureUpdate& surfaceTextureUpdate):
+surfaceTextureUpdate(surfaceTextureUpdate),
         onRenderNewEyeCallback(std::move(onRenderNewEyeCallback))
 {
     lastLog=steady_clock::now();
     resetTS();
 }
 
-void FBRManager::drawLeftAndRightEye(JNIEnv* env) {
-    const auto vsyncPosition=getVsyncRasterizerPosition();
-    // VSYNC is currently scanning the left eye area
+void FBRManager::drawLeftAndRightEye(JNIEnv* env,int SCREEN_W,int SCREEN_H) {
+    ATrace_beginSection("SurfaceTexture::update");
+    if(const auto delay=surfaceTextureUpdate.waitUntilFrameAvailable(env,std::chrono::steady_clock::now()+std::chrono::seconds(1))){
+        MLOGD<<"Delay until opengl is "<<MyTimeHelper::R(*delay);
+    }
+    const auto VSYNCPositionNormalized=getVsyncRasterizerPositionNormalized();
+    MLOGD<<"Got new video Frame. Current VSYNC position is: "<<VSYNCPositionNormalized;
+    const auto lastVSYNC=getLatestVSYNC();
+    /*CLOCK::time_point startRenderingLeftEye;
+    CLOCK::time_point startRenderingRightEye;
+    if(VSYNCPositionNormalized>0.1f && VSYNCPositionNormalized<0.5f){
+        // Not enough time left to render the
+        startRenderingLeftEye=lastVSYNC+getEyeRefreshTime();
+        startRenderingRightEye=lastVSYNC+getDisplayRefreshTime();
+    }else if(VSYNCPositionNormalized){
+
+    }*/
+
+    if(VSYNCPositionNormalized<0.5){
+        // Render right eye, We are scan line racing
+        bool isLeftEye=false;
+        const CLOCK::time_point startRenderingLeftEye=lastVSYNC+getEyeRefreshTime();
+        directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
+        onRenderNewEyeCallback(env,isLeftEye);
+        directRender.end();
+        //
+        std::unique_ptr<FenceSync> fenceSync=std::make_unique<FenceSync>();
+        waitUntilTimePoint(startRenderingLeftEye,*fenceSync);
+        isLeftEye=true;
+        directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
+        onRenderNewEyeCallback(env,isLeftEye);
+        directRender.end();
+        glFlush();
+    }else{ // VSYNC is between [0.5,1.0]
+        // Render left eye
+       bool isLeftEye=true;
+        CLOCK::time_point startRenderingRightEye=lastVSYNC+getDisplayRefreshTime();
+        directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
+        onRenderNewEyeCallback(env,isLeftEye);
+        directRender.end();
+        //
+        std::unique_ptr<FenceSync> fenceSync=std::make_unique<FenceSync>();
+        waitUntilTimePoint(startRenderingRightEye,*fenceSync);
+        isLeftEye=false;
+        directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
+        onRenderNewEyeCallback(env,isLeftEye);
+        directRender.end();
+        glFlush();
+    }
+    ATrace_endSection();
 }
 
 
@@ -68,10 +116,16 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H)
             continue;
         }
         //render new eye (right eye first)
+        ATrace_beginSection(eye==0 ? "FBRManager::renderLeftEye" : "FBRManager::renderRightEye");
         eyeChrono[eye].avgCPUTime.start();
         TimerQuery timerQuery;
         timerQuery.begin();
+        ATrace_beginSection("SurfaceTexture::update");
+        //surfaceTextureUpdate.updateAndCheck(env);
+        ATrace_endSection();
+        ATrace_beginSection("DirectRendering::begin()");
         directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
+        ATrace_endSection();
         onRenderNewEyeCallback(env,isLeftEye);
         directRender.end();
         eyeChrono[eye].avgCPUTime.stop();
@@ -105,11 +159,15 @@ VSYNC::CLOCK::duration  FBRManager::waitUntilTimePoint(const std::chrono::steady
     if(timeLeft<=0ns){
         MLOGE<<"Time point already elapsed(wait)";
         const auto overshoot=CLOCK::now()-timePoint;
+        ATrace_endSection();
         return overshoot;
     }
     fenceSync.wait(timeLeft);
+    ATrace_endSection();
+    ATrace_beginSection("Sleep");
     std::this_thread::sleep_until(timePoint);
     const auto overshoot=CLOCK::now()-timePoint;
+    ATrace_endSection();
     return overshoot;
 }
 

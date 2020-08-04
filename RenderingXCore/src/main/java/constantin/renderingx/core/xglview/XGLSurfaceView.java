@@ -81,18 +81,13 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         super(context);
         activity=((AppCompatActivity)context);
         ((AppCompatActivity)context).getLifecycle().addObserver(this);
-        init();
+        getHolder().addCallback(this);
     }
     public XGLSurfaceView(Context context, AttributeSet attrs) {
         super(context,attrs);
         activity=((AppCompatActivity)context);
         ((AppCompatActivity)context).getLifecycle().addObserver(this);
-        init();
-    }
-
-    private void init(){
-        SurfaceHolder holder = getHolder();
-        holder.addCallback(this);
+        getHolder().addCallback(this);
     }
 
 
@@ -172,9 +167,9 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                 }
                 // Swap buffers will ensure that onDrawFrame is not called more than 60 times per second
                 // If the surface is NOT single buffered
-                //if(!DO_SUPERSYNC_MODS){
+                if(!DO_SUPERSYNC_MODS){
                     eglSwapBuffersSafe(eglDisplay,eglSurface);
-                //}
+                }
             }
             eglMakeCurrentSafe(eglDisplay,EGL_NO_SURFACE,EGL_NO_CONTEXT);
         }
