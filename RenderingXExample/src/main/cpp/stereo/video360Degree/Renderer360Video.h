@@ -38,8 +38,7 @@ public:
     enum SPHERE_MODE{SPHERE_MODE_EQUIRECTANGULAR_TEST,SPHERE_MODE_INSTA360_TEST2};
     const SPHERE_MODE M_SPHERE_MODE;
 public:
-    Renderer360Video(JNIEnv* env, jobject androidContext, gvr_context *gvr_context,
-                       bool RENDER_SCENE_USING_GVR_RENDERBUFFER=true, bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT=true,const int SPHERE_MODE=0);
+    Renderer360Video(JNIEnv* env, jobject androidContext, gvr_context *gvr_context,const int SPHERE_MODE=0);
     void onSurfaceCreated(JNIEnv* env,jobject context,int videoTexture);
     void onDrawFrame();
     void onSecondaryContextCreated(JNIEnv* env,jobject context);

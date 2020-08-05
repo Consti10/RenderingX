@@ -121,19 +121,27 @@ void FBRManager::enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H)
         TimerQuery timerQuery;
         timerQuery.begin();
         ATrace_beginSection("SurfaceTexture::update");
-        //surfaceTextureUpdate.updateAndCheck(env);
+        avgCPUTimeUpdateSurfaceTexture.start();
+        surfaceTextureUpdate.updateAndCheck(env);
+        avgCPUTimeUpdateSurfaceTexture.stop();
         ATrace_endSection();
-        ATrace_beginSection("DirectRendering::begin()");
+        ATrace_beginSection("DirectRendering::begin");
         directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
         ATrace_endSection();
+        ATrace_beginSection("renderNewEyeCallback");
         onRenderNewEyeCallback(env,isLeftEye);
+        ATrace_endSection();
+        ATrace_beginSection("DirectRendering::end");
         directRender.end();
         eyeChrono[eye].avgCPUTime.stop();
+        ATrace_endSection();
+        ATrace_beginSection("Wait for GPU completion");
         std::unique_ptr<FenceSync> fenceSync=std::make_unique<FenceSync>();
         glFlush();
         timerQuery.end();
         vsyncWaitTime[eye].start();
         waitUntilTimePoint(nextEvent,*fenceSync);
+        ATrace_endSection();
         //timerQuery.print();
         //MLOGD<<"Time from fence "<<MyTimeHelper::R(fenceSync->getDeltaCreationSatisfied());
 
@@ -197,6 +205,7 @@ void FBRManager::printLog() {
         <<" | left&right:"<<leAreGPUTimeNotMeasurablePerc;
         avgLog<<"\nVsync waitT:"<<" start: "<< vsyncWaitTime[0].getAvgReadable()<<" | middle: "<<vsyncWaitTime[1].getAvgReadable()
         <<" | start&middle "<<AvgCalculator::median(vsyncWaitTime[0],vsyncWaitTime[1]).getAvgReadable();
+        avgLog<<"\n SurfaceTexture update "<<avgCPUTimeUpdateSurfaceTexture.getAvgReadable();
         //avgLog<<"\nDisplay refresh time ms:"<<DISPLAY_REFRESH_TIME/1000.0/1000.0;
         avgLog<<"\n----  -----  ----  ----  ----  ----  ----  ----  --- ---";
         MLOGD<<avgLog.str();

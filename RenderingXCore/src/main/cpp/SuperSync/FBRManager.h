@@ -71,6 +71,7 @@ private:
         double nEyes=0;
         double nEyesNotMeasurable=0;
     };
+    Chronometer avgCPUTimeUpdateSurfaceTexture;
     // return the overshoot
     static CLOCK::duration waitUntilTimePoint(const std::chrono::steady_clock::time_point& timePoint,FenceSync& fenceSync);
     std::array<EyeChrono,2> eyeChrono={};

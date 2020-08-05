@@ -76,8 +76,7 @@ public class AExample360Video extends VrActivity {
                     }
                 } :
                 videoPlayer.configure2();
-        renderer =new Renderer360Video(this,iSurfaceAvailable, gvrApi,false,
-                true,SPHERE_MODE);
+        renderer =new Renderer360Video(this,iSurfaceAvailable, gvrApi,SPHERE_MODE);
         //gLView.setRenderer(renderer);
         //gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         //gLView.setPreserveEGLContextOnPause(true);

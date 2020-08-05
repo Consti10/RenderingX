@@ -52,7 +52,7 @@ void RendererSuperSync::onSurfaceCreated(JNIEnv *env, jobject androidContext,job
     vrCompositorRenderer.removeLayers();
 
     float uiElementWidth=3.0;
-    //vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,mVideoTexture, true, VrCompositorRenderer::NONE);
+    vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,mVideoTexture, true, VrCompositorRenderer::NONE);
     uiElementWidth=1.5;
     vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,mExampleUITexture, false, VrCompositorRenderer::NONE);
 
@@ -74,13 +74,11 @@ void RendererSuperSync::setLastVSYNC(int64_t lastVSYNC) {
 }
 
 void RendererSuperSync::renderNewEyeCallback(JNIEnv *env, const bool leftEye, const int64_t offsetNS) {
-    ATrace_beginSection("renderNewEyeCallback");
     //if(const auto delay=mSurfaceTextureUpdate.updateAndCheck(env)){
     //    //MLOGD<<"avg Latency until opengl is "<<MyTimeHelper::R(*delay);
     //}
     glClearColor(0.5F,0.5F,0.5F,0.0F);
     drawEye(env,leftEye);
-    ATrace_endSection();
 }
 
 void RendererSuperSync::drawEye(JNIEnv *env, bool leftEye) {

@@ -12,8 +12,7 @@
 #include <CardboardViewportOcclusion.hpp>
 #include <Sphere/SphereBuilder.hpp>
 
-Renderer360Video::Renderer360Video(JNIEnv *env, jobject androidContext, gvr_context *gvr_context, bool RENDER_SCENE_USING_GVR_RENDERBUFFER,
-                                       bool RENDER_SCENE_USING_VERTEX_DISPLACEMENT, const int vSPHERE_MODE):
+Renderer360Video::Renderer360Video(JNIEnv *env, jobject androidContext, gvr_context *gvr_context,const int vSPHERE_MODE):
         M_SPHERE_MODE(static_cast<SPHERE_MODE>(vSPHERE_MODE)),
         gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context)),
         vrCompositorRenderer(env,androidContext,gvr_api_.get(),true,true),
@@ -102,10 +101,8 @@ inline Renderer360Video *native(jlong ptr) {
 extern "C" {
 
 JNI_METHOD(jlong, nativeConstruct)
-(JNIEnv *env, jobject obj,jobject androidContext,jlong native_gvr_api,jboolean RENDER_SCENE_USING_GVR_RENDERBUFFER,
- jboolean RENDER_SCENE_USING_VERTEX_DISPLACEMENT,jint SPHERE_MODE) {
-    return jptr(new Renderer360Video(env, androidContext, reinterpret_cast<gvr_context *>(native_gvr_api), RENDER_SCENE_USING_GVR_RENDERBUFFER,
-                                       RENDER_SCENE_USING_VERTEX_DISPLACEMENT,SPHERE_MODE));
+(JNIEnv *env, jobject obj,jobject androidContext,jlong native_gvr_api,jint SPHERE_MODE) {
+    return jptr(new Renderer360Video(env, androidContext, reinterpret_cast<gvr_context *>(native_gvr_api),SPHERE_MODE));
 }
 JNI_METHOD(void, nativeDelete)
 (JNIEnv *env, jobject obj, jlong p) {
