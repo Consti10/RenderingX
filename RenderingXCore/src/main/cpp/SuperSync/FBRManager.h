@@ -61,7 +61,7 @@ public:
     FBRManager(RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,SurfaceTextureUpdate& surfaceTextureUpdate);
     //has to be called from the OpenGL thread that is bound to the front buffer surface
     //blocks until requestExitSuperSyncLoop() is called (from any thread, e.g. the UI onPauseX )
-    void enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H);
+    void warpEyesToFrontBufferSynchronized(JNIEnv* env, int SCREEN_W, int SCREEN_H);
     void drawLeftAndRightEye(JNIEnv* env,int SCREEN_W,int SCREEN_H);
 private:
     const DirectRender directRender;
@@ -88,7 +88,7 @@ private:
         return {HALF_SCREEN_W, 0, HALF_SCREEN_W,SCREEN_H};
     }
     CLOCK::time_point endLastFunctionCall;
-    CLOCK::time_point lastRenderedVsync=CLOCK::now();
+    VSYNCState lastRenderedFrame;
     SurfaceTextureUpdate& surfaceTextureUpdate;
 };
 

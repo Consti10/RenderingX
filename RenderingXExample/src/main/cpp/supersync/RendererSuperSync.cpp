@@ -65,7 +65,8 @@ void RendererSuperSync::onSurfaceCreated(JNIEnv *env, jobject androidContext,job
 
 void RendererSuperSync::enterSuperSyncLoop(JNIEnv *env, jobject obj, int exclusiveVRCore) {
     LOLX::setAffinity(exclusiveVRCore);
-    mFBRManager->enterDirectRenderingLoop(env,vrCompositorRenderer.SCREEN_WIDTH_PX,vrCompositorRenderer.SCREEN_HEIGHT_PX);
+    mFBRManager->warpEyesToFrontBufferSynchronized(env, vrCompositorRenderer.SCREEN_WIDTH_PX,
+                                                   vrCompositorRenderer.SCREEN_HEIGHT_PX);
     //mFBRManager->drawLeftAndRightEye(env,vrCompositorRenderer.SCREEN_WIDTH_PX,vrCompositorRenderer.SCREEN_HEIGHT_PX);
 }
 

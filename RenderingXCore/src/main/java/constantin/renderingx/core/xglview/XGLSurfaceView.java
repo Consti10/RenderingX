@@ -90,7 +90,6 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         getHolder().addCallback(this);
     }
 
-
     public void setEGLConfigPrams(final XSurfaceParams wantedSurfaceParams){
         this.mWantedSurfaceParams=wantedSurfaceParams;
     }
@@ -105,6 +104,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     public void setmISecondaryContext(final GLContextSurfaceLess.SecondarySharedContext i){
         glContextSurfaceLess=new GLContextSurfaceLess(i);
     }
+
 
     /**
      * Create the OpenGL context, but not the EGL Surface since I have to wait for the

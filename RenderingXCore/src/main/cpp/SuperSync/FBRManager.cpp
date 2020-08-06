@@ -36,7 +36,7 @@ void FBRManager::drawLeftAndRightEye(JNIEnv* env,int SCREEN_W,int SCREEN_H) {
     }
     const auto VSYNCPositionNormalized=getVsyncRasterizerPositionNormalized();
     MLOGD<<"Got new video Frame. Current VSYNC position is: "<<VSYNCPositionNormalized;
-    const auto lastVSYNC=getLatestVSYNC();
+    const auto lastVSYNC=getLatestVSYNC().base;
     /*CLOCK::time_point startRenderingLeftEye;
     CLOCK::time_point startRenderingRightEye;
     if(VSYNCPositionNormalized>0.1f && VSYNCPositionNormalized<0.5f){
@@ -82,23 +82,20 @@ void FBRManager::drawLeftAndRightEye(JNIEnv* env,int SCREEN_W,int SCREEN_H) {
 }
 
 
-void FBRManager::enterDirectRenderingLoop(JNIEnv* env,int SCREEN_W,int SCREEN_H) {
+void FBRManager::warpEyesToFrontBufferSynchronized(JNIEnv* env, int SCREEN_W, int SCREEN_H) {
     if(endLastFunctionCall!=CLOCK::time_point{}){
         const auto deltaBetweenFunctionCalls=CLOCK::now()-endLastFunctionCall;
         if(deltaBetweenFunctionCalls>300us){ //1/10 of a ms
-            MLOGE<<"Stayed too long:"<<MyTimeHelper::R(deltaBetweenFunctionCalls);
+            //MLOGE<<"Stayed too long:"<<MyTimeHelper::R(deltaBetweenFunctionCalls);
         }
     }
     const auto latestVSYNC=getLatestVSYNC();
-    const auto nextVSYNCMiddle=latestVSYNC+getEyeRefreshTime()+std::chrono::milliseconds(0);
-    const auto nextVSYNC=latestVSYNC+getDisplayRefreshTime()+std::chrono::milliseconds(0);
-    //MLOGD<<"latestVSYNC"<<MyTimeHelper::R(CLOCK::now()-latestVSYNC)<<" nextVSYNCMiddle "<<MyTimeHelper::R(CLOCK::now()-nextVSYNCMiddle)<<" nextVSYNC "<<MyTimeHelper::R(CLOCK::now()-nextVSYNC);
-    //if(getVsyncRasterizerPositionNormalized()>0.1f){
-    //    MLOGE<<"XYZ VSYNC should be at the beginning "<<getVsyncRasterizerPositionNormalized();
-    //}
-    const auto diff=latestVSYNC-lastRenderedVsync;
-    //MLOGD<<"VSYNC diff "<<MyTimeHelper::R(diff);
-    lastRenderedVsync=latestVSYNC;
+    const auto nextVSYNCMiddle=latestVSYNC.base+getEyeRefreshTime()+std::chrono::milliseconds(0);
+    const auto nextVSYNC=latestVSYNC.base+getDisplayRefreshTime()+std::chrono::milliseconds(0);
+    if(lastRenderedFrame.count+1!=latestVSYNC.count){
+        MLOGE<<"Probably missed VSYNC "<<lastRenderedFrame.count<<" "<<latestVSYNC.count<<" "<<getVsyncRasterizerPositionNormalized()<<" "<<MyTimeHelper::R(CLOCK::now()-latestVSYNC.base);
+    }
+    lastRenderedFrame=latestVSYNC;
     //
     // wait until nextVSYNCMiddle
     // Render left eye

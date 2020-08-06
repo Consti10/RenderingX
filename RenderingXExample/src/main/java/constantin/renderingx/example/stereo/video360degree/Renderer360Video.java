@@ -34,12 +34,11 @@ public class Renderer360Video implements XGLSurfaceView.FullscreenRenderer, GLCo
     private int nSurfaceTextureUpdateReturnedTrue=0;
 
     @SuppressLint("ApplySharedPref")
-    public Renderer360Video(final AppCompatActivity context, final ISurfaceAvailable iSurfaceAvailable, final GvrApi gvrApi,int SPHERE_MODE){
+    public Renderer360Video(final AppCompatActivity context, final ISurfaceAvailable iSurfaceAvailable,final GvrApi gvrApi,int SPHERE_MODE){
         mContext=context;
         mVideoSurfaceHolder=new VideoSurfaceHolder(context);
         mVideoSurfaceHolder.setCallBack(iSurfaceAvailable);
-        nativeRenderer=nativeConstruct(context,
-                gvrApi.getNativeGvrContext(),SPHERE_MODE);
+        nativeRenderer=nativeConstruct(context, gvrApi.getNativeGvrContext(),SPHERE_MODE);
     }
     // For testing the 'check if update was successfully'
     public int getNSurfaceTextureUpdateReturnedTrue(){

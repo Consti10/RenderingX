@@ -29,7 +29,7 @@ public class AExample360Video extends VrActivity {
     public static final String KEY_SPHERE_MODE ="KEY_SPHERE_MODE";
     public static final String KEY_VIDEO_FILENAME="KEY_VIDEO_FILENAME";
     // Only one of these two is in use at the same time
-    private static final boolean USE_ANDROID_MEDIA_PLAYER=false;
+    private static final boolean USE_ANDROID_MEDIA_PLAYER=true;
     private VideoPlayer videoPlayer;
     private MediaPlayer mediaPlayer;
     private Renderer360Video renderer;
