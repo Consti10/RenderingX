@@ -49,6 +49,10 @@ android {
     buildFeatures {
         //prefab true
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -88,5 +92,7 @@ dependencies {
     //test
     //implementation 'com.android.ndk.thirdparty:curl:7.68.0-alpha-1'
     //implementation 'com.android.ndk.thirdparty:jsoncpp:1.8.4-alpha-1'
+
+    implementation 'com.google.android.exoplayer:exoplayer:2.11.7'
 }
 apply plugin: 'com.google.gms.google-services'

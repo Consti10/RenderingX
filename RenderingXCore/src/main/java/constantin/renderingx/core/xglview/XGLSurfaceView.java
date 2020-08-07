@@ -21,6 +21,8 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
 
+import com.google.vr.cardboard.ExternalSurfaceManager;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static android.opengl.EGL14.EGL_DEFAULT_DISPLAY;
@@ -138,6 +140,8 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         public void run() {
             Thread.currentThread().setName("XGLRendererM");
             eglMakeCurrentSafe(eglDisplay,eglSurface,eglContext);
+
+
             if(DO_SUPERSYNC_MODS){
                 XEGLConfigChooser.setEglSurfaceAttrib(EGL14.EGL_RENDER_BUFFER,EGL14.EGL_SINGLE_BUFFER);
                 XEGLConfigChooser.setEglSurfaceAttrib(EGL_ANDROID_front_buffer_auto_refresh,EGL14.EGL_TRUE);
