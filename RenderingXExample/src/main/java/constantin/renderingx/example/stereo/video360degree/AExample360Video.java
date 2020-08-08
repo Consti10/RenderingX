@@ -88,24 +88,6 @@ public class AExample360Video extends VrActivity {
                 }
             }
         };
-
-        // VideoCore provides a convenient callback to use with VideoSurfaceHolder
-       /*final ISurfaceAvailable iSurfaceAvailable= USE_GOOGLE_EXO_PLAYER_INSTEAD ?
-                new ISurfaceAvailable() {
-                    @Override
-                    public void XSurfaceCreated(SurfaceTexture surfaceTexture, Surface surface) {
-                        //mediaPlayer.setSurface(surface);
-                        //mediaPlayer.start();
-                        simpleExoPlayer.getVideoComponent().setVideoSurface(surface);
-                    }
-                    @Override
-                    public void XSurfaceDestroyed() {
-                        simpleExoPlayer.getVideoComponent().setVideoSurface(null);
-                        //mediaPlayer.pause();
-                    }
-                } :
-                videoPlayer.configure2();
-        renderer =new Renderer360Video(this,iSurfaceAvailable, gvrApi,SPHERE_MODE);*/
         Renderer360Video renderer = new Renderer360Video(this, gvrApi, SPHERE_MODE);
 
         //gLView.setRenderer(renderer);
