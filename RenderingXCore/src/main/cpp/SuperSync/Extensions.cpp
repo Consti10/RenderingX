@@ -4,6 +4,7 @@
 
 #include "Extensions.h"
 #include <string>
+#include <jni.h>
 
 
 bool ExtensionStringPresent(const std::string& extension,const std::string& allExtensions){
@@ -125,3 +126,10 @@ void Extensions::initializeGL(){
     glInvalidateFramebuffer_  = (PFNGLINVALIDATEFRAMEBUFFER_)eglGetProcAddress("glInvalidateFramebuffer");
 }
 
+extern "C" {
+
+void Java_constantin_renderingx_core_Extensions_nativeSetThreadAffinity(JNIEnv *env, jclass jclass1,jint core) {
+CPUAffinityHelper::setAffinity(core);
+}
+
+}

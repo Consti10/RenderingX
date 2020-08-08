@@ -25,6 +25,9 @@ import com.google.vr.cardboard.ExternalSurfaceManager;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import constantin.renderingx.core.Extensions;
+import constantin.renderingx.core.views.MyVRLayout;
+
 import static android.opengl.EGL14.EGL_DEFAULT_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_SURFACE;
@@ -80,7 +83,8 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
 
     private GLContextSurfaceLess glContextSurfaceLess=null;
 
-    private  SurfaceTextureHolder surfaceTextureHolder;
+    private SurfaceTextureHolder surfaceTextureHolder;
+    private int exclusiveCPUCore=-1;
 
     public XGLSurfaceView(final Context context){
         super(context);
@@ -154,6 +158,9 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                 eglSwapBuffersSafe(eglDisplay,eglSurface);
                 Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
                 Process.setThreadPriority(-20);
+                if(exclusiveCPUCore!=-1){
+                    Extensions.nativeSetThreadAffinity(exclusiveCPUCore);
+                }
             }
             if(firstTimeSurfaceBound){
                 if(surfaceTextureHolder!=null){
@@ -197,6 +204,8 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private void onResume(){
         log("onResume");
+        // If supported, use the exclusive core from the android os for the OpenGL thread
+        exclusiveCPUCore=MyVRLayout.getExclusiveVRCore();
         // wait until the EGL Surface has been created
         // e.g wait until the SurfaceHolder callback is called
     }

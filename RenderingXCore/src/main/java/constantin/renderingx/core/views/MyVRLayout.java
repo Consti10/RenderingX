@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Build;
 import android.os.PowerManager;
+import android.os.Process;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
@@ -191,4 +192,25 @@ public class MyVRLayout extends FrameLayout implements LifecycleObserver {
         }
     }
 
+    public static int getExclusiveVRCore(){
+        int exclusiveVRCore=-1;
+        boolean exclusiveCoreAvailable=false;
+        try{
+            if (Build.VERSION.SDK_INT >= 24) {
+                int[] cores= Process.getExclusiveCores();
+                if(cores!=null && cores.length>0){
+                    exclusiveCoreAvailable=true;
+                    exclusiveVRCore=cores[0];
+                }
+            }
+        }catch (RuntimeException e){
+            Log.d(TAG,"Got exception "+e.getMessage());
+        }
+        if(exclusiveCoreAvailable){
+            Log.d(TAG," exclusive core "+exclusiveVRCore);
+        }else{
+            Log.d(TAG,"Cannot get exclusive core "+exclusiveVRCore);
+        }
+        return exclusiveVRCore;
+    }
 }

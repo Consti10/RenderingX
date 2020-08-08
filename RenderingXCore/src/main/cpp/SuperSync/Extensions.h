@@ -284,7 +284,7 @@ namespace FrameTimestamps{
 }
 
 
-namespace LOLX{
+namespace CPUAffinityHelper{
     static void setAffinity(int core){
         cpu_set_t  cpuset;
         CPU_ZERO(&cpuset);       //clears the cpuset

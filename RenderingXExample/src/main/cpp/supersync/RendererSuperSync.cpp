@@ -61,8 +61,7 @@ void RendererSuperSync::onSurfaceCreated(JNIEnv *env, jobject androidContext,job
             ColoredGeometry::makeTessellatedColoredRect(10, {0,0,0}, {2,2}, TrueColor2::YELLOW));
 }
 
-void RendererSuperSync::enterSuperSyncLoop(JNIEnv *env, jobject obj, int exclusiveVRCore) {
-    LOLX::setAffinity(exclusiveVRCore);
+void RendererSuperSync::enterSuperSyncLoop(JNIEnv *env, jobject obj) {
     mFBRManager->warpEyesToFrontBufferSynchronized(env, vrCompositorRenderer.SCREEN_WIDTH_PX,
                                                    vrCompositorRenderer.SCREEN_HEIGHT_PX);
     //mFBRManager->drawLeftAndRightEye(env,vrCompositorRenderer.SCREEN_WIDTH_PX,vrCompositorRenderer.SCREEN_HEIGHT_PX);
@@ -120,8 +119,8 @@ JNI_METHOD(void, nativeOnSurfaceCreated)
     native(glRendererStereo)->onSurfaceCreated(env,androidContext,surfaceTextureHolder,width,height);
 }
 JNI_METHOD(void, nativeEnterSuperSyncLoop)
-(JNIEnv *env, jobject obj, jlong glRendererStereo,jint exclusiveVRCore) {
-    native(glRendererStereo)->enterSuperSyncLoop(env,obj,(int)exclusiveVRCore);
+(JNIEnv *env, jobject obj, jlong glRendererStereo) {
+    native(glRendererStereo)->enterSuperSyncLoop(env,obj);
 }
 
 }

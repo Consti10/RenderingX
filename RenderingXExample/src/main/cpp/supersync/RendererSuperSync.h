@@ -47,14 +47,13 @@ public:
     /**
      * WARNING: does not return until exitSuperSyncLoop is called. Basically it blocks the GL thread.
     */
-    void enterSuperSyncLoop(JNIEnv * env, jobject obj,int exclusiveVRCore);
+    void enterSuperSyncLoop(JNIEnv * env, jobject obj);
     void onSurfaceCreated(JNIEnv * env,jobject obj,jobject surfaceTextureHolder,int width, int height);
 private:
     /**
      * Called by the SuperSync manager
      * @param env
      * @param whichEye left/right eye
-     * @param offsetNS  time since eye event
      */
     void renderNewEyeCallback(JNIEnv* env,bool whichEye);
     void drawEye(JNIEnv* env,bool whichEye);

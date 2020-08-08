@@ -10,6 +10,8 @@ import com.google.vr.ndk.base.GvrApi;
 import constantin.renderingx.core.MVrHeadsetParams;
 import constantin.renderingx.core.VSYNC;
 import constantin.renderingx.core.gles_info.Extensions;
+import constantin.renderingx.core.views.MyVRLayout;
+import constantin.renderingx.core.views.MyVrView;
 import constantin.renderingx.core.views.ViewSuperSync;
 import constantin.renderingx.core.xglview.SurfaceTextureHolder;
 import constantin.video.core.gl.ISurfaceAvailable;
@@ -23,7 +25,7 @@ public class GLRExampleSuperSync implements ViewSuperSync.IRendererSuperSync {
     private native long nativeConstruct(Context context,long nativeGvrContext,long vsync);
     private native void nativeDelete(long glRendererStereoP);
     private native void nativeOnSurfaceCreated(long glRendererStereoP, Context androidContext,SurfaceTextureHolder surfaceTextureHolder,int width, int height);
-    private native void nativeEnterSuperSyncLoop(long glRendererStereoP, int exclusiveVRCore);
+    private native void nativeEnterSuperSyncLoop(long glRendererStereoP);
 
     private final Context mContext;
     // Opaque native pointer to the native GLRStereoSuperSync instance.
@@ -43,7 +45,7 @@ public class GLRExampleSuperSync implements ViewSuperSync.IRendererSuperSync {
 
     @Override
     public void onDrawFrame() {
-        nativeEnterSuperSyncLoop(nativeGLRSuperSync,0);
+        nativeEnterSuperSyncLoop(nativeGLRSuperSync);
     }
 
 

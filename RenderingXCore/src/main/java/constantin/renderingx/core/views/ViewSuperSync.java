@@ -76,25 +76,6 @@ public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.Fullscre
 
 
 
-
-    private static int getExclusiveVRCore(){
-        int exclusiveVRCore=2; //use the 3rd core default
-        if (Build.VERSION.SDK_INT >= 24) {
-            try {
-                int[] cores= Process.getExclusiveCores();
-                if(cores!=null){
-                    if(cores.length>=1){
-                        exclusiveVRCore=cores[0];
-                    }
-                }
-            } catch (RuntimeException e){
-                Log.w("", "getExclusiveCores() is not supported on this device.");
-            }
-        }
-        return exclusiveVRCore;
-    }
-
-
     private static void debug(final String s){
         Log.d(TAG,s);
     }
