@@ -50,7 +50,9 @@ public class SurfaceTextureHolder {
         parent.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                iSurfaceTextureAvailable.surfaceTextureCreated(surfaceTexture,surface);
+                if(SurfaceTextureHolder.this.parent.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)){
+                    iSurfaceTextureAvailable.surfaceTextureCreated(surfaceTexture,surface);
+                }
             }
         });
     }
