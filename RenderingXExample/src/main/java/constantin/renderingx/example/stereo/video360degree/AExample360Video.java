@@ -89,15 +89,9 @@ public class AExample360Video extends VrActivity {
             }
         };
         Renderer360Video renderer = new Renderer360Video(this, gvrApi, SPHERE_MODE);
-
-        //gLView.setRenderer(renderer);
-        //gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-        //gLView.setPreserveEGLContextOnPause(true);
         glSurfaceView2.setRenderer(renderer,iSurfaceTextureAvailable);
         glSurfaceView2.setmISecondaryContext(renderer);
-
         setContentView(myVRLayout);
-        //myVRLayout.setPresentationView(gLView);
         myVRLayout.setPresentationView(glSurfaceView2);
     }
 

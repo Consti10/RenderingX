@@ -24,11 +24,6 @@
 #include "FPSCalculator.h"
 #include "VRFrameCPUChronometer.h"
 #include "RendererSuperSync.h"
-#include <android/choreographer.h>
-
-static void refreshRateCallback(int64_t vsyncPeriodNanos, void *data) {
-    MLOGD<<"Refresh rate is"<<MyTimeHelper::ReadableNS(vsyncPeriodNanos);
-}
 
 RendererSuperSync::RendererSuperSync(JNIEnv *env, jobject androidContext, gvr_context *gvr_context,jlong vsync):
         mSurfaceTextureUpdate(env),
@@ -36,12 +31,9 @@ RendererSuperSync::RendererSuperSync(JNIEnv *env, jobject androidContext, gvr_co
         ,vrCompositorRenderer(env,androidContext,gvr_api_.get(),true,false,false)
         {
     std::function<void(JNIEnv *env2, bool leftEye)> f = [this](JNIEnv *env2, bool leftEye) {
-        this->renderNewEyeCallback(env2,leftEye,0);
+        this->renderNewEyeCallback(env2,leftEye);
     };
-    mFBRManager=std::make_unique<FBRManager>(reinterpret_cast<VSYNC*>(vsync),f,mSurfaceTextureUpdate);
-    //auto choreographer=AChoreographer_getInstance();
-    //AChoreographer_registerRefreshRateCallback(choreographer,refreshRateCallback,nullptr);
-    //AChoreographer_registerRefreshRateCallback()
+    mFBRManager=std::make_unique<FBRManager>(VSYNC::native(vsync),f,mSurfaceTextureUpdate);
 }
 
 void RendererSuperSync::onSurfaceCreated(JNIEnv *env, jobject androidContext,jobject surfaceTextureHolder,int width, int height) {
@@ -76,7 +68,7 @@ void RendererSuperSync::enterSuperSyncLoop(JNIEnv *env, jobject obj, int exclusi
     //mFBRManager->drawLeftAndRightEye(env,vrCompositorRenderer.SCREEN_WIDTH_PX,vrCompositorRenderer.SCREEN_HEIGHT_PX);
 }
 
-void RendererSuperSync::renderNewEyeCallback(JNIEnv *env, const bool leftEye, const int64_t offsetNS) {
+void RendererSuperSync::renderNewEyeCallback(JNIEnv *env, const bool leftEye) {
     //if(const auto delay=mSurfaceTextureUpdate.updateAndCheck(env)){
     //    //MLOGD<<"avg Latency until opengl is "<<MyTimeHelper::R(*delay);
     //}

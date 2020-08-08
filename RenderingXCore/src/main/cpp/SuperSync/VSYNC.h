@@ -11,6 +11,7 @@
 #include <deque>
 #include <TimeHelper.hpp>
 #include <android/trace.h>
+#include <jni.h>
 
 
 // Helper to obtain the current VSYNC position (e.g. which scan line is currently read out)
@@ -29,6 +30,12 @@ public:
         CLOCK::time_point base;
         int count=-1;
     };
+    static inline jlong jptr(VSYNC *p) {
+        return reinterpret_cast<intptr_t>(p);
+    }
+    static inline VSYNC *native(jlong ptr) {
+        return reinterpret_cast<VSYNC*>(ptr);
+    }
 private:
     // last registered VSYNC. Indirectly set by the callback, but it is guaranteed that this value
     // is never smaller than the current system time in NS (In other words, the timestamp
