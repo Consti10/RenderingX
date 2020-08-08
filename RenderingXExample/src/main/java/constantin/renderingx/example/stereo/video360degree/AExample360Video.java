@@ -45,8 +45,6 @@ public class AExample360Video extends VrActivity {
     private VideoPlayer videoPlayer;
     private SimpleExoPlayer simpleExoPlayer;
 
-    private Renderer360Video renderer;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,7 +106,7 @@ public class AExample360Video extends VrActivity {
                 } :
                 videoPlayer.configure2();
         renderer =new Renderer360Video(this,iSurfaceAvailable, gvrApi,SPHERE_MODE);*/
-        renderer =new Renderer360Video(this,gvrApi,SPHERE_MODE);
+        Renderer360Video renderer = new Renderer360Video(this, gvrApi, SPHERE_MODE);
 
         //gLView.setRenderer(renderer);
         //gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
