@@ -23,6 +23,8 @@ class VSYNC{
 public:
     // Java System.nanoTime is the same as std::chrono::steady_clock
     using CLOCK=std::chrono::steady_clock;
+    // A VSYNC state consists of a the time point when it occurred and a count
+    // which is increasing which each occurred vsync
     struct VSYNCState{
         CLOCK::time_point base;
         int count=-1;
@@ -115,7 +117,7 @@ public:
         VSYNCState ret;
         const std::chrono::nanoseconds delta=currTime-vsyncState.base;
         const int64_t factor=delta.count()/displayRefreshTime.count();
-        MLOGD<<"Factor "<<factor;
+        //MLOGD<<"Factor "<<factor;
         ret.count=vsyncState.count+factor;
         ret.base=vsyncState.base+factor*displayRefreshTime;
 

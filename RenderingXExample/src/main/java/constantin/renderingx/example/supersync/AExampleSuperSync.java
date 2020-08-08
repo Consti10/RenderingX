@@ -1,10 +1,13 @@
 package constantin.renderingx.example.supersync;
 
+import android.graphics.SurfaceTexture;
 import android.os.Bundle;
+import android.view.Surface;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import constantin.renderingx.core.views.ViewSuperSync;
+import constantin.renderingx.core.xglview.SurfaceTextureHolder;
 import constantin.video.core.video_player.VideoPlayer;
 import constantin.video.core.video_player.VideoSettings;
 
@@ -21,8 +24,18 @@ public class AExampleSuperSync extends AppCompatActivity {
         VideoSettings.setVS_FILE_ONLY_LIMIT_FPS(this,40);
         videoPlayer=new VideoPlayer(this);
 
-        mViewSuperSync=new ViewSuperSync(this);
-        mGLRStereoSuperSync = new GLRExampleSuperSync(this,videoPlayer.configure2(),mViewSuperSync.getGvrApi());
+        final SurfaceTextureHolder.ISurfaceTextureAvailable iSurfaceTextureAvailable=new SurfaceTextureHolder.ISurfaceTextureAvailable() {
+            @Override
+            public void surfaceTextureCreated(SurfaceTexture surfaceTexture, Surface surface) {
+                videoPlayer.addAndStartDecoderReceiver(surface);
+            }
+            @Override
+            public void surfaceTextureDestroyed() {
+                videoPlayer.stopAndRemoveReceiverDecoder();
+            }
+        };
+        mViewSuperSync=new ViewSuperSync(this,iSurfaceTextureAvailable);
+        mGLRStereoSuperSync = new GLRExampleSuperSync(this,mViewSuperSync.getGvrApi());
         mViewSuperSync.setRenderer(mGLRStereoSuperSync);
         setContentView(mViewSuperSync);
     }

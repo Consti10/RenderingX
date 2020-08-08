@@ -5,6 +5,7 @@ import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Surface;
+import android.view.SurfaceHolder;
 
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -17,6 +18,7 @@ import com.google.android.exoplayer2.util.Util;
 import com.google.vr.ndk.base.GvrApi;
 
 import constantin.renderingx.core.VrActivity;
+import constantin.renderingx.core.xglview.SurfaceTextureHolder;
 import constantin.renderingx.core.xglview.XGLSurfaceView;
 import constantin.renderingx.core.views.MyVRLayout;
 import constantin.renderingx.example.R;
@@ -61,12 +63,8 @@ public class AExample360Video extends VrActivity {
         //glSurfaceView2.setEGLConfigPrams(new XSurfaceParams(0,0,true));
         //glSurfaceView2.DO_SUPERSYNC_MODS=true;
 
-        //final MyGLSurfaceView gLView = new MyGLSurfaceView(this);
-        //gLView.setEGLContextClientVersion(2);
         // Use one of both ! Default to the player from VideoCore
         if(USE_GOOGLE_EXO_PLAYER_INSTEAD){
-            //TODO doesnt work on mp4 assets because of compression
-            //mediaPlayer=MediaPlayer.create(this, R.raw.test_room1_1920mono);
            simpleExoPlayer=createAndConfigureExoPlayer(this);
         }else{
             VideoSettings.setVS_SOURCE(this, VideoSettings.VS_SOURCE.ASSETS);
@@ -74,10 +72,27 @@ public class AExample360Video extends VrActivity {
             VideoSettings.setVS_FILE_ONLY_LIMIT_FPS(this,40);
             videoPlayer=new VideoPlayer(this);
         }
-
+        final SurfaceTextureHolder.ISurfaceTextureAvailable iSurfaceTextureAvailable=new SurfaceTextureHolder.ISurfaceTextureAvailable() {
+            @Override
+            public void surfaceTextureCreated(SurfaceTexture surfaceTexture, Surface surface) {
+                if(USE_GOOGLE_EXO_PLAYER_INSTEAD){
+                    simpleExoPlayer.getVideoComponent().setVideoSurface(surface);
+                }else{
+                    videoPlayer.addAndStartDecoderReceiver(surface);
+                }
+            }
+            @Override
+            public void surfaceTextureDestroyed() {
+                if(USE_GOOGLE_EXO_PLAYER_INSTEAD){
+                    simpleExoPlayer.getVideoComponent().setVideoSurface(null);
+                }else{
+                    videoPlayer.stopAndRemoveReceiverDecoder();
+                }
+            }
+        };
 
         // VideoCore provides a convenient callback to use with VideoSurfaceHolder
-        final ISurfaceAvailable iSurfaceAvailable= USE_GOOGLE_EXO_PLAYER_INSTEAD ?
+       /*final ISurfaceAvailable iSurfaceAvailable= USE_GOOGLE_EXO_PLAYER_INSTEAD ?
                 new ISurfaceAvailable() {
                     @Override
                     public void XSurfaceCreated(SurfaceTexture surfaceTexture, Surface surface) {
@@ -92,11 +107,13 @@ public class AExample360Video extends VrActivity {
                     }
                 } :
                 videoPlayer.configure2();
-        renderer =new Renderer360Video(this,iSurfaceAvailable, gvrApi,SPHERE_MODE);
+        renderer =new Renderer360Video(this,iSurfaceAvailable, gvrApi,SPHERE_MODE);*/
+        renderer =new Renderer360Video(this,gvrApi,SPHERE_MODE);
+
         //gLView.setRenderer(renderer);
         //gLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         //gLView.setPreserveEGLContextOnPause(true);
-        glSurfaceView2.setRenderer(renderer);
+        glSurfaceView2.setRenderer(renderer,iSurfaceTextureAvailable);
         glSurfaceView2.setmISecondaryContext(renderer);
 
         setContentView(myVRLayout);
@@ -119,9 +136,6 @@ public class AExample360Video extends VrActivity {
         }
     }
 
-    public int getNSurfaceTextureUpdateReturnedTrue(){
-        return renderer.getNSurfaceTextureUpdateReturnedTrue();
-    }
 
     // ExoPlayer is a better choice than the Android MediaPlayer
     private static SimpleExoPlayer createAndConfigureExoPlayer(final Context context){

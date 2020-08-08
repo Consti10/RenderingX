@@ -31,6 +31,7 @@
 #include <VrCompositorRenderer.h>
 #include <VrRenderBuffer.hpp>
 #include <VrRenderBuffer2.hpp>
+#include <SurfaceTextureUpdate.hpp>
 
 // Example that renders 360° video with the Vr compositor renderer using VDDC
 class Renderer360Video{
@@ -39,18 +40,18 @@ public:
     const SPHERE_MODE M_SPHERE_MODE;
 public:
     Renderer360Video(JNIEnv* env, jobject androidContext, gvr_context *gvr_context,const int SPHERE_MODE=0);
-    void onSurfaceCreated(JNIEnv* env,jobject context,int videoTexture);
-    void onDrawFrame();
+    void onSurfaceCreated(JNIEnv* env,jobject context,jobject surfaceTextureHolder);
+    void onDrawFrame(JNIEnv* env);
     void onSecondaryContextCreated(JNIEnv* env,jobject context);
     void onSecondaryContextDoWork(JNIEnv* env);
 private:
     std::unique_ptr<gvr::GvrApi> gvr_api_;
     FPSCalculator mFPSCalculator;
-    GLuint mVideoTexture;
     GLuint mExampleUiTexture=0;
     VrRenderBuffer vrRenderBuffer;
     int clearColorIndex=0;
     VrRenderBuffer2 vrRenderBuffer2;
+    SurfaceTextureUpdate surfaceTextureUpdate;
 public:
     VrCompositorRenderer vrCompositorRenderer;
 };

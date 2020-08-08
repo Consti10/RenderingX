@@ -53,7 +53,7 @@ public:
      * @param lastVSYNC last reported vsync, in ns
      */
     void setLastVSYNC(int64_t lastVSYNC);
-    void onSurfaceCreated(JNIEnv * env,jobject obj,jobject videoSurfaceTexture,jint videoSurfaceTextureId,int width, int height);
+    void onSurfaceCreated(JNIEnv * env,jobject obj,jobject surfaceTextureHolder,int width, int height);
 private:
     /**
      * Called by the SuperSync manager
@@ -70,7 +70,6 @@ private:
     ColoredGLMeshBuffer solidRectangleBlack;
     std::array<int,2> whichColor;
     std::unique_ptr<gvr::GvrApi> gvr_api_;
-    GLuint mVideoTexture;
     SurfaceTextureUpdate mSurfaceTextureUpdate;
 public:
     VrCompositorRenderer vrCompositorRenderer;

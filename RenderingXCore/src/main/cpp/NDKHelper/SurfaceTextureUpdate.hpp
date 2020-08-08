@@ -51,7 +51,7 @@ private:
     ASurfaceTexture* mSurfaceTexture;
     // set later (not in constructor)
     jobject weakGlobalRefSurfaceTexture;
-    //JNIEnv* env1;
+    GLint textureId;
 public:
     // look up all the method ids
     SurfaceTextureUpdate(JNIEnv* env){
@@ -79,8 +79,8 @@ public:
      * set the wrapped SurfaceTexture. this has to be delayed (cannot be done in constructor)
      * @param surfaceTexture1 when nullptr delete previosuly aquired reference, else create new reference
      */
-    void setSurfaceTexture(JNIEnv* env,jobject surfaceTexture1){
-        //env1=env;
+    void setSurfaceTextureAndId(JNIEnv* env,jobject surfaceTexture1,jint textureId){
+        this->textureId=textureId;
 #ifdef FPV_VR_USE_JAVA_FOR_SURFACE_TEXTURE_UPDATE
         if(surfaceTexture1==nullptr){
             assert(weakGlobalRefSurfaceTexture!=nullptr);
@@ -92,6 +92,15 @@ public:
 #else
         mSurfaceTexture=ASurfaceTexture_fromSurfaceTexture(env,surfaceTexture);
 #endif
+    }
+    void updateFromSurfaceTextureHolder(JNIEnv* env,jobject surfaceTextureHolder){
+        jclass jcSurfaceTextureHolder = env->FindClass("constantin/renderingx/core/xglview/SurfaceTextureHolder");
+        assert(jcSurfaceTextureHolder);
+        jmethodID jmGetTextureId = env->GetMethodID(jcSurfaceTextureHolder, "getTextureId", "()I" );
+        assert(jmGetTextureId);
+        jmethodID jmGetSurfaceTexture=env->GetMethodID(jcSurfaceTextureHolder, "getSurfaceTexture", "()Landroid/graphics/SurfaceTexture;" );
+        assert(jmGetTextureId);
+        setSurfaceTextureAndId(env,env->CallObjectMethod(surfaceTextureHolder,jmGetSurfaceTexture),env->CallIntMethod(surfaceTextureHolder,jmGetTextureId));
     }
     void updateTexImageJAVA(JNIEnv* env) {
 #ifdef FPV_VR_USE_JAVA_FOR_SURFACE_TEXTURE_UPDATE
@@ -131,6 +140,9 @@ public:
             TestSleep::sleep(std::chrono::milliseconds(1));
         }
         return std::nullopt;
+    }
+    GLint getTextureId()const{
+        return textureId;
     }
 };
 

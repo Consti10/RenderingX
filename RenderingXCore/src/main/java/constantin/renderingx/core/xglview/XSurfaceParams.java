@@ -1,5 +1,6 @@
 package constantin.renderingx.core.xglview;
 
+// I do not need anything other than RGB_888 or RGB_8888 for the GL Surface
 public class XSurfaceParams {
     // R,G,B channels, default to 8 bits per channel
     final int mR=8,mG=8,mB=8;

@@ -24,7 +24,11 @@
 #include "FPSCalculator.h"
 #include "VRFrameCPUChronometer.h"
 #include "RendererSuperSync.h"
+#include <android/choreographer.h>
 
+static void refreshRateCallback(int64_t vsyncPeriodNanos, void *data) {
+    MLOGD<<"Refresh rate is"<<MyTimeHelper::ReadableNS(vsyncPeriodNanos);
+}
 
 RendererSuperSync::RendererSuperSync(JNIEnv *env, jobject androidContext, gvr_context *gvr_context):
         mSurfaceTextureUpdate(env),
@@ -35,14 +39,16 @@ RendererSuperSync::RendererSuperSync(JNIEnv *env, jobject androidContext, gvr_co
         this->renderNewEyeCallback(env2,leftEye,0);
     };
     mFBRManager=std::make_unique<FBRManager>(f,mSurfaceTextureUpdate);
+    //auto choreographer=AChoreographer_getInstance();
+    //AChoreographer_registerRefreshRateCallback(choreographer,refreshRateCallback,nullptr);
+    //AChoreographer_registerRefreshRateCallback()
 }
 
-void RendererSuperSync::onSurfaceCreated(JNIEnv *env, jobject androidContext,jobject videoSurfaceTexture,jint videoSurfaceTextureId, int width, int height) {
+void RendererSuperSync::onSurfaceCreated(JNIEnv *env, jobject androidContext,jobject surfaceTextureHolder,int width, int height) {
     Extensions::initializeGL();
     vrCompositorRenderer.initializeGL();
     gvr_api_->InitializeGl();
-    mVideoTexture=videoSurfaceTextureId;
-    mSurfaceTextureUpdate.setSurfaceTexture(env,videoSurfaceTexture);
+    mSurfaceTextureUpdate.updateFromSurfaceTextureHolder(env,surfaceTextureHolder);
     glGenTextures(1,&mBlueTexture);
     glGenTextures(1,&mGreenTexture);
     glGenTextures(1,&mExampleUITexture);
@@ -52,7 +58,7 @@ void RendererSuperSync::onSurfaceCreated(JNIEnv *env, jobject androidContext,job
     vrCompositorRenderer.removeLayers();
 
     float uiElementWidth=3.0;
-    vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,mVideoTexture, true, VrCompositorRenderer::NONE);
+    vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,mSurfaceTextureUpdate.getTextureId(), true, VrCompositorRenderer::NONE);
     uiElementWidth=1.5;
     vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,mExampleUITexture, false, VrCompositorRenderer::NONE);
 
@@ -122,8 +128,8 @@ JNI_METHOD(void, nativeDelete)
 }
 
 JNI_METHOD(void, nativeOnSurfaceCreated)
-(JNIEnv *env, jobject obj, jlong glRendererStereo,jobject androidContext,jobject videoSurfaceTexture,jint videoSurfaceTextureId,jint width, jint height) {
-    native(glRendererStereo)->onSurfaceCreated(env,androidContext,videoSurfaceTexture,videoSurfaceTextureId,width,height);
+(JNIEnv *env, jobject obj, jlong glRendererStereo,jobject androidContext,jobject surfaceTextureHolder,jint width, jint height) {
+    native(glRendererStereo)->onSurfaceCreated(env,androidContext,surfaceTextureHolder,width,height);
 }
 JNI_METHOD(void, nativeEnterSuperSyncLoop)
 (JNIEnv *env, jobject obj, jlong glRendererStereo,jint exclusiveVRCore) {

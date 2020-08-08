@@ -13,6 +13,7 @@ import androidx.lifecycle.OnLifecycleEvent;
 
 import java.util.Objects;
 
+import constantin.renderingx.core.xglview.SurfaceTextureHolder;
 import constantin.renderingx.core.xglview.XGLSurfaceView;
 import constantin.renderingx.core.xglview.XSurfaceParams;
 
@@ -23,7 +24,7 @@ import constantin.renderingx.core.xglview.XSurfaceParams;
  * Specifying the device as 'Daydream ready'
  */
 
-public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.FullscreenRenderer, Choreographer.FrameCallback{
+public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.FullscreenRendererWithSurfaceTexture, Choreographer.FrameCallback{
     private static final String TAG="ViewSuperSync";
     private final XGLSurfaceView mGLSurfaceView;
     private IRendererSuperSync mRenderer;
@@ -31,14 +32,14 @@ public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.Fullscre
     private final long choreographerVsyncOffsetNS;
     private Context context;
 
-    public ViewSuperSync(Context context){
+    public ViewSuperSync(Context context,SurfaceTextureHolder.ISurfaceTextureAvailable iSurfaceTextureAvailable){
         super(context);
         this.context=context;
         //getUiLayout().setTransitionViewEnabled(false);
         //setAsyncReprojectionEnabled(false);
         mGLSurfaceView =new XGLSurfaceView(context);
         mGLSurfaceView.setEGLConfigPrams(new XSurfaceParams(0,0,true));
-        mGLSurfaceView.setRenderer(this);
+        mGLSurfaceView.setRenderer(this,iSurfaceTextureAvailable);
         mGLSurfaceView.DO_SUPERSYNC_MODS=true;
 
         setPresentationView(mGLSurfaceView);
@@ -74,48 +75,6 @@ public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.Fullscre
         destroyX();
     }
 
-
-    /*@Override
-    public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
-        mRenderer.onSurfaceCreated();
-    }
-
-    @Override
-    public void onSurfaceChanged(GL10 gl10, int i, int i1) {
-        mRenderer.onSurfaceChanged(i,i1);
-        MyEGLConfigChooser.setEglSurfaceAttrib(EGL14.EGL_RENDER_BUFFER,EGL14.EGL_SINGLE_BUFFER);
-        MyEGLConfigChooser.setEglSurfaceAttrib(EGL_ANDROID_front_buffer_auto_refresh,EGL14.EGL_TRUE);
-    }
-
-    @Override
-    public void onDrawFrame(GL10 gl10) {
-        if(frameC<60){
-            frameC++;
-            //Clear and swap
-            GLES20.glClearColor(0,color,color,1);
-            color-=(1/60.0f);
-            GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT|GLES20.GL_COLOR_BUFFER_BIT|GLES20.GL_STENCIL_BUFFER_BIT);
-            try {
-                Thread.sleep(4);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            EGL14.eglSwapBuffers(EGL14.eglGetCurrentDisplay(),EGL14.eglGetCurrentSurface(EGL14.EGL_DRAW));
-            return;
-        }
-        if(doNotEnterAgain){
-            //debug("Do not enter again flag set");
-            return;
-        }
-        debug("Entering SS on GL thread");
-        GLES20.glClearColor(0,0,0,0.0f);
-        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
-        Process.setThreadPriority(-20);
-
-        mRenderer.enterSuperSyncLoop(getExclusiveVRCore());
-        debug("Exited SS on GL thread");
-        doNotEnterAgain=true;
-    }*/
 
     @Override
     public void doFrame(long frameTimeNanos) {
@@ -158,8 +117,8 @@ public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.Fullscre
 
 
     @Override
-    public void onContextCreated(int width, int height) {
-        mRenderer.onContextCreated(width,height);
+    public void onContextCreated(int width, int height, SurfaceTextureHolder surfaceTextureHolder) {
+        mRenderer.onContextCreated(width,height,surfaceTextureHolder);
     }
 
     @Override
@@ -169,7 +128,7 @@ public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.Fullscre
 
 
     public interface IRendererSuperSync {
-        void onContextCreated(int width, int height);
+        void onContextCreated(int width, int height, SurfaceTextureHolder surfaceTextureHolder);
         void onDrawFrame();
         void setLastVSYNC(long lastVSYNC);
     }

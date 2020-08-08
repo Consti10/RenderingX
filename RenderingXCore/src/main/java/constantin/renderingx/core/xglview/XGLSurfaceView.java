@@ -57,11 +57,12 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     private EGLSurface eglSurface = EGL_NO_SURFACE;
     private EGLContext eglContext = EGL_NO_CONTEXT;
     private EGLConfig eglConfig = null;
-    // Thr Thread that renders frames
+    // The Thread that renders OpenGL frames
     private Thread mOpenGLThread;
     // Choose between one of the two interfaces.
     // For legacy code the older GLSurfaceView.Renderer interface is also supported
     private FullscreenRenderer mRenderer2;
+    private FullscreenRendererWithSurfaceTexture mRenderer3;
     private GLSurfaceView.Renderer mLegacyRenderer;
     // For VR applications the surface width and height is equal to the display w/h and therefore
     // Does never change
@@ -78,6 +79,8 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     private final AtomicBoolean shouldRender=new AtomicBoolean(false);
 
     private GLContextSurfaceLess glContextSurfaceLess=null;
+
+    private  SurfaceTextureHolder surfaceTextureHolder;
 
     public XGLSurfaceView(final Context context){
         super(context);
@@ -101,6 +104,10 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     }
     public void setRenderer(final FullscreenRenderer renderer2){
         this.mRenderer2=renderer2;
+    }
+    public void setRenderer(final FullscreenRendererWithSurfaceTexture renderer3,final  SurfaceTextureHolder.ISurfaceTextureAvailable iSurfaceTextureAvailable){
+        this.mRenderer3=renderer3;
+        this.surfaceTextureHolder=new SurfaceTextureHolder(activity,iSurfaceTextureAvailable);
     }
 
     public void setmISecondaryContext(final GLContextSurfaceLess.SecondarySharedContext i){
@@ -141,7 +148,6 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
             Thread.currentThread().setName("XGLRendererM");
             eglMakeCurrentSafe(eglDisplay,eglSurface,eglContext);
 
-
             if(DO_SUPERSYNC_MODS){
                 XEGLConfigChooser.setEglSurfaceAttrib(EGL14.EGL_RENDER_BUFFER,EGL14.EGL_SINGLE_BUFFER);
                 XEGLConfigChooser.setEglSurfaceAttrib(EGL_ANDROID_front_buffer_auto_refresh,EGL14.EGL_TRUE);
@@ -150,8 +156,14 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                 Process.setThreadPriority(-20);
             }
             if(firstTimeSurfaceBound){
+                if(surfaceTextureHolder!=null){
+                    surfaceTextureHolder.createOnOpenGLThread();
+                }
                 if(mRenderer2!=null){
                     mRenderer2.onContextCreated(SURFACE_W,SURFACE_H);
+                }
+                if(mRenderer3!=null){
+                    mRenderer3.onContextCreated(SURFACE_W,SURFACE_H,surfaceTextureHolder);
                 }
                 firstTimeSurfaceBound=false;
             }
@@ -168,6 +180,9 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                 }
                 if(mRenderer2!=null){
                     mRenderer2.onDrawFrame();
+                }
+                if(mRenderer3!=null){
+                    mRenderer3.onDrawFrame();
                 }
                 // Swap buffers will ensure that onDrawFrame is not called more than 60 times per second
                 // If the surface is NOT single buffered
@@ -220,6 +235,9 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     private void onDestroy(){
         log("onDestroy");
+        if(surfaceTextureHolder!=null){
+            surfaceTextureHolder.destroyOnUiThread();
+        }
         if(glContextSurfaceLess!=null){
             glContextSurfaceLess.destroy();
         }
@@ -287,6 +305,20 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         // but here the context is still bound for cleanup operations
         //void onContextDestroyed();
     }
-
+    public interface FullscreenRendererWithSurfaceTexture {
+        // Called as soon as the OpenGL context is created
+        // The lifetime of the OpenGL context is tied to the lifetime of the Activity (onCreate / onDestroy)
+        // Therefore this callback is called at most once
+        // Also, since the https://www.khronos.org/registry/EGL/extensions/KHR/EGL_KHR_surfaceless_context.txt
+        // extension is not available on all devices, a Surface is always bound when
+        // onContextCreated is called
+        // For a VR application, screen width and height do not change and are equal to the screen width and height
+        void onContextCreated(int screenWidth,int screenHeight,final SurfaceTextureHolder surfaceTextureHolder);
+        // Called repeatedly in between onResume() / onPause()
+        void onDrawFrame();
+        // Called once the opengl context has to be destroyed,
+        // but here the context is still bound for cleanup operations
+        //void onContextDestroyed();
+    }
 
 }

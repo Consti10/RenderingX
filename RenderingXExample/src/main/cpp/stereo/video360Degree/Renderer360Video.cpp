@@ -13,6 +13,7 @@
 #include <Sphere/SphereBuilder.hpp>
 
 Renderer360Video::Renderer360Video(JNIEnv *env, jobject androidContext, gvr_context *gvr_context,const int vSPHERE_MODE):
+        surfaceTextureUpdate(env),
         M_SPHERE_MODE(static_cast<SPHERE_MODE>(vSPHERE_MODE)),
         gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context)),
         vrCompositorRenderer(env,androidContext,gvr_api_.get(),true,true),
@@ -20,10 +21,10 @@ Renderer360Video::Renderer360Video(JNIEnv *env, jobject androidContext, gvr_cont
 }
 
 
-void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoTexture) {
+void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context,jobject surfaceTextureHolder) {
     Extensions::initializeGL();
     vrCompositorRenderer.initializeGL();
-    mVideoTexture=(GLuint)videoTexture;
+    surfaceTextureUpdate.updateFromSurfaceTextureHolder(env,surfaceTextureHolder);
     //vrRenderBuffer2.createRenderTextures(1280,720);
     //glGenTextures(1,&mExampleUiTexture);
     GLProgramTexture::loadTexture(mExampleUiTexture,env,context,"ExampleTexture/ui.png");
@@ -34,10 +35,10 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
     GLProgramTexture::loadTexture(mTexture360ImageInsta360,env,context,"360DegreeImages/insta_360_equirectangular.png");*/
     vrCompositorRenderer.removeLayers();
     if(M_SPHERE_MODE==SPHERE_MODE_EQUIRECTANGULAR_TEST){
-        vrCompositorRenderer.addLayerSphere360(10.0f,UvSphere::MEDIA_EQUIRECT_MONOSCOPIC,videoTexture,true);
+        vrCompositorRenderer.addLayerSphere360(10.0f,UvSphere::MEDIA_EQUIRECT_MONOSCOPIC,surfaceTextureUpdate.getTextureId(),true);
     }else{
         auto sphere=DualFisheyeSphere::createSphereGL(2560, 1280);
-        vrCompositorRenderer.addLayer(sphere, mVideoTexture, true, VrCompositorRenderer::HEAD_TRACKING::FULL);
+        vrCompositorRenderer.addLayer(sphere, surfaceTextureUpdate.getTextureId(), true, VrCompositorRenderer::HEAD_TRACKING::FULL);
     }
     const float uiElementWidth=2.0;
     vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,mExampleUiTexture, false, VrCompositorRenderer::FULL);
@@ -45,8 +46,9 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context, int videoT
     //vrCompositorRenderer.addLayer2DCanvas(-3,0.2f,0.2f,mSomethingTexture,false,VrCompositorRenderer::NONE);
 }
 
-void Renderer360Video::onDrawFrame() {
+void Renderer360Video::onDrawFrame(JNIEnv* env) {
     mFPSCalculator.tick();
+    surfaceTextureUpdate.updateAndCheck(env);
     //MLOGD<<"FPS: "<<mFPSCalculator.getCurrentFPS();
     vrCompositorRenderer.setLayerTextureId(1, vrRenderBuffer2.getLatestRenderedTexture());
 
@@ -110,13 +112,13 @@ JNI_METHOD(void, nativeDelete)
 }
 
 JNI_METHOD(void, nativeOnSurfaceCreated)
-(JNIEnv *env, jobject obj,jlong p,jobject androidContext,jint videoTexture) {
-    native(p)->onSurfaceCreated(env,androidContext,videoTexture);
+(JNIEnv *env, jobject obj,jlong p,jobject androidContext,jobject surfaceTextureHolder) {
+    native(p)->onSurfaceCreated(env,androidContext,surfaceTextureHolder);
 }
 
 JNI_METHOD(void, nativeOnDrawFrame)
 (JNIEnv *env, jobject obj,jlong p) {
-    native(p)->onDrawFrame();
+    native(p)->onDrawFrame(env);
 }
 
 JNI_METHOD(void, nativeOnSecondaryContextCreated)
