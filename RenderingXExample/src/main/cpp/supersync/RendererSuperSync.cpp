@@ -30,7 +30,7 @@ static void refreshRateCallback(int64_t vsyncPeriodNanos, void *data) {
     MLOGD<<"Refresh rate is"<<MyTimeHelper::ReadableNS(vsyncPeriodNanos);
 }
 
-RendererSuperSync::RendererSuperSync(JNIEnv *env, jobject androidContext, gvr_context *gvr_context):
+RendererSuperSync::RendererSuperSync(JNIEnv *env, jobject androidContext, gvr_context *gvr_context,jlong vsync):
         mSurfaceTextureUpdate(env),
         gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context))
         ,vrCompositorRenderer(env,androidContext,gvr_api_.get(),true,false,false)
@@ -38,7 +38,7 @@ RendererSuperSync::RendererSuperSync(JNIEnv *env, jobject androidContext, gvr_co
     std::function<void(JNIEnv *env2, bool leftEye)> f = [this](JNIEnv *env2, bool leftEye) {
         this->renderNewEyeCallback(env2,leftEye,0);
     };
-    mFBRManager=std::make_unique<FBRManager>(f,mSurfaceTextureUpdate);
+    mFBRManager=std::make_unique<FBRManager>(reinterpret_cast<VSYNC*>(vsync),f,mSurfaceTextureUpdate);
     //auto choreographer=AChoreographer_getInstance();
     //AChoreographer_registerRefreshRateCallback(choreographer,refreshRateCallback,nullptr);
     //AChoreographer_registerRefreshRateCallback()
@@ -74,10 +74,6 @@ void RendererSuperSync::enterSuperSyncLoop(JNIEnv *env, jobject obj, int exclusi
     mFBRManager->warpEyesToFrontBufferSynchronized(env, vrCompositorRenderer.SCREEN_WIDTH_PX,
                                                    vrCompositorRenderer.SCREEN_HEIGHT_PX);
     //mFBRManager->drawLeftAndRightEye(env,vrCompositorRenderer.SCREEN_WIDTH_PX,vrCompositorRenderer.SCREEN_HEIGHT_PX);
-}
-
-void RendererSuperSync::setLastVSYNC(int64_t lastVSYNC) {
-    mFBRManager->setVSYNCSentByChoreographer(lastVSYNC);
 }
 
 void RendererSuperSync::renderNewEyeCallback(JNIEnv *env, const bool leftEye, const int64_t offsetNS) {
@@ -119,8 +115,8 @@ inline RendererSuperSync *native(jlong ptr) {
 extern "C" {
 
 JNI_METHOD(jlong, nativeConstruct)
-(JNIEnv *env, jobject obj,jobject androidContext,jlong native_gvr_api) {
-    return jptr(new RendererSuperSync(env, androidContext, reinterpret_cast<gvr_context *>(native_gvr_api)));
+(JNIEnv *env, jobject obj,jobject androidContext,jlong native_gvr_api,jlong vsync) {
+    return jptr(new RendererSuperSync(env, androidContext, reinterpret_cast<gvr_context *>(native_gvr_api),vsync));
 }
 JNI_METHOD(void, nativeDelete)
 (JNIEnv *env, jobject obj, jlong glRendererStereo) {
@@ -135,8 +131,5 @@ JNI_METHOD(void, nativeEnterSuperSyncLoop)
 (JNIEnv *env, jobject obj, jlong glRendererStereo,jint exclusiveVRCore) {
     native(glRendererStereo)->enterSuperSyncLoop(env,obj,(int)exclusiveVRCore);
 }
-JNI_METHOD(void, nativeDoFrame)
-(JNIEnv *env, jobject obj, jlong glRendererStereo,jlong lastVSYNC) {
-    native(glRendererStereo)->setLastVSYNC((int64_t) lastVSYNC);
-}
+
 }

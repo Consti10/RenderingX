@@ -13,6 +13,7 @@ import androidx.lifecycle.OnLifecycleEvent;
 
 import java.util.Objects;
 
+import constantin.renderingx.core.VSYNC;
 import constantin.renderingx.core.xglview.SurfaceTextureHolder;
 import constantin.renderingx.core.xglview.XGLSurfaceView;
 import constantin.renderingx.core.xglview.XSurfaceParams;
@@ -24,7 +25,7 @@ import constantin.renderingx.core.xglview.XSurfaceParams;
  * Specifying the device as 'Daydream ready'
  */
 
-public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.FullscreenRendererWithSurfaceTexture, Choreographer.FrameCallback{
+public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.FullscreenRendererWithSurfaceTexture{
     private static final String TAG="ViewSuperSync";
     private final XGLSurfaceView mGLSurfaceView;
     private IRendererSuperSync mRenderer;
@@ -60,12 +61,10 @@ public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.Fullscre
         //FullscreenHelper.setImmersiveSticky(this);
         //FullscreenHelper.enableAndroidVRModeIfPossible(this);
         resumeX();
-        Choreographer.getInstance().postFrameCallback(this);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     private void onPause(){
-        Choreographer.getInstance().removeFrameCallback(this);
         pauseX();
         //FullscreenHelper.disableAndroidVRModeIfEnabled(this);
     }
@@ -76,22 +75,7 @@ public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.Fullscre
     }
 
 
-    @Override
-    public void doFrame(long frameTimeNanos) {
-        //System.out.println("j time "+System.nanoTime());
-        //System.out.println("j delta"+(System.nanoTime()-frameTimeNanos));
-        //####google SurfaceFlinger.cpp ##################
-        // We add an additional 1ms to allow for processing time and
-        // differences between the ideal and actual refresh rate.
-        /*final Display d=((WindowManager) Objects.requireNonNull(context.getSystemService(Context.WINDOW_SERVICE))).getDefaultDisplay();
-        if(d.getAppVsyncOffsetNanos()!=choreographerVsyncOffsetNS){
-            choreographerVsyncOffsetNS=d.getAppVsyncOffsetNanos();
-            System.out.println("choreographerVsyncOffsetNS changed");
-        }
-        choreographerVsyncOffsetNS=d.getAppVsyncOffsetNanos();*/
-        mRenderer.setLastVSYNC(frameTimeNanos-choreographerVsyncOffsetNS+1000000);
-        Choreographer.getInstance().postFrameCallback(this);
-    }
+
 
     private static int getExclusiveVRCore(){
         int exclusiveVRCore=2; //use the 3rd core default
@@ -130,7 +114,6 @@ public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.Fullscre
     public interface IRendererSuperSync {
         void onContextCreated(int width, int height, SurfaceTextureHolder surfaceTextureHolder);
         void onDrawFrame();
-        void setLastVSYNC(long lastVSYNC);
     }
 
 }

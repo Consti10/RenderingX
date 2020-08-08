@@ -43,7 +43,7 @@
 
 class RendererSuperSync{
 public:
-    RendererSuperSync(JNIEnv* env, jobject androidContext, gvr_context *gvr_context);
+    RendererSuperSync(JNIEnv* env, jobject androidContext, gvr_context *gvr_context,jlong VSYNC);
     /**
      * WARNING: does not return until exitSuperSyncLoop is called. Basically it blocks the GL thread.
     */

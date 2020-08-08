@@ -21,7 +21,8 @@ static std::chrono::steady_clock::duration ThisThreadSleepUntil(std::chrono::ste
     return now-tp;
 }
 
-FBRManager::FBRManager(RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,SurfaceTextureUpdate& surfaceTextureUpdate):
+FBRManager::FBRManager(VSYNC* vsync,RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,SurfaceTextureUpdate& surfaceTextureUpdate):
+vsync(*vsync),
 surfaceTextureUpdate(surfaceTextureUpdate),
         onRenderNewEyeCallback(std::move(onRenderNewEyeCallback))
 {
@@ -34,9 +35,9 @@ void FBRManager::drawLeftAndRightEye(JNIEnv* env,int SCREEN_W,int SCREEN_H) {
     if(const auto delay=surfaceTextureUpdate.waitUntilFrameAvailable(env,std::chrono::steady_clock::now()+std::chrono::seconds(1))){
         MLOGD<<"Delay until opengl is "<<MyTimeHelper::R(*delay);
     }
-    const auto VSYNCPositionNormalized=getVsyncRasterizerPositionNormalized();
+    const auto VSYNCPositionNormalized=vsync.getVsyncRasterizerPositionNormalized();
     MLOGD<<"Got new video Frame. Current VSYNC position is: "<<VSYNCPositionNormalized;
-    const auto lastVSYNC=getLatestVSYNC().base;
+    const auto lastVSYNC=vsync.getLatestVSYNC().base;
     /*CLOCK::time_point startRenderingLeftEye;
     CLOCK::time_point startRenderingRightEye;
     if(VSYNCPositionNormalized>0.1f && VSYNCPositionNormalized<0.5f){
@@ -50,7 +51,7 @@ void FBRManager::drawLeftAndRightEye(JNIEnv* env,int SCREEN_W,int SCREEN_H) {
     if(VSYNCPositionNormalized<0.5){
         // Render right eye, We are scan line racing
         bool isLeftEye=false;
-        const CLOCK::time_point startRenderingLeftEye=lastVSYNC+getEyeRefreshTime();
+        const CLOCK::time_point startRenderingLeftEye=lastVSYNC+vsync.getEyeRefreshTime();
         directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
         onRenderNewEyeCallback(env,isLeftEye);
         directRender.end();
@@ -65,7 +66,7 @@ void FBRManager::drawLeftAndRightEye(JNIEnv* env,int SCREEN_W,int SCREEN_H) {
     }else{ // VSYNC is between [0.5,1.0]
         // Render left eye
        bool isLeftEye=true;
-        CLOCK::time_point startRenderingRightEye=lastVSYNC+getDisplayRefreshTime();
+        CLOCK::time_point startRenderingRightEye=lastVSYNC+vsync.getDisplayRefreshTime();
         directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
         onRenderNewEyeCallback(env,isLeftEye);
         directRender.end();
@@ -89,11 +90,11 @@ void FBRManager::warpEyesToFrontBufferSynchronized(JNIEnv* env, int SCREEN_W, in
             //MLOGE<<"Stayed too long:"<<MyTimeHelper::R(deltaBetweenFunctionCalls);
         }
     }
-    const auto latestVSYNC=getLatestVSYNC();
-    const auto nextVSYNCMiddle=latestVSYNC.base+getEyeRefreshTime()+std::chrono::milliseconds(0);
-    const auto nextVSYNC=latestVSYNC.base+getDisplayRefreshTime()+std::chrono::milliseconds(0);
+    const auto latestVSYNC=vsync.getLatestVSYNC();
+    const auto nextVSYNCMiddle=latestVSYNC.base+vsync.getEyeRefreshTime()+std::chrono::milliseconds(0);
+    const auto nextVSYNC=latestVSYNC.base+vsync.getDisplayRefreshTime()+std::chrono::milliseconds(0);
     if(lastRenderedFrame.count+1!=latestVSYNC.count){
-        MLOGE<<"Probably missed VSYNC "<<lastRenderedFrame.count<<" "<<latestVSYNC.count<<" "<<getVsyncRasterizerPositionNormalized()<<" "<<MyTimeHelper::R(CLOCK::now()-latestVSYNC.base);
+        MLOGE<<"Probably missed VSYNC "<<lastRenderedFrame.count<<" "<<latestVSYNC.count<<" "<<vsync.getVsyncRasterizerPositionNormalized()<<" "<<MyTimeHelper::R(CLOCK::now()-latestVSYNC.base);
     }
     lastRenderedFrame=latestVSYNC;
     //

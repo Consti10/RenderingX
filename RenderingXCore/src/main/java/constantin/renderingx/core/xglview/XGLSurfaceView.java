@@ -305,20 +305,10 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         // but here the context is still bound for cleanup operations
         //void onContextDestroyed();
     }
+    // Same as above but the GLSurfaceView also creates and manages a SurfaceTexture aka VideoTexture
     public interface FullscreenRendererWithSurfaceTexture {
-        // Called as soon as the OpenGL context is created
-        // The lifetime of the OpenGL context is tied to the lifetime of the Activity (onCreate / onDestroy)
-        // Therefore this callback is called at most once
-        // Also, since the https://www.khronos.org/registry/EGL/extensions/KHR/EGL_KHR_surfaceless_context.txt
-        // extension is not available on all devices, a Surface is always bound when
-        // onContextCreated is called
-        // For a VR application, screen width and height do not change and are equal to the screen width and height
         void onContextCreated(int screenWidth,int screenHeight,final SurfaceTextureHolder surfaceTextureHolder);
-        // Called repeatedly in between onResume() / onPause()
         void onDrawFrame();
-        // Called once the opengl context has to be destroyed,
-        // but here the context is still bound for cleanup operations
-        //void onContextDestroyed();
     }
 
 }

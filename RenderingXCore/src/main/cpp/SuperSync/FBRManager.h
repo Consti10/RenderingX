@@ -50,20 +50,21 @@
 #include <vector>
 #include <atomic>
 #include <EGL/eglext.h>
-#include "VSYNC.hpp"
+#include "VSYNC.h"
 #include "DirectRender.hpp"
 #include <SurfaceTextureUpdate.hpp>
 
 using RENDER_NEW_EYE_CALLBACK=std::function<void(JNIEnv*,bool)>;
 
-class FBRManager: public VSYNC {
+class FBRManager{
 public:
-    FBRManager(RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,SurfaceTextureUpdate& surfaceTextureUpdate);
+    FBRManager(VSYNC* vsync,RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,SurfaceTextureUpdate& surfaceTextureUpdate);
     //has to be called from the OpenGL thread that is bound to the front buffer surface
     //blocks until requestExitSuperSyncLoop() is called (from any thread, e.g. the UI onPauseX )
     void warpEyesToFrontBufferSynchronized(JNIEnv* env, int SCREEN_W, int SCREEN_H);
     void drawLeftAndRightEye(JNIEnv* env,int SCREEN_W,int SCREEN_H);
 private:
+    const VSYNC& vsync;
     const DirectRender directRender;
     struct EyeChrono{
         Chronometer avgCPUTime{};
@@ -88,7 +89,7 @@ private:
         return {HALF_SCREEN_W, 0, HALF_SCREEN_W,SCREEN_H};
     }
     CLOCK::time_point endLastFunctionCall;
-    VSYNCState lastRenderedFrame;
+    VSYNC::VSYNCState lastRenderedFrame;
     SurfaceTextureUpdate& surfaceTextureUpdate;
 };
 
