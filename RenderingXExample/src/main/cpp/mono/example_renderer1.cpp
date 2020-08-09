@@ -1,5 +1,4 @@
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "cert-err58-cpp"
+
 //
 // Created by Consti10 on 15/05/2019.
 //
@@ -25,7 +24,7 @@
 #include <TimeHelper.hpp>
 #include <FPSCalculator.h>
 #include <ProjTex/GLPTextureProj.h>
-#include "../../../../../RenderingXCore/src/main/cpp/GLPrograms/GLProgramVC.h"
+#include <GLProgramVC.h>
 
 //Render a simple scene consisting of a colored triangle, smooth lines and smooth text
 
@@ -319,5 +318,3 @@ JNI_METHOD(void, nativeSetSeekBarValues)
 }
 
 }
-
-#pragma clang diagnostic pop
