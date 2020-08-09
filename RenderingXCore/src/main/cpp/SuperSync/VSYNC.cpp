@@ -1,11 +1,17 @@
 #include "VSYNC.h"
 #include <android/choreographer.h>
 
+static bool resumed=false;
+
 static void refreshRateCallback(int64_t vsyncPeriodNanos, void *data) {
     MLOGD<<"Refresh rate is"<<MyTimeHelper::ReadableNS(vsyncPeriodNanos);
 }
-static void frameCallback(int64_t frameTimeNanos, void* data) {
-    MLOGD<<"Frame callback"<<MyTimeHelper::ReadableNS(frameTimeNanos);
+static void frameCallback(long frameTimeNanos, void* data) {
+    MLOGD<<"Frame callback A:"<<frameTimeNanos;
+    reinterpret_cast<VSYNC*>(data)->setVSYNCSentByChoreographer(frameTimeNanos);
+    if(resumed){
+        //AChoreographer_postFrameCallback(AChoreographer_getInstance(),frameCallback,data);
+    }
 }
 
 static void test(){
@@ -30,8 +36,21 @@ JNI_METHOD(void, nativeDelete)
 delete VSYNC::native(p);
 }
 
+/*JNI_METHOD(void, nativeResume)
+(JNIEnv *env, jobject obj, jlong p) {
+    resumed=true;
+    auto choreographer=AChoreographer_getInstance();
+    AChoreographer_postFrameCallback(choreographer,frameCallback,(void*)p);
+}
+JNI_METHOD(void, nativePause)
+(JNIEnv *env, jobject obj, jlong p) {
+    resumed=false;
+}*/
+
+
 JNI_METHOD(void, nativeSetVSYNCSentByChoreographer)
 (JNIEnv *env, jobject obj, jlong p,jlong value) {
+    //MLOGD<<"Frame callback B:"<<value;
     VSYNC::native(p)->setVSYNCSentByChoreographer((int64_t)value);
 }
 

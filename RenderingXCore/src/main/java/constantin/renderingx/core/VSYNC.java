@@ -16,6 +16,8 @@ import java.util.Objects;
 public class VSYNC implements LifecycleObserver, Choreographer.FrameCallback{
     private native long nativeConstruct();
     private native void nativeSetVSYNCSentByChoreographer(long nativeInstance,long newVSYNC);
+    //private native void nativePause(long nativeInstance);
+    //private native void nativeResume(long nativeInstance);
     private native void nativeDelete(long p);
 
     private final long nativeInstance;
@@ -52,11 +54,13 @@ public class VSYNC implements LifecycleObserver, Choreographer.FrameCallback{
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private void onResume(){
         Choreographer.getInstance().postFrameCallback(this);
+        //nativeResume(nativeInstance);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     private void onPause(){
         Choreographer.getInstance().removeFrameCallback(this);
+        //nativePause(nativeInstance);
     }
 
     @Override

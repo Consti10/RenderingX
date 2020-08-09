@@ -40,15 +40,14 @@ private:
     // last registered VSYNC. Indirectly set by the callback, but it is guaranteed that this value
     // is never smaller than the current system time in NS (In other words, the timestamp
     // always lies in the past, never in the future). However, it is not guaranteed to be the
-    // 'last' VSYNC - see getLatestVSYNC()
+    // 'last' VSYNC - it might be up to n events old
+    VSYNCState lastVSYNCStateFromChoreographer;
     static constexpr CLOCK::duration DEFAULT_REFRESH_TIME=16666666ns;
     // display refresh rate becomes more accurately over time
     CLOCK::duration displayRefreshTime=DEFAULT_REFRESH_TIME;
     CLOCK::duration eyeRefreshTime= displayRefreshTime/2;
     AvgCalculator displayRefreshTimeCalculator;
     static constexpr const auto N_SAMPLES=60;
-    CLOCK::time_point lastTimeSetVsyncWasCalled=CLOCK::now();
-    VSYNCState lastVSYNCStateFromChoreographer;
 public:
     /**
      * pass the last vsync timestamp from java (setLastVSYNC) to cpp
