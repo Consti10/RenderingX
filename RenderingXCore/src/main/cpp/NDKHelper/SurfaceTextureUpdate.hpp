@@ -79,8 +79,8 @@ public:
      * set the wrapped SurfaceTexture. this has to be delayed (cannot be done in constructor)
      * @param surfaceTexture1 when nullptr delete previosuly aquired reference, else create new reference
      */
-    void setSurfaceTextureAndId(JNIEnv* env,jobject surfaceTexture1,jint textureId){
-        this->textureId=textureId;
+    void setSurfaceTextureAndId(JNIEnv* env,jobject surfaceTexture1,jint textureId1){
+        textureId=textureId1;
 #ifdef FPV_VR_USE_JAVA_FOR_SURFACE_TEXTURE_UPDATE
         if(surfaceTexture1==nullptr){
             assert(weakGlobalRefSurfaceTexture!=nullptr);
@@ -90,7 +90,7 @@ public:
             weakGlobalRefSurfaceTexture = env->NewWeakGlobalRef(surfaceTexture1);
         }
 #else
-        mSurfaceTexture=ASurfaceTexture_fromSurfaceTexture(env,surfaceTexture);
+        mSurfaceTexture=ASurfaceTexture_fromSurfaceTexture(env,surfaceTexture1);
 #endif
     }
     void updateFromSurfaceTextureHolder(JNIEnv* env,jobject surfaceTextureHolder){
@@ -110,7 +110,11 @@ public:
 #endif
     };
     long getTimestamp(JNIEnv* env){
+#ifdef FPV_VR_USE_JAVA_FOR_SURFACE_TEXTURE_UPDATE
         return env->CallLongMethod(weakGlobalRefSurfaceTexture, getTimestampMethodId);
+#else
+        return ASurfaceTexture_getTimestamp(mSurfaceTexture);
+#endif
     }
     // on success, returns delay between producer enqueueing buffer and consumer (gl) dequeueing it
     // on failure (no new image available) returns std::nullopt

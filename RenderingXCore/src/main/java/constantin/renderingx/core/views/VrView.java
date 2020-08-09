@@ -1,5 +1,6 @@
 package constantin.renderingx.core.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
@@ -15,6 +16,7 @@ import constantin.renderingx.core.xglview.SurfaceTextureHolder;
 import constantin.renderingx.core.xglview.XGLSurfaceView;
 import constantin.renderingx.core.xglview.XSurfaceParams;
 
+@SuppressLint("ViewConstructor")
 public class VrView extends VRLayout {
     final XGLSurfaceView xglSurfaceView;
 
@@ -22,13 +24,6 @@ public class VrView extends VRLayout {
         super(context);
         xglSurfaceView=new XGLSurfaceView(context);
         super.setPresentationView(xglSurfaceView);
-    }
-
-    public VrView(AppCompatActivity context, AttributeSet attrs) {
-        super(context,attrs);
-        xglSurfaceView=new XGLSurfaceView(context);
-        super.setPresentationView(xglSurfaceView);
-        GvrView v;
     }
 
     public void setRenderer(final XGLSurfaceView.FullscreenRenderer renderer2){

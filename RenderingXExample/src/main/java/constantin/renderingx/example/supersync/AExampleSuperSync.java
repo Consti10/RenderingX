@@ -6,13 +6,13 @@ import android.view.Surface;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import constantin.renderingx.core.views.ViewSuperSync;
+import constantin.renderingx.core.views.VrViewSuperSync;
 import constantin.renderingx.core.xglview.SurfaceTextureHolder;
 import constantin.video.core.video_player.VideoPlayer;
 import constantin.video.core.video_player.VideoSettings;
 
 public class AExampleSuperSync extends AppCompatActivity {
-    private ViewSuperSync mViewSuperSync;
+    private VrViewSuperSync mViewSuperSync;
     private GLRExampleSuperSync mGLRStereoSuperSync;
     private VideoPlayer videoPlayer;
 
@@ -34,9 +34,9 @@ public class AExampleSuperSync extends AppCompatActivity {
                 videoPlayer.stopAndRemoveReceiverDecoder();
             }
         };
-        mViewSuperSync=new ViewSuperSync(this,iSurfaceTextureAvailable);
+        mViewSuperSync=new VrViewSuperSync(this);
         mGLRStereoSuperSync = new GLRExampleSuperSync(this,mViewSuperSync.getGvrApi());
-        mViewSuperSync.setRenderer(mGLRStereoSuperSync);
+        mViewSuperSync.setRenderer(mGLRStereoSuperSync,iSurfaceTextureAvailable);
         setContentView(mViewSuperSync);
     }
 

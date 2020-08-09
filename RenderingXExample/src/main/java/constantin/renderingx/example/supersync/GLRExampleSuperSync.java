@@ -7,11 +7,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.vr.ndk.base.GvrApi;
 
 import constantin.renderingx.core.VSYNC;
-import constantin.renderingx.core.views.ViewSuperSync;
+import constantin.renderingx.core.views.VrViewSuperSync;
 import constantin.renderingx.core.xglview.SurfaceTextureHolder;
+import constantin.renderingx.core.xglview.XGLSurfaceView;
 
 //See native code for documentation
-public class GLRExampleSuperSync implements ViewSuperSync.IRendererSuperSync {
+public class GLRExampleSuperSync implements XGLSurfaceView.FullscreenRendererWithSurfaceTexture {
     static {
         System.loadLibrary("example-supersync");
     }
