@@ -21,12 +21,10 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
 
-import com.google.vr.cardboard.ExternalSurfaceManager;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import constantin.renderingx.core.Extensions;
-import constantin.renderingx.core.views.MyVRLayout;
+import constantin.renderingx.core.views.VRLayout;
 
 import static android.opengl.EGL14.EGL_DEFAULT_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_DISPLAY;
@@ -205,7 +203,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     private void onResume(){
         log("onResume");
         // If supported, use the exclusive core from the android os for the OpenGL thread
-        exclusiveCPUCore=MyVRLayout.getExclusiveVRCore();
+        exclusiveCPUCore= VRLayout.getExclusiveVRCore();
         // wait until the EGL Surface has been created
         // e.g wait until the SurfaceHolder callback is called
     }

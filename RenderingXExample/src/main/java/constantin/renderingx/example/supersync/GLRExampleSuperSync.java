@@ -1,21 +1,14 @@
 package constantin.renderingx.example.supersync;
 
 import android.content.Context;
-import android.graphics.SurfaceTexture;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.vr.ndk.base.GvrApi;
 
-import constantin.renderingx.core.MVrHeadsetParams;
 import constantin.renderingx.core.VSYNC;
-import constantin.renderingx.core.gles_info.Extensions;
-import constantin.renderingx.core.views.MyVRLayout;
-import constantin.renderingx.core.views.MyVrView;
 import constantin.renderingx.core.views.ViewSuperSync;
 import constantin.renderingx.core.xglview.SurfaceTextureHolder;
-import constantin.video.core.gl.ISurfaceAvailable;
-import constantin.video.core.gl.VideoSurfaceHolder;
 
 //See native code for documentation
 public class GLRExampleSuperSync implements ViewSuperSync.IRendererSuperSync {

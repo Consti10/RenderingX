@@ -5,7 +5,6 @@ import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Surface;
-import android.view.SurfaceHolder;
 
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -18,11 +17,11 @@ import com.google.android.exoplayer2.util.Util;
 import com.google.vr.ndk.base.GvrApi;
 
 import constantin.renderingx.core.VrActivity;
+import constantin.renderingx.core.views.VrView;
 import constantin.renderingx.core.xglview.SurfaceTextureHolder;
 import constantin.renderingx.core.xglview.XGLSurfaceView;
-import constantin.renderingx.core.views.MyVRLayout;
+import constantin.renderingx.core.views.VRLayout;
 import constantin.renderingx.example.R;
-import constantin.video.core.gl.ISurfaceAvailable;
 import constantin.video.core.video_player.VideoPlayer;
 import constantin.video.core.video_player.VideoSettings;
 
@@ -48,16 +47,15 @@ public class AExample360Video extends VrActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        final GvrApi gvrApi;
-        final MyVRLayout myVRLayout = new MyVRLayout(this);
-        gvrApi= myVRLayout.getGvrApi();
-
         final Bundle bundle=getIntent().getExtras();
         final int SPHERE_MODE=bundle.getInt(KEY_SPHERE_MODE,0);
         final String VIDEO_FILENAME=bundle.getString(KEY_VIDEO_FILENAME);
         //start initialization
-        final XGLSurfaceView glSurfaceView2=new XGLSurfaceView(this);
+        //final VRLayout myVRLayout = new VRLayout(this);
+        final VrView mVrView=new VrView(this);
+
+
+        //final XGLSurfaceView glSurfaceView2=new XGLSurfaceView(this);
         //glSurfaceView2.setEGLConfigPrams(new XSurfaceParams(0,0,true));
         //glSurfaceView2.DO_SUPERSYNC_MODS=true;
 
@@ -88,11 +86,10 @@ public class AExample360Video extends VrActivity {
                 }
             }
         };
-        Renderer360Video renderer = new Renderer360Video(this, gvrApi, SPHERE_MODE);
-        glSurfaceView2.setRenderer(renderer,iSurfaceTextureAvailable);
-        glSurfaceView2.setmISecondaryContext(renderer);
-        setContentView(myVRLayout);
-        myVRLayout.setPresentationView(glSurfaceView2);
+        Renderer360Video renderer = new Renderer360Video(this,mVrView.getGvrApi(), SPHERE_MODE);
+        mVrView.setRenderer(renderer,iSurfaceTextureAvailable);
+        mVrView.setmISecondaryContext(renderer);
+        setContentView(mVrView);
     }
 
     @Override

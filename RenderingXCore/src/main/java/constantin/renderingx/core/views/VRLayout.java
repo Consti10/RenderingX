@@ -42,18 +42,18 @@ import static android.content.Context.POWER_SERVICE;
 
 // Warning: constructors will crash when context!=AppCompatActivity
 @SuppressLint("ViewConstructor")
-public class MyVRLayout extends FrameLayout implements LifecycleObserver {
+public class VRLayout extends FrameLayout implements LifecycleObserver {
     private static final String TAG="MyVRLayout";
 
     private GvrApi gvrApi;
     private DisplaySynchronizer displaySynchronizer;
 
-    public MyVRLayout(Context context) {
+    public VRLayout(Context context) {
         super(context);
         init((AppCompatActivity)context,false);
     }
 
-    public MyVRLayout(Context context, AttributeSet attrs) {
+    public VRLayout(Context context, AttributeSet attrs) {
         super(context,attrs);
         init((AppCompatActivity)context,false);
     }

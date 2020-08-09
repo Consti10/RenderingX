@@ -9,7 +9,7 @@ import com.google.vr.ndk.base.GvrLayout;
 import constantin.renderingx.core.FullscreenHelper;
 import constantin.renderingx.core.VrActivity;
 import constantin.renderingx.core.xglview.XGLSurfaceView;
-import constantin.renderingx.core.views.MyVRLayout;
+import constantin.renderingx.core.views.VRLayout;
 
 //Uses the LiveVideo10ms VideoCore lib which is intended for live streaming, not file playback.
 //I recommend using android MediaPlayer if only playback from file is needed
@@ -21,7 +21,7 @@ public class AExampleDistortion extends VrActivity {
     //Use one of both, either GvrLayout or MyVRLayout
     private static final boolean USE_GVR_LAYOUT=false;
     private GvrLayout gvrLayout;
-    private MyVRLayout myVRLayout;
+    private VRLayout myVRLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +32,7 @@ public class AExampleDistortion extends VrActivity {
             gvrLayout=new GvrLayout(this);
             gvrApi =gvrLayout.getGvrApi();
         }else{
-            myVRLayout=new MyVRLayout(this);
+            myVRLayout=new VRLayout(this);
             gvrApi=myVRLayout.getGvrApi();
         }
         gLView = new XGLSurfaceView(this);

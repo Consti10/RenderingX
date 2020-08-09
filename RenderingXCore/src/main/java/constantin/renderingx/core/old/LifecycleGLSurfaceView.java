@@ -1,4 +1,4 @@
-package constantin.renderingx.core.views;
+package constantin.renderingx.core.old;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
@@ -17,16 +17,16 @@ import androidx.lifecycle.OnLifecycleEvent;
  */
 
 // Warning: constructors will crash when context!=AppCompatActivity
-public class MyGLSurfaceView extends GLSurfaceView implements LifecycleObserver {
+public class LifecycleGLSurfaceView extends GLSurfaceView implements LifecycleObserver {
     //Do not pause / resume if no renderer is set (e.g. the view exists but was not properly configured in onCreate() )
     private boolean rendererSet=false;
 
-    public MyGLSurfaceView(Context context) {
+    public LifecycleGLSurfaceView(Context context) {
         super(context);
         ((AppCompatActivity)context).getLifecycle().addObserver(this);
     }
 
-    public MyGLSurfaceView(Context context, AttributeSet attrs) {
+    public LifecycleGLSurfaceView(Context context, AttributeSet attrs) {
         super(context,attrs);
         ((AppCompatActivity)context).getLifecycle().addObserver(this);
     }

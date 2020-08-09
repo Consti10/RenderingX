@@ -1,10 +1,7 @@
 package constantin.renderingx.core.views;
 
 import android.content.Context;
-import android.os.Build;
-import android.os.Process;
 import android.util.Log;
-import android.view.Choreographer;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -13,7 +10,6 @@ import androidx.lifecycle.OnLifecycleEvent;
 
 import java.util.Objects;
 
-import constantin.renderingx.core.VSYNC;
 import constantin.renderingx.core.xglview.SurfaceTextureHolder;
 import constantin.renderingx.core.xglview.XGLSurfaceView;
 import constantin.renderingx.core.xglview.XSurfaceParams;
@@ -25,7 +21,7 @@ import constantin.renderingx.core.xglview.XSurfaceParams;
  * Specifying the device as 'Daydream ready'
  */
 
-public class ViewSuperSync extends MyVRLayout implements XGLSurfaceView.FullscreenRendererWithSurfaceTexture{
+public class ViewSuperSync extends VRLayout implements XGLSurfaceView.FullscreenRendererWithSurfaceTexture{
     private static final String TAG="ViewSuperSync";
     private final XGLSurfaceView mGLSurfaceView;
     private IRendererSuperSync mRenderer;

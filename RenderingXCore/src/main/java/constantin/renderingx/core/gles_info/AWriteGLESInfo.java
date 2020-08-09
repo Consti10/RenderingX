@@ -19,10 +19,9 @@ import java.util.ArrayList;
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.opengles.GL10;
 
-import constantin.renderingx.core.BuildConfig;
-import constantin.renderingx.core.views.MyEGLConfigChooser;
+import constantin.renderingx.core.old.MyEGLConfigChooser;
 
-import static constantin.renderingx.core.views.MyEGLConfigChooser.findConfigAttrib;
+import static constantin.renderingx.core.old.MyEGLConfigChooser.findConfigAttrib;
 
 
 /*
