@@ -1,16 +1,10 @@
 package constantin.renderingx.core.views;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.opengl.GLSurfaceView;
-import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.vr.sdk.base.GvrView;
-
-import constantin.renderingx.core.old.LifecycleGLSurfaceView;
 import constantin.renderingx.core.xglview.GLContextSurfaceLess;
 import constantin.renderingx.core.xglview.SurfaceTextureHolder;
 import constantin.renderingx.core.xglview.XGLSurfaceView;
