@@ -3,7 +3,6 @@ package constantin.renderingx.core.xglview;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
 import android.view.Surface;
-import android.view.SurfaceHolder;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Lifecycle;

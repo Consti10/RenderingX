@@ -20,16 +20,15 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
-
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import constantin.renderingx.core.Extensions;
 import constantin.renderingx.core.views.VRLayout;
 
 import static android.opengl.EGL14.EGL_DEFAULT_DISPLAY;
+import static android.opengl.EGL14.EGL_NO_CONTEXT;
 import static android.opengl.EGL14.EGL_NO_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_SURFACE;
-import static android.opengl.EGL14.EGL_NO_CONTEXT;
 import static constantin.renderingx.core.xglview.XEGLConfigChooser.EGL_ANDROID_front_buffer_auto_refresh;
 
 // TODO in Development

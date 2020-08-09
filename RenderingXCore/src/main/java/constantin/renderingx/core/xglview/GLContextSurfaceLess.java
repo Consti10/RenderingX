@@ -5,15 +5,14 @@ import android.opengl.EGLConfig;
 import android.opengl.EGLContext;
 import android.opengl.EGLDisplay;
 import android.opengl.EGLSurface;
-import android.os.Process;
 
 import static android.opengl.EGL14.EGL_DEFAULT_DISPLAY;
+import static android.opengl.EGL14.EGL_HEIGHT;
+import static android.opengl.EGL14.EGL_NONE;
 import static android.opengl.EGL14.EGL_NO_CONTEXT;
 import static android.opengl.EGL14.EGL_NO_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_SURFACE;
 import static android.opengl.EGL14.EGL_WIDTH;
-import static android.opengl.EGL14.EGL_HEIGHT;
-import static android.opengl.EGL14.EGL_NONE;
 
 public class GLContextSurfaceLess {
     private EGLDisplay eglDisplay = EGL_NO_DISPLAY;
