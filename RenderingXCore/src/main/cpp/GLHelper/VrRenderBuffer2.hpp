@@ -25,7 +25,6 @@ class SwapChain{
 };*/
 
 
-
 class VrRenderBuffer2{
 public:
     GLuint framebuffers[2];
@@ -34,6 +33,13 @@ public:
     GLuint textures[2];
     int currentRenderTexture=0;
     std::chrono::steady_clock::time_point timeFrameWasBound[2]={{},{}};
+    using CLOCK=std::chrono::steady_clock;
+    struct TimingInformation{
+        CLOCK::time_point startSubmitCommands;
+        CLOCK::time_point stopSubmitCommands;
+        CLOCK::time_point gpuFinishedRendering;
+    };
+    TimingInformation timingInformation[2];
 
     void createRenderTextures(int W,int H){
         WIDTH_PX=W;
@@ -71,25 +77,31 @@ public:
         glScissor(0,0,WIDTH_PX,HEIGH_PX);
         glViewport(0,0,WIDTH_PX,HEIGH_PX);
         GLHelper::checkGlError("after B");
+        timingInformation[currentRenderTexture].startSubmitCommands=CLOCK::now();
     }
 
     // Submit rendering commands in between
 
     void unbindAndSwap() {
+        timingInformation[currentRenderTexture].stopSubmitCommands=CLOCK::now();
         GLHelper::checkGlError("before U");
         FenceSync fenceSync;
         // wait until rendering complete
         fenceSync.wait(EGL_FOREVER_KHR);
         //MLOGD<<"OSD fence sync took "<<MyTimeHelper::R(fenceSync.getDeltaCreationSatisfied());
         //
+        timingInformation[currentRenderTexture].gpuFinishedRendering=CLOCK::now();
         // Now it is safe to swap buffers
         currentRenderTexture=incrementAndModulo(currentRenderTexture);
         GLHelper::checkGlError("after U");
     }
 
-    GLuint getLatestRenderedTexture(){
+    GLuint getLatestRenderedTexture(TimingInformation* timingForThisFrame=nullptr){
         //return textures[0];
         int currentSampleIndex=currentRenderTexture+1;
+        if(timingForThisFrame!=nullptr){
+            *timingForThisFrame=timingInformation[currentSampleIndex];
+        }
         currentSampleIndex=currentSampleIndex % 2;
         //MLOGD<<"curr sample index "<<currentSampleIndex;
         return textures[currentSampleIndex];

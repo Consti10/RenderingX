@@ -27,8 +27,12 @@ void VrCompositorRenderer::initializeGL() {
 }
 
 void VrCompositorRenderer::updateLatestHeadSpaceFromStartSpaceRotation() {
-    auto tmp=gvr_api->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
-    latestHeadSpaceFromStartSpaceRotation=toGLM(tmp);
+    if(gvr_api!=nullptr){
+        auto tmp=gvr_api->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
+        latestHeadSpaceFromStartSpaceRotation=toGLM(tmp);
+    }else{
+        latestHeadSpaceFromStartSpaceRotation=glm::mat4(1.0f);
+    }
 }
 
 glm::mat4 VrCompositorRenderer::GetLatestHeadSpaceFromStartSpaceRotation()const{

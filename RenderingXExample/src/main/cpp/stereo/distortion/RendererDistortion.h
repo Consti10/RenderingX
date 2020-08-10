@@ -48,7 +48,7 @@ public:
     void onDrawFrame();
 private:
     /*
-    * draws the grid of a 2D surface into gvr renderbuffer which is then distorted into framebuffer
+    * draws the grid of a 2D surface into gvr renderbuffer which is then distorted into framebuffer by the gvr api
     */
     void drawEyeGvrRenderbuffer(gvr::Eye eye);
     /*

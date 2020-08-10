@@ -45,9 +45,7 @@ void FBRManager::drawLeftAndRightEye(JNIEnv* env,int SCREEN_W,int SCREEN_H) {
         startRenderingLeftEye=lastVSYNC+getEyeRefreshTime();
         startRenderingRightEye=lastVSYNC+getDisplayRefreshTime();
     }else if(VSYNCPositionNormalized){
-
     }*/
-
     if(VSYNCPositionNormalized<0.5){
         // Render right eye, We are scan line racing
         bool isLeftEye=false;
