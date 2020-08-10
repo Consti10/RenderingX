@@ -38,5 +38,6 @@ dependencies {
     //Since we already included gvr here, other projects should not use their own gvr versions, but also use this one (and the native code supplied here)
     // by using api instead of implementation modules that depend on RenderingXCore also get th gvr api
     api "com.google.vr:sdk-base:$mGvrVersion"
+    implementation project(path: ':VideoCore')
 
 }

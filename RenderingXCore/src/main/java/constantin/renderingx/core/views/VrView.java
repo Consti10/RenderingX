@@ -9,6 +9,7 @@ import constantin.renderingx.core.xglview.GLContextSurfaceLess;
 import constantin.renderingx.core.xglview.SurfaceTextureHolder;
 import constantin.renderingx.core.xglview.XGLSurfaceView;
 import constantin.renderingx.core.xglview.XSurfaceParams;
+import constantin.video.core.gl.ISurfaceTextureAvailable;
 
 @SuppressLint("ViewConstructor")
 public class VrView extends VRLayout {
@@ -23,7 +24,7 @@ public class VrView extends VRLayout {
     public void setRenderer(final XGLSurfaceView.FullscreenRenderer renderer2){
         xglSurfaceView.setRenderer(renderer2);
     }
-    public void setRenderer(final XGLSurfaceView.FullscreenRendererWithSurfaceTexture renderer3, final  SurfaceTextureHolder.ISurfaceTextureAvailable iSurfaceTextureAvailable){
+    public void setRenderer(final XGLSurfaceView.FullscreenRendererWithSurfaceTexture renderer3, final ISurfaceTextureAvailable iSurfaceTextureAvailable){
         xglSurfaceView.setRenderer(renderer3,iSurfaceTextureAvailable);
     }
 

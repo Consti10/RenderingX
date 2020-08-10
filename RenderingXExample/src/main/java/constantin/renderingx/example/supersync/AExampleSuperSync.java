@@ -24,19 +24,9 @@ public class AExampleSuperSync extends AppCompatActivity {
         VideoSettings.setVS_FILE_ONLY_LIMIT_FPS(this,40);
         videoPlayer=new VideoPlayer(this);
 
-        final SurfaceTextureHolder.ISurfaceTextureAvailable iSurfaceTextureAvailable=new SurfaceTextureHolder.ISurfaceTextureAvailable() {
-            @Override
-            public void surfaceTextureCreated(SurfaceTexture surfaceTexture, Surface surface) {
-                videoPlayer.addAndStartDecoderReceiver(surface);
-            }
-            @Override
-            public void surfaceTextureDestroyed() {
-                videoPlayer.stopAndRemoveReceiverDecoder();
-            }
-        };
         mViewSuperSync=new VrViewSuperSync(this);
         mGLRStereoSuperSync = new GLRExampleSuperSync(this,mViewSuperSync.getGvrApi());
-        mViewSuperSync.setRenderer(mGLRStereoSuperSync,iSurfaceTextureAvailable);
+        mViewSuperSync.setRenderer(mGLRStereoSuperSync,videoPlayer.configure2());
         setContentView(mViewSuperSync);
     }
 

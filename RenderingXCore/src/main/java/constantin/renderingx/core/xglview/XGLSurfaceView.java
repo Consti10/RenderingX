@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import constantin.renderingx.core.Extensions;
 import constantin.renderingx.core.views.VRLayout;
+import constantin.video.core.gl.ISurfaceTextureAvailable;
 
 import static android.opengl.EGL14.EGL_DEFAULT_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_CONTEXT;
@@ -106,7 +107,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     public void setRenderer(final FullscreenRenderer renderer2){
         this.mRenderer2=renderer2;
     }
-    public void setRenderer(final FullscreenRendererWithSurfaceTexture renderer3,final  SurfaceTextureHolder.ISurfaceTextureAvailable iSurfaceTextureAvailable){
+    public void setRenderer(final FullscreenRendererWithSurfaceTexture renderer3,final ISurfaceTextureAvailable iSurfaceTextureAvailable){
         this.mRenderer3=renderer3;
         this.surfaceTextureHolder=new SurfaceTextureHolder(activity,iSurfaceTextureAvailable);
     }

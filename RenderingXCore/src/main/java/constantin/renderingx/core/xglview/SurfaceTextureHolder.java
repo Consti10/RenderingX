@@ -7,6 +7,8 @@ import android.view.Surface;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Lifecycle;
 
+import constantin.video.core.gl.ISurfaceTextureAvailable;
+
 public class SurfaceTextureHolder {
     private final AppCompatActivity parent;
     private final ISurfaceTextureAvailable iSurfaceTextureAvailable;
@@ -14,14 +16,6 @@ public class SurfaceTextureHolder {
     private SurfaceTexture surfaceTexture;
     private Surface surface;
 
-    public interface ISurfaceTextureAvailable{
-        // Called when the SurfaceTexture (and Surface) was created on the OpenGL Thread
-        // However, the callback is run on the UI Thread to ease synchronization
-        void surfaceTextureCreated(final SurfaceTexture surfaceTexture, final Surface surface);
-        // Called when the SurfaceTexture (and Surface) are about to be deleted. After this call
-        // returns, both SurfaceTexture and Surface are invalid
-        void surfaceTextureDestroyed();
-    }
 
     public SurfaceTextureHolder(final AppCompatActivity parent,final ISurfaceTextureAvailable iSurfaceTextureAvailable){
         this.parent=parent;

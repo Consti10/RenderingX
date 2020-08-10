@@ -22,6 +22,7 @@ import constantin.renderingx.core.xglview.SurfaceTextureHolder;
 import constantin.renderingx.core.xglview.XGLSurfaceView;
 import constantin.renderingx.core.views.VRLayout;
 import constantin.renderingx.example.R;
+import constantin.video.core.gl.ISurfaceTextureAvailable;
 import constantin.video.core.video_player.VideoPlayer;
 import constantin.video.core.video_player.VideoSettings;
 
@@ -68,7 +69,7 @@ public class AExample360Video extends VrActivity {
             VideoSettings.setVS_FILE_ONLY_LIMIT_FPS(this,40);
             videoPlayer=new VideoPlayer(this);
         }
-        final SurfaceTextureHolder.ISurfaceTextureAvailable iSurfaceTextureAvailable=new SurfaceTextureHolder.ISurfaceTextureAvailable() {
+        final ISurfaceTextureAvailable iSurfaceTextureAvailable=new ISurfaceTextureAvailable() {
             @Override
             public void surfaceTextureCreated(SurfaceTexture surfaceTexture, Surface surface) {
                 if(USE_GOOGLE_EXO_PLAYER_INSTEAD){
