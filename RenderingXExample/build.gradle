@@ -4,7 +4,7 @@ apply plugin: 'com.google.firebase.firebase-perf'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
-
+    //ndkVersion "21.3.6528147"
     defaultConfig {
         applicationId "constantin.renderingx.example"
         minSdkVersion rootProject.minSdkVersion
@@ -62,8 +62,8 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintlayoutVersion"
 
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    testImplementation 'junit:junit:4.12'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    testImplementation 'junit:junit:4.13'
 
     //for touch input (scale/rotate text)
     implementation 'com.dinuscxj:multitouchgesturedetector:1.0.0'
@@ -75,8 +75,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-perf:19.0.8'
 
     implementation project(path: ':RenderingXCore')
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0-rc02'
-    androidTestImplementation 'androidx.test:rules:1.3.0-rc02'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0-rc03'
+    androidTestImplementation 'androidx.test:rules:1.3.0-rc03'
 
     //Use either the artifacts from jitpack or provide a path directly
     //(Requires also changes to the settings.gradle file)

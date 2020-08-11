@@ -17,6 +17,7 @@ static void frameCallback(long frameTimeNanos, void* data) {
 static void test(){
     //auto choreographer=AChoreographer_getInstance();
     //AChoreographer_registerRefreshRateCallback(choreographer,refreshRateCallback,nullptr);
+    //AChoreographer_refreshRateCallback* p;
     //AChoreographer_postFrameCallback64(choreographer,frameCallback,nullptr);
 }
 
