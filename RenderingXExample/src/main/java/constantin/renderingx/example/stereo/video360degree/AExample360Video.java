@@ -88,8 +88,8 @@ public class AExample360Video extends VrActivity {
             }
         };
         Renderer360Video renderer = new Renderer360Video(this,mVrView.getGvrApi(), SPHERE_MODE);
-        mVrView.setRenderer(renderer,iSurfaceTextureAvailable);
-        mVrView.setmISecondaryContext(renderer);
+        mVrView.getPresentationView().setRenderer(renderer,iSurfaceTextureAvailable);
+        mVrView.getPresentationView().setmISecondaryContext(renderer);
         setContentView(mVrView);
     }
 

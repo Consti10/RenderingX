@@ -11,6 +11,8 @@ import constantin.renderingx.core.xglview.XGLSurfaceView;
 import constantin.renderingx.core.xglview.XSurfaceParams;
 import constantin.video.core.gl.ISurfaceTextureAvailable;
 
+// VrView is almost the same as VrLayout but it also holds and creates the OpenGL Surface view
+// that is used to render content
 @SuppressLint("ViewConstructor")
 public class VrView extends VRLayout {
     final XGLSurfaceView xglSurfaceView;
@@ -21,19 +23,13 @@ public class VrView extends VRLayout {
         super.setPresentationView(xglSurfaceView);
     }
 
-    public void setRenderer(final XGLSurfaceView.FullscreenRenderer renderer2){
-        xglSurfaceView.setRenderer(renderer2);
-    }
-    public void setRenderer(final XGLSurfaceView.FullscreenRendererWithSurfaceTexture renderer3, final ISurfaceTextureAvailable iSurfaceTextureAvailable){
-        xglSurfaceView.setRenderer(renderer3,iSurfaceTextureAvailable);
+    public XGLSurfaceView getPresentationView(){
+        return xglSurfaceView;
     }
 
-    public void setmISecondaryContext(final GLContextSurfaceLess.SecondarySharedContext i){
-        xglSurfaceView.setmISecondaryContext(i);
-    }
-
-    public void setEGLConfigPrams(final XSurfaceParams wantedSurfaceParams){
-        xglSurfaceView.setEGLConfigPrams(wantedSurfaceParams);
+    public void enableSuperSync(){
+        xglSurfaceView.setEGLConfigPrams(new XSurfaceParams(0,0,true));
+        xglSurfaceView.DO_SUPERSYNC_MODS=true;
     }
 
     @Override

@@ -116,34 +116,6 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         glContextSurfaceLess=new GLContextSurfaceLess(i);
     }
 
-
-    /**
-     * Create the OpenGL context, but not the EGL Surface since I have to wait for the
-     * android.view.SurfaceHolder.Callback until the native window is available
-     */
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    private void onCreate() {
-        log("onCreate");
-        if(glContextSurfaceLess!=null){
-            glContextSurfaceLess.create();
-        }
-        eglDisplay = EGL14.eglGetDisplay(EGL_DEFAULT_DISPLAY);
-        int[] major = new int[]{0};
-        int[] minor = new int[]{0};
-        EGL14.eglInitialize(eglDisplay, major, 0, minor, 0);
-        eglConfig = XEGLConfigChooser.chooseConfig(eglDisplay,mWantedSurfaceParams);
-        final int GLESVersion=mWantedSurfaceParams.mUseMutableFlag ? 3 : 2;
-        final int[] contextAttributes = new int[]{
-                EGL14.EGL_CONTEXT_CLIENT_VERSION, GLESVersion,
-                EGL14.EGL_NONE
-        };
-        // https://www.khronos.org/registry/EGL/sdk/docs/man/html/eglCreateContext.xhtml
-        eglContext = EGL14.eglCreateContext(eglDisplay, eglConfig, glContextSurfaceLess==null ? EGL_NO_CONTEXT : glContextSurfaceLess.getEglContext(), contextAttributes, 0);
-        if (eglContext==EGL_NO_CONTEXT) {
-            throw new AssertionError("Cannot create eglContext");
-        }
-    }
-
     private final Runnable mOpenGLRunnable=new Runnable() {
         @Override
         public void run() {
@@ -199,6 +171,33 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         }
     };
 
+    /**
+     * Create the OpenGL context, but not the EGL Surface since I have to wait for the
+     * android.view.SurfaceHolder.Callback until the native window is available
+     */
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    private void onCreate() {
+        log("onCreate");
+        if(glContextSurfaceLess!=null){
+            glContextSurfaceLess.create();
+        }
+        eglDisplay = EGL14.eglGetDisplay(EGL_DEFAULT_DISPLAY);
+        int[] major = new int[]{0};
+        int[] minor = new int[]{0};
+        EGL14.eglInitialize(eglDisplay, major, 0, minor, 0);
+        eglConfig = XEGLConfigChooser.chooseConfig(eglDisplay,mWantedSurfaceParams);
+        final int GLESVersion=mWantedSurfaceParams.mUseMutableFlag ? 3 : 2;
+        final int[] contextAttributes = new int[]{
+                EGL14.EGL_CONTEXT_CLIENT_VERSION, GLESVersion,
+                EGL14.EGL_NONE
+        };
+        // https://www.khronos.org/registry/EGL/sdk/docs/man/html/eglCreateContext.xhtml
+        eglContext = EGL14.eglCreateContext(eglDisplay, eglConfig, glContextSurfaceLess==null ? EGL_NO_CONTEXT : glContextSurfaceLess.getEglContext(), contextAttributes, 0);
+        if (eglContext==EGL_NO_CONTEXT) {
+            throw new AssertionError("Cannot create eglContext");
+        }
+    }
+
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private void onResume(){
         log("onResume");
@@ -206,19 +205,6 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         exclusiveCPUCore= VRLayout.getExclusiveVRCore();
         // wait until the EGL Surface has been created
         // e.g wait until the SurfaceHolder callback is called
-    }
-
-    private static void eglSwapBuffersSafe(final EGLDisplay eglDisplay,final EGLSurface eglSurface){
-        if(!EGL14.eglSwapBuffers(eglDisplay,eglSurface)){
-            log("Cannot swap buffers");
-        }
-    }
-    private static void eglMakeCurrentSafe(final EGLDisplay eglDisplay, EGLSurface eglSurface,EGLContext eglContext) {
-        //log("makeCurrent");
-        boolean result= EGL14.eglMakeCurrent(eglDisplay,eglSurface,eglSurface,eglContext);
-        if(!result){
-            throw new AssertionError("Cannot make surface current "+eglSurface);
-        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
@@ -312,10 +298,22 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         // but here the context is still bound for cleanup operations
         //void onContextDestroyed();
     }
+
     // Same as above but the GLSurfaceView also creates and manages a SurfaceTexture aka VideoTexture
     public interface FullscreenRendererWithSurfaceTexture {
         void onContextCreated(int screenWidth,int screenHeight,final SurfaceTextureHolder surfaceTextureHolder);
         void onDrawFrame();
     }
-
+    private static void eglSwapBuffersSafe(final EGLDisplay eglDisplay,final EGLSurface eglSurface){
+        if(!EGL14.eglSwapBuffers(eglDisplay,eglSurface)){
+            log("Cannot swap buffers");
+        }
+    }
+    private static void eglMakeCurrentSafe(final EGLDisplay eglDisplay, EGLSurface eglSurface,EGLContext eglContext) {
+        //log("makeCurrent");
+        boolean result= EGL14.eglMakeCurrent(eglDisplay,eglSurface,eglSurface,eglContext);
+        if(!result){
+            throw new AssertionError("Cannot make surface current "+eglSurface);
+        }
+    }
 }
