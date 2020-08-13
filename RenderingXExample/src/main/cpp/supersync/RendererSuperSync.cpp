@@ -28,12 +28,8 @@
 RendererSuperSync::RendererSuperSync(JNIEnv *env, jobject androidContext, gvr_context *gvr_context,jlong vsync):
         mSurfaceTextureUpdate(env),
         gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context))
-        ,vrCompositorRenderer(env,androidContext,gvr_api_.get(),true,false,false)
-        {
-    std::function<void(JNIEnv *env2, bool leftEye)> f = [this](JNIEnv *env2, bool leftEye) {
-        this->renderNewEyeCallback(env2,leftEye);
-    };
-    mFBRManager=std::make_unique<FBRManager>(VSYNC::native(vsync),f,mSurfaceTextureUpdate);
+        ,vrCompositorRenderer(env,androidContext,gvr_api_.get(),true,false,false),
+        mFBRManager(VSYNC::native(vsync)){
 }
 
 void RendererSuperSync::onSurfaceCreated(JNIEnv *env, jobject androidContext,jobject surfaceTextureHolder,int width, int height) {
@@ -48,43 +44,10 @@ void RendererSuperSync::onSurfaceCreated(JNIEnv *env, jobject androidContext,job
     vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,&mSurfaceTextureUpdate, VrCompositorRenderer::NONE);
     uiElementWidth=1.5;
     vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,&vrRenderBufferExampleTexture, VrCompositorRenderer::NONE);
-
-    glProgramVC2D=new GLProgramVC(true);
-    solidRectangleBlack.setData(
-            ColoredGeometry::makeTessellatedColoredRect(10, {0,0,0}, {2,2}, TrueColor2::BLACK));
-    solidRectangleYellow.setData(
-            ColoredGeometry::makeTessellatedColoredRect(10, {0,0,0}, {2,2}, TrueColor2::YELLOW));
 }
 
 void RendererSuperSync::enterSuperSyncLoop(JNIEnv *env, jobject obj) {
-    mFBRManager->warpEyesToFrontBufferSynchronized(env, vrCompositorRenderer.SCREEN_WIDTH_PX,
-                                                   vrCompositorRenderer.SCREEN_HEIGHT_PX);
-    //mFBRManager->drawLeftAndRightEye(env,vrCompositorRenderer.SCREEN_WIDTH_PX,vrCompositorRenderer.SCREEN_HEIGHT_PX);
-}
-
-void RendererSuperSync::renderNewEyeCallback(JNIEnv *env, const bool leftEye) {
-    //if(const auto delay=mSurfaceTextureUpdate.updateAndCheck(env)){
-    //    //MLOGD<<"avg Latency until opengl is "<<MyTimeHelper::R(*delay);
-    //}
-    glClearColor(0.5F,0.5F,0.5F,0.0F);
-    drawEye(env,leftEye);
-}
-
-void RendererSuperSync::drawEye(JNIEnv *env, bool leftEye) {
-    ATrace_beginSection("drawEye()");
-    //Draw the background, which alternates between black and yellow to make tearing observable
-    const int idx=leftEye==0 ? 0 : 1;
-    whichColor[idx]++;
-    if(whichColor[idx]>1){
-        whichColor[idx]=0;
-    }
-    if(whichColor[idx]==0){
-        glProgramVC2D->drawX(glm::mat4(),glm::mat4(), solidRectangleBlack);
-    }else{
-        glProgramVC2D->drawX(glm::mat4(),glm::mat4(), solidRectangleYellow);
-    }
-    vrCompositorRenderer.drawLayers(leftEye ? GVR_LEFT_EYE : GVR_RIGHT_EYE);
-    ATrace_endSection();
+    mFBRManager.warpEyesToFrontBufferSynchronized(env,vrCompositorRenderer);
 }
 
 #define JNI_METHOD(return_type, method_name) \

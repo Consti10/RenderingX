@@ -1,0 +1,52 @@
+void FBRManager::drawLeftAndRightEye(JNIEnv* env,int SCREEN_W,int SCREEN_H) {
+    ATrace_beginSection("SurfaceTexture::update");
+    SurfaceTextureUpdate* surfaceTextureUpdate;
+
+
+    if(const auto delay=surfaceTextureUpdate.waitUntilFrameAvailable(env,std::chrono::steady_clock::now()+std::chrono::seconds(1))){
+        MLOGD<<"Delay until opengl is "<<MyTimeHelper::R(*delay);
+    }
+    const auto VSYNCPositionNormalized=vsync.getVsyncRasterizerPositionNormalized();
+    MLOGD<<"Got new video Frame. Current VSYNC position is: "<<VSYNCPositionNormalized;
+    const auto lastVSYNC=vsync.getLatestVSYNC().base;
+    /*CLOCK::time_point startRenderingLeftEye;
+    CLOCK::time_point startRenderingRightEye;
+    if(VSYNCPositionNormalized>0.1f && VSYNCPositionNormalized<0.5f){
+        // Not enough time left to render the
+        startRenderingLeftEye=lastVSYNC+getEyeRefreshTime();
+        startRenderingRightEye=lastVSYNC+getDisplayRefreshTime();
+    }else if(VSYNCPositionNormalized){
+    }*/
+    if(VSYNCPositionNormalized<0.5){
+        // Render right eye, We are scan line racing
+        bool isLeftEye=false;
+        const CLOCK::time_point startRenderingLeftEye=lastVSYNC+vsync.getEyeRefreshTime();
+        directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
+        onRenderNewEyeCallback(env,isLeftEye);
+        directRender.end();
+        //
+        std::unique_ptr<FenceSync> fenceSync=std::make_unique<FenceSync>();
+        waitUntilTimePoint(startRenderingLeftEye,*fenceSync);
+        isLeftEye=true;
+        directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
+        onRenderNewEyeCallback(env,isLeftEye);
+        directRender.end();
+        glFlush();
+    }else{ // VSYNC is between [0.5,1.0]
+        // Render left eye
+       bool isLeftEye=true;
+        CLOCK::time_point startRenderingRightEye=lastVSYNC+vsync.getDisplayRefreshTime();
+        directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
+        onRenderNewEyeCallback(env,isLeftEye);
+        directRender.end();
+        //
+        std::unique_ptr<FenceSync> fenceSync=std::make_unique<FenceSync>();
+        waitUntilTimePoint(startRenderingRightEye,*fenceSync);
+        isLeftEye=false;
+        directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
+        onRenderNewEyeCallback(env,isLeftEye);
+        directRender.end();
+        glFlush();
+    }
+    ATrace_endSection();
+}

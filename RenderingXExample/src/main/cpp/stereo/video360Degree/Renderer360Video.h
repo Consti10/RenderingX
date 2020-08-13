@@ -47,7 +47,6 @@ public:
 private:
     std::unique_ptr<gvr::GvrApi> gvr_api_;
     FPSCalculator mFPSCalculator;
-    VrRenderBuffer vrRenderBuffer;
     int clearColorIndex=0;
     VrRenderBuffer2 vrRenderBuffer2;
     VrRenderBuffer2 vrRenderBufferExampleUi{"ExampleTexture/ui.png"};

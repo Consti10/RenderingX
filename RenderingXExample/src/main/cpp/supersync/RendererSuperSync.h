@@ -50,22 +50,9 @@ public:
     void enterSuperSyncLoop(JNIEnv * env, jobject obj);
     void onSurfaceCreated(JNIEnv * env,jobject obj,jobject surfaceTextureHolder,int width, int height);
 private:
-    /**
-     * Called by the SuperSync manager
-     * @param env
-     * @param whichEye left/right eye
-     */
-    void renderNewEyeCallback(JNIEnv* env,bool whichEye);
-    void drawEye(JNIEnv* env,bool whichEye);
-private:
-    GLProgramVC* glProgramVC2D;
-    std::unique_ptr<FBRManager> mFBRManager= nullptr;
-    ColoredGLMeshBuffer solidRectangleYellow;
-    ColoredGLMeshBuffer solidRectangleBlack;
-    std::array<int,2> whichColor;
+    FBRManager mFBRManager;
     std::unique_ptr<gvr::GvrApi> gvr_api_;
     SurfaceTextureUpdate mSurfaceTextureUpdate;
-public:
     VrCompositorRenderer vrCompositorRenderer;
     VrRenderBuffer2 vrRenderBufferExampleTexture{"ExampleTexture/ui.png"};
 };

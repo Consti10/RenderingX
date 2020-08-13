@@ -5,6 +5,7 @@
 #include <CardboardViewportOcclusion.hpp>
 #include <Sphere/SphereBuilder.hpp>
 #include <android/trace.h>
+#include <ColoredGeometry.hpp>
 #include "VrCompositorRenderer.h"
 
 VrCompositorRenderer::VrCompositorRenderer(JNIEnv* env,jobject androidContext,gvr::GvrApi *gvr_api,const bool ENABLE_VDDC,const bool ENABLE_DEBUG1,const bool ENABLE_VIGNETTE):
@@ -24,6 +25,11 @@ void VrCompositorRenderer::initializeGL() {
     mGLProgramTextureExtVDDC=std::make_unique<GLProgramTextureExt>(true, false);
     const TrueColor occlusionMeshColor=ENABLE_DEBUG ? TrueColor2::RED : TrueColor2::BLACK;
     CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(*this, occlusionMeshColor, mOcclusionMesh);
+    //
+    solidRectangleBlack.setData(
+            ColoredGeometry::makeTessellatedColoredRect(10, {0,0,0}, {2,2}, TrueColor2::BLACK));
+    solidRectangleYellow.setData(
+            ColoredGeometry::makeTessellatedColoredRect(10, {0,0,0}, {2,2}, TrueColor2::YELLOW));
 }
 
 void VrCompositorRenderer::updateLatestHeadSpaceFromStartSpaceRotation() {

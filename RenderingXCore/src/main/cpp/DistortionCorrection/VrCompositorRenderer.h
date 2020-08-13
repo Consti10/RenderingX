@@ -19,6 +19,7 @@
 #include <TimeHelper.hpp>
 #include <SurfaceTextureUpdate.hpp>
 #include <VrRenderBuffer2.hpp>
+#include <DirectRender.hpp>
 
 class VrCompositorRenderer {
 public:
@@ -90,7 +91,6 @@ public:
         FULL
     };
     using VrContentProvider=std::variant<SurfaceTextureUpdate*,VrRenderBuffer2*>;
-
     // https://developer.oculus.com/documentation/unity/unity-ovroverlay/
     struct VRLayer{
         HEAD_TRACKING headTracking;
@@ -115,13 +115,13 @@ public:
     void addLayer2DCanvas(float z,float width,float height,VrContentProvider vrContentProvider,HEAD_TRACKING headTracking=FULL);
     // Add a 360° video sphere
     void addLayerSphere360(float radius,UvSphere::MEDIA_FORMAT format,VrContentProvider vrContentProvider);
-    VRLayer& getLayer(size_t idx){
-        return mVrLayerList.at(idx);
+    std::vector<VRLayer>& getLayers(){
+        return mVrLayerList;
     }
 public:
     // The left/right eye viewport is exactly the area covered when splitting the screen in half
     // while holding the device in landscape mode
-    std::array<int,4> getViewportForEye(gvr::Eye eye){
+    DirectRender::GLViewport getViewportForEye(gvr::Eye eye){
         if(eye==GVR_LEFT_EYE){
             return {0,0,EYE_VIEWPORT_W,EYE_VIEWPORT_H};
         }
@@ -174,6 +174,12 @@ public:
     }
 private:
     std::array<Chronometer,2> cpuTime={Chronometer{"CPU left"},Chronometer{"CPU right"}};
+    ColoredGLMeshBuffer solidRectangleYellow;
+    ColoredGLMeshBuffer solidRectangleBlack;
+public:
+    void clearViewportUsingRenderedMesh(const bool blackOrYellow)const{
+        mGLProgramVC2D->drawX(glm::mat4(),glm::mat4(), blackOrYellow ? solidRectangleBlack : solidRectangleYellow);
+    }
 };
 
 

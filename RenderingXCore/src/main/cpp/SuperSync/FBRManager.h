@@ -53,17 +53,18 @@
 #include "VSYNC.h"
 #include "DirectRender.hpp"
 #include <SurfaceTextureUpdate.hpp>
+#include <VrCompositorRenderer.h>
 
-using RENDER_NEW_EYE_CALLBACK=std::function<void(JNIEnv*,bool)>;
+//using RENDER_NEW_EYE_CALLBACK=std::function<void(JNIEnv*,bool)>;
 
 class FBRManager{
 public:
-    FBRManager(VSYNC* vsync,RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,SurfaceTextureUpdate& surfaceTextureUpdate);
+    FBRManager(VSYNC* vsync);
     //has to be called from the OpenGL thread that is bound to the front buffer surface
     //blocks until requestExitSuperSyncLoop() is called (from any thread, e.g. the UI onPauseX )
-    void warpEyesToFrontBufferSynchronized(JNIEnv* env, int SCREEN_W, int SCREEN_H);
-    void drawLeftAndRightEye(JNIEnv* env,int SCREEN_W,int SCREEN_H);
+    void warpEyesToFrontBufferSynchronized(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer);
 private:
+    const bool CHANGE_CLEAR_COLOR_TO_MAKE_TEARING_OBSERVABLE=true;
     const VSYNC& vsync;
     const DirectRender directRender;
     struct EyeChrono{
@@ -76,21 +77,15 @@ private:
     // return the overshoot
     static CLOCK::duration waitUntilTimePoint(const std::chrono::steady_clock::time_point& timePoint,FenceSync& fenceSync);
     std::array<EyeChrono,2> eyeChrono={};
-    const RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback;
+    //const RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback;
     std::array<Chronometer,2> vsyncWaitTime={Chronometer{"VSYNC start wait time"},Chronometer{"VSYNC middle wait time"}};
     void printLog();
     std::chrono::steady_clock::time_point lastLog;
     void resetTS();
-    static DirectRender::GLViewport getViewportForEye(const bool leftEye,int SCREEN_W,int SCREEN_H){
-        const int HALF_SCREEN_W= SCREEN_W / 2;
-        if(leftEye){
-            return {0, 0, HALF_SCREEN_W, SCREEN_H};
-        }
-        return {HALF_SCREEN_W, 0, HALF_SCREEN_W,SCREEN_H};
-    }
     CLOCK::time_point endLastFunctionCall;
     VSYNC::VSYNCState lastRenderedFrame;
-    SurfaceTextureUpdate& surfaceTextureUpdate;
+    void drawEye(JNIEnv* env,const bool isLeftEye,VrCompositorRenderer& vrCompositorRenderer);
+    std::array<int,2> whichColor;
 };
 
 //While the CPU creates the command buffer it is guaranteed that the Frame Buffer won't be affected. (only as soon as glFinish()/glFlush() is called)

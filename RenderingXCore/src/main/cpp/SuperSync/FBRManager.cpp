@@ -21,67 +21,14 @@ static std::chrono::steady_clock::duration ThisThreadSleepUntil(std::chrono::ste
     return now-tp;
 }
 
-FBRManager::FBRManager(VSYNC* vsync,RENDER_NEW_EYE_CALLBACK onRenderNewEyeCallback,SurfaceTextureUpdate& surfaceTextureUpdate):
-vsync(*vsync),
-surfaceTextureUpdate(surfaceTextureUpdate),
-        onRenderNewEyeCallback(std::move(onRenderNewEyeCallback))
-{
+FBRManager::FBRManager(VSYNC* vsync):
+vsync(*vsync){
     lastLog=steady_clock::now();
     resetTS();
 }
 
-void FBRManager::drawLeftAndRightEye(JNIEnv* env,int SCREEN_W,int SCREEN_H) {
-    ATrace_beginSection("SurfaceTexture::update");
-    if(const auto delay=surfaceTextureUpdate.waitUntilFrameAvailable(env,std::chrono::steady_clock::now()+std::chrono::seconds(1))){
-        MLOGD<<"Delay until opengl is "<<MyTimeHelper::R(*delay);
-    }
-    const auto VSYNCPositionNormalized=vsync.getVsyncRasterizerPositionNormalized();
-    MLOGD<<"Got new video Frame. Current VSYNC position is: "<<VSYNCPositionNormalized;
-    const auto lastVSYNC=vsync.getLatestVSYNC().base;
-    /*CLOCK::time_point startRenderingLeftEye;
-    CLOCK::time_point startRenderingRightEye;
-    if(VSYNCPositionNormalized>0.1f && VSYNCPositionNormalized<0.5f){
-        // Not enough time left to render the
-        startRenderingLeftEye=lastVSYNC+getEyeRefreshTime();
-        startRenderingRightEye=lastVSYNC+getDisplayRefreshTime();
-    }else if(VSYNCPositionNormalized){
-    }*/
-    if(VSYNCPositionNormalized<0.5){
-        // Render right eye, We are scan line racing
-        bool isLeftEye=false;
-        const CLOCK::time_point startRenderingLeftEye=lastVSYNC+vsync.getEyeRefreshTime();
-        directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
-        onRenderNewEyeCallback(env,isLeftEye);
-        directRender.end();
-        //
-        std::unique_ptr<FenceSync> fenceSync=std::make_unique<FenceSync>();
-        waitUntilTimePoint(startRenderingLeftEye,*fenceSync);
-        isLeftEye=true;
-        directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
-        onRenderNewEyeCallback(env,isLeftEye);
-        directRender.end();
-        glFlush();
-    }else{ // VSYNC is between [0.5,1.0]
-        // Render left eye
-       bool isLeftEye=true;
-        CLOCK::time_point startRenderingRightEye=lastVSYNC+vsync.getDisplayRefreshTime();
-        directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
-        onRenderNewEyeCallback(env,isLeftEye);
-        directRender.end();
-        //
-        std::unique_ptr<FenceSync> fenceSync=std::make_unique<FenceSync>();
-        waitUntilTimePoint(startRenderingRightEye,*fenceSync);
-        isLeftEye=false;
-        directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
-        onRenderNewEyeCallback(env,isLeftEye);
-        directRender.end();
-        glFlush();
-    }
-    ATrace_endSection();
-}
 
-
-void FBRManager::warpEyesToFrontBufferSynchronized(JNIEnv* env, int SCREEN_W, int SCREEN_H) {
+void FBRManager::warpEyesToFrontBufferSynchronized(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer) {
     if(endLastFunctionCall!=CLOCK::time_point{}){
         const auto deltaBetweenFunctionCalls=CLOCK::now()-endLastFunctionCall;
         if(deltaBetweenFunctionCalls>300us){ //1/10 of a ms
@@ -95,6 +42,7 @@ void FBRManager::warpEyesToFrontBufferSynchronized(JNIEnv* env, int SCREEN_W, in
         MLOGE<<"Probably missed VSYNC "<<lastRenderedFrame.count<<" "<<latestVSYNC.count<<" "<<vsync.getVsyncRasterizerPositionNormalized()<<" "<<MyTimeHelper::R(CLOCK::now()-latestVSYNC.base);
     }
     lastRenderedFrame=latestVSYNC;
+    SurfaceTextureUpdate* surfaceTextureUpdate=std::get<SurfaceTextureUpdate*>(vrCompositorRenderer.getLayers().at(0).contentProvider);
     //
     // wait until nextVSYNCMiddle
     // Render left eye
@@ -118,14 +66,14 @@ void FBRManager::warpEyesToFrontBufferSynchronized(JNIEnv* env, int SCREEN_W, in
         timerQuery.begin();
         ATrace_beginSection("SurfaceTexture::update");
         avgCPUTimeUpdateSurfaceTexture.start();
-        surfaceTextureUpdate.updateAndCheck(env);
+        surfaceTextureUpdate->updateAndCheck(env);
         avgCPUTimeUpdateSurfaceTexture.stop();
         ATrace_endSection();
         ATrace_beginSection("DirectRendering::begin");
-        directRender.begin(getViewportForEye(isLeftEye,SCREEN_W,SCREEN_H));
+        directRender.begin(vrCompositorRenderer.getViewportForEye(isLeftEye ? GVR_LEFT_EYE : GVR_RIGHT_EYE));
         ATrace_endSection();
         ATrace_beginSection("renderNewEyeCallback");
-        onRenderNewEyeCallback(env,isLeftEye);
+        drawEye(env,isLeftEye,vrCompositorRenderer);
         ATrace_endSection();
         ATrace_beginSection("DirectRendering::end");
         directRender.end();
@@ -219,6 +167,23 @@ void FBRManager::resetTS() {
         eyeChrono[i].nEyes=0;
         eyeChrono[i].nEyesNotMeasurable=0;
     }
+}
+
+void FBRManager::drawEye(JNIEnv *env, const bool leftEye, VrCompositorRenderer &vrCompositorRenderer) {
+    ATrace_beginSection("drawEye()");
+    //Draw the background, which alternates between black and yellow to make tearing observable
+    const int idx=leftEye==0 ? 0 : 1;
+    whichColor[idx]++;
+    if(whichColor[idx]>1){
+        whichColor[idx]=0;
+    }
+    if(whichColor[idx]==0){
+        vrCompositorRenderer.clearViewportUsingRenderedMesh(true);
+    }else{
+        vrCompositorRenderer.clearViewportUsingRenderedMesh(false);
+    }
+    vrCompositorRenderer.drawLayers(leftEye ? GVR_LEFT_EYE : GVR_RIGHT_EYE);
+    ATrace_endSection();
 }
 
 
