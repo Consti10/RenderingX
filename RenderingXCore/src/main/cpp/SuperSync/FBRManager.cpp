@@ -29,14 +29,13 @@ vsync(*vsync){
 }
 
 void FBRManager::enterWarping(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer){
-    JThread::MethodHelper methodHelper(env);
+    JThread jThread(env);
     Chronometer callJavaTime{"Call java isInterrupted()"};
     while (true){
         callJavaTime.start();
-        const bool isInterrupted=methodHelper.isInterrupted();
+        const bool isInterrupted=jThread.isInterrupted();
         callJavaTime.stop();
         callJavaTime.printInIntervalls(std::chrono::seconds(3),false);
-
         if(isInterrupted)break;
         warpEyesToFrontBufferSynchronized(env,vrCompositorRenderer);
     }
