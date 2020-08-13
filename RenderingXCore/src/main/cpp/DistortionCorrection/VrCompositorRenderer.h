@@ -17,6 +17,8 @@
 #include <Sphere/UvSphere.hpp>
 #include "MatrixHelper.h"
 #include <TimeHelper.hpp>
+#include <SurfaceTextureUpdate.hpp>
+#include <VrRenderBuffer2.hpp>
 
 class VrCompositorRenderer {
 public:
@@ -98,6 +100,9 @@ public:
         std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> optionalRightEyeDistortedMesh=nullptr;
         GLuint textureId;
         bool isExternalTexture;
+        // By supplying the content provider updating the layer each frame is much easier
+        std::optional<SurfaceTextureUpdate> contentProvider1=std::nullopt;
+        std::optional<VrRenderBuffer2> contentProvider2=std::nullopt;
     };
     // List of layer descriptions
     std::vector<VRLayer> mVrLayerList;

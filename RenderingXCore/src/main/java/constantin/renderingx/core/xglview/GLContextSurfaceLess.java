@@ -5,6 +5,7 @@ import android.opengl.EGLConfig;
 import android.opengl.EGLContext;
 import android.opengl.EGLDisplay;
 import android.opengl.EGLSurface;
+import android.util.Log;
 
 import static android.opengl.EGL14.EGL_DEFAULT_DISPLAY;
 import static android.opengl.EGL14.EGL_HEIGHT;
@@ -15,6 +16,7 @@ import static android.opengl.EGL14.EGL_NO_SURFACE;
 import static android.opengl.EGL14.EGL_WIDTH;
 
 public class GLContextSurfaceLess {
+    private static final String TAG=" GLContextSurfaceLess";
     private EGLDisplay eglDisplay = EGL_NO_DISPLAY;
     private EGLSurface eglSurface = EGL_NO_SURFACE;
     private EGLContext eglContext = EGL_NO_CONTEXT;
@@ -42,7 +44,14 @@ public class GLContextSurfaceLess {
         if (eglContext==EGL_NO_CONTEXT) {
             throw new AssertionError("Cannot create eglContext");
         }
-        eglSurface=createDefaultPBufferSurface(eglDisplay,eglConfig);
+        String extensions=EGL14.eglQueryString(eglDisplay,EGL14.EGL_EXTENSIONS);
+        if(extensions.contains("EGL_KHR_surfaceless_context")){
+            Log.d(TAG,"Got EGL_KHR_surfaceless_context extension");
+            eglSurface=EGL_NO_SURFACE;
+        }else{
+            // The egl context surface less extension is not available on all devices. As a workaround, create a small but unused pbuffer if needed
+            eglSurface=createDefaultPBufferSurface(eglDisplay,eglConfig);
+        }
     }
 
     public void resumeWork(){
@@ -60,7 +69,10 @@ public class GLContextSurfaceLess {
     }
 
     public void destroy(){
-        EGL14.eglDestroySurface(eglDisplay, eglSurface);
+        // surface can be null due to extension
+        if(eglSurface!=EGL_NO_SURFACE){
+            EGL14.eglDestroySurface(eglDisplay, eglSurface);
+        }
         EGL14.eglDestroyContext(eglDisplay, eglContext);
         EGL14.eglTerminate(eglDisplay);
     }
@@ -84,7 +96,7 @@ public class GLContextSurfaceLess {
         }
     };
 
-
+    // Create a small pbuffer surface for EGL context's that do not support surfaceless
     private static EGLSurface createDefaultPBufferSurface(final EGLDisplay eglDisplay,final EGLConfig eglConfig){
         int[] attrib_list = {EGL_WIDTH, 16, EGL_HEIGHT, 16, EGL_NONE };
         final EGLSurface eglSurface=EGL14.eglCreatePbufferSurface(eglDisplay,eglConfig,attrib_list,0);
