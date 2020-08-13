@@ -11,7 +11,9 @@
 //
 // Workaround for issue https://github.com/android/ndk/issues/1255 and more
 // Java Thread utility methods
-// Another method that has proven really usefull is the JThread::isInterrupted() method
+// Another method that has proven really usefully is the JThread::isInterrupted() method
+//
+// Direct mapping from java Thread method names to c++
 //
 class JThread{
 private:
@@ -35,23 +37,23 @@ public:
     bool isInterrupted(){
         return (bool) env->CallBooleanMethod(joCurrentThread,jmIsInterrupted);
     }
-    int getThreadPriority(){
+    int getPriority(){
         return (int)env->CallIntMethod(joCurrentThread,jmGetPriority);
     }
-    void setThreadPriority(int wantedPriority){
+    void setPriority(int wantedPriority){
         env->CallVoidMethod(joCurrentThread,jmSetPriority,(jint)wantedPriority);
     }
     static bool isInterrupted(JNIEnv* env){
         return JThread(env).isInterrupted();
     }
-    static int getThreadPriority(JNIEnv* env){
-        return JThread(env).getThreadPriority();
+    static int getPriority(JNIEnv* env){
+        return JThread(env).getPriority();
     }
-    static void setThreadPriority(JNIEnv* env,int wantedPriority){
-        JThread(env).setThreadPriority(wantedPriority);
+    static void setPriority(JNIEnv* env, int wantedPriority){
+        JThread(env).setPriority(wantedPriority);
     }
     static void printThreadPriority(JNIEnv* env){
-        MLOGD<<"printThreadPriority "<<getThreadPriority(env);
+        MLOGD << "printThreadPriority " << getPriority(env);
     }
 };
 // Java android.os.Process utility methods (not java/lang/Process !)
@@ -136,7 +138,7 @@ namespace NDKTHREADHELPERTEST{
     static void doSomething(JavaVM* jvm) {
         JNIEnv* env=NDKThreadHelper::attachThread(jvm);
         JThread::printThreadPriority(env);
-        JThread::setThreadPriority(env,5);
+        JThread::setPriority(env, 5);
         JThread::printThreadPriority(env);
         NDKThreadHelper::detachThread(jvm);
         env=NDKThreadHelper::attachThread(jvm);

@@ -55,7 +55,7 @@ add_library( GLPrograms SHARED
         ${RX_CORE_CPP}/DistortionCorrection/PolynomialRadialDistortion/PolynomialRadialInverse.cpp
         ${RX_CORE_CPP}/DistortionCorrection/LensDistortion/MLensDistortion.cpp
         ${RX_CORE_CPP}/DistortionCorrection/VrCompositorRenderer.cpp
-        ${RX_CORE_CPP}/DistortionCorrection/VDDC.cpp
+        #${RX_CORE_CPP}/DistortionCorrection/VDDC.cpp
         ${RX_CORE_CPP}/GLPrograms/GLProgramVC.cpp
         ${RX_CORE_CPP}/GLPrograms/GLProgramText.cpp
         ${RX_CORE_CPP}/GLPrograms/GLProgramTexture.cpp
