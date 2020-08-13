@@ -124,7 +124,7 @@ void VrCompositorRenderer::updateHeadsetParams(const MVrHeadsetParams &mDP) {
     }
 }
 
-void VrCompositorRenderer::addLayer(const TexturedStereoMeshData &meshData, GLuint textureId,bool isExternalTexture,HEAD_TRACKING headTracking) {
+void VrCompositorRenderer::addLayer(const TexturedStereoMeshData &meshData,VrContentProvider vrContentProvider,HEAD_TRACKING headTracking) {
     //MLOGD<<"Add layer";
     VRLayer vrLayer;
     if(headTracking==HEAD_TRACKING::NONE){
@@ -136,21 +136,19 @@ void VrCompositorRenderer::addLayer(const TexturedStereoMeshData &meshData, GLui
     }else{
         vrLayer.meshLeftAndRightEye=std::make_unique<TexturedStereoGLMeshBuffer>(meshData);
     }
-    vrLayer.textureId=textureId;
-    vrLayer.isExternalTexture=isExternalTexture;
+    vrLayer.contentProvider=vrContentProvider;
     vrLayer.headTracking=headTracking;
     mVrLayerList.push_back(std::move(vrLayer));
 }
 
-void VrCompositorRenderer::addLayer2DCanvas(float z, float width, float height, GLuint textureId,
-                                            bool isExternalTexture,HEAD_TRACKING headTracking) {
+void VrCompositorRenderer::addLayer2DCanvas(float z, float width, float height,VrContentProvider vrContentProvider,HEAD_TRACKING headTracking) {
     const auto mesh=TexturedGeometry::makeTesselatedVideoCanvas(12,{0, 0,z}, {width, height},0.0f,1.0f);
-    addLayer(mesh,textureId,isExternalTexture,headTracking);
+    addLayer(mesh,vrContentProvider,headTracking);
 }
 
-void VrCompositorRenderer::addLayerSphere360(float radius,UvSphere::MEDIA_FORMAT format,GLuint textureId, bool isExternalTexture) {
+void VrCompositorRenderer::addLayerSphere360(float radius,UvSphere::MEDIA_FORMAT format,VrContentProvider vrContentProvider) {
     const auto sphere=SphereBuilder::createSphereEquirectangularMonoscopic(radius, 72, 36,format);
-    addLayer(sphere,textureId,isExternalTexture,HEAD_TRACKING::FULL);
+    addLayer(sphere,vrContentProvider,HEAD_TRACKING::FULL);
 }
 
 void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
@@ -170,11 +168,17 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         if(layer.headTracking==HEAD_TRACKING::NONE){
             TexturedGLMeshBuffer* distortedMesh= eye == GVR_LEFT_EYE ? layer.optionalLeftEyeDistortedMesh.get() :
                     layer.optionalRightEyeDistortedMesh.get();
-            GLProgramTexture* glProgramTexture2D=layer.isExternalTexture ? mGLProgramTextureExt2D.get() : mGLProgramTexture2D.get();
-            glProgramTexture2D->drawX(layer.textureId,glm::mat4(1.0f),glm::mat4(1.0f),*distortedMesh);
+            const bool isExternalTexture=std::holds_alternative<SurfaceTextureUpdate*>(layer.contentProvider);
+            const GLint textureId=isExternalTexture ? std::get<SurfaceTextureUpdate*>(layer.contentProvider)->getTextureId() :
+                    std::get<VrRenderBuffer2*>(layer.contentProvider)->getLatestRenderedTexture();
+            GLProgramTexture* glProgramTexture2D=isExternalTexture ? mGLProgramTextureExt2D.get() : mGLProgramTexture2D.get();
+            glProgramTexture2D->drawX(textureId,glm::mat4(1.0f),glm::mat4(1.0f),*distortedMesh);
         }else{
-            GLProgramTexture* glProgramTexture= layer.isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
-            glProgramTexture->drawXStereoVertex(layer.textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye,eye==GVR_LEFT_EYE);
+            const bool isExternalTexture=std::holds_alternative<SurfaceTextureUpdate*>(layer.contentProvider);
+            const GLint textureId=isExternalTexture ? std::get<SurfaceTextureUpdate*>(layer.contentProvider)->getTextureId() :
+                    std::get<VrRenderBuffer2*>(layer.contentProvider)->getLatestRenderedTexture();
+            GLProgramTexture* glProgramTexture= isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
+            glProgramTexture->drawXStereoVertex(textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye,eye==GVR_LEFT_EYE);
         }
     }
     // Render the mesh that occludes everything except the part actually visible inside the headset

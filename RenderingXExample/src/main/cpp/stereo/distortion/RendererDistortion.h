@@ -73,7 +73,7 @@ private:
     GLProgramTexture::TexturedGLMeshBuffer mTestMesh2DWireframe;
 public:
     VrCompositorRenderer vrCompositorRenderer;
-    GLuint mGreenTexture;
+    VrRenderBuffer2 vrRenderBufferWithGreenTexture{"ExampleTexture/green.png"};
     GLuint mBlueTexture;
 };
 

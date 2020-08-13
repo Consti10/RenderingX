@@ -25,9 +25,7 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context,jobject sur
     Extensions::initializeGL();
     vrCompositorRenderer.initializeGL();
     surfaceTextureUpdate.updateFromSurfaceTextureHolder(env,surfaceTextureHolder);
-    //vrRenderBuffer2.createRenderTextures(1280,720);
-    //glGenTextures(1,&mExampleUiTexture);
-    GLProgramTexture::loadTexture(mExampleUiTexture,env,context,"ExampleTexture/ui.png");
+    vrRenderBufferExampleUi.loadDefaultTexture(env,context);
     //GLProgramTexture::loadTexture(mSomethingTexture,env,context,"ExampleTexture/something.png");
     /*glGenTextures(1,&mTexture360Image);
     glGenTextures(1,&mTexture360ImageInsta360);
@@ -35,13 +33,13 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context,jobject sur
     GLProgramTexture::loadTexture(mTexture360ImageInsta360,env,context,"360DegreeImages/insta_360_equirectangular.png");*/
     vrCompositorRenderer.removeLayers();
     if(M_SPHERE_MODE==SPHERE_MODE_EQUIRECTANGULAR_TEST){
-        vrCompositorRenderer.addLayerSphere360(10.0f,UvSphere::MEDIA_EQUIRECT_MONOSCOPIC,surfaceTextureUpdate.getTextureId(),true);
+        vrCompositorRenderer.addLayerSphere360(10.0f,UvSphere::MEDIA_EQUIRECT_MONOSCOPIC,&surfaceTextureUpdate);
     }else{
         auto sphere=DualFisheyeSphere::createSphereGL(2560, 1280);
-        vrCompositorRenderer.addLayer(sphere, surfaceTextureUpdate.getTextureId(), true, VrCompositorRenderer::HEAD_TRACKING::FULL);
+        vrCompositorRenderer.addLayer(sphere,&surfaceTextureUpdate, VrCompositorRenderer::HEAD_TRACKING::FULL);
     }
     const float uiElementWidth=2.0;
-    vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,mExampleUiTexture, false, VrCompositorRenderer::FULL);
+    vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,&vrRenderBufferExampleUi, VrCompositorRenderer::FULL);
     // add a static layer to test the pre-distort feature
     //vrCompositorRenderer.addLayer2DCanvas(-3,0.2f,0.2f,mSomethingTexture,false,VrCompositorRenderer::NONE);
 }
@@ -50,7 +48,7 @@ void Renderer360Video::onDrawFrame(JNIEnv* env) {
     mFPSCalculator.tick();
     surfaceTextureUpdate.updateAndCheck(env);
     //MLOGD<<"FPS: "<<mFPSCalculator.getCurrentFPS();
-    vrCompositorRenderer.setLayerTextureId(1, vrRenderBuffer2.getLatestRenderedTexture());
+    //vrCompositorRenderer.setLayerTextureId(1, vrRenderBuffer2.getLatestRenderedTexture());
 
     //Update the head position (rotation) then leave it untouched during the frame
     vrCompositorRenderer.updateLatestHeadSpaceFromStartSpaceRotation();

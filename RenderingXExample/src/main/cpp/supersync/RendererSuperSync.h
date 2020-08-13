@@ -67,9 +67,7 @@ private:
     SurfaceTextureUpdate mSurfaceTextureUpdate;
 public:
     VrCompositorRenderer vrCompositorRenderer;
-    GLuint mGreenTexture;
-    GLuint mBlueTexture;
-    GLuint mExampleUITexture;
+    VrRenderBuffer2 vrRenderBufferExampleTexture{"ExampleTexture/ui.png"};
 };
 
 #endif //RENDERINGX_RENDERERSUPERSYNC_H

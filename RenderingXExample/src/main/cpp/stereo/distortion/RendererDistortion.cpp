@@ -42,12 +42,12 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     const auto tmpData=TexturedGeometry::makeTessellatedRectWireframe(LINE_MESH_TESSELATION_FACTOR, {0, 0, -2}, {tesselatedRectSize, tesselatedRectSize});
     mTestMesh2DWireframe.setData(tmpData);
     glGenTextures(1,&mBlueTexture);
-    glGenTextures(1,&mGreenTexture);
+    //glGenTextures(1,&mGreenTexture);
     GLProgramTexture::loadTexture(mBlueTexture,env,context,"ExampleTexture/blue.png");
-    GLProgramTexture::loadTexture(mGreenTexture,env,context,"ExampleTexture/green.png");
+    vrRenderBufferWithGreenTexture.loadDefaultTexture(env,context);
     vrCompositorRenderer.removeLayers();
 
-    vrCompositorRenderer.addLayer(tmpData, mGreenTexture, false,
+    vrCompositorRenderer.addLayer(tmpData,&vrRenderBufferWithGreenTexture,
 #ifdef ENABLE_HEAD_TRACKING
 VrCompositorRenderer::HEAD_TRACKING::FULL
 #else

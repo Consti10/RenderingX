@@ -41,18 +41,13 @@ void RendererSuperSync::onSurfaceCreated(JNIEnv *env, jobject androidContext,job
     vrCompositorRenderer.initializeGL();
     gvr_api_->InitializeGl();
     mSurfaceTextureUpdate.updateFromSurfaceTextureHolder(env,surfaceTextureHolder);
-    glGenTextures(1,&mBlueTexture);
-    glGenTextures(1,&mGreenTexture);
-    glGenTextures(1,&mExampleUITexture);
-    GLProgramTexture::loadTexture(mBlueTexture,env,androidContext,"ExampleTexture/blue.png");
-    GLProgramTexture::loadTexture(mGreenTexture,env,androidContext,"ExampleTexture/green.png");
-    GLProgramTexture::loadTexture(mExampleUITexture,env,androidContext,"ExampleTexture/ui.png");
+    vrRenderBufferExampleTexture.loadDefaultTexture(env,androidContext);
     vrCompositorRenderer.removeLayers();
 
     float uiElementWidth=3.0;
-    vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,mSurfaceTextureUpdate.getTextureId(), true, VrCompositorRenderer::NONE);
+    vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,&mSurfaceTextureUpdate, VrCompositorRenderer::NONE);
     uiElementWidth=1.5;
-    vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,mExampleUITexture, false, VrCompositorRenderer::NONE);
+    vrCompositorRenderer.addLayer2DCanvas(-3, uiElementWidth,uiElementWidth*1080.0f/2160.0f,&vrRenderBufferExampleTexture, VrCompositorRenderer::NONE);
 
     glProgramVC2D=new GLProgramVC(true);
     solidRectangleBlack.setData(

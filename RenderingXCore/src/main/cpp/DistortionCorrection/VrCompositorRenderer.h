@@ -89,6 +89,8 @@ public:
         NONE,
         FULL
     };
+    using VrContentProvider=std::variant<SurfaceTextureUpdate*,VrRenderBuffer2*>;
+
     // https://developer.oculus.com/documentation/unity/unity-ovroverlay/
     struct VRLayer{
         HEAD_TRACKING headTracking;
@@ -98,27 +100,24 @@ public:
         std::unique_ptr<GLProgramTexture::TexturedStereoGLMeshBuffer> meshLeftAndRightEye=nullptr;
         std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> optionalLeftEyeDistortedMesh=nullptr;
         std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> optionalRightEyeDistortedMesh=nullptr;
-        GLuint textureId;
-        bool isExternalTexture;
         // By supplying the content provider updating the layer each frame is much easier
-        std::optional<SurfaceTextureUpdate> contentProvider1=std::nullopt;
-        std::optional<VrRenderBuffer2> contentProvider2=std::nullopt;
+        VrContentProvider contentProvider;
     };
     // List of layer descriptions
     std::vector<VRLayer> mVrLayerList;
-    void addLayer(const GLProgramTexture::TexturedStereoMeshData& meshData, GLuint textureId, bool isExternalTexture=false, HEAD_TRACKING headTracking=FULL);
-    void addLayer(const GLProgramTexture::TexturedMeshData& meshData, GLuint textureId, bool isExternalTexture=false, HEAD_TRACKING headTracking=FULL){
-        addLayer(GLProgramTexture::convert(meshData),textureId,isExternalTexture,headTracking);
-    }
-    void setLayerTextureId(ssize_t idx,GLuint textureId){
-        mVrLayerList.at(idx).textureId=textureId;
+    void addLayer(const GLProgramTexture::TexturedStereoMeshData& meshData,VrContentProvider vrContentProvider, HEAD_TRACKING headTracking=FULL);
+    void addLayer(const GLProgramTexture::TexturedMeshData& meshData,VrContentProvider vrContentProvider, HEAD_TRACKING headTracking=FULL){
+        addLayer(GLProgramTexture::convert(meshData),vrContentProvider,headTracking);
     }
     void removeLayers();
     void drawLayers(gvr::Eye eye);
     // Add a 2D layer at position (0,0,Z) and (width,height) in VR 3D space.
-    void addLayer2DCanvas(float z,float width,float height,GLuint textureId, bool isExternalTexture=false,HEAD_TRACKING headTracking=FULL);
+    void addLayer2DCanvas(float z,float width,float height,VrContentProvider vrContentProvider,HEAD_TRACKING headTracking=FULL);
     // Add a 360° video sphere
-    void addLayerSphere360(float radius,UvSphere::MEDIA_FORMAT format,GLuint textureId, bool isExternalTexture=false);
+    void addLayerSphere360(float radius,UvSphere::MEDIA_FORMAT format,VrContentProvider vrContentProvider);
+    VRLayer& getLayer(size_t idx){
+        return mVrLayerList.at(idx);
+    }
 public:
     // The left/right eye viewport is exactly the area covered when splitting the screen in half
     // while holding the device in landscape mode

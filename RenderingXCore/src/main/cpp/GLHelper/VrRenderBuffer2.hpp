@@ -27,6 +27,11 @@ class SwapChain{
 
 class VrRenderBuffer2{
 public:
+    VrRenderBuffer2(std::optional<std::string> defaultTextureUrl=std::nullopt):defaultTextureUrl(defaultTextureUrl){}
+
+    const std::optional<std::string> defaultTextureUrl;
+    GLuint defaultTexture;
+
     GLuint framebuffers[2];
     GLuint WIDTH_PX=0,HEIGH_PX=0;
     //bool texturesCreated=false;
@@ -41,7 +46,14 @@ public:
     };
     TimingInformation timingInformation[2];
 
+    void loadDefaultTexture(JNIEnv* env,jobject androidContext){
+        assert(defaultTextureUrl!=std::nullopt);
+        glGenTextures(1, &defaultTexture);
+        GLProgramTexture::loadTexture(defaultTexture,env,androidContext,defaultTextureUrl->c_str());
+    }
+
     void createRenderTextures(int W,int H){
+        assert(defaultTextureUrl==std::nullopt);
         WIDTH_PX=W;
         HEIGH_PX=H;
         for(int i=0;i<2;i++){
@@ -59,6 +71,7 @@ public:
     }
 
     void createFrameBuffers(){
+        assert(defaultTextureUrl==std::nullopt);
         for(int i=0;i<2;i++){
             glGenFramebuffers(1, &framebuffers[i]);
             glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[i]);
@@ -70,6 +83,7 @@ public:
     }
 
     void bind1(){
+        assert(defaultTextureUrl==std::nullopt);
         GLHelper::checkGlError("before B");
         timeFrameWasBound[currentRenderTexture]=std::chrono::steady_clock::now();
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[currentRenderTexture]);
@@ -83,6 +97,7 @@ public:
     // Submit rendering commands in between
 
     void unbindAndSwap() {
+        assert(defaultTextureUrl==std::nullopt);
         timingInformation[currentRenderTexture].stopSubmitCommands=CLOCK::now();
         GLHelper::checkGlError("before U");
         FenceSync fenceSync;
@@ -97,6 +112,9 @@ public:
     }
 
     GLuint getLatestRenderedTexture(TimingInformation* timingForThisFrame=nullptr){
+        if(defaultTextureUrl!=std::nullopt){
+            return defaultTexture;
+        }
         //return textures[0];
         int currentSampleIndex=currentRenderTexture+1;
         if(timingForThisFrame!=nullptr){
