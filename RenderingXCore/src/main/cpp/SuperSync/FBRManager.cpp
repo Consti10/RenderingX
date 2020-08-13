@@ -8,6 +8,7 @@
 #include "FBRManager.h"
 #include "Extensions.h"
 #include <AndroidLogger.hpp>
+#include <NDKThreadHelper.hpp>
 #include <utility>
 
 //#define RELEASE
@@ -27,14 +28,21 @@ vsync(*vsync){
     resetTS();
 }
 
+void FBRManager::enterWarping(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer){
+    JThread::MethodHelper methodHelper(env);
+    Chronometer callJavaTime{"Call java isInterrupted()"};
+    while (true){
+        callJavaTime.start();
+        const bool isInterrupted=methodHelper.isInterrupted();
+        callJavaTime.stop();
+        callJavaTime.printInIntervalls(std::chrono::seconds(3),false);
+
+        if(isInterrupted)break;
+        warpEyesToFrontBufferSynchronized(env,vrCompositorRenderer);
+    }
+}
 
 void FBRManager::warpEyesToFrontBufferSynchronized(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer) {
-    if(endLastFunctionCall!=CLOCK::time_point{}){
-        const auto deltaBetweenFunctionCalls=CLOCK::now()-endLastFunctionCall;
-        if(deltaBetweenFunctionCalls>300us){ //1/10 of a ms
-            //MLOGE<<"Stayed too long:"<<MyTimeHelper::R(deltaBetweenFunctionCalls);
-        }
-    }
     const auto latestVSYNC=vsync.getLatestVSYNC();
     const auto nextVSYNCMiddle=latestVSYNC.base+vsync.getEyeRefreshTime()+std::chrono::milliseconds(0);
     const auto nextVSYNC=latestVSYNC.base+vsync.getDisplayRefreshTime()+std::chrono::milliseconds(0);
@@ -102,7 +110,6 @@ void FBRManager::warpEyesToFrontBufferSynchronized(JNIEnv* env,VrCompositorRende
         //MLOGD<<"VSYNC pos "<<getVsyncRasterizerPositionNormalized();
     }
     printLog();
-    endLastFunctionCall=CLOCK::now();
 }
 
 

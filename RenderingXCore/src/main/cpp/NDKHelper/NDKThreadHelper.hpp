@@ -38,6 +38,29 @@ namespace JThread{
     static void printThreadPriority(JNIEnv* env){
         MLOGD<<"printThreadPriority "<<getThreadPriority(env);
     }
+    class MethodHelper{
+    private:
+        JNIEnv* env;
+        jclass jcThread;
+        jmethodID jmCurrentThread;
+        jmethodID jmIsInterrupted;
+        jmethodID jmGetPriority;
+        jmethodID jmSetPriority;
+        jobject joCurrentThread;
+    public:
+        MethodHelper(JNIEnv* env){
+            this->env=env;
+            jcThread = env->FindClass("java/lang/Thread");
+            jmCurrentThread=env->GetStaticMethodID(jcThread,"currentThread","()Ljava/lang/Thread;");
+            jmIsInterrupted=env->GetMethodID(jcThread,"isInterrupted","()Z");
+            jmGetPriority=env->GetMethodID(jcThread,"getPriority","()I");
+            jmSetPriority=env->GetMethodID(jcThread,"setPriority","(I)V");
+            joCurrentThread=env->CallStaticObjectMethod(jcThread,jmCurrentThread);
+        }
+        bool isInterrupted(){
+            return (bool) env->CallBooleanMethod(joCurrentThread,jmIsInterrupted);
+        }
+    };
 }
 // Java android.os.Process utility methods (not java/lang/Process !)
 // I think process and thread is used in the same context here but you probably want to use

@@ -266,7 +266,7 @@ static void onDrawFrame(){
     }
     GLHelper::checkGlError("example_renderer::onDrawFrame");
     cpuFrameTime.stop();
-    cpuFrameTime.printAvg(std::chrono::seconds(5));
+    cpuFrameTime.printInIntervalls(std::chrono::seconds(5));
     fpsCalculator.tick();
 }
 

@@ -60,6 +60,8 @@
 class FBRManager{
 public:
     FBRManager(VSYNC* vsync);
+    // Runs until the current thread is interrupted (java thread)
+    void enterWarping(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer);
     //has to be called from the OpenGL thread that is bound to the front buffer surface
     //blocks until requestExitSuperSyncLoop() is called (from any thread, e.g. the UI onPauseX )
     void warpEyesToFrontBufferSynchronized(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer);
@@ -82,7 +84,6 @@ private:
     void printLog();
     std::chrono::steady_clock::time_point lastLog;
     void resetTS();
-    CLOCK::time_point endLastFunctionCall;
     VSYNC::VSYNCState lastRenderedFrame;
     void drawEye(JNIEnv* env,const bool isLeftEye,VrCompositorRenderer& vrCompositorRenderer);
     std::array<int,2> whichColor;
