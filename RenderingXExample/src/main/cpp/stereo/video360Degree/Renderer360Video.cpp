@@ -46,6 +46,15 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context,jobject sur
 
 void Renderer360Video::onDrawFrame(JNIEnv* env) {
     mFPSCalculator.tick();
+    const auto timeP=std::chrono::steady_clock::now()+std::chrono::seconds(1);
+    if(const auto delay=surfaceTextureUpdate.waitUntilFrameAvailable(env,timeP)){
+        videoFrameWaitTime.add(*delay);
+        //MLOGD<<"avg Latency until opengl is "<<surfaceTextureDelay.getAvg_ms();
+        //MLOGD<<MyTimeHelper::R(*delay)<<" | "<<videoFrameWaitTime.getAvgReadable();
+    }else{
+        //MLOGD<<"Timeout";
+    }
+
     surfaceTextureUpdate.updateAndCheck(env);
     //MLOGD<<"FPS: "<<mFPSCalculator.getCurrentFPS();
 

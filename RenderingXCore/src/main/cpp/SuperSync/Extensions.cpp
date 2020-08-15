@@ -56,6 +56,9 @@ PFNEGLGETNEXTFRAMEIDANDROIDPROC Extensions::eglGetNextFrameIdANDROID ;
 PFNEGLGETFRAMETIMESTAMPSANDROIDPROC Extensions::eglGetFrameTimestampsANDROID;
 PFNEGLGETCOMPOSITORTIMINGANDROIDPROC Extensions::eglGetCompositorTimingANDROID;
 PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC Extensions::eglGetFrameTimestampSupportedANDROID;
+//
+bool Extensions::EGL_KHR_swap_buffers_with_damage_available;
+PFNEGLSWAPBUFFERSWITHDAMAGEKHRPROC Extensions::eglSwapBuffersWithDamageKHR;
 
 void Extensions::initializeGL(){
     const char* glExtensionsC=(const char*)glGetString(GL_EXTENSIONS);
@@ -121,6 +124,11 @@ void Extensions::initializeGL(){
         eglGetCompositorTimingANDROID= reinterpret_cast<PFNEGLGETCOMPOSITORTIMINGANDROIDPROC >(eglGetProcAddress("eglGetCompositorTimingANDROID"));
         eglGetFrameTimestampSupportedANDROID=reinterpret_cast<PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC>(eglGetProcAddress("eglGetFrameTimestampSupportedANDROID"));
         assert(eglGetNextFrameIdANDROID!=nullptr && eglGetFrameTimestampsANDROID!=nullptr);
+    }
+    if(ExtensionStringPresent("EGL_KHR_swap_buffers_with_damage",eglExtensions)){
+        EGL_KHR_swap_buffers_with_damage_available=true;
+        eglSwapBuffersWithDamageKHR=reinterpret_cast<PFNEGLSWAPBUFFERSWITHDAMAGEKHRPROC>(eglGetProcAddress("eglSwapBuffersWithDamageKHR"));
+        assert(eglSwapBuffersWithDamageKHR!=nullptr);
     }
     //other
     glInvalidateFramebuffer_  = (PFNGLINVALIDATEFRAMEBUFFER_)eglGetProcAddress("glInvalidateFramebuffer");

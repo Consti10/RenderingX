@@ -171,18 +171,15 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         const auto& layer=mVrLayerList[i];
         // Calculate the view matrix for this layer.
         const glm::mat4 viewM= layer.headTracking==NONE ? eyeFromHead[EYE_IDX] : eyeFromHead[EYE_IDX] * rotation;
+        const bool isExternalTexture=std::holds_alternative<SurfaceTextureUpdate*>(layer.contentProvider);
+        const GLint textureId=isExternalTexture ? std::get<SurfaceTextureUpdate*>(layer.contentProvider)->getTextureId() :
+                              std::get<VrRenderBuffer2*>(layer.contentProvider)->getLatestRenderedTexture();
         if(layer.headTracking==HEAD_TRACKING::NONE){
             TexturedGLMeshBuffer* distortedMesh= eye == GVR_LEFT_EYE ? layer.optionalLeftEyeDistortedMesh.get() :
                     layer.optionalRightEyeDistortedMesh.get();
-            const bool isExternalTexture=std::holds_alternative<SurfaceTextureUpdate*>(layer.contentProvider);
-            const GLint textureId=isExternalTexture ? std::get<SurfaceTextureUpdate*>(layer.contentProvider)->getTextureId() :
-                    std::get<VrRenderBuffer2*>(layer.contentProvider)->getLatestRenderedTexture();
             GLProgramTexture* glProgramTexture2D=isExternalTexture ? mGLProgramTextureExt2D.get() : mGLProgramTexture2D.get();
             glProgramTexture2D->drawX(textureId,glm::mat4(1.0f),glm::mat4(1.0f),*distortedMesh);
         }else{
-            const bool isExternalTexture=std::holds_alternative<SurfaceTextureUpdate*>(layer.contentProvider);
-            const GLint textureId=isExternalTexture ? std::get<SurfaceTextureUpdate*>(layer.contentProvider)->getTextureId() :
-                    std::get<VrRenderBuffer2*>(layer.contentProvider)->getLatestRenderedTexture();
             GLProgramTexture* glProgramTexture= isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
             glProgramTexture->drawXStereoVertex(textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye,eye==GVR_LEFT_EYE);
         }

@@ -39,7 +39,7 @@ public class AExample360Video extends VrActivity {
     public static final String KEY_SPHERE_MODE ="KEY_SPHERE_MODE";
     public static final String KEY_VIDEO_FILENAME="KEY_VIDEO_FILENAME";
     // Only one of these two is in use at the same time
-    private static final boolean USE_GOOGLE_EXO_PLAYER_INSTEAD =true;
+    private static final boolean USE_GOOGLE_EXO_PLAYER_INSTEAD =false;
     // ExoPlayer is the better choice for file playback, but my VideoPlayer
     // Is the better choice for low latency h264 live video playback
     private VideoPlayer videoPlayer;
@@ -52,13 +52,7 @@ public class AExample360Video extends VrActivity {
         final int SPHERE_MODE=bundle.getInt(KEY_SPHERE_MODE,0);
         final String VIDEO_FILENAME=bundle.getString(KEY_VIDEO_FILENAME);
         //start initialization
-        //final VRLayout myVRLayout = new VRLayout(this);
         final VrView mVrView=new VrView(this);
-
-
-        //final XGLSurfaceView glSurfaceView2=new XGLSurfaceView(this);
-        //glSurfaceView2.setEGLConfigPrams(new XSurfaceParams(0,0,true));
-        //glSurfaceView2.DO_SUPERSYNC_MODS=true;
 
         // Use one of both ! Default to the player from VideoCore
         if(USE_GOOGLE_EXO_PLAYER_INSTEAD){

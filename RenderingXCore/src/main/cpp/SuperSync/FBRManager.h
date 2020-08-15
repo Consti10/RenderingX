@@ -62,9 +62,10 @@ public:
     FBRManager(VSYNC* vsync);
     // Runs until the current thread is interrupted (java thread)
     void enterWarping(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer);
-    //has to be called from the OpenGL thread that is bound to the front buffer surface
-    //blocks until requestExitSuperSyncLoop() is called (from any thread, e.g. the UI onPauseX )
+    // warp eyes at the right time into front buffer to avoid tearing
     void warpEyesToFrontBufferSynchronized(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer);
+    //
+    void drawEyesToFrontBufferUnsynchronized(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer);
 private:
     const bool CHANGE_CLEAR_COLOR_TO_MAKE_TEARING_OBSERVABLE=true;
     const VSYNC& vsync;

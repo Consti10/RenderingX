@@ -49,6 +49,7 @@ void FBRManager::warpEyesToFrontBufferSynchronized(JNIEnv* env,VrCompositorRende
         MLOGE<<"Probably missed VSYNC "<<lastRenderedFrame.count<<" "<<latestVSYNC.count<<" "<<vsync.getVsyncRasterizerPositionNormalized()<<" "<<MyTimeHelper::R(CLOCK::now()-latestVSYNC.base);
     }
     lastRenderedFrame=latestVSYNC;
+    // For now assume there is max 1 layer that holds a SurfaceTexture
     SurfaceTextureUpdate* surfaceTextureUpdate=std::get<SurfaceTextureUpdate*>(vrCompositorRenderer.getLayers().at(0).contentProvider);
     //
     // wait until nextVSYNCMiddle
@@ -178,18 +179,39 @@ void FBRManager::resetTS() {
 void FBRManager::drawEye(JNIEnv *env, const bool leftEye, VrCompositorRenderer &vrCompositorRenderer) {
     ATrace_beginSection("drawEye()");
     //Draw the background, which alternates between black and yellow to make tearing observable
-    const int idx=leftEye==0 ? 0 : 1;
-    whichColor[idx]++;
-    if(whichColor[idx]>1){
-        whichColor[idx]=0;
-    }
-    if(whichColor[idx]==0){
-        vrCompositorRenderer.clearViewportUsingRenderedMesh(true);
-    }else{
-        vrCompositorRenderer.clearViewportUsingRenderedMesh(false);
+    if(CHANGE_CLEAR_COLOR_TO_MAKE_TEARING_OBSERVABLE){
+        const int idx=leftEye==0 ? 0 : 1;
+        whichColor[idx]++;
+        if(whichColor[idx]>1){
+            whichColor[idx]=0;
+        }
+        if(whichColor[idx]==0){
+            vrCompositorRenderer.clearViewportUsingRenderedMesh(true);
+        }else{
+            vrCompositorRenderer.clearViewportUsingRenderedMesh(false);
+        }
     }
     vrCompositorRenderer.drawLayers(leftEye ? GVR_LEFT_EYE : GVR_RIGHT_EYE);
     ATrace_endSection();
+}
+
+void FBRManager::drawEyesToFrontBufferUnsynchronized(JNIEnv *env,VrCompositorRenderer &vrCompositorRenderer) {
+    JThread jThread(env);
+    while (!jThread.isInterrupted()){
+        SurfaceTextureUpdate* surfaceTextureUpdate=std::get<SurfaceTextureUpdate*>(vrCompositorRenderer.getLayers().at(0).contentProvider);
+        for(int eye=0;eye<2;eye++){
+            surfaceTextureUpdate->updateAndCheck(env);
+            //surfaceTextureUpdate->waitUntilFrameAvailable(env,std::chrono::steady_clock::now()+std::chrono::milliseconds(14));
+            const bool isLeftEye=eye==0;
+            directRender.begin(vrCompositorRenderer.getViewportForEye(isLeftEye ? GVR_LEFT_EYE : GVR_RIGHT_EYE));
+            drawEye(env,isLeftEye,vrCompositorRenderer);
+            directRender.end();
+            std::unique_ptr<FenceSync> fenceSync=std::make_unique<FenceSync>();
+            glFlush();
+            // Make sure that I do not submit eyes faster than the GPU is able to render them
+            fenceSync->wait(std::chrono::milliseconds(100));
+        }
+    }
 }
 
 

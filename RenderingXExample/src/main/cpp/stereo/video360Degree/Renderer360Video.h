@@ -53,6 +53,7 @@ private:
     SurfaceTextureUpdate surfaceTextureUpdate;
 public:
     VrCompositorRenderer vrCompositorRenderer;
+    AvgCalculator videoFrameWaitTime;
 };
 
 #endif //RENDERINGX_EXAMPLE_DISTORTION_H

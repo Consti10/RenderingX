@@ -47,8 +47,8 @@ void RendererSuperSync::onSurfaceCreated(JNIEnv *env, jobject androidContext,job
 }
 
 void RendererSuperSync::enterSuperSyncLoop(JNIEnv *env, jobject obj) {
-    //mFBRManager.warpEyesToFrontBufferSynchronized(env,vrCompositorRenderer);
     mFBRManager.enterWarping(env,vrCompositorRenderer);
+    //mFBRManager.drawEyesToFrontBufferUnsynchronized(env,vrCompositorRenderer);
 }
 
 #define JNI_METHOD(return_type, method_name) \
