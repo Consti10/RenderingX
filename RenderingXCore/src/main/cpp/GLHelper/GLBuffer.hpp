@@ -25,16 +25,16 @@ namespace GLBufferHelper {
     //returns the n of elements inside the vector (NOT the n of bytes)
     //since they often are the n of triangles/indices that need to be drawn
     template<class T>
-    static int uploadGLBuffer(const GLuint buff, const std::vector<T> &data,GLenum usage=GL_STATIC_DRAW) {
+    static std::size_t uploadGLBuffer(const GLuint buff, const std::vector<T> &data,GLenum usage=GL_STATIC_DRAW) {
         const auto size = data.size();
         uploadGLBuffer(buff, (void *) data.data(), size * sizeof(T));
-        return (int) size;
+        return size;
     }
     //wrap std::array, similar to std::vector<>
     template<class T,std::size_t S>
-    static int uploadGLBuffer(const GLuint buff, const std::array<T,S> &data,GLenum usage=GL_STATIC_DRAW) {
+    static  std::size_t uploadGLBuffer(const GLuint buff, const std::array<T,S> &data,GLenum usage=GL_STATIC_DRAW) {
         uploadGLBuffer(buff, (void *)data.data(), S * sizeof(T));
-        return (int) S;
+        return S;
     }
 };
 
@@ -54,7 +54,7 @@ public:
     GLBuffer(GLBuffer&&)=default;
 private:
     // N of elements of type T stored inside OpenGL buffer.
-    int count=0;
+    std::size_t count=0;
     GLuint glBufferId;
     bool alreadyCreatedGLBuffer=false;
     bool alreadyUploaded=false;
@@ -101,7 +101,7 @@ public:
         return glBufferId;
     }
     int getCount()const{
-        return count;
+        return (int)count;
     }
     /*void deleteGL() {
         if(alreadyCreatedGLBuffer){

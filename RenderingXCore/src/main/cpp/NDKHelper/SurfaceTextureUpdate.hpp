@@ -39,6 +39,7 @@
 #include <optional>
 #include <chrono>
 #include <TimeHelper.hpp>
+#include <NDKThreadHelper.hpp>
 
 //Helper for calling the ASurfaceTexture_XXX method with a fallback for minApi<28
 // 03.06.2020 confirmed that the ASurfaceTexture_XXX methods call native code directly (not java)
@@ -101,6 +102,8 @@ public:
         jmethodID jmGetSurfaceTexture=env->GetMethodID(jcSurfaceTextureHolder, "getSurfaceTexture", "()Landroid/graphics/SurfaceTexture;" );
         assert(jmGetTextureId);
         setSurfaceTextureAndId(env,env->CallObjectMethod(surfaceTextureHolder,jmGetSurfaceTexture),env->CallIntMethod(surfaceTextureHolder,jmGetTextureId));
+        // call once such that the target is set properly for the texture
+        updateTexImageJAVA(env);
     }
     void updateTexImageJAVA(JNIEnv* env) {
 #ifdef FPV_VR_USE_JAVA_FOR_SURFACE_TEXTURE_UPDATE
@@ -130,15 +133,21 @@ public:
         }
         return std::nullopt;
     }
-    // Poll on the SurfaceTexture in small intervalls until either a new frame was dequeued
-    // or the timeout was reached. return same as above
+    // Poll on the SurfaceTexture in small intervalls until either
+    // 1) a new frame was dequeued
+    // 2) the timeout was reached
+    // 3) the calling java thread was interrupted
     std::optional<std::chrono::steady_clock::duration> waitUntilFrameAvailable(JNIEnv* env,const std::chrono::steady_clock::time_point& maxWaitTimePoint){
+        JThread jThread(env);
         while(true){
             if(const auto delay=updateAndCheck(env)){
                 return delay;
             }
             //const auto leftSleepTime=maxWaitTimePoint-std::chrono::steady_clock::now();
             if(std::chrono::steady_clock::now()>=maxWaitTimePoint){
+                break;
+            }
+            if(jThread.isInterrupted()){
                 break;
             }
             TestSleep::sleep(std::chrono::milliseconds(1));
