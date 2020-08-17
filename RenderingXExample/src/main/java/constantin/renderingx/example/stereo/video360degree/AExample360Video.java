@@ -39,7 +39,7 @@ public class AExample360Video extends VrActivity {
     public static final String KEY_SPHERE_MODE ="KEY_SPHERE_MODE";
     public static final String KEY_VIDEO_FILENAME="KEY_VIDEO_FILENAME";
     // Only one of these two is in use at the same time
-    private static final boolean USE_GOOGLE_EXO_PLAYER_INSTEAD =false;
+    private static final boolean USE_GOOGLE_EXO_PLAYER_INSTEAD =true;
     // ExoPlayer is the better choice for file playback, but my VideoPlayer
     // Is the better choice for low latency h264 live video playback
     private VideoPlayer videoPlayer;
