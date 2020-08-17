@@ -6,6 +6,8 @@ import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import constantin.renderingx.core.vrsettings.ASettingsVR;
+
 // Specific implementation of AppCompatActivity that handles full screen and key events
 public class VrActivity  extends AppCompatActivity {
 
@@ -45,7 +47,7 @@ public class VrActivity  extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         WindowManager.LayoutParams layout = getWindow().getAttributes();
-        layout.screenBrightness = 0.8f;
+        layout.screenBrightness = ASettingsVR.getScreenBrightnessInRangeZeroTo1(this);
         getWindow().setAttributes(layout);
         //if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M || Settings.System.canWrite(this)) {
         //}

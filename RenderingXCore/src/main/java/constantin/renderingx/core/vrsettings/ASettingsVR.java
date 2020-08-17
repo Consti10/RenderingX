@@ -38,6 +38,10 @@ public class ASettingsVR extends AppCompatActivity {
         super.onPause();
     }
 
+    public static float getScreenBrightnessInRangeZeroTo1(final Context context){
+        // normalize the value
+        return context.getSharedPreferences("pref_vr_rendering",MODE_PRIVATE).getFloat(context.getString(R.string.VR_SCREEN_BRIGHTNESS_PERCENTAGE),80)/100.0f;
+    }
 
     public static class FSettingsVR extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener{
 
