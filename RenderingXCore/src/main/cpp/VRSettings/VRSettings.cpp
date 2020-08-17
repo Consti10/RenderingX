@@ -6,10 +6,10 @@
 #include <sstream>
 #include <SharedPreferences.hpp>
 #include <AndroidLogger.hpp>
-#include "SettingsVR.h"
+#include "VRSettings.h"
 #include "IDVR.hpp"
 
-SettingsVR::SettingsVR(JNIEnv *env, jobject androidContext) {
+VRSettings::VRSettings(JNIEnv *env, jobject androidContext) {
     SharedPreferences settingsN(env,androidContext,"pref_vr_rendering");
 
     VR_SCENE_SCALE_PERCENTAGE=settingsN.getFloat(IDVR::VR_SCENE_SCALE_PERCENTAGE,100.0F);

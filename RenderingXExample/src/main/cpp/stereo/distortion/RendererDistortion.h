@@ -7,7 +7,6 @@
 
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
-#include "../../../../../../RenderingXCore/src/main/cpp/VRSettings/SettingsVR.h"
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 #include <jni.h>

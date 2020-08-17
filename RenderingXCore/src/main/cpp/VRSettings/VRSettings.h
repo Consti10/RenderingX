@@ -11,11 +11,11 @@
 #include <string>
 #include <vr/gvr/capi/include/gvr.h>
 
-class SettingsVR {
+class VRSettings {
 public:
-    SettingsVR(JNIEnv *env, jobject androidContext);
-    SettingsVR(SettingsVR const &) = delete;
-    void operator=(SettingsVR const &)= delete;
+    VRSettings(JNIEnv *env, jobject androidContext);
+    VRSettings(VRSettings const &) = delete;
+    void operator=(VRSettings const &)= delete;
 public:
     //Stereo and VR Rendering
     int VR_DISTORTION_CORRECTION_MODE;
