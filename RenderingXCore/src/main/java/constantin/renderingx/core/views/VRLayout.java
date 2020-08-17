@@ -3,6 +3,7 @@ package constantin.renderingx.core.views;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Build;
 import android.os.PowerManager;
@@ -11,10 +12,12 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,12 +26,17 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
 import com.google.vr.cardboard.DisplaySynchronizer;
+import com.google.vr.cardboard.VrParamsProvider;
 import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrUiLayout;
 import com.google.vr.sdk.base.AndroidCompat;
+import com.google.vr.sdk.base.GvrViewerParams;
+
+import java.lang.ref.WeakReference;
 
 import constantin.renderingx.core.FullscreenHelper;
 import constantin.renderingx.core.R;
+import constantin.renderingx.core.vrsettings.ASettingsVR;
 
 import static android.content.Context.POWER_SERVICE;
 
@@ -42,11 +50,12 @@ import static android.content.Context.POWER_SERVICE;
 
 // Warning: constructors will crash when context!=AppCompatActivity
 @SuppressLint("ViewConstructor")
-public class VRLayout extends FrameLayout implements LifecycleObserver {
+public class VRLayout extends FrameLayout implements LifecycleObserver , PopupMenu.OnMenuItemClickListener {
     private static final String TAG="MyVRLayout";
 
     private GvrApi gvrApi;
     private DisplaySynchronizer displaySynchronizer;
+    private AppCompatActivity activity;
 
     public VRLayout(Context context) {
         super(context);
@@ -59,6 +68,7 @@ public class VRLayout extends FrameLayout implements LifecycleObserver {
     }
 
     private void init(final AppCompatActivity activity,final boolean createDisplaySynchronizer){
+        this.activity=activity;
         LayoutInflater.from(getContext()).inflate(R.layout.my_vr_layout, this, true);
         final Display display=activity.getWindowManager().getDefaultDisplay();
         displaySynchronizer=null;
@@ -69,13 +79,17 @@ public class VRLayout extends FrameLayout implements LifecycleObserver {
         findViewById(R.id.vr_overlay_settings_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                GvrUiLayout.launchOrInstallGvrApp(activity);
+                PopupMenu popup = new PopupMenu(activity,view);
+                popup.setOnMenuItemClickListener(VRLayout.this);
+                popup.inflate(R.menu.vr_popup_menu);
+                popup.show();
+                /*GvrUiLayout.launchOrInstallGvrApp(activity);
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(activity,"VR Headset changes require an activity restart",Toast.LENGTH_LONG).show();
                     }
-                });
+                });*/
             }
         });
         findViewById(R.id.vr_overlay_back_button).setOnClickListener(new View.OnClickListener() {
@@ -212,5 +226,25 @@ public class VRLayout extends FrameLayout implements LifecycleObserver {
             Log.d(TAG,"Cannot get exclusive core "+exclusiveVRCore);
         }
         return exclusiveVRCore;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        //Toast.makeText(activity, "Selected Item: " +item.getTitle(), Toast.LENGTH_SHORT).show();
+        final int itemId = item.getItemId();
+        if (itemId == R.id.change_headset_item) {
+            GvrUiLayout.launchOrInstallGvrApp(activity);
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(activity,"VR Headset changes require an activity restart",Toast.LENGTH_LONG).show();
+                }
+            });
+            return true;
+        } else if (itemId == R.id.other_vr_item) {
+            activity.startActivity(new Intent().setClass(activity, ASettingsVR.class));
+            return true;
+        }
+        return false;
     }
 }

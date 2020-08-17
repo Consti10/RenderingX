@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="entriesDistortionCorrection" >
+        <item>Disable</item>
+        <item>Enable (Default)</item>
+    </string-array>
+    <string-array name="valuesDistortionCorrection" >
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="entriesMSAADefault" >
+        <item>0xMSAA</item>
+        <item>2xMSAA</item>
+        <item>4xMSAA</item>
+        <item>6xMSAA</item>
+        <item>8xMSAA</item>
+        <item>16xMSAA</item>
+    </string-array>
+    <string-array name="valuesMSAADefault" >
+        <item>0</item>
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+        <item>8</item>
+        <item>16</item>
+    </string-array>
+
+    <string-array name="entriesGroundHeadTrackingMode" >
+        <item>disable</item>
+        <item>1st person perspective</item>
+        <item>3rd person perspective for gimbal</item>
+    </string-array>
+    <string-array name="valuesGroundHeadTrackingMode" >
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="entriesAirHeadTrackingMode" >
+        <item>disable</item>
+        <item>enable</item>
+    </string-array>
+    <string-array name="valuesAirHeadTrackingMode" >
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+</resources>

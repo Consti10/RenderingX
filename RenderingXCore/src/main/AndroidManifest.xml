@@ -29,6 +29,10 @@
         <activity android:name="constantin.renderingx.core.gles_info.AWriteGLESInfo"
             android:screenOrientation="behind"/>
 
+        <activity
+            android:name="constantin.renderingx.core.vrsettings.ASettingsVR"
+            android:screenOrientation="behind" />
+
     </application>
 
 </manifest>
