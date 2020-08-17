@@ -23,5 +23,7 @@
     //VR or Stereo Settings
     <string name="VR_SCENE_SCALE_PERCENTAGE">VR_SCENE_SCALE_PERCENTAGE</string>
     <string name="VR_DISTORTION_CORRECTION_MODE">VR_DISTORTION_CORRECTION_MODE</string>
+    <string name="VR_ENABLE_DEBUG">VR_ENABLE_DEBUG</string>
+
 
 </resources>

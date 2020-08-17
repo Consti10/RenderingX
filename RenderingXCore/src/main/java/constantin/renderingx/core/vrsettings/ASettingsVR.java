@@ -169,8 +169,5 @@ public class ASettingsVR extends AppCompatActivity {
                 }
             });
         }
-
-
-
     }
 }

@@ -7,6 +7,7 @@
 
 #include "vr/gvr/capi/include/gvr.h"
 #include "vr/gvr/capi/include/gvr_types.h"
+#include "../../../../../../RenderingXCore/src/main/cpp/VRSettings/SettingsVR.h"
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 #include <jni.h>
@@ -57,6 +58,7 @@ private:
      */
     void drawEyeVDDC(gvr::Eye eye);
 private:
+    //const SettingsVR settingsVr;
     std::unique_ptr<gvr::GvrApi> gvr_api_;
     gvr::BufferViewportList buffer_viewports;
     gvr::BufferViewportList recommended_buffer_viewports;
