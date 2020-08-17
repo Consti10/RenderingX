@@ -243,6 +243,12 @@ public class VRLayout extends FrameLayout implements LifecycleObserver , PopupMe
             return true;
         } else if (itemId == R.id.other_vr_item) {
             activity.startActivity(new Intent().setClass(activity, ASettingsVR.class));
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(activity,"VR Headset changes require an activity restart",Toast.LENGTH_LONG).show();
+                }
+            });
             return true;
         }
         return false;
