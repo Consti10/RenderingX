@@ -64,6 +64,13 @@
                     android:entries="@array/entriesDistortionCorrection"
                     android:entryValues="@array/valuesDistortionCorrection"
                     android:defaultValue="1" />
+
+            <SwitchPreference
+                android:key="@string/VR_ENABLE_DEBUG"
+                android:title="@string/VR_ENABLE_DEBUG"
+                android:summary="@string/VR_ENABLE_DEBUG"
+                android:defaultValue="false"/>
+
         </PreferenceScreen>
     </PreferenceCategory>
 
