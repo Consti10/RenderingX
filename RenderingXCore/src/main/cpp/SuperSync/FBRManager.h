@@ -69,7 +69,6 @@ public:
 private:
     const bool CHANGE_CLEAR_COLOR_TO_MAKE_TEARING_OBSERVABLE=true;
     const VSYNC& vsync;
-    const DirectRender directRender;
     struct EyeChrono{
         Chronometer avgCPUTime{};
         AvgCalculator avgGPUTime;

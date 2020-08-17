@@ -78,13 +78,13 @@ void FBRManager::warpEyesToFrontBufferSynchronized(JNIEnv* env,VrCompositorRende
         avgCPUTimeUpdateSurfaceTexture.stop();
         ATrace_endSection();
         ATrace_beginSection("DirectRendering::begin");
-        directRender.begin(vrCompositorRenderer.getViewportForEye(isLeftEye ? GVR_LEFT_EYE : GVR_RIGHT_EYE));
+        DirectRender::begin(vrCompositorRenderer.getViewportForEye(isLeftEye ? GVR_LEFT_EYE : GVR_RIGHT_EYE));
         ATrace_endSection();
         ATrace_beginSection("renderNewEyeCallback");
         drawEye(env,isLeftEye,vrCompositorRenderer);
         ATrace_endSection();
         ATrace_beginSection("DirectRendering::end");
-        directRender.end();
+        DirectRender::end();
         eyeChrono[eye].avgCPUTime.stop();
         ATrace_endSection();
         ATrace_beginSection("Wait for GPU completion");
@@ -203,9 +203,9 @@ void FBRManager::drawEyesToFrontBufferUnsynchronized(JNIEnv *env,VrCompositorRen
             surfaceTextureUpdate->updateAndCheck(env);
             //surfaceTextureUpdate->waitUntilFrameAvailable(env,std::chrono::steady_clock::now()+std::chrono::milliseconds(14));
             const bool isLeftEye=eye==0;
-            directRender.begin(vrCompositorRenderer.getViewportForEye(isLeftEye ? GVR_LEFT_EYE : GVR_RIGHT_EYE));
+            DirectRender::begin(vrCompositorRenderer.getViewportForEye(isLeftEye ? GVR_LEFT_EYE : GVR_RIGHT_EYE));
             drawEye(env,isLeftEye,vrCompositorRenderer);
-            directRender.end();
+            DirectRender::end();
             std::unique_ptr<FenceSync> fenceSync=std::make_unique<FenceSync>();
             glFlush();
             // Make sure that I do not submit eyes faster than the GPU is able to render them

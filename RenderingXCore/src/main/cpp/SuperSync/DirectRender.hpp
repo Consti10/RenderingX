@@ -9,19 +9,15 @@
 
 // Direct Rendering refers to rendering a specific area ( and the specific area only)
 // This class hides the difference(s) between the two major GPU manufacturer: Qualcomm and MALI (ARM)
-class DirectRender{
-public:
+namespace DirectRender{
     using GLViewport=std::array<int,4>;
-
-    DirectRender(){
-    }
     static void setGlViewport(const GLViewport& viewport){
         glViewport(viewport[0],viewport[1],viewport[2],viewport[3]);
     }
     static void setGlScissor(const GLViewport& viewport){
         glScissor(viewport[0],viewport[1],viewport[2],viewport[3]);
     }
-    void begin(const GLViewport& viewport)const{
+    static void begin(const GLViewport& viewport){
         if(Extensions::QCOM_tiled_rendering){
             Extensions::StartTilingQCOM(viewport);
             glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -32,7 +28,7 @@ public:
         setGlViewport(viewport);
         setGlScissor(viewport);
     }
-    void end()const{
+    static void end(){
         if(Extensions::QCOM_tiled_rendering){
             Extensions::EndTilingQCOM();
         }else{
