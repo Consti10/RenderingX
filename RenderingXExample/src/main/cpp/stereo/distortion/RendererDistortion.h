@@ -57,7 +57,6 @@ private:
      */
     void drawEyeVDDC(gvr::Eye eye);
 private:
-    //const SettingsVR settingsVr;
     std::unique_ptr<gvr::GvrApi> gvr_api_;
     gvr::BufferViewportList buffer_viewports;
     gvr::BufferViewportList recommended_buffer_viewports;

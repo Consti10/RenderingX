@@ -9,7 +9,6 @@
 #include <jni.h>
 #include <array>
 #include <string>
-#include <vr/gvr/capi/include/gvr.h>
 
 class VRSettings {
 public:
