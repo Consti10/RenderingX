@@ -17,11 +17,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGL10;
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.opengles.GL10;
-
-import constantin.renderingx.core.old.MyEGLConfigChooser;
-
-import static constantin.renderingx.core.old.MyEGLConfigChooser.findConfigAttrib;
 
 
 /*
@@ -123,6 +121,15 @@ public class AWriteGLESInfo extends AppCompatActivity {
     protected void onPause() {
         mTestView.onPause();
         super.onPause();
+    }
+
+    public static int findConfigAttrib(EGL10 egl, EGLDisplay display,
+                                       EGLConfig config, int attribute, int defaultValue) {
+        int[] value = new int[1];
+        if (egl.eglGetConfigAttrib(display, config, attribute, value)) {
+            return value[0];
+        }
+        return defaultValue;
     }
 
     private final class MyTestConfigChooser2 implements  GLSurfaceView.EGLConfigChooser {
