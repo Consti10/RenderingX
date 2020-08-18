@@ -23,7 +23,8 @@ using COLORED_INDEX_DATA=GLuint;
 using ColoredMeshData=AbstractMeshData<ColoredVertex,COLORED_INDEX_DATA>;
 using ColoredGLMeshBuffer=AbstractGLMeshBuffer<ColoredVertex,COLORED_INDEX_DATA>;
 
-
+// Abstract class that loads the apropriate vertex and fragment shader for rendering colored geometry
+// See the 2 implementat
 class AGLProgramVC {
 protected:
     // The MVP multiplication is optional.
@@ -32,8 +33,8 @@ protected:
     GLuint mProgram;
     GLuint mPositionHandle,mColorHandle;
     GLuint mMVPMatrixHandle;
-public:
     AGLProgramVC(const bool DO_MVP_MULTIPLICATION);
+public:
     void beforeDraw(GLuint buffer) const;
     void afterDraw() const;
 private:
