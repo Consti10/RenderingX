@@ -187,7 +187,7 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
     // Render the mesh that occludes everything except the part actually visible inside the headset
     if (ENABLE_VIGNETTE) {
         int idx = eye == GVR_LEFT_EYE ? 0 : 1;
-        mGLProgramVC2D->drawX(glm::mat4(1.0f), glm::mat4(1.0f), mOcclusionMesh[idx]);
+        mGLProgramVC2D->drawX( mOcclusionMesh[idx]);
     }
     GLHelper::checkGlError("VrCompositorRenderer::drawLayers");
     cpuTime[EYE_IDX].stop();

@@ -14,11 +14,10 @@
 #include <cstring>
 
 
-// True Color means 8 bit per channel . OpenGL Uses RGBA by default, so I also use that layout for the TrueColor class
+// True Color means 8 bit per channel. OpenGL Uses RGBA by default, so I also use that layout for the TrueColor class
 // 8 bits per channel * 4 channels = 32 bit / 4 bytes total
 static constexpr const auto TRUE_COLOR_SIZE_BYTES=4;
 // It is possible to upload a TrueColor instance to OpenGL buffers directly - see end of file
-
 class TrueColor {
 public:
     uint8_t r=0;
@@ -40,6 +39,17 @@ public:
         b(static_cast<uint8_t>((rgba >> 8) & 0xFF)),
         a(static_cast<uint8_t>((rgba   ) & 0xFF)){}
     /**
+    * Constructor that takes GL_RGBA32F
+    * Which refers to 4 float values in the range [0..1].
+    * glm::vec4 / vec3 are RGBA32F by default.
+    */
+    constexpr TrueColor(const glm::vec4& colorRGBA32F){
+        r=(uint8_t)(colorRGBA32F.x*255); //read of member 'r' not allowed in constant expression
+        g=(uint8_t)(colorRGBA32F.y*255);// .g
+        b=(uint8_t)(colorRGBA32F.z*255);// .b
+        a=(uint8_t)(colorRGBA32F.w*255);// .a
+    }
+    /**
      * Comparing two TrueColor values is straight forward
      */
     constexpr bool operator==(const TrueColor& y)const{
@@ -47,17 +57,6 @@ public:
     }
     constexpr bool operator!=(const TrueColor& y)const{
         return !(*this==y);
-    }
-    /**
-     * Methods to convert from / to GL_RGBA32F
-     * Which refers to 4 float values in the range [0..1].
-     * glm::vec4 / vec3 are RGBA32F by default.
-     */
-    constexpr TrueColor(const glm::vec4& colorRGBA32F){
-        r=(uint8_t)(colorRGBA32F.x*255); //read of member 'r' not allowed in constant expression
-        g=(uint8_t)(colorRGBA32F.y*255);// .g
-        b=(uint8_t)(colorRGBA32F.z*255);// .b
-        a=(uint8_t)(colorRGBA32F.w*255);// .a
     }
     /**
      * Automatic conversion to glm::vec4 and glm::vec3
@@ -70,6 +69,7 @@ public:
     }
     /**
      * In Androids JAVA code colors are stored in argb, not rgba
+     * This is not a constructor for TrueColor to avoid confusion
      */
     static constexpr TrueColor ARGB(const int argb){
         const auto alpha=static_cast<uint8_t>((argb>>24) & 0xFF);

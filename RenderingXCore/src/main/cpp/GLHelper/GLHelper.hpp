@@ -51,7 +51,8 @@ namespace GLHelper{
             MLOGE<<"Framebuffer not complete "<<GLHelper::GlErrorString(status);
         }
     }
-    // Additional flags: for example "#define ENABLE_SOMETHING"
+    // Additional flags: for example "#define ENABLE_SOMETHING\n"
+    // Do not forget the new line
     static const GLuint loadShader(GLenum type,const std::string& shaderCode,const std::string& additionalFlags){
         GLuint shader = glCreateShader(type);
         // add the source code to the shader and compile it

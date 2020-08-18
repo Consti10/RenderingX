@@ -25,6 +25,7 @@
 #include <FPSCalculator.h>
 #include <ProjTex/GLPTextureProj.h>
 #include <GLProgramVC.h>
+#include <Extensions.h>
 
 //Render a simple scene consisting of a colored triangle, smooth lines and smooth text
 
@@ -93,6 +94,9 @@ float seekBarValue3=10.0f;
 
 static void onSurfaceCreated(JNIEnv* env,jobject context){
     TEST_LOGGING_ON_ANDROID::test2();
+    Extensions::initializeGL();
+    HelperKhrDebug::enable();
+
     //Instantiate all our OpenGL rendering 'Programs'
     glProgramVC=new GLProgramVC();
     glProgramLine=new GLProgramLine();

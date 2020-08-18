@@ -22,6 +22,8 @@ import androidx.lifecycle.OnLifecycleEvent;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.microedition.khronos.egl.EGL10;
+
 import constantin.renderingx.core.Extensions;
 import constantin.renderingx.core.views.VRLayout;
 import constantin.video.core.gl.ISurfaceTextureAvailable;
@@ -30,6 +32,7 @@ import static android.opengl.EGL14.EGL_DEFAULT_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_CONTEXT;
 import static android.opengl.EGL14.EGL_NO_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_SURFACE;
+import static android.opengl.EGLExt.EGL_CONTEXT_FLAGS_KHR;
 import static constantin.renderingx.core.xglview.XEGLConfigChooser.EGL_ANDROID_front_buffer_auto_refresh;
 
 // TODO in Development
@@ -74,6 +77,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     private XSurfaceParams mWantedSurfaceParams=new XSurfaceParams(0,0);
 
     public boolean DO_SUPERSYNC_MODS=false;
+    public boolean ENABLE_EGL_KHR_DEBUG=false;
 
     //enum Message{START_RENDERING_FRAMES,STOP_RENDERING_FRAMES};
     //final BlockingQueue<Message> blockingQueue = new LinkedBlockingQueue<Message>();
@@ -83,6 +87,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
 
     private SurfaceTextureHolder surfaceTextureHolder;
     private int exclusiveCPUCore=-1;
+    public static final int EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR= 0x00000001;
 
     public XGLSurfaceView(final Context context){
         super(context);
@@ -190,8 +195,14 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                 EGL14.EGL_CONTEXT_CLIENT_VERSION, GLESVersion,
                 EGL14.EGL_NONE
         };
+        final int[] contextAttributesWithDebug = {
+                EGL14.EGL_CONTEXT_CLIENT_VERSION, GLESVersion,
+                EGL_CONTEXT_FLAGS_KHR, EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR,
+                EGL10.EGL_NONE };
+
         // https://www.khronos.org/registry/EGL/sdk/docs/man/html/eglCreateContext.xhtml
-        eglContext = EGL14.eglCreateContext(eglDisplay, eglConfig, glContextSurfaceLess==null ? EGL_NO_CONTEXT : glContextSurfaceLess.getEglContext(), contextAttributes, 0);
+        eglContext = EGL14.eglCreateContext(eglDisplay, eglConfig, glContextSurfaceLess==null ? EGL_NO_CONTEXT : glContextSurfaceLess.getEglContext(),
+                ENABLE_EGL_KHR_DEBUG ? contextAttributesWithDebug : contextAttributes, 0);
         if (eglContext==EGL_NO_CONTEXT) {
             throw new AssertionError("Cannot create eglContext");
         }

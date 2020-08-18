@@ -26,6 +26,7 @@ public class AExampleRendering extends AppCompatActivity implements SeekBar.OnSe
         binding = ActivityExampleRenderingBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         renderer=new GLRExample(this);
+        binding.MyGLSurfaceView.ENABLE_EGL_KHR_DEBUG=true;
         binding.MyGLSurfaceView.setRenderer(renderer);
         binding.MyGLSurfaceView.setOnTouchListener(new View.OnTouchListener() {
             @Override

@@ -178,7 +178,7 @@ private:
     ColoredGLMeshBuffer solidRectangleBlack;
 public:
     void clearViewportUsingRenderedMesh(const bool blackOrYellow)const{
-        mGLProgramVC2D->drawX(glm::mat4(),glm::mat4(), blackOrYellow ? solidRectangleBlack : solidRectangleYellow);
+        mGLProgramVC2D->drawX(blackOrYellow ? solidRectangleBlack : solidRectangleYellow);
     }
 };
 

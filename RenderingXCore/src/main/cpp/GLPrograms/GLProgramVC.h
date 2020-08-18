@@ -15,9 +15,6 @@
 #include <TrueColor.hpp>
 #include <AbstractMesh.hpp>
 
-//#define WIREFRAME
-
-using Mat4x4=const GLfloat*;
 struct ColoredVertex{
     float x,y,z;
     TrueColor colorRGBA;
@@ -26,68 +23,60 @@ using COLORED_INDEX_DATA=GLuint;
 using ColoredMeshData=AbstractMeshData<ColoredVertex,COLORED_INDEX_DATA>;
 using ColoredGLMeshBuffer=AbstractGLMeshBuffer<ColoredVertex,COLORED_INDEX_DATA>;
 
-class GLProgramVC {
-private:
-    // 2 Dimensions or 3 dimensions or Vertex displacement distortion correction (3 dimensions)
-    enum MODE{D2,D3,VDDC};
+
+class AGLProgramVC {
+protected:
+    // The MVP multiplication is optional.
+    // GLProgramVC does the mvp multiplication and GLProgramVC2D does not transform the raw mesh data
+    const bool DO_MVP_MULTIPLICATION;
     GLuint mProgram;
     GLuint mPositionHandle,mColorHandle;
-    GLuint mMVMatrixHandle,mPMatrixHandle;
+    GLuint mMVPMatrixHandle;
 public:
-    explicit GLProgramVC(bool coordinates2D=false);
+    AGLProgramVC(const bool DO_MVP_MULTIPLICATION);
     void beforeDraw(GLuint buffer) const;
-    void draw(Mat4x4 ViewM, Mat4x4 ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
-    void draw(const glm::mat4& ViewM,const glm::mat4& ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
-    void drawIndexed(GLuint indexBuffer,Mat4x4 ViewM, Mat4x4 ProjM,int indicesOffset,int numberIndices, GLenum mode) const;
-    void drawIndexed(GLuint indexBuffer,const glm::mat4& ViewM,const glm::mat4& ProjM,int indicesOffset,int numberIndices, GLenum mode) const;
     void afterDraw() const;
-    //convenient methods for drawing a colored mesh with / without indices
-    //calls beforeDraw(), draw() and afterDraw() properly
-    void drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const ColoredGLMeshBuffer& mesh)const;
 private:
-    static const std::string VS(){
-        std::stringstream s;
-        //s<<"#version 100\n";
-        s<<"uniform mat4 uMVMatrix;\n";
-        s<<"uniform mat4 uPMatrix;\n";
-        s<<"attribute vec4 aPosition;\n";
-        s<<"attribute vec4 aColor;\n";
-        s<<"varying vec4 vColor;\n";
-        s<<"void main(){\n";
-        // Depending on the selected mode writing gl_Position is different
-        s<<"#ifdef USE_2D_COORDINATES\n";
-        s<<"gl_Position=vec4(aPosition.xyz,1);\n";
-        s<<"#else\n";
-        s<<"gl_Position = (uPMatrix*uMVMatrix)* aPosition;\n";
-        s<<"#endif\n";
-        s<<"vColor = aColor;\n";
-        s<<"gl_PointSize=15.0;";
-        s<<"}\n";
-        return s.str();
-    }
-    static const std::string FS(){
-        std::stringstream s;
-        s<<"precision mediump float;\n";
-        s<<"varying vec4 vColor;\n";
-        //s<<"varying float invisibleFragment;";
-        s<<"void main(){\n";
-        s<<"gl_FragColor = vColor;\n";
-        //s<<"if(invisibleFragment>=0.9){";
-        //s<<"gl_FragColor=vec4(0.0,0.0,0.0,0.0);";
-        //s<<"}";
-#ifdef WIREFRAME
-        s<<"gl_FragColor.rgb=vec3(1.0,1.0,1.0);\n";
+    static constexpr auto VS=R"(
+attribute vec4 aPosition;
+attribute vec4 aColor;
+#ifdef DO_MVP_MULTIPLICATION
+uniform mat4 uMVPMatrix;
 #endif
-        s<<"}\n";
-        s<<"\n";
-        return s.str();
-    }
+varying vec4 vColor;
+void main(){
+#ifdef DO_MVP_MULTIPLICATION
+gl_Position = uMVPMatrix*aPosition;
+#else
+gl_Position=vec4(aPosition.xyz,1);
+#endif
+vColor = aColor;
+}
+        )";
+    static constexpr auto FS=R"(
+precision mediump float;
+varying vec4 vColor;
+void main(){
+gl_FragColor = vColor;
+}
+    )";
 };
 
-class GLProgramVC2D: public GLProgramVC{
+class GLProgramVC: public AGLProgramVC{
 public:
-    GLProgramVC2D():GLProgramVC(true){
-    }
+    GLProgramVC():AGLProgramVC(true){}
+    void draw(const glm::mat4& ViewM,const glm::mat4& ProjM, int verticesOffset,int numberVertices, GLenum mode) const;
+    void drawIndexed(GLuint indexBuffer,const glm::mat4& ViewM,const glm::mat4& ProjM,int indicesOffset,int numberIndices, GLenum mode) const;
+    void drawX(const glm::mat4& ViewM,const glm::mat4 ProjM,const ColoredGLMeshBuffer& mesh)const;
 };
+
+class GLProgramVC2D: public AGLProgramVC{
+public:
+    GLProgramVC2D():AGLProgramVC(false){}
+    void draw(int verticesOffset,int numberVertices, GLenum mode) const;
+    void drawIndexed(GLuint indexBuffer,int indicesOffset,int numberIndices, GLenum mode) const;
+    void drawX(const ColoredGLMeshBuffer& mesh)const;
+};
+
 
 #endif
