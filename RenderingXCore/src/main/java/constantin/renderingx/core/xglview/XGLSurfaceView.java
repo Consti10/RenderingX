@@ -77,6 +77,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     private XSurfaceParams mWantedSurfaceParams=new XSurfaceParams(0,0);
 
     public boolean DO_SUPERSYNC_MODS=false;
+    // When enabled you can use the EGL_KHR_DEBUG extension (no checkGLError yeah !)
     public boolean ENABLE_EGL_KHR_DEBUG=false;
 
     //enum Message{START_RENDERING_FRAMES,STOP_RENDERING_FRAMES};
