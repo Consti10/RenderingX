@@ -23,7 +23,6 @@ public:
     GLuint WIDTH_PX=0,HEIGH_PX=0;
     std::array<FramebufferTexture,2> buffers;
     int currentRenderTexture=0;
-    std::chrono::steady_clock::time_point timeFrameWasBound[2]={{},{}};
     using CLOCK=std::chrono::steady_clock;
     struct TimingInformation{
         CLOCK::time_point startSubmitCommands;
@@ -54,13 +53,9 @@ public:
 
     void bind1(){
         assert(defaultTextureUrl==std::nullopt);
-        GLHelper::checkGlError("before B");
-        timeFrameWasBound[currentRenderTexture]=std::chrono::steady_clock::now();
         glBindFramebuffer(GL_FRAMEBUFFER, buffers[currentRenderTexture].framebuffer);
-        GLHelper::checkFramebufferStatus(GL_FRAMEBUFFER);
         glScissor(0,0,WIDTH_PX,HEIGH_PX);
         glViewport(0,0,WIDTH_PX,HEIGH_PX);
-        GLHelper::checkGlError("after B");
         timingInformation[currentRenderTexture].startSubmitCommands=CLOCK::now();
     }
 
@@ -69,7 +64,6 @@ public:
     void unbindAndSwap() {
         assert(defaultTextureUrl==std::nullopt);
         timingInformation[currentRenderTexture].stopSubmitCommands=CLOCK::now();
-        GLHelper::checkGlError("before U");
         FenceSync fenceSync;
         // wait until rendering complete
         fenceSync.wait(EGL_FOREVER_KHR);
