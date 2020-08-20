@@ -45,6 +45,7 @@ public class GLContextSurfaceLess {
             throw new AssertionError("Cannot create eglContext");
         }
         String extensions=EGL14.eglQueryString(eglDisplay,EGL14.EGL_EXTENSIONS);
+
         if(extensions.contains("EGL_KHR_surfaceless_context")){
             Log.d(TAG,"Got EGL_KHR_surfaceless_context extension");
             eglSurface=EGL_NO_SURFACE;

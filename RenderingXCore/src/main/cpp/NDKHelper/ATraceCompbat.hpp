@@ -14,8 +14,8 @@
 // Do nothing
 #else
 
-void ATrace_beginSection(const char* sectionName){}
-void ATrace_endSection(){}
+static void ATrace_beginSection(const char* sectionName){}
+static void ATrace_endSection(){}
 #endif
 
 #endif //RENDERINGX_ATRACECOMPBAT_H
