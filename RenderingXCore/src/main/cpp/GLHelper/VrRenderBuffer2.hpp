@@ -79,12 +79,11 @@ public:
         if(defaultTextureUrl!=std::nullopt){
             return defaultTexture;
         }
-        //return textures[0];
         int currentSampleIndex=currentRenderTexture+1;
+        currentSampleIndex=currentSampleIndex % 2;
         if(timingForThisFrame!=nullptr){
             *timingForThisFrame=timingInformation[currentSampleIndex];
         }
-        currentSampleIndex=currentSampleIndex % 2;
         //MLOGD<<"curr sample index "<<currentSampleIndex;
         return buffers[currentSampleIndex].texture;
     }
