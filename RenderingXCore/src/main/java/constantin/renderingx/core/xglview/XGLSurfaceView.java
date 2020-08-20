@@ -86,11 +86,8 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     public boolean DO_SUPERSYNC_MODS=false;
     // When enabled you can use the EGL_KHR_DEBUG extension (no checkGLError yeah !)
     public boolean ENABLE_EGL_KHR_DEBUG=false;
+    // When enabled try to get a high priority context
     public boolean ENABLE_HIGH_PRIORITY_CONTEXT=false;
-
-    //enum Message{START_RENDERING_FRAMES,STOP_RENDERING_FRAMES};
-    //final BlockingQueue<Message> blockingQueue = new LinkedBlockingQueue<Message>();
-    private final AtomicBoolean shouldRender=new AtomicBoolean(false);
 
     private GLContextSurfaceLess glContextSurfaceLess=null;
 
@@ -220,9 +217,10 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         if (eglContext==EGL_NO_CONTEXT) {
             throw new AssertionError("Cannot create eglContext");
         }
+        // check if we actually got a high priority context
         if(ENABLE_HIGH_PRIORITY_CONTEXT){
             final int eglContextPriorityLevel=eglQueryContext(EGL_CONTEXT_PRIORITY_LEVEL_IMG);
-            if(eglContextPriorityLevel!=EGL_CONTEXT_PRIORITY_HIGH_IMG){
+            if(eglContextPriorityLevel==EGL_CONTEXT_PRIORITY_HIGH_IMG){
                 Log.d(TAG,"Got high prio context"+eglContextPriorityLevel);
             }else{
                 Log.d(TAG,"Cannot get high prio context"+eglContextPriorityLevel);

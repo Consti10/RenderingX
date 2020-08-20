@@ -30,6 +30,7 @@ public class VrView extends VRLayout {
     public void enableSuperSync(){
         xglSurfaceView.setEGLConfigPrams(new XSurfaceParams(0,0,true));
         xglSurfaceView.DO_SUPERSYNC_MODS=true;
+        xglSurfaceView.ENABLE_HIGH_PRIORITY_CONTEXT=true;
     }
 
     @Override
