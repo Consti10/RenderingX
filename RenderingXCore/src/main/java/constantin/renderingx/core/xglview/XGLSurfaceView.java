@@ -20,6 +20,9 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
+import com.google.common.primitives.Ints;
+
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.microedition.khronos.egl.EGL10;
@@ -33,6 +36,9 @@ import static android.opengl.EGL14.EGL_NO_CONTEXT;
 import static android.opengl.EGL14.EGL_NO_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_SURFACE;
 import static android.opengl.EGLExt.EGL_CONTEXT_FLAGS_KHR;
+import static constantin.renderingx.core.xglview.EGLContextPriority.EGL_CONTEXT_PRIORITY_HIGH_IMG;
+import static constantin.renderingx.core.xglview.EGLContextPriority.EGL_CONTEXT_PRIORITY_LEVEL_IMG;
+import static constantin.renderingx.core.xglview.EGLContextPriority.EGL_CONTEXT_PRIORITY_LOW_IMG;
 import static constantin.renderingx.core.xglview.XEGLConfigChooser.EGL_ANDROID_front_buffer_auto_refresh;
 
 // TODO in Development
@@ -53,6 +59,7 @@ import static constantin.renderingx.core.xglview.XEGLConfigChooser.EGL_ANDROID_f
  */
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, SurfaceHolder.Callback {
+    private static final String TAG="XGLSurfaceView";
     // Reference to the base activity for obtaining lifecycle status and more
     private final AppCompatActivity activity;
     // All these members are created/ destroyed on the UI thread
@@ -79,6 +86,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     public boolean DO_SUPERSYNC_MODS=false;
     // When enabled you can use the EGL_KHR_DEBUG extension (no checkGLError yeah !)
     public boolean ENABLE_EGL_KHR_DEBUG=false;
+    public boolean ENABLE_HIGH_PRIORITY_CONTEXT=false;
 
     //enum Message{START_RENDERING_FRAMES,STOP_RENDERING_FRAMES};
     //final BlockingQueue<Message> blockingQueue = new LinkedBlockingQueue<Message>();
@@ -192,20 +200,33 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         EGL14.eglInitialize(eglDisplay, major, 0, minor, 0);
         eglConfig = XEGLConfigChooser.chooseConfig(eglDisplay,mWantedSurfaceParams);
         final int GLESVersion=mWantedSurfaceParams.mUseMutableFlag ? 3 : 2;
-        final int[] contextAttributes = new int[]{
-                EGL14.EGL_CONTEXT_CLIENT_VERSION, GLESVersion,
-                EGL14.EGL_NONE
-        };
-        final int[] contextAttributesWithDebug = {
-                EGL14.EGL_CONTEXT_CLIENT_VERSION, GLESVersion,
-                EGL_CONTEXT_FLAGS_KHR, EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR,
-                EGL10.EGL_NONE };
+
+        final ArrayList<Integer> contextAttributes=new ArrayList<>();
+        contextAttributes.add(EGL14.EGL_CONTEXT_CLIENT_VERSION);
+        contextAttributes.add(GLESVersion);
+        if(ENABLE_EGL_KHR_DEBUG){
+            contextAttributes.add(EGL_CONTEXT_FLAGS_KHR);
+            contextAttributes.add(EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR);
+        }
+        if(ENABLE_HIGH_PRIORITY_CONTEXT){
+            contextAttributes.add(EGL_CONTEXT_PRIORITY_LEVEL_IMG);
+            contextAttributes.add(EGL_CONTEXT_PRIORITY_HIGH_IMG);
+        }
+        contextAttributes.add( EGL14.EGL_NONE);
 
         // https://www.khronos.org/registry/EGL/sdk/docs/man/html/eglCreateContext.xhtml
         eglContext = EGL14.eglCreateContext(eglDisplay, eglConfig, glContextSurfaceLess==null ? EGL_NO_CONTEXT : glContextSurfaceLess.getEglContext(),
-                ENABLE_EGL_KHR_DEBUG ? contextAttributesWithDebug : contextAttributes, 0);
+                Ints.toArray(contextAttributes), 0);
         if (eglContext==EGL_NO_CONTEXT) {
             throw new AssertionError("Cannot create eglContext");
+        }
+        if(ENABLE_HIGH_PRIORITY_CONTEXT){
+            final int eglContextPriorityLevel=eglQueryContext(EGL_CONTEXT_PRIORITY_LEVEL_IMG);
+            if(eglContextPriorityLevel!=EGL_CONTEXT_PRIORITY_HIGH_IMG){
+                Log.d(TAG,"Got high prio context"+eglContextPriorityLevel);
+            }else{
+                Log.d(TAG,"Cannot get high prio context"+eglContextPriorityLevel);
+            }
         }
     }
 
@@ -326,5 +347,10 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         if(!result){
             throw new AssertionError("Cannot make surface current "+eglSurface);
         }
+    }
+    private int eglQueryContext(int attribute){
+        int[] ret=new int[1];
+        EGL14.eglQueryContext(eglDisplay,eglContext,attribute,ret,0);
+        return ret[0];
     }
 }

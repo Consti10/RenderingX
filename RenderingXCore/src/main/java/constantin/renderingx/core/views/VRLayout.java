@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Build;
 import android.os.PowerManager;
@@ -146,6 +147,9 @@ public class VRLayout extends FrameLayout implements LifecycleObserver , PopupMe
     protected void resumeX() {
         gvrApi.resumeTracking();
         if(displaySynchronizer!=null)displaySynchronizer.onResume();
+        if(supportsVrHighPerformance(activity)){
+            Log.d(TAG,"Supports Vr high performance ");
+        }
         enableSustainedPerformanceIfPossible((Activity)getContext());
     }
 
@@ -254,6 +258,14 @@ public class VRLayout extends FrameLayout implements LifecycleObserver , PopupMe
                 }
             });
             return true;
+        }
+        return false;
+    }
+
+    public static boolean supportsVrHighPerformance(final AppCompatActivity appCompatActivity) {
+        PackageManager pm = appCompatActivity.getPackageManager();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return pm.hasSystemFeature(PackageManager.FEATURE_VR_MODE_HIGH_PERFORMANCE);
         }
         return false;
     }

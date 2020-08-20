@@ -33,6 +33,8 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$rootProject.appcompatVersion"
     implementation "androidx.preference:preference:$rootProject.androidxpreferenceVersion"
     //
+    implementation("com.google.guava:guava:29.0-android")
+    //
     implementation 'com.mapzen.android:prefs-plus:1.0.0'
 
     //For SuperSync, we rely on the GvrLayout provided by the GoogleVR library
