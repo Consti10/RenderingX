@@ -9,36 +9,19 @@
 #include <AndroidLogger.hpp>
 #include <GLHelper.hpp>
 #include <Extensions.h>
+#include <FramebufferTexture.hpp>
 
-/*struct Frame{
-    GLuint framebuffer;
-    GLuint texture;
-    GLuint WIDTH_PX=0,HEIGH_PX=0;
-    void bind();
-    void unbindAndSubmit();
-    std::chrono::steady_clock::time_point renderingStart;
-    std::chrono::steady_clock::time_point rendringFinished;
-};
-
-class SwapChain{
-
-};*/
-
-
+// Double buffered VR renderbuffer
 class VrRenderBuffer2{
 public:
     VrRenderBuffer2(std::optional<std::string> defaultTextureUrl=std::nullopt):defaultTextureUrl(defaultTextureUrl){}
     // no copy, only move constructor
     VrRenderBuffer2(const VrRenderBuffer2&)=delete;
     VrRenderBuffer2(VrRenderBuffer2&&)=default;
-
     const std::optional<std::string> defaultTextureUrl;
     GLuint defaultTexture;
-
-    GLuint framebuffers[2];
     GLuint WIDTH_PX=0,HEIGH_PX=0;
-    //bool texturesCreated=false;
-    GLuint textures[2];
+    std::array<FramebufferTexture,2> buffers;
     int currentRenderTexture=0;
     std::chrono::steady_clock::time_point timeFrameWasBound[2]={{},{}};
     using CLOCK=std::chrono::steady_clock;
@@ -55,33 +38,17 @@ public:
         GLProgramTexture::loadTexture(defaultTexture,env,androidContext,defaultTextureUrl->c_str());
     }
 
-    void createRenderTextures(int W,int H){
-        assert(defaultTextureUrl==std::nullopt);
-        WIDTH_PX=W;
-        HEIGH_PX=H;
-        for(int i=0;i<2;i++){
-            glGenTextures(1, &textures[i]);
-            glBindTexture(GL_TEXTURE_2D, textures[i]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            //  GL_RGBA8_OES
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, W,H, 0,
-                         GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-            glBindTexture(GL_TEXTURE_2D,0);
+    void initializeGL(){
+        for(FramebufferTexture& buffer:buffers){
+            buffer.initializeGL();
         }
     }
 
-    void createFrameBuffers(){
-        assert(defaultTextureUrl==std::nullopt);
-        for(int i=0;i<2;i++){
-            glGenFramebuffers(1, &framebuffers[i]);
-            glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[i]);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                                   textures[i], 0);
-            GLHelper::checkFramebufferStatus(GL_FRAMEBUFFER);
-            glBindFramebuffer(GL_FRAMEBUFFER,0);
+    void setSize(int W,int H){
+        WIDTH_PX=W;
+        HEIGH_PX=H;
+        for(FramebufferTexture& buffer:buffers){
+            buffer.setSize(WIDTH_PX,HEIGH_PX);
         }
     }
 
@@ -89,7 +56,7 @@ public:
         assert(defaultTextureUrl==std::nullopt);
         GLHelper::checkGlError("before B");
         timeFrameWasBound[currentRenderTexture]=std::chrono::steady_clock::now();
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[currentRenderTexture]);
+        glBindFramebuffer(GL_FRAMEBUFFER, buffers[currentRenderTexture].framebuffer);
         GLHelper::checkFramebufferStatus(GL_FRAMEBUFFER);
         glScissor(0,0,WIDTH_PX,HEIGH_PX);
         glViewport(0,0,WIDTH_PX,HEIGH_PX);
@@ -125,7 +92,7 @@ public:
         }
         currentSampleIndex=currentSampleIndex % 2;
         //MLOGD<<"curr sample index "<<currentSampleIndex;
-        return textures[currentSampleIndex];
+        return buffers[currentSampleIndex].texture;
     }
 
     static int incrementAndModulo(int value){

@@ -73,8 +73,8 @@ void Renderer360Video::onDrawFrame(JNIEnv* env) {
 }
 
 void Renderer360Video::onSecondaryContextCreated(JNIEnv* env,jobject context) {
-    vrRenderBuffer2.createRenderTextures(1280,720);
-    vrRenderBuffer2.createFrameBuffers();
+    vrRenderBuffer2.initializeGL();
+    vrRenderBuffer2.setSize(1280,720);
 }
 
 void Renderer360Video::onSecondaryContextDoWork(JNIEnv *env) {
