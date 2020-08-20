@@ -1,5 +1,6 @@
 package constantin.renderingx.core;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.WindowManager;
@@ -73,4 +74,14 @@ public class VrActivity  extends AppCompatActivity {
         //}
         return super.dispatchKeyEvent(event);
     }
+
+    /*@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == ASettingsVR.RESULT_CODE_SETTINGS_CHANGED) {
+            System.out.println("Got onActivityResult");
+        }
+    }*/
+
 }

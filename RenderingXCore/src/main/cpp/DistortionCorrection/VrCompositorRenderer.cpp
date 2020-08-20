@@ -4,7 +4,7 @@
 
 #include <CardboardViewportOcclusion.hpp>
 #include <Sphere/SphereBuilder.hpp>
-#include <android/trace.h>
+#include <ATraceCompbat.hpp>
 #include <ColoredGeometry.hpp>
 #include "VrCompositorRenderer.h"
 

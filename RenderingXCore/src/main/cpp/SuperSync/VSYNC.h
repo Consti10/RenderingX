@@ -10,7 +10,7 @@
 #include <list>
 #include <deque>
 #include <TimeHelper.hpp>
-#include <android/trace.h>
+#include <ATraceCompbat.hpp>
 #include <jni.h>
 
 
@@ -72,9 +72,9 @@ public:
 
         const auto latestVSYNCBefore=getLatestVSYNC();
         if(!isInRange(deltaBetweenVSYNCs,displayRefreshTime-1ms,displayRefreshTime+1ms)){
-            // The elapsed time between the last and new VSYNC is greatly bigger than the display refresh time
+            // The elapsed time between the last and new VSYNC is greatly bigger/smaller than the display refresh time
             // I cannot determine what the new 'count' should be
-            MLOGE<<"Big out of order delta: "<<MyTimeHelper::R(deltaBetweenVSYNCs);
+            MLOGE<<"Big/small out of order delta: "<<MyTimeHelper::R(deltaBetweenVSYNCs);
         }
 
         lastVSYNCStateFromChoreographer.base=newVSYNC;
@@ -84,16 +84,15 @@ public:
         if(latestVSYNCAfter.count!=latestVSYNCBefore.count){
             MLOGE<<"VSYNC count changed out of order old:"<<latestVSYNCAfter.count<<" new:"<<latestVSYNCAfter.count;
         }
-
         // use the delta between VSYNC events to calculate the display refresh rate more accurately
         //Stop as soon we have n samples (that should be more than enough)
         if(displayRefreshTimeCalculator.getNSamples() < N_SAMPLES){
             //Assumption: There are only displays on the Market with refresh Rates that differ from 16.666ms +-n ms
             //This is needed because i am not sure if the vsync callbacks always get executed in the right order
             //so delta might be 32ms. In this case delta is not the display refresh time
-            const auto minDisplayRR=DEFAULT_REFRESH_TIME-0.5ms;
-            const auto maxDisplayRR=DEFAULT_REFRESH_TIME+0.5ms;
-            if(deltaBetweenVSYNCs>minDisplayRR && deltaBetweenVSYNCs<maxDisplayRR){
+            const auto minDisplayRR=DEFAULT_REFRESH_TIME-std::chrono::duration_cast<std::chrono::nanoseconds>(0.5ms);
+            const auto maxDisplayRR=DEFAULT_REFRESH_TIME+std::chrono::duration_cast<std::chrono::nanoseconds>(0.5ms);
+            if(isInRange(deltaBetweenVSYNCs,minDisplayRR,maxDisplayRR)){
                 displayRefreshTimeCalculator.add(deltaBetweenVSYNCs);
                 //we can use the average Value for "displayRefreshTime" when we have n samples
                 if(displayRefreshTimeCalculator.getNSamples()==N_SAMPLES ) {

@@ -1,61 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="Stereo/VR" >
-        <PreferenceScreen
-            android:title="Stereo/VR rendering 'Hacks'"
-            android:summary="Decrease latency and increase quality in VR/Stereo rendering (mono rendering is automatically optimized)" >
-            <PreferenceCategory
-                android:title="@string/PerformanceHacksDescription">
-            </PreferenceCategory>
-            <SwitchPreference
-                android:key="@string/SuperSync"
-                android:title="SuperSync"
-                android:summary="@string/SuperSyncDescription"
-                android:defaultValue="false"
-                android:disableDependentsState="true"/>
-            <PreferenceCategory
-                android:title="Settings to reduce lag on smartphones that don't support SuperSync"
-                android:dependency="@string/SuperSync">
-                <SwitchPreference
-                    android:key="@string/DisableVSYNC"
-                    android:title="Disable VSYNC"
-                    android:summary="@string/DisableVSYNCDescription"
-                    android:defaultValue="false"/>
-                <SwitchPreference
-                    android:title="Disable 60 OpenGL fps cap"
-                    android:key="@string/Disable60FPSLock"
-                    android:summary="@string/Disable60FPSLockDescription"
-                    android:defaultValue="false"/>
-            </PreferenceCategory>
-
-            <PreferenceCategory
-                android:title="Quality">
-                <com.mapzen.prefsplus.IntListPreference
-                    android:title="@string/MultiSampleAntiAliasing"
-                    android:key="@string/MultiSampleAntiAliasing"
-                    android:summary="@string/MSAADescription"
-                    android:entries="@array/entriesMSAADefault"
-                    android:entryValues="@array/valuesMSAADefault"
-                    android:defaultValue="0"/>
-            </PreferenceCategory>
-
-            <SwitchPreference
-                android:key="@string/ENABLE_LOW_PERSISTENCE"
-                android:title="@string/ENABLE_LOW_PERSISTENCE"
-                android:summary="@string/DisbaleLowPersistenceModeDescription"
-                android:defaultValue="false"/>
-        </PreferenceScreen>
+        android:title="Additional VR Settings" >
 
         <PreferenceScreen
-            android:title="Stereo/VR rendering"
-            android:summary="General settings for stereo rendering/VR rendering">
+            android:title="Adjust VR Scene"
+            android:summary="Change size of the VR scene and more">
 
             <com.mapzen.prefsplus.EditFloatPreference
                 android:key="@string/VR_SCENE_SCALE_PERCENTAGE"
                 android:title="@string/VR_SCENE_SCALE_PERCENTAGE"
                 android:defaultValue="100"
                 android:dialogTitle="Size of your VR Scene in %. Default 100, which means the video fills a fov of 60 degrees"/>
+
+            <com.mapzen.prefsplus.EditFloatPreference
+                android:key="@string/VR_SCREEN_BRIGHTNESS_PERCENTAGE"
+                android:title="@string/VR_SCREEN_BRIGHTNESS_PERCENTAGE"
+                android:defaultValue="80"
+                android:dialogTitle="Screen Brightness in VR. Default 80 percent."/>
 
             <com.mapzen.prefsplus.IntListPreference
                 android:key="@string/VR_DISTORTION_CORRECTION_MODE"
@@ -70,18 +32,8 @@
                 android:title="@string/VR_ENABLE_DEBUG"
                 android:summary="@string/VR_ENABLE_DEBUG"
                 android:defaultValue="false"/>
-
-            <com.mapzen.prefsplus.EditFloatPreference
-                android:key="@string/VR_SCREEN_BRIGHTNESS_PERCENTAGE"
-                android:title="@string/VR_SCREEN_BRIGHTNESS_PERCENTAGE"
-                android:defaultValue="80"
-                android:dialogTitle="Screen Brightness in VR. Default 80 percent."/>
-
         </PreferenceScreen>
-    </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="Other" >
         <PreferenceScreen
             android:title="HeadTracking settings"
             android:summary="Configure HeadTracking.">
@@ -117,9 +69,6 @@
                     android:defaultValue="false"/>
             </PreferenceCategory>
         </PreferenceScreen>
+
     </PreferenceCategory>
-
-
-
-
 </PreferenceScreen>

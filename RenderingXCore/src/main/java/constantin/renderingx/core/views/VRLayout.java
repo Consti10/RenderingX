@@ -242,7 +242,11 @@ public class VRLayout extends FrameLayout implements LifecycleObserver , PopupMe
             });
             return true;
         } else if (itemId == R.id.other_vr_item) {
-            activity.startActivity(new Intent().setClass(activity, ASettingsVR.class));
+            final Intent settingsI=new Intent().setClass(activity, ASettingsVR.class);
+
+            //activity.startActivity(settingsI);
+            activity.startActivityForResult(settingsI,0);
+
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

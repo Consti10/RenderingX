@@ -1,35 +1,30 @@
 package constantin.renderingx.core.vrsettings;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.ListPreference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
+import android.util.Log;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-
-import com.mapzen.prefsplus.IntListPreference;
-
-import java.util.ArrayList;
-
 import constantin.renderingx.core.R;
-import constantin.renderingx.core.gles_info.Extensions;
-import constantin.renderingx.core.gles_info.OpenGLESValues;
 
 
 public class ASettingsVR extends AppCompatActivity {
+    private FSettingsVR fSettingsVR;
+    public static final int RESULT_CODE_SETTINGS_CHANGED=321;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Display the fragment as the main content.
+        fSettingsVR=new FSettingsVR();
         getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new FSettingsVR())
+                .replace(android.R.id.content, fSettingsVR)
                 .commit();
     }
 
@@ -38,12 +33,30 @@ public class ASettingsVR extends AppCompatActivity {
         super.onPause();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(fSettingsVR.settingsHaveBeenChanged){
+
+            /*Intent returnIntent = new Intent();
+            returnIntent.putExtra("result",0);
+            setResult(ASettingsVR.RESULT_CODE_SETTINGS_CHANGED,returnIntent);*/
+            /*Intent goToMainActivity = new Intent(getApplicationContext(), MainActivity.class);
+            goToMainActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // Will clear out your activity history stack till now
+            startActivity(goToMainActivity);*/
+
+            Log.d("HUHU","settings have been changed");
+        }
+        Log.d("HUHU","onDestroy");
+    }
+
     public static float getScreenBrightnessInRangeZeroTo1(final Context context){
         // normalize the value
         return context.getSharedPreferences("pref_vr_rendering",MODE_PRIVATE).getFloat(context.getString(R.string.VR_SCREEN_BRIGHTNESS_PERCENTAGE),80)/100.0f;
     }
 
     public static class FSettingsVR extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener{
+        public boolean settingsHaveBeenChanged=false;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -57,7 +70,6 @@ public class ASettingsVR extends AppCompatActivity {
         @Override
         public void onActivityCreated(Bundle savedInstanceState){
             super.onActivityCreated(savedInstanceState);
-            setupMSAALevelsPreference( getActivity());
             setupHeadTrackingCategory(getPreferenceScreen().getSharedPreferences());
         }
 
@@ -65,7 +77,6 @@ public class ASettingsVR extends AppCompatActivity {
         public void onResume(){
             super.onResume();
             getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-            //System.out.println("name is:"+getPreferenceManager().getSharedPreferencesName());
         }
 
         @Override
@@ -76,64 +87,10 @@ public class ASettingsVR extends AppCompatActivity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
-            validateUserInputRenderingModes(preferences,key);
             if(key.contentEquals(getString(R.string.GroundHeadTrackingMode)) || key.contentEquals(getString(R.string.AirHeadTrackingMode))){
                 setupHeadTrackingCategory(preferences);
             }
-        }
-
-
-        private void validateUserInputRenderingModes(SharedPreferences pref_default, String key){
-            //if(SJ.DEV_OVERRIDE_RENDERING_MODE_CHECK(getActivity(),pref_default)){
-            //    return;
-            //}
-            if(key.contentEquals(getString(R.string.DisableVSYNC))&& pref_default.getBoolean(key,false)){
-                //The user tried to enable the "DisableVSYNC" option
-                //This only works if there is the 'mutable' extension available, supported by ~10% today,
-                //mostly on modern smartphones
-                if(Extensions.available(getActivity(),Extensions.EGL_KHR_mutable_render_buffer)){
-                    SwitchPreference sp=(SwitchPreference)findPreference(getString(R.string.Disable60FPSLock));
-                    sp.setChecked(false);
-                }else{
-                    String warn="This smartphone does not support disabling VSYNC\n";
-                    warn+="EGL_KHR_mutable_render_bufferAvailable: false\n";
-                    makeDialog(getActivity(),warn);
-                    SwitchPreference sp=(SwitchPreference)findPreference(getString(R.string.DisableVSYNC));
-                    sp.setChecked(false);
-                }
-            }else if(key.contentEquals(getString(R.string.SuperSync)) && pref_default.getBoolean(key,false)){
-                //The user enabled the "SuperSync" option
-                if(!(Extensions.available(getActivity(),Extensions.EGL_KHR_mutable_render_buffer) &&
-                        Extensions.available(getActivity(),Extensions.EGL_ANDROID_front_buffer_auto_refresh ))){
-                    String warn="This smartphone does not support enabling SuperSync.";
-                    warn+="\n-EGL_KHR_mutable_render_bufferAvailable: "+Extensions.available(getActivity(),Extensions.EGL_KHR_mutable_render_buffer);
-                    warn+="\n-EGL_ANDROID_front_buffer_auto_refreshAvailable: "+Extensions.available(getActivity(),Extensions.EGL_ANDROID_front_buffer_auto_refresh );
-                    warn+="\n-EGL_KHR_reusable_syncAvailable: "+Extensions.available(getActivity(),Extensions.EGL_KHR_reusable_sync );
-                    makeDialog(getActivity(),warn);
-                    SwitchPreference sp=(SwitchPreference)findPreference(getString(R.string.SuperSync));
-                    sp.setChecked(false);
-                }
-            }else if(key.contentEquals(getString(R.string.Disable60FPSLock))&& pref_default.getBoolean(key,false)){
-                //The user enabled the "disable60fpslock" option. Cannot be used simultaneous with "DisableVSYNC". / SuperSync
-                SwitchPreference p1=(SwitchPreference)findPreference(getString(R.string.DisableVSYNC));
-                p1.setChecked(false);
-                SwitchPreference p2=(SwitchPreference)findPreference(getString(R.string.SuperSync));
-                p2.setChecked(false);
-            }
-        }
-
-
-        private void setupMSAALevelsPreference(final Context c){
-            ArrayList<Integer> allMSAALevels= OpenGLESValues.availableMSAALevels(c);
-            CharSequence[] msaaEntries =new CharSequence[allMSAALevels.size()];
-            CharSequence[] msaaEntryValues =new CharSequence[allMSAALevels.size()];
-            for(int i=0;i<allMSAALevels.size();i++){
-                msaaEntries[allMSAALevels.size()-1-i]=""+allMSAALevels.get(i)+"xMSAA";
-                msaaEntryValues[allMSAALevels.size()-1-i]=""+allMSAALevels.get(i);
-            }
-            IntListPreference msaaPreference = (IntListPreference) findPreference(this.getString(R.string.MultiSampleAntiAliasing));
-            msaaPreference.setEntries(msaaEntries);
-            msaaPreference.setEntryValues(msaaEntryValues);
+            settingsHaveBeenChanged=true;
         }
 
         private void setupHeadTrackingCategory(SharedPreferences sharedPreferences){
@@ -156,22 +113,5 @@ public class ASettingsVR extends AppCompatActivity {
             lp1.setEnabled(enabledAHT);*/
         }
 
-        private void makeDialog(final Context c, final String text){
-            ((Activity)c).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(c);
-                    builder.setCancelable(true);
-                    builder.setMessage(text);
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            //just go away
-                        }
-                    });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
-            });
-        }
     }
 }
