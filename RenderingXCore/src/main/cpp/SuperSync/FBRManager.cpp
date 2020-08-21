@@ -113,7 +113,7 @@ void FBRManager::warpEyesToFrontBufferSynchronized(JNIEnv* env,VrCompositorRende
 }
 
 
-VSYNC::CLOCK::duration  FBRManager::waitUntilTimePoint(const std::chrono::steady_clock::time_point& timePoint,FenceSync& fenceSync) {
+VSYNC::CLOCK::duration FBRManager::waitUntilTimePoint(const std::chrono::steady_clock::time_point& timePoint,FenceSync& fenceSync) {
     const auto timeLeft=timePoint-CLOCK::now();
     if(timeLeft<=0ns){
         MLOGE<<"Time point already elapsed(wait)";
