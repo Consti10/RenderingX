@@ -7,7 +7,7 @@ import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrLayout;
 
 import constantin.renderingx.core.FullscreenHelper;
-import constantin.renderingx.core.VrActivity;
+import constantin.renderingx.core.views.VrActivity;
 import constantin.renderingx.core.xglview.XGLSurfaceView;
 import constantin.renderingx.core.views.VRLayout;
 

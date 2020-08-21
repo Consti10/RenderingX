@@ -27,13 +27,9 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
 import com.google.vr.cardboard.DisplaySynchronizer;
-import com.google.vr.cardboard.VrParamsProvider;
 import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrUiLayout;
 import com.google.vr.sdk.base.AndroidCompat;
-import com.google.vr.sdk.base.GvrViewerParams;
-
-import java.lang.ref.WeakReference;
 
 import constantin.renderingx.core.FullscreenHelper;
 import constantin.renderingx.core.R;
@@ -249,7 +245,7 @@ public class VRLayout extends FrameLayout implements LifecycleObserver , PopupMe
             final Intent settingsI=new Intent().setClass(activity, ASettingsVR.class);
 
             //activity.startActivity(settingsI);
-            activity.startActivityForResult(settingsI,0);
+            activity.startActivityForResult(settingsI,VrActivity.REQUEST_CODE_NOTIFY_IF_VR_SETTINGS_CHANGED);
 
             activity.runOnUiThread(new Runnable() {
                 @Override

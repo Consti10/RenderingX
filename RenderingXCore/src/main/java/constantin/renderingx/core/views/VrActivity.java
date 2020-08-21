@@ -1,16 +1,23 @@
-package constantin.renderingx.core;
+package constantin.renderingx.core.views;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import constantin.renderingx.core.FullscreenHelper;
+import constantin.renderingx.core.gles_info.AWriteGLESInfo;
 import constantin.renderingx.core.vrsettings.ASettingsVR;
 
 // Specific implementation of AppCompatActivity that handles full screen and key events
 public class VrActivity  extends AppCompatActivity {
+    private static final String TAG="VrActivity";
+    public static final int REQUEST_CODE_NOTIFY_IF_VR_SETTINGS_CHANGED =99;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +60,10 @@ public class VrActivity  extends AppCompatActivity {
         //if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M || Settings.System.canWrite(this)) {
         //}
     }
+    @Override
+    protected void onPause(){
+        super.onPause();
+    }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -75,13 +86,25 @@ public class VrActivity  extends AppCompatActivity {
         return super.dispatchKeyEvent(event);
     }
 
-    /*@Override
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == ASettingsVR.RESULT_CODE_SETTINGS_CHANGED) {
-            System.out.println("Got onActivityResult");
+        //Log.d(TAG,"Got onActivityResult "+requestCode+" "+resultCode);
+        if (requestCode == REQUEST_CODE_NOTIFY_IF_VR_SETTINGS_CHANGED) {
+            if(resultCode==ASettingsVR.RESULT_CODE_SETTINGS_CHANGED_RESTART_REQUIRED){
+                Log.d(TAG,"Got result that we need to restart the activity");
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setCancelable(false);
+                builder.setTitle("Vr config changed").setMessage("Restart required");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        recreate();
+                    }
+                });
+                builder.setNegativeButton("No",null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
         }
-    }*/
-
+    }
 }

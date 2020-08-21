@@ -14,13 +14,9 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.RawResourceDataSource;
 import com.google.android.exoplayer2.util.Util;
-import com.google.vr.ndk.base.GvrApi;
 
-import constantin.renderingx.core.VrActivity;
+import constantin.renderingx.core.views.VrActivity;
 import constantin.renderingx.core.views.VrView;
-import constantin.renderingx.core.xglview.SurfaceTextureHolder;
-import constantin.renderingx.core.xglview.XGLSurfaceView;
-import constantin.renderingx.core.views.VRLayout;
 import constantin.renderingx.example.R;
 import constantin.video.core.gl.ISurfaceTextureAvailable;
 import constantin.video.core.video_player.VideoPlayer;

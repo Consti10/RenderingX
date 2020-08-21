@@ -2,11 +2,7 @@ package constantin.renderingx.example.supersync;
 
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.vr.sdk.base.GvrActivity;
-
-import constantin.renderingx.core.VrActivity;
+import constantin.renderingx.core.views.VrActivity;
 import constantin.renderingx.core.views.VrView;
 import constantin.video.core.video_player.VideoPlayer;
 import constantin.video.core.video_player.VideoSettings;

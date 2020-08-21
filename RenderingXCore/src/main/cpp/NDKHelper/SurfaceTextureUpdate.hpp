@@ -127,7 +127,7 @@ public:
         const long newTimestamp=getTimestamp(env);
         if(newTimestamp!=oldTimestamp){
             const auto diff=newTimestamp-oldTimestamp;
-            MLOGD<<"Diff "<<MyTimeHelper::R(std::chrono::nanoseconds(diff));
+            //MLOGD<<"Diff "<<MyTimeHelper::R(std::chrono::nanoseconds(diff));
             const auto delay=std::chrono::steady_clock::now().time_since_epoch()-std::chrono::nanoseconds(newTimestamp);
             return delay;
         }

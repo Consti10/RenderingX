@@ -16,7 +16,7 @@ import constantin.renderingx.core.R;
 
 public class ASettingsVR extends AppCompatActivity {
     private FSettingsVR fSettingsVR;
-    public static final int RESULT_CODE_SETTINGS_CHANGED=321;
+    public static final int RESULT_CODE_SETTINGS_CHANGED_RESTART_REQUIRED =321;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,18 +36,6 @@ public class ASettingsVR extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(fSettingsVR.settingsHaveBeenChanged){
-
-            /*Intent returnIntent = new Intent();
-            returnIntent.putExtra("result",0);
-            setResult(ASettingsVR.RESULT_CODE_SETTINGS_CHANGED,returnIntent);*/
-            /*Intent goToMainActivity = new Intent(getApplicationContext(), MainActivity.class);
-            goToMainActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // Will clear out your activity history stack till now
-            startActivity(goToMainActivity);*/
-
-            Log.d("HUHU","settings have been changed");
-        }
-        Log.d("HUHU","onDestroy");
     }
 
     public static float getScreenBrightnessInRangeZeroTo1(final Context context){
@@ -56,7 +44,6 @@ public class ASettingsVR extends AppCompatActivity {
     }
 
     public static class FSettingsVR extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener{
-        public boolean settingsHaveBeenChanged=false;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -90,7 +77,7 @@ public class ASettingsVR extends AppCompatActivity {
             if(key.contentEquals(getString(R.string.GroundHeadTrackingMode)) || key.contentEquals(getString(R.string.AirHeadTrackingMode))){
                 setupHeadTrackingCategory(preferences);
             }
-            settingsHaveBeenChanged=true;
+            getActivity().setResult(ASettingsVR.RESULT_CODE_SETTINGS_CHANGED_RESTART_REQUIRED,null);
         }
 
         private void setupHeadTrackingCategory(SharedPreferences sharedPreferences){
