@@ -39,7 +39,7 @@ public:
 private:
     // last registered VSYNC. Indirectly set by the callback, but it is not guaranteed that this is the last occurred VSYNC
     // The only thread writing the variable is the choreographer
-    // Any other thread can read it without worying about locks, for example the Front Buffer Renderer
+    // Any other thread can read it without worrying about locks, for example the Front Buffer Renderer
     std::atomic<VSYNCState> lastVSYNCStateFromChoreographer;
     static constexpr CLOCK::duration DEFAULT_REFRESH_TIME=16666666ns;
     // display refresh rate becomes more accurately over time when I got enough samples
