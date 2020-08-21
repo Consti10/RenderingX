@@ -1,6 +1,7 @@
 package constantin.renderingx.core;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.Choreographer;
 import android.view.Display;
 import android.view.WindowManager;
@@ -29,10 +30,20 @@ public class VSYNC implements LifecycleObserver, Choreographer.FrameCallback{
         choreographerVsyncOffsetNS=d.getAppVsyncOffsetNanos();
         nativeInstance=nativeConstruct();
         parent.getLifecycle().addObserver(this);
+        final long deadline=d.getPresentationDeadlineNanos();
+        Log.d("VSYNC","Deadline is "+deadline);
     }
     public long getNativeInstance(){
         return nativeInstance;
     }
+
+    // nougat:
+    // https://android.googlesource.com/platform/frameworks/native/+/refs/heads/nougat-cts-release/services/surfaceflinger/SurfaceFlinger.cpp
+    // https://android.googlesource.com/platform/frameworks/native/+/refs/heads/nougat-cts-release/services/surfaceflinger/SurfaceFlinger.h
+    //
+    // We add an additional 1ms to allow for processing time and
+    // differences between the ideal and actual refresh rate.
+    //info.presentationDeadline = hwConfig->getVsyncPeriod() - offset.late.sf + 1000000;
 
     @Override
     public void doFrame(long frameTimeNanos) {
