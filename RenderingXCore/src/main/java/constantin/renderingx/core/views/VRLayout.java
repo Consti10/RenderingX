@@ -80,13 +80,6 @@ public class VRLayout extends FrameLayout implements LifecycleObserver , PopupMe
                 popup.setOnMenuItemClickListener(VRLayout.this);
                 popup.inflate(R.menu.vr_popup_menu);
                 popup.show();
-                /*GvrUiLayout.launchOrInstallGvrApp(activity);
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(activity,"VR Headset changes require an activity restart",Toast.LENGTH_LONG).show();
-                    }
-                });*/
             }
         });
         findViewById(R.id.vr_overlay_back_button).setOnClickListener(new View.OnClickListener() {
@@ -234,25 +227,14 @@ public class VRLayout extends FrameLayout implements LifecycleObserver , PopupMe
         final int itemId = item.getItemId();
         if (itemId == R.id.change_headset_item) {
             GvrUiLayout.launchOrInstallGvrApp(activity);
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(activity,"VR Headset changes require an activity restart",Toast.LENGTH_LONG).show();
-                }
-            });
+            //Toast.makeText(activity,"VR Headset changes require an activity restart",Toast.LENGTH_LONG).show();
             return true;
         } else if (itemId == R.id.other_vr_item) {
             final Intent settingsI=new Intent().setClass(activity, ASettingsVR.class);
-
             //activity.startActivity(settingsI);
+            // By calling startActivityForResult() we get the result from the settings activity in the base VR activity
             activity.startActivityForResult(settingsI,VrActivity.REQUEST_CODE_NOTIFY_IF_VR_SETTINGS_CHANGED);
-
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(activity,"VR Headset changes require an activity restart",Toast.LENGTH_LONG).show();
-                }
-            });
+            //Toast.makeText(activity,"VR Headset changes require an activity restart",Toast.LENGTH_LONG).show();
             return true;
         }
         return false;
