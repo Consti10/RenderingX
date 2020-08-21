@@ -15,6 +15,7 @@ import java.util.Objects;
 
 
 public class VSYNC implements LifecycleObserver, Choreographer.FrameCallback{
+    private static final String TAG="VSYNC";
     private native long nativeConstruct();
     private native void nativeSetVSYNCSentByChoreographer(long nativeInstance,long newVSYNC);
     //private native void nativePause(long nativeInstance);
@@ -30,8 +31,8 @@ public class VSYNC implements LifecycleObserver, Choreographer.FrameCallback{
         choreographerVsyncOffsetNS=d.getAppVsyncOffsetNanos();
         nativeInstance=nativeConstruct();
         parent.getLifecycle().addObserver(this);
-        final long deadline=d.getPresentationDeadlineNanos();
-        Log.d("VSYNC","Deadline is "+deadline);
+        //final long deadline=d.getPresentationDeadlineNanos();
+        //Log.d(TAG,"Deadline is "+deadline);
     }
     public long getNativeInstance(){
         return nativeInstance;
