@@ -15,7 +15,6 @@ import constantin.renderingx.core.R;
 
 
 public class ASettingsVR extends AppCompatActivity {
-    private FSettingsVR fSettingsVR;
     // This one is written to  getActivity().setResult() if the vr settings have changed
     // such that the base VR application needs to be restarted
     public static final int RESULT_CODE_SETTINGS_CHANGED_RESTART_REQUIRED =321;
@@ -24,7 +23,7 @@ public class ASettingsVR extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Display the fragment as the main content.
-        fSettingsVR=new FSettingsVR();
+        FSettingsVR fSettingsVR = new FSettingsVR();
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, fSettingsVR)
                 .commit();
