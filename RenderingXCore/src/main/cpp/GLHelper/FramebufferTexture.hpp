@@ -9,7 +9,7 @@
 #include <AndroidLogger.hpp>
 #include <GLHelper.hpp>
 
-// Wrapper around one framebuffer that draws into a texture
+// Wrapper around one framebuffer that is bound to a texture id
 // Width and Height can be changed dynamically after initializeGL() is called
 class FramebufferTexture{
 public:
