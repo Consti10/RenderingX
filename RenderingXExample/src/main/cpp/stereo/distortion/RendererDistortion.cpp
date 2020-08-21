@@ -13,9 +13,8 @@
 
 constexpr auto TAG="DistortionExample";
 
-#define ENABLE_HEAD_TRACKING
-
 RendererDistortion::RendererDistortion(JNIEnv *env, jobject androidContext, gvr_context *gvr_context):
+        vrSettings(env,androidContext),
         gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context)),
         vrCompositorRenderer(env,androidContext,gvr_api_.get(),true,true),
         mFPSCalculator("OpenGL FPS",std::chrono::seconds(2)){
@@ -46,14 +45,9 @@ void RendererDistortion::onSurfaceCreated(JNIEnv *env, jobject context) {
     GLProgramTexture::loadTexture(mBlueTexture,env,context,"ExampleTexture/blue.png");
     vrRenderBufferWithGreenTexture.loadDefaultTexture(env,context);
     vrCompositorRenderer.removeLayers();
+    const auto headTracking=vrSettings.isHeadTrackingEnabled() ? VrCompositorRenderer::HEAD_TRACKING::FULL : VrCompositorRenderer::HEAD_TRACKING::NONE;
 
-    vrCompositorRenderer.addLayer(tmpData,&vrRenderBufferWithGreenTexture,
-#ifdef ENABLE_HEAD_TRACKING
-VrCompositorRenderer::HEAD_TRACKING::FULL
-#else
-VrCompositorRenderer::HEAD_TRACKING::NONE
-#endif
-    );
+    vrCompositorRenderer.addLayer(tmpData,&vrRenderBufferWithGreenTexture,headTracking);
     GLHelper::checkGlError("example_renderer::onSurfaceCreated");
 }
 
@@ -115,11 +109,12 @@ void RendererDistortion::drawEyeGvrRenderbuffer(gvr::Eye eye) {
     const auto eyeM=gvr_api_->GetEyeFromHeadMatrix(eye==0 ? GVR_LEFT_EYE : GVR_RIGHT_EYE);
     //const auto rotM=gvr_api_->GetHeadSpaceFromStartSpaceRotation(gvr::GvrApi::GetTimePointNow());
     const auto rotM=toGVR(vrCompositorRenderer.GetLatestHeadSpaceFromStartSpaceRotation());
-#ifdef ENABLE_HEAD_TRACKING
-    const auto viewM=toGLM(ndk_hello_vr::MatrixMul(eyeM,rotM));
-#else
-    const auto viewM=toGLM(ndk_hello_vr::MatrixMul(eyeM,toGVR(glm::mat4(1.0f))));
-#endif
+    glm::mat4 viewM;
+    if(vrSettings.isHeadTrackingEnabled()){
+        viewM=toGLM(ndk_hello_vr::MatrixMul(eyeM,rotM));
+    }else{
+        viewM=toGLM(ndk_hello_vr::MatrixMul(eyeM,toGVR(glm::mat4(1.0f))));
+    }
     const auto projectionM=toGLM(perspective);
     glLineWidth(LINE_WIDTH_BIG);
     // draw debug mesh:

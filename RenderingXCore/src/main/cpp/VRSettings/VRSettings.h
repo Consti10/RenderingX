@@ -15,6 +15,12 @@ public:
     VRSettings(JNIEnv *env, jobject androidContext);
     VRSettings(VRSettings const &) = delete;
     void operator=(VRSettings const &)= delete;
+    bool enableDistortionCorrection()const{
+        return VR_DISTORTION_CORRECTION_MODE==1;
+    }
+    bool isHeadTrackingEnabled()const{
+        return GHT_MODE!=0;
+    }
 public:
     //Stereo and VR Rendering
     int VR_DISTORTION_CORRECTION_MODE;

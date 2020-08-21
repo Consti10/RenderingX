@@ -16,7 +16,6 @@ public class SurfaceTextureHolder {
     private SurfaceTexture surfaceTexture;
     private Surface surface;
 
-
     public SurfaceTextureHolder(final AppCompatActivity parent,final ISurfaceTextureAvailable iSurfaceTextureAvailable){
         this.parent=parent;
         this.iSurfaceTextureAvailable=iSurfaceTextureAvailable;

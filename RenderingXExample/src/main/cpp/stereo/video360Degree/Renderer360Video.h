@@ -32,6 +32,7 @@
 #include <VrRenderBuffer.hpp>
 #include <VrRenderBuffer2.hpp>
 #include <SurfaceTextureUpdate.hpp>
+#include <VRSettings.h>
 
 // Example that renders 360° video with the Vr compositor renderer using VDDC
 class Renderer360Video{
@@ -45,6 +46,7 @@ public:
     void onSecondaryContextCreated(JNIEnv* env,jobject context);
     void onSecondaryContextDoWork(JNIEnv* env);
 private:
+    const VRSettings vrSettings;
     std::unique_ptr<gvr::GvrApi> gvr_api_;
     FPSCalculator mFPSCalculator;
     int clearColorIndex=0;

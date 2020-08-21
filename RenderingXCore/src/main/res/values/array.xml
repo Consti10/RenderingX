@@ -46,4 +46,17 @@
         <item>1</item>
     </string-array>
 
+    <string-array name="entriesVR_RENDERING_MODE" >
+        <item>Auto (default)</item>
+        <item>Render on demand</item>
+        <item>Super Sync</item>
+        <item>Unlimited</item>
+    </string-array>
+    <string-array name="valuesVR_RENDERING_MODE" >
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
 </resources>

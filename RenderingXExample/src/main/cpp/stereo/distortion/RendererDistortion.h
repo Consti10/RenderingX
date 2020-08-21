@@ -32,6 +32,7 @@
 #include <GLBuffer.hpp>
 #include <ProjTex/GLPTextureProj.h>
 #include <VrCompositorRenderer.h>
+#include <VRSettings.h>
 
 // Example that compares the distortion created by VDDC and google cardboard with Gvr (google vr)
 // Renders the wireframe of a 2D rectangular surface
@@ -57,6 +58,7 @@ private:
      */
     void drawEyeVDDC(gvr::Eye eye);
 private:
+    const VRSettings vrSettings;
     std::unique_ptr<gvr::GvrApi> gvr_api_;
     gvr::BufferViewportList buffer_viewports;
     gvr::BufferViewportList recommended_buffer_viewports;

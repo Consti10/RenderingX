@@ -13,10 +13,11 @@
 #include <Sphere/SphereBuilder.hpp>
 
 Renderer360Video::Renderer360Video(JNIEnv *env, jobject androidContext, gvr_context *gvr_context,const int vSPHERE_MODE):
+        vrSettings(env,androidContext),
         surfaceTextureUpdate(env),
         M_SPHERE_MODE(static_cast<SPHERE_MODE>(vSPHERE_MODE)),
         gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context)),
-        vrCompositorRenderer(env,androidContext,gvr_api_.get(),true,true),
+        vrCompositorRenderer(env,androidContext,gvr_api_.get(),vrSettings.enableDistortionCorrection(),vrSettings.VR_ENABLE_DEBUG),
         mFPSCalculator("OpenGL FPS", std::chrono::seconds(2)){
 }
 
@@ -46,17 +47,17 @@ void Renderer360Video::onSurfaceCreated(JNIEnv *env, jobject context,jobject sur
 
 void Renderer360Video::onDrawFrame(JNIEnv* env) {
     mFPSCalculator.tick();
-    const auto timeP=std::chrono::steady_clock::now()+std::chrono::seconds(1);
+    /*const auto timeP=std::chrono::steady_clock::now()+std::chrono::seconds(1);
     if(const auto delay=surfaceTextureUpdate.waitUntilFrameAvailable(env,timeP)){
         videoFrameWaitTime.add(*delay);
         //MLOGD<<"avg Latency until opengl is "<<surfaceTextureDelay.getAvg_ms();
         //MLOGD<<MyTimeHelper::R(*delay)<<" | "<<videoFrameWaitTime.getAvgReadable();
     }else{
         //MLOGD<<"Timeout";
-    }
+    }*/
 
     surfaceTextureUpdate.updateAndCheck(env);
-    //MLOGD<<"FPS: "<<mFPSCalculator.getCurrentFPS();
+    MLOGD<<"FPS: "<<mFPSCalculator.getCurrentFPS();
 
     //Update the head position (rotation) then leave it untouched during the frame
     vrCompositorRenderer.updateLatestHeadSpaceFromStartSpaceRotation();
@@ -69,6 +70,7 @@ void Renderer360Video::onDrawFrame(JNIEnv* env) {
     for(int eye=0;eye<2;eye++){
         vrCompositorRenderer.drawLayers(static_cast<gvr::Eye>(eye));
     }
+    Extensions::eglPresentationTimeANDROID(eglGetCurrentDisplay(),eglGetCurrentSurface(EGL_DRAW),std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
     GLHelper::checkGlError("Renderer360Video::onDrawFrame");
 }
 

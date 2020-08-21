@@ -11,7 +11,12 @@ import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.mapzen.prefsplus.IntListPreference;
+
+import java.util.ArrayList;
+
 import constantin.renderingx.core.R;
+import constantin.renderingx.core.gles_info.OpenGLESValues;
 
 
 public class ASettingsVR extends AppCompatActivity {
@@ -59,6 +64,7 @@ public class ASettingsVR extends AppCompatActivity {
         public void onActivityCreated(Bundle savedInstanceState){
             super.onActivityCreated(savedInstanceState);
             setupHeadTrackingCategory(getPreferenceScreen().getSharedPreferences());
+            setupMSAALevelsPreference(getActivity());
         }
 
         @Override
@@ -99,6 +105,19 @@ public class ASettingsVR extends AppCompatActivity {
             sp3x.setEnabled(enabledAHT);
             ListPreference lp1=(ListPreference)findPreference(getString(R.string.AHTRefreshRateMs));
             lp1.setEnabled(enabledAHT);*/
+        }
+
+        private void setupMSAALevelsPreference(final Context c){
+            ArrayList<Integer> allMSAALevels= OpenGLESValues.availableMSAALevels(c);
+            CharSequence[] msaaEntries =new CharSequence[allMSAALevels.size()];
+            CharSequence[] msaaEntryValues =new CharSequence[allMSAALevels.size()];
+            for(int i=0;i<allMSAALevels.size();i++){
+                msaaEntries[allMSAALevels.size()-1-i]=""+allMSAALevels.get(i)+"xMSAA";
+                msaaEntryValues[allMSAALevels.size()-1-i]=""+allMSAALevels.get(i);
+            }
+            IntListPreference msaaPreference = (IntListPreference) findPreference(this.getString(R.string.MultiSampleAntiAliasing));
+            msaaPreference.setEntries(msaaEntries);
+            msaaPreference.setEntryValues(msaaEntryValues);
         }
 
     }

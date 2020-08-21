@@ -35,7 +35,7 @@
         </PreferenceScreen>
 
         <PreferenceScreen
-            android:title="HeadTracking settings"
+            android:title="HeadTracking"
             android:summary="Configure HeadTracking.">
             <PreferenceCategory
                 android:title="Ground head tracking">
@@ -68,6 +68,33 @@
                     android:summary="If enabled, the OSD is fixed to the Head position,regardless of the video. Default false."
                     android:defaultValue="false"/>
             </PreferenceCategory>
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:title="Performance"
+            android:summary="Reduce latency and more">
+            <PreferenceCategory
+                android:title="Performance">
+                <com.mapzen.prefsplus.IntListPreference
+                    android:title="VR_RENDERING_MODE"
+                    android:key="VR_RENDERING_MODE"
+                    android:summary="Select a specialized VR rendering method"
+                    android:entries="@array/entriesVR_RENDERING_MODE"
+                    android:entryValues="@array/valuesVR_RENDERING_MODE"
+                    android:defaultValue="0"/>
+            </PreferenceCategory>
+
+            <PreferenceCategory
+                android:title="Quality">
+                <com.mapzen.prefsplus.IntListPreference
+                    android:title="@string/MultiSampleAntiAliasing"
+                    android:key="@string/MultiSampleAntiAliasing"
+                    android:summary="@string/MSAADescription"
+                    android:entries="@array/entriesMSAADefault"
+                    android:entryValues="@array/valuesMSAADefault"
+                    android:defaultValue="0"/>
+            </PreferenceCategory>
+
         </PreferenceScreen>
 
     </PreferenceCategory>

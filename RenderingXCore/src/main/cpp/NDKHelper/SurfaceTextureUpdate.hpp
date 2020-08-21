@@ -154,7 +154,7 @@ public:
         }
         return std::nullopt;
     }
-    GLint getTextureId()const{
+    GLuint getTextureId()const{
         return textureId;
     }
 };
