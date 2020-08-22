@@ -23,12 +23,11 @@ public class GLRExampleSuperSync implements XGLSurfaceView.FullscreenRendererWit
     private final Context mContext;
     // Opaque native pointer to the native GLRStereoSuperSync instance.
     private final long nativeGLRSuperSync;
-    private final VSYNC vsync;
 
     public GLRExampleSuperSync(final Context context, GvrApi gvrApi){
         mContext=context;
-        vsync=new VSYNC((AppCompatActivity)context);
-        nativeGLRSuperSync=nativeConstruct(context,gvrApi.getNativeGvrContext(),vsync.getNativeInstance());
+        final VSYNC vsync = new VSYNC((AppCompatActivity) context);
+        nativeGLRSuperSync=nativeConstruct(context,gvrApi.getNativeGvrContext(), vsync.getNativeInstance());
     }
 
     @Override

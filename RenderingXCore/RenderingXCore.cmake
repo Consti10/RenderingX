@@ -34,8 +34,10 @@ target_link_libraries( Time ${log-lib} android)
 
 include_directories(${RX_CORE_CPP}/SuperSync)
 add_library(Extensions SHARED
-        ${RX_CORE_CPP}/SuperSync/Extensions.cpp)
+        ${RX_CORE_CPP}/SuperSync/Extensions.cpp
+        )
 target_link_libraries( Extensions ${log-lib} android EGL GLESv2)
+
 include_directories(${RX_CORE_CPP}/VRSettings)
 add_library(VRSettings SHARED
         ${RX_CORE_CPP}/VRSettings/VRSettings.cpp)
@@ -69,9 +71,10 @@ add_library( GLPrograms SHARED
         )
 target_link_libraries( GLPrograms ${log-lib} android GLESv2 gvr-lib Time Extensions VRSettings)
 
-
+#
 include_directories(${RX_CORE_CPP}/SuperSync)
 add_library( SuperSync SHARED
         ${RX_CORE_CPP}/SuperSync/VSYNC.cpp
         ${RX_CORE_CPP}/SuperSync/FBRManager.cpp)
 target_link_libraries( SuperSync ${log-lib} android Time log EGL GLESv2 Extensions GLPrograms)
+#
