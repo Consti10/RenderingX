@@ -214,5 +214,21 @@ void FBRManager::drawEyesToFrontBufferUnsynchronized(JNIEnv *env,VrCompositorRen
     }
 }
 
+void FBRManager::drawFramesToFrontBufferUnsynchronized(JNIEnv *env,
+                                                       VrCompositorRenderer &vrCompositorRenderer) {
+    JThread jThread(env);
+    while (!jThread.isInterrupted()){
+        glClear(GLHelper::ALL_GL_BUFFERS);
+        SurfaceTextureUpdate* surfaceTextureUpdate=std::get<SurfaceTextureUpdate*>(vrCompositorRenderer.getLayers().at(0).contentProvider);
+        for(int eye=0;eye<2;eye++){
+            surfaceTextureUpdate->updateAndCheck(env);
+            //surfaceTextureUpdate->waitUntilFrameAvailable(env,std::chrono::steady_clock::now()+std::chrono::milliseconds(14));
+            const bool isLeftEye=eye==0;
+            drawEye(env,isLeftEye,vrCompositorRenderer);
+        }
+        eglSwapBuffers(eglGetCurrentDisplay(),eglGetCurrentSurface(EGL_DRAW));
+    }
+}
+
 
 

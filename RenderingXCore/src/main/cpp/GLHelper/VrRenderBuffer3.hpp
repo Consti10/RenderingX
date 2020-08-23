@@ -1,9 +1,9 @@
 //
-// Created by geier on 02/07/2020.
+// Created by geier on 22/08/2020.
 //
 
-#ifndef RENDERINGX_VRRENDERBUFFER2_H
-#define RENDERINGX_VRRENDERBUFFER2_H
+#ifndef RENDERINGX_VRRENDERBUFFER3_H
+#define RENDERINGX_VRRENDERBUFFER3_H
 
 #include <GLES2/gl2.h>
 #include <AndroidLogger.hpp>
@@ -11,8 +11,22 @@
 #include <Extensions.h>
 #include <FramebufferTexture.hpp>
 
+struct TimingInformation{
+    CLOCK::time_point startSubmitCommands;
+    CLOCK::time_point stopSubmitCommands;
+    CLOCK::time_point gpuFinishedRendering;
+};
+
+struct Frame{
+    // Matrix
+    glm::mat4x4 matrix;
+    const FramebufferTexture& renderBuffer;
+    TimingInformation timingInformation;
+};
+
+
 // Double buffered VR renderbuffer
-class VrRenderBuffer2{
+class VrRenderBuffer3{
 public:
     VrRenderBuffer2(std::optional<std::string> defaultTextureUrl=std::nullopt):defaultTextureUrl(defaultTextureUrl){}
     // no copy, only move constructor
@@ -96,4 +110,5 @@ public:
     }
 };
 
-#endif //RENDERINGX_VRRENDERBUFFER2_H
+
+#endif //RENDERINGX_VRRENDERBUFFER3_H

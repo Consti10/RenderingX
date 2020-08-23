@@ -172,8 +172,10 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         // Calculate the view matrix for this layer.
         const glm::mat4 viewM= layer.headTracking==NONE ? eyeFromHead[EYE_IDX] : eyeFromHead[EYE_IDX] * rotation;
         const bool isExternalTexture=std::holds_alternative<SurfaceTextureUpdate*>(layer.contentProvider);
+        VrRenderBuffer2::TimingInformation timingInformation;
+
         const GLint textureId=isExternalTexture ? std::get<SurfaceTextureUpdate*>(layer.contentProvider)->getTextureId() :
-                              std::get<VrRenderBuffer2*>(layer.contentProvider)->getLatestRenderedTexture();
+                              std::get<VrRenderBuffer2*>(layer.contentProvider)->getLatestRenderedTexture(&timingInformation);
         if(layer.headTracking==HEAD_TRACKING::NONE){
             TexturedGLMeshBuffer* distortedMesh= eye == GVR_LEFT_EYE ? layer.optionalLeftEyeDistortedMesh.get() :
                     layer.optionalRightEyeDistortedMesh.get();
@@ -182,6 +184,9 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         }else{
             GLProgramTexture* glProgramTexture= isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
             glProgramTexture->drawXStereoVertex(textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye,eye==GVR_LEFT_EYE);
+        }
+        if(!isExternalTexture){
+            MLOGD<<"Latency of osd "<<MyTimeHelper::R(std::chrono::steady_clock::now()-timingInformation.startSubmitCommands);
         }
     }
     // Render the mesh that occludes everything except the part actually visible inside the headset

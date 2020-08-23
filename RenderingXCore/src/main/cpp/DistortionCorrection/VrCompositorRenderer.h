@@ -21,6 +21,7 @@
 #include <VrRenderBuffer2.hpp>
 #include <DirectRender.hpp>
 
+
 class VrCompositorRenderer {
 public:
     /**
@@ -91,6 +92,9 @@ public:
         FULL
     };
     using VrContentProvider=std::variant<SurfaceTextureUpdate*,VrRenderBuffer2*>;
+    struct VrLayer2DMonoscopic{
+        
+    };
     // https://developer.oculus.com/documentation/unity/unity-ovroverlay/
     struct VRLayer{
         HEAD_TRACKING headTracking;
@@ -102,6 +106,7 @@ public:
         std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> optionalRightEyeDistortedMesh=nullptr;
         // By supplying the content provider updating the layer each frame is much easier
         VrContentProvider contentProvider;
+        // the time point when the data for this layer was created
     };
     // List of layer descriptions
     std::vector<VRLayer> mVrLayerList;
@@ -182,5 +187,9 @@ public:
     }
 };
 
+class SwapChain{
+public:
+    std::vector<VrCompositorRenderer::VRLayer> layers;
+};
 
 #endif //FPV_VR_OS_VRCOMPOSITORRENDERER_H

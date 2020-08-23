@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Lifecycle;
@@ -23,9 +24,8 @@ import androidx.lifecycle.OnLifecycleEvent;
 import com.google.common.primitives.Ints;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.microedition.khronos.egl.EGL10;
+import javax.microedition.khronos.opengles.GL10;
 
 import constantin.renderingx.core.Extensions;
 import constantin.renderingx.core.views.VRLayout;
@@ -38,13 +38,12 @@ import static android.opengl.EGL14.EGL_NO_SURFACE;
 import static android.opengl.EGLExt.EGL_CONTEXT_FLAGS_KHR;
 import static constantin.renderingx.core.xglview.EGLContextPriority.EGL_CONTEXT_PRIORITY_HIGH_IMG;
 import static constantin.renderingx.core.xglview.EGLContextPriority.EGL_CONTEXT_PRIORITY_LEVEL_IMG;
-import static constantin.renderingx.core.xglview.EGLContextPriority.EGL_CONTEXT_PRIORITY_LOW_IMG;
 import static constantin.renderingx.core.xglview.XEGLConfigChooser.EGL_ANDROID_front_buffer_auto_refresh;
 
 // TODO in Development
 
 /**
- * This View is intended as an replacement for GLSurfaceView.
+ * This View is intended as an replacement for {@link android.opengl.GLSurfaceView}
  * https://developer.android.com/reference/android/opengl/GLSurfaceView
  * The Complexity of GLSurfaceView comes from its compatibility all the way down to Android 2.3.3 (API level 10) where for example EGL14 was not available
  * By replacing EGL10 with EGL14 and also having not to worry about 'hacks' that were needed on these old api versions I hope to reduce complexity
@@ -70,11 +69,12 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     private EGLConfig eglConfig = null;
     // The Thread that renders OpenGL frames
     private Thread mOpenGLThread;
-    // Choose between one of the two interfaces.
-    // For legacy code the older GLSurfaceView.Renderer interface is also supported
-    private FullscreenRenderer mRenderer2;
-    private FullscreenRendererWithSurfaceTexture mRenderer3;
-    private GLSurfaceView.Renderer mLegacyRenderer;
+    // Choose between one of the interfaces.
+    // For compability with code that uses the GLSurfaceView.Renderer an interface really similar to
+    // this interface also exists
+    private LegacyRenderer mRenderer0;
+    private FullscreenRenderer mRenderer1;
+    private FullscreenRendererWithSurfaceTexture mRenderer2;
     // For VR applications the surface width and height is equal to the display w/h and therefore
     // Does never change
     private int SURFACE_W,SURFACE_H;
@@ -112,15 +112,22 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         this.mWantedSurfaceParams=wantedSurfaceParams;
     }
 
-    public void setRenderer(final GLSurfaceView.Renderer renderer){
-        this.mLegacyRenderer =renderer;
+    public void setRenderer(final LegacyRenderer renderer){
+        mRenderer0 =renderer;
     }
-    public void setRenderer(final FullscreenRenderer renderer2){
-        this.mRenderer2=renderer2;
+    public void setRenderer(final FullscreenRenderer renderer){
+        this.mRenderer1 =renderer;
     }
-    public void setRenderer(final FullscreenRendererWithSurfaceTexture renderer3,final ISurfaceTextureAvailable iSurfaceTextureAvailable){
-        this.mRenderer3=renderer3;
-        this.surfaceTextureHolder=new SurfaceTextureHolder(activity,iSurfaceTextureAvailable);
+    /**
+     * Set the renderer that also has a SurfaceTexture,e.g for video playback
+     * @param iSurfaceTextureAvailable Configure your video player using this interface. When passing null for the ISurfaceTextureAvailable
+     * No SurfaceTexture holder is created (and the value passed to the renderer is also null)
+     */
+    public void setRenderer(final FullscreenRendererWithSurfaceTexture renderer,final @Nullable ISurfaceTextureAvailable iSurfaceTextureAvailable){
+        this.mRenderer2 =renderer;
+        if(iSurfaceTextureAvailable!=null){
+            this.surfaceTextureHolder=new SurfaceTextureHolder(activity,iSurfaceTextureAvailable);
+        }
     }
 
     public void setmISecondaryContext(final GLContextSurfaceLess.SecondarySharedContext i){
@@ -146,30 +153,30 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                 if(surfaceTextureHolder!=null){
                     surfaceTextureHolder.createOnOpenGLThread();
                 }
-                if(mRenderer2!=null){
-                    mRenderer2.onContextCreated(SURFACE_W,SURFACE_H);
+                if(mRenderer1 !=null){
+                    mRenderer1.onContextCreated(SURFACE_W,SURFACE_H);
                 }
-                if(mRenderer3!=null){
-                    mRenderer3.onContextCreated(SURFACE_W,SURFACE_H,surfaceTextureHolder);
+                if(mRenderer2 !=null){
+                    mRenderer2.onContextCreated(SURFACE_W,SURFACE_H,surfaceTextureHolder);
                 }
                 firstTimeSurfaceBound=false;
             }
-            if(mLegacyRenderer !=null){
-                mLegacyRenderer.onSurfaceCreated(null,null);
-                mLegacyRenderer.onSurfaceChanged(null,SURFACE_W,SURFACE_H);
+            if(mRenderer0 !=null){
+                mRenderer0.onSurfaceCreated();
+                mRenderer0.onSurfaceChanged(SURFACE_W,SURFACE_H);
             }
             if(glContextSurfaceLess!=null){
                 glContextSurfaceLess.resumeWork();
             }
             while (!Thread.currentThread().isInterrupted()){
-                if(mLegacyRenderer !=null){
-                    mLegacyRenderer.onDrawFrame(null);
+                if(mRenderer0 !=null){
+                    mRenderer0.onDrawFrame();
                 }
-                if(mRenderer2!=null){
+                if(mRenderer1 !=null){
+                    mRenderer1.onDrawFrame();
+                }
+                if(mRenderer2 !=null){
                     mRenderer2.onDrawFrame();
-                }
-                if(mRenderer3!=null){
-                    mRenderer3.onDrawFrame();
                 }
                 // Swap buffers will ensure that onDrawFrame is not called more than 60 times per second
                 // If the surface is NOT single buffered
@@ -188,6 +195,9 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     private void onCreate() {
         log("onCreate");
+        if(mRenderer0==null && mRenderer1 ==null && mRenderer2 ==null){
+            throw new AssertionError("No renderer set");
+        }
         if(glContextSurfaceLess!=null){
             glContextSurfaceLess.create();
         }
@@ -312,6 +322,14 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         Log.d("MyGLView",message);
     }
 
+    /**
+     * @see android.opengl.GLSurfaceView.Renderer
+     */
+    public interface LegacyRenderer{
+        void onSurfaceCreated();
+        void onSurfaceChanged(int width, int height);
+        void onDrawFrame();
+    }
 
     public interface FullscreenRenderer {
         // Called as soon as the OpenGL context is created

@@ -8,9 +8,11 @@ import com.dinuscxj.gesture.MultiTouchGestureDetector;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import constantin.renderingx.core.xglview.XGLSurfaceView;
+
 
 //See native code for documentation
-public class GLRExample implements GLSurfaceView.Renderer, MultiTouchGestureDetector.OnMultiTouchGestureListener{
+public class GLRExample implements XGLSurfaceView.LegacyRenderer, MultiTouchGestureDetector.OnMultiTouchGestureListener{
     static {
         System.loadLibrary("example-mono");
     }
@@ -34,19 +36,19 @@ public class GLRExample implements GLSurfaceView.Renderer, MultiTouchGestureDete
     }
 
     @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+    public void onSurfaceCreated() {
         nativeOnSurfaceCreated(mContext);
     }
 
     @Override
-    public void onSurfaceChanged(GL10 gl, int width, int height) {
+    public void onSurfaceChanged(int width, int height) {
         this.width=width;
         this.height=height;
         nativeOnSurfaceChanged(width,height);
     }
 
     @Override
-    public void onDrawFrame(GL10 gl) {
+    public void onDrawFrame() {
         nativeOnDrawFrame();
     }
 

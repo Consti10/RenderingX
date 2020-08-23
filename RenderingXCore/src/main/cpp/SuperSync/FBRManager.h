@@ -66,6 +66,8 @@ public:
     void warpEyesToFrontBufferSynchronized(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer);
     //
     void drawEyesToFrontBufferUnsynchronized(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer);
+    //
+    void drawFramesToFrontBufferUnsynchronized(JNIEnv* env, VrCompositorRenderer& vrCompositorRenderer);
 private:
     const bool CHANGE_CLEAR_COLOR_TO_MAKE_TEARING_OBSERVABLE=true;
     const VSYNC& vsync;
