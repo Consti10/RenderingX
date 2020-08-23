@@ -236,6 +236,8 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                 Log.d(TAG,"Cannot get high prio context"+eglContextPriorityLevel);
             }
         }
+        //if(ENABLE_EGL_KHR_DEBUG){
+        //}
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
