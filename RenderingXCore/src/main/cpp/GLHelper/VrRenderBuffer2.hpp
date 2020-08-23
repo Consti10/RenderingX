@@ -57,7 +57,6 @@ public:
         buffers[currentRenderBufferIdx].unbindAndFinishCommands();
         // Now it is safe to swap buffers
         std::swap(currentRenderBufferIdx, currentSampleBufferIdx);
-        //currentRenderBuffer=incrementAndModulo(currentRenderBuffer);
         GLHelper::checkGlError("after U");
     }
 
