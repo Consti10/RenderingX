@@ -9,6 +9,7 @@
 
 // Direct Rendering refers to rendering a specific area ( and the specific area only)
 // This class hides the difference(s) between the two major GPU manufacturer: Qualcomm and MALI (ARM)
+// https://community.arm.com/developer/tools-software/graphics/f/discussions/9609/sliced-front-buffer-rendering-on-mali-gpus
 namespace DirectRender{
     using GLViewport=std::array<int,4>;
     static void setGlViewport(const GLViewport& viewport){
