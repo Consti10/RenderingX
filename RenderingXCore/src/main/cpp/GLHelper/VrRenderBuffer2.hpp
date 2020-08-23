@@ -16,8 +16,8 @@ class VrRenderBuffer2{
 public:
     VrRenderBuffer2(std::optional<std::string> defaultTextureUrl=std::nullopt):defaultTextureUrl(defaultTextureUrl){}
     // no copy, only move constructor
-    VrRenderBuffer2(const VrRenderBuffer2&)=delete;
-    VrRenderBuffer2(VrRenderBuffer2&&)=default;
+    //VrRenderBuffer2(const VrRenderBuffer2&)=delete;
+    //VrRenderBuffer2(VrRenderBuffer2&&)=default;
     const std::optional<std::string> defaultTextureUrl;
     GLuint defaultTexture;
     GLuint WIDTH_PX=0,HEIGH_PX=0;

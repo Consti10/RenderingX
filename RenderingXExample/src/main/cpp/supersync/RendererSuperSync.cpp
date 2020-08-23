@@ -21,8 +21,7 @@
 #include <Extensions.h>
 
 #include "GLProgramLine.h"
-#include "FPSCalculator.h"
-#include "VRFrameCPUChronometer.h"
+#include "FPSCalculator.hpp"
 #include "RendererSuperSync.h"
 
 RendererSuperSync::RendererSuperSync(JNIEnv *env, jobject androidContext, gvr_context *gvr_context,jlong vsync):

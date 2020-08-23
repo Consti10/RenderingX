@@ -22,7 +22,7 @@
 #include <TextAssetsHelper.hpp>
 
 #include <GLProgramLine.h>
-#include <FPSCalculator.h>
+#include <FPSCalculator.hpp>
 #include <VrCompositorRenderer.h>
 #include <SurfaceTextureUpdate.hpp>
 

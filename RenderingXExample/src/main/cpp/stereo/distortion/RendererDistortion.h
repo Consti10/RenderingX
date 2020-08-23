@@ -26,7 +26,7 @@
 #include <TextAssetsHelper.hpp>
 
 #include <GLProgramLine.h>
-#include <FPSCalculator.h>
+#include <FPSCalculator.hpp>
 #include <BasicGLPrograms.hpp>
 #include <gvr_util/util.h>
 #include <GLBuffer.hpp>

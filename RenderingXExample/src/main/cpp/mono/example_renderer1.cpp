@@ -22,7 +22,7 @@
 #include <GLProgramLine.h>
 #include <GLProgramTexture.h>
 #include <TimeHelper.hpp>
-#include <FPSCalculator.h>
+#include <FPSCalculator.hpp>
 #include <ProjTex/GLPTextureProj.h>
 #include <GLProgramVC.h>
 #include <Extensions.h>

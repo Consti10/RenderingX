@@ -24,13 +24,9 @@ set_target_properties(gvr-lib PROPERTIES IMPORTED_LOCATION
 include_directories(${RX_CORE_EXTERNAL_LIBS}/glm)
 
 ##########################################################################################################
-#Time & SuperSync
+#Time & SuperSync & VrSettings
 ##########################################################################################################
 include_directories(${RX_CORE_CPP}/Time)
-add_library(Time SHARED
-        ${RX_CORE_CPP}/Time/VRFrameCPUChronometer.cpp
-        ${RX_CORE_CPP}/Time/FPSCalculator.cpp)
-target_link_libraries( Time ${log-lib} android)
 
 include_directories(${RX_CORE_CPP}/SuperSync)
 add_library(Extensions SHARED
@@ -69,12 +65,12 @@ add_library( GLPrograms SHARED
         ${RX_CORE_CPP}/GLPrograms/ProjTex/GLPTextureProj.cpp
         ${RX_CORE_CPP}/GLPrograms/ProjTex/GLPTextureProj2.cpp
         )
-target_link_libraries( GLPrograms ${log-lib} android GLESv2 gvr-lib Time Extensions VRSettings)
+target_link_libraries( GLPrograms ${log-lib} android GLESv2 gvr-lib Extensions VRSettings)
 
 #
 include_directories(${RX_CORE_CPP}/SuperSync)
 add_library( SuperSync SHARED
         ${RX_CORE_CPP}/SuperSync/VSYNC.cpp
         ${RX_CORE_CPP}/SuperSync/FBRManager.cpp)
-target_link_libraries( SuperSync ${log-lib} android Time log EGL GLESv2 Extensions GLPrograms)
+target_link_libraries( SuperSync ${log-lib} android log EGL GLESv2 Extensions GLPrograms)
 #
