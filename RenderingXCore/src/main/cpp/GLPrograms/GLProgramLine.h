@@ -39,64 +39,50 @@ public:
     static void convertLineToRenderingData(const glm::vec3& start, const glm::vec3& end, float lineWidth,
                                            Vertex array[], int arrayOffset, TrueColor baseColor=TrueColor2::BLACK, TrueColor outlineColor=TrueColor2::WHITE);
 private:
-    static const std::string VS(){
-        std::stringstream s;
-        s<<"uniform mat4 uMVMatrix;\n";
-        s<<"uniform mat4 uPMatrix;\n";
-        s<<"attribute vec4 aPosition;\n";
-        s<<"attribute vec3 aNormal;\n";
-        s<<"attribute float aLineWidth;";
-        s<<"attribute vec4 aBaseColor;";
-        s<<"attribute vec4 aOutlineColor;";
-        s<<"varying vec3 vNormal;";
-        s<<"varying vec4 vBaseColor;";
-        s<<"varying vec4 vOutlineColor;";
-        s<<"vec4 extruded_pos;";
-        s<<"void main(){\n";
-        s<<"extruded_pos=aPosition+vec4(aNormal*aLineWidth,0.0);\n";
-        s<<"gl_Position = (uPMatrix*uMVMatrix)* extruded_pos;\n";
-        s<<"vNormal=aNormal;";
-        s<<"vBaseColor=aBaseColor;";
-        s<<"vOutlineColor=aOutlineColor;";
-        //s<<" gl_Position.zw=vec2(0.0,1.0);";
-        s<<"}\n";
-        return s.str();
-    }
+    static constexpr auto VS=R"(
+uniform mat4 uMVMatrix;
+uniform mat4 uPMatrix;
+attribute vec4 aPosition;
+attribute vec3 aNormal;
+attribute float aLineWidth;
+attribute vec4 aBaseColor;
+attribute vec4 aOutlineColor;
+varying vec3 vNormal;
+varying vec4 vBaseColor;
+varying vec4 vOutlineColor;
+vec4 extruded_pos;
+void main(){
+extruded_pos=aPosition+vec4(aNormal*aLineWidth,0.0);
+gl_Position = (uPMatrix*uMVMatrix)* extruded_pos;
+vNormal=aNormal;
+vBaseColor=aBaseColor;
+vOutlineColor=aOutlineColor;
+}
+)";
+    static constexpr auto FS=R"(
+precision mediump float;
+varying vec3 vNormal;
+varying vec4 vBaseColor;
+varying vec4 vOutlineColor;
 
-    static const std::string FS(){
-        std::stringstream s;
-        s<<"precision mediump float;\n";
-        s<<"varying vec3 vNormal;";
-        s<<"varying vec4 vBaseColor;";
-        s<<"varying vec4 vOutlineColor;";
+const float width=0.5;
+uniform float uEdge;
+uniform float  uOutlineStrength;
+uniform float uBorderEdge;
 
-        s<<"const float width=0.5;";
-        s<<"uniform float uEdge;";
-        s<<"uniform float  uOutlineStrength;"; //0.4
-        s<<"uniform float uBorderEdge;";
+void main(){
+float distanceInv=abs(length(vNormal));
 
-        s<<"void main(){\n";
-        s<<"float distanceInv=abs(length(vNormal));";
-        /*s<<"vec4 color;";
-        s<<"if(distance<0.5){";
-        s<<"color=vec4(1.0,1.0,1.0,1.0);";
-        s<<"}else{";
-        s<<"color=vec4(0.0,0.0,0.0,1.0);";
-        s<<"}";
-        s<<"gl_FragColor=color;";*/
-        s<<"float alpha = 1.0- smoothstep(width,width+uEdge,distanceInv);";
-        s<<"float outlineAlpha = 1.0 - smoothstep(width+uOutlineStrength,width+uOutlineStrength+uBorderEdge,distanceInv);";
-        s<<"float overallAlpha= alpha + (1.0 - alpha) * outlineAlpha ;";
-        s<<"vec3 overallColor= mix(vOutlineColor.rgb,vBaseColor.rgb, alpha / overallAlpha);\n";
-        s<<"gl_FragColor=vec4(overallColor*overallAlpha,overallAlpha);";
+float alpha = 1.0- smoothstep(width,width+uEdge,distanceInv);
+float outlineAlpha = 1.0 - smoothstep(width+uOutlineStrength,width+uOutlineStrength+uBorderEdge,distanceInv);
+float overallAlpha= alpha + (1.0 - alpha) * outlineAlpha ;
+vec3 overallColor= mix(vOutlineColor.rgb,vBaseColor.rgb, alpha / overallAlpha);
+gl_FragColor=vec4(overallColor*overallAlpha,overallAlpha);
 
-        /*s<<"float alpha = smoothstep(width,width+edge,distance);";
-        s<<"gl_FragColor = vec4(vec3(1.0,0.0,0.0)*alpha,alpha);";*/
+}
 
-        s<<"}\n";
-        s<<"\n";
-        return s.str();
-    }
+)";
+
 };
 
 

@@ -5,7 +5,7 @@
 #include "GLProgramLine.h"
 
 GLProgramLine::GLProgramLine(){
-    mProgram = GLHelper::createProgram(VS(),FS());
+    mProgram = GLHelper::createProgram(VS,FS);
     mMVMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uMVMatrix");
     mPMatrixHandle=GLHelper::GlGetUniformLocation(mProgram,"uPMatrix");
     mPositionHandle =GLHelper::GlGetAttribLocation(mProgram, "aPosition");
