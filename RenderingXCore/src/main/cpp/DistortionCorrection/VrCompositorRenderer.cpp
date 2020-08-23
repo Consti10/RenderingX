@@ -172,7 +172,7 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         // Calculate the view matrix for this layer.
         const glm::mat4 viewM= layer.headTracking==NONE ? eyeFromHead[EYE_IDX] : eyeFromHead[EYE_IDX] * rotation;
         const bool isExternalTexture=std::holds_alternative<SurfaceTextureUpdate*>(layer.contentProvider);
-        VrRenderBuffer2::TimingInformation timingInformation;
+        FramebufferTexture::TimingInformation timingInformation;
 
         const GLint textureId=isExternalTexture ? std::get<SurfaceTextureUpdate*>(layer.contentProvider)->getTextureId() :
                               std::get<VrRenderBuffer2*>(layer.contentProvider)->getLatestRenderedTexture(&timingInformation);

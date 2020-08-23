@@ -31,6 +31,7 @@
 #include <VrCompositorRenderer.h>
 #include <VrRenderBuffer.hpp>
 #include <VrRenderBuffer2.hpp>
+#include <VrRenderBuffer3.hpp>
 #include <SurfaceTextureUpdate.hpp>
 #include <VRSettings.h>
 

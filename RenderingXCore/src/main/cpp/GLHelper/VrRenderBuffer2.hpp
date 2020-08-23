@@ -11,7 +11,7 @@
 #include <Extensions.h>
 #include <FramebufferTexture.hpp>
 
-// Double buffered VR renderbuffer
+// Double buffered
 class VrRenderBuffer2{
 public:
     VrRenderBuffer2(std::optional<std::string> defaultTextureUrl=std::nullopt):defaultTextureUrl(defaultTextureUrl){}
@@ -22,14 +22,8 @@ public:
     GLuint defaultTexture;
     GLuint WIDTH_PX=0,HEIGH_PX=0;
     std::array<FramebufferTexture,2> buffers;
-    int currentRenderTexture=0;
-    using CLOCK=std::chrono::steady_clock;
-    struct TimingInformation{
-        CLOCK::time_point startSubmitCommands;
-        CLOCK::time_point stopSubmitCommands;
-        CLOCK::time_point gpuFinishedRendering;
-    };
-    TimingInformation timingInformation[2];
+    int currentRenderBufferIdx=0;
+    int currentSampleBufferIdx=1;
 
     void loadDefaultTexture(JNIEnv* env,jobject androidContext){
         assert(defaultTextureUrl!=std::nullopt);
@@ -51,43 +45,31 @@ public:
         }
     }
 
-    void bind1(){
+    void bind(){
         assert(defaultTextureUrl==std::nullopt);
-        glBindFramebuffer(GL_FRAMEBUFFER, buffers[currentRenderTexture].framebuffer);
-        glScissor(0,0,WIDTH_PX,HEIGH_PX);
-        glViewport(0,0,WIDTH_PX,HEIGH_PX);
-        timingInformation[currentRenderTexture].startSubmitCommands=CLOCK::now();
+        buffers[currentRenderBufferIdx].bind();
     }
 
     // Submit rendering commands in between
 
     void unbindAndSwap() {
         assert(defaultTextureUrl==std::nullopt);
-        timingInformation[currentRenderTexture].stopSubmitCommands=CLOCK::now();
-        FenceSync fenceSync;
-        // wait until rendering complete
-        fenceSync.wait(EGL_FOREVER_KHR);
-        //MLOGD<<"OSD fence sync took "<<MyTimeHelper::R(fenceSync.getDeltaCreationSatisfied());
-        //
-        timingInformation[currentRenderTexture].gpuFinishedRendering=CLOCK::now();
+        buffers[currentRenderBufferIdx].unbindAndFinishCommands();
         // Now it is safe to swap buffers
-        currentRenderTexture=incrementAndModulo(currentRenderTexture);
+        std::swap(currentRenderBufferIdx, currentSampleBufferIdx);
+        //currentRenderBuffer=incrementAndModulo(currentRenderBuffer);
         GLHelper::checkGlError("after U");
     }
 
-    GLuint getLatestRenderedTexture(TimingInformation* timingForThisFrame=nullptr){
+    GLuint getLatestRenderedTexture(FramebufferTexture::TimingInformation* timingForThisFrame=nullptr){
         if(defaultTextureUrl!=std::nullopt){
             return defaultTexture;
         }
-        int currentSampleIndex=currentRenderTexture+1;
-        currentSampleIndex=currentSampleIndex % 2;
         if(timingForThisFrame!=nullptr){
-            *timingForThisFrame=timingInformation[currentSampleIndex];
+            *timingForThisFrame=buffers[currentSampleBufferIdx].timingInformation;
         }
-        //MLOGD<<"curr sample index "<<currentSampleIndex;
-        return buffers[currentSampleIndex].texture;
+        return buffers[currentSampleBufferIdx].texture;
     }
-
 
     static int incrementAndModulo(int value){
         value++;

@@ -81,7 +81,7 @@ void Renderer360Video::onSecondaryContextCreated(JNIEnv* env,jobject context) {
 
 void Renderer360Video::onSecondaryContextDoWork(JNIEnv *env) {
     //MLOGD<<"Do work";
-    vrRenderBuffer2.bind1();
+    vrRenderBuffer2.bind();
     GLHelper::updateSetClearColor(clearColorIndex);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     vrRenderBuffer2.unbindAndSwap();

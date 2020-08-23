@@ -8,11 +8,23 @@
 #include <GLES2/gl2.h>
 #include <AndroidLogger.hpp>
 #include <GLHelper.hpp>
+#include <chrono>
 
 // Wrapper around one framebuffer that is bound to a texture id
 // Width and Height can be changed dynamically after initializeGL() is called
 class FramebufferTexture{
 public:
+    FramebufferTexture()=default;
+    FramebufferTexture(const FramebufferTexture&)=delete;
+    FramebufferTexture(FramebufferTexture&&)=default;
+    using CLOCK=std::chrono::steady_clock;
+    struct TimingInformation{
+        CLOCK::time_point startSubmitCommands;
+        CLOCK::time_point stopSubmitCommands;
+        CLOCK::time_point gpuFinishedRendering;
+    };
+    TimingInformation timingInformation;
+
     GLuint framebuffer;
     GLuint texture;
     GLuint WIDTH_PX=0,HEIGH_PX=0;
@@ -45,6 +57,21 @@ public:
             MLOGE<<"Framebuffer not complete "<<status;
         }
         glBindFramebuffer(GL_FRAMEBUFFER,0);
+    }
+    // Bind the framebuffer to render to it
+    void bind(){
+        glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
+        timingInformation.startSubmitCommands=CLOCK::now();
+        glScissor(0,0,WIDTH_PX,HEIGH_PX);
+        glViewport(0,0,WIDTH_PX,HEIGH_PX);
+    }
+    // Unbind the framebuffer
+    // Does not return until all OpenGL commands have been executed
+    void unbindAndFinishCommands(){
+        timingInformation.stopSubmitCommands=CLOCK::now();
+        glFinish();
+        //MLOGD<<"FramebufferTexture fence sync took "<<MyTimeHelper::R(fenceSync.getDeltaCreationSatisfied());
+        timingInformation.gpuFinishedRendering=CLOCK::now();
     }
 };
 #endif //RENDERINGX_FRAMEBUFFERTEXTURE_HPP
