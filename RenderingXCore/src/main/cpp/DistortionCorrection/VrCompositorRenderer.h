@@ -92,9 +92,6 @@ public:
         FULL
     };
     using VrContentProvider=std::variant<SurfaceTextureUpdate*,VrRenderBuffer2*>;
-    struct VrLayer2DMonoscopic{
-        
-    };
     // https://developer.oculus.com/documentation/unity/unity-ovroverlay/
     struct VRLayer{
         HEAD_TRACKING headTracking;

@@ -50,6 +50,7 @@ private:
     const VRSettings vrSettings;
     std::unique_ptr<gvr::GvrApi> gvr_api_;
     FPSCalculator mFPSCalculator;
+    FPSCalculator mFPSCalculatorRenderbuffer;
     int clearColorIndex=0;
     VrRenderBuffer2 vrRenderBuffer2;
     VrRenderBuffer2 vrRenderBufferExampleUi{"ExampleTexture/ui.png"};

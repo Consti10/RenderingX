@@ -22,8 +22,10 @@ public:
     GLuint defaultTexture;
     GLuint WIDTH_PX=0,HEIGH_PX=0;
     std::array<FramebufferTexture,2> buffers;
+    std::mutex mMutex;
     int currentRenderBufferIdx=0;
     int currentSampleBufferIdx=1;
+    bool newFrameAvailable=false;
 
     void loadDefaultTexture(JNIEnv* env,jobject androidContext){
         assert(defaultTextureUrl!=std::nullopt);
@@ -56,10 +58,10 @@ public:
         assert(defaultTextureUrl==std::nullopt);
         buffers[currentRenderBufferIdx].unbindAndFinishCommands();
         // Now it is safe to swap buffers
+        std::lock_guard<std::mutex> lock(mMutex);
         std::swap(currentRenderBufferIdx, currentSampleBufferIdx);
-        GLHelper::checkGlError("after U");
+        newFrameAvailable=true;
     }
-
     GLuint getLatestRenderedTexture(FramebufferTexture::TimingInformation* timingForThisFrame=nullptr){
         if(defaultTextureUrl!=std::nullopt){
             return defaultTexture;
@@ -67,6 +69,18 @@ public:
         if(timingForThisFrame!=nullptr){
             *timingForThisFrame=buffers[currentSampleBufferIdx].timingInformation;
         }
+        return buffers[currentSampleBufferIdx].texture;
+    }
+    GLuint getLatestRenderedTexture(bool& isNewFrame,FramebufferTexture::TimingInformation& timingInformation){
+        if(defaultTextureUrl!=std::nullopt){
+            return defaultTexture;
+        }
+        std::lock_guard<std::mutex> lock(mMutex);
+        if(newFrameAvailable){
+            isNewFrame=true;
+            newFrameAvailable=false;
+        }
+        timingInformation=buffers[currentSampleBufferIdx].timingInformation;
         return buffers[currentSampleBufferIdx].texture;
     }
 
