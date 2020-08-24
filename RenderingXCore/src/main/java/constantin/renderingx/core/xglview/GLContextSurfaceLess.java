@@ -15,6 +15,8 @@ import static android.opengl.EGL14.EGL_NO_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_SURFACE;
 import static android.opengl.EGL14.EGL_WIDTH;
 
+// An OpenGL context that is never bound to a surface
+// When the proper EGL extension is found the context truly has no 'surface', else a fake off-screen surface is created
 public class GLContextSurfaceLess {
     private static final String TAG=" GLContextSurfaceLess";
     private EGLDisplay eglDisplay = EGL_NO_DISPLAY;

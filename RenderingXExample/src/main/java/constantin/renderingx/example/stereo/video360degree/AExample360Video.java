@@ -35,7 +35,7 @@ public class AExample360Video extends VrActivity {
     public static final String KEY_SPHERE_MODE ="KEY_SPHERE_MODE";
     public static final String KEY_VIDEO_FILENAME="KEY_VIDEO_FILENAME";
     // Only one of these two is in use at the same time
-    private static final boolean USE_GOOGLE_EXO_PLAYER_INSTEAD =true;
+    private static final boolean USE_GOOGLE_EXO_PLAYER_INSTEAD =false;
     // ExoPlayer is the better choice for file playback, but my VideoPlayer
     // Is the better choice for low latency h264 live video playback
     private VideoPlayer videoPlayer;
@@ -59,26 +59,18 @@ public class AExample360Video extends VrActivity {
             VideoSettings.setVS_FILE_ONLY_LIMIT_FPS(this,40);
             videoPlayer=new VideoPlayer(this);
         }
-        final ISurfaceTextureAvailable iSurfaceTextureAvailable=new ISurfaceTextureAvailable() {
+        final ISurfaceTextureAvailable iSurfaceTextureAvailableExoPlayer=new ISurfaceTextureAvailable() {
             @Override
             public void surfaceTextureCreated(SurfaceTexture surfaceTexture, Surface surface) {
-                if(USE_GOOGLE_EXO_PLAYER_INSTEAD){
-                    simpleExoPlayer.getVideoComponent().setVideoSurface(surface);
-                }else{
-                    videoPlayer.addAndStartDecoderReceiver(surface);
-                }
+                simpleExoPlayer.getVideoComponent().setVideoSurface(surface);
             }
             @Override
             public void surfaceTextureDestroyed() {
-                if(USE_GOOGLE_EXO_PLAYER_INSTEAD){
-                    simpleExoPlayer.getVideoComponent().setVideoSurface(null);
-                }else{
-                    videoPlayer.stopAndRemoveReceiverDecoder();
-                }
+                simpleExoPlayer.getVideoComponent().setVideoSurface(null);
             }
         };
         Renderer360Video renderer = new Renderer360Video(this,mVrView.getGvrApi(), SPHERE_MODE);
-        mVrView.getPresentationView().setRenderer(renderer,iSurfaceTextureAvailable);
+        mVrView.getPresentationView().setRenderer(renderer,USE_GOOGLE_EXO_PLAYER_INSTEAD ? iSurfaceTextureAvailableExoPlayer : videoPlayer.configure2());
         mVrView.getPresentationView().setmISecondaryContext(renderer);
         setContentView(mVrView);
     }
