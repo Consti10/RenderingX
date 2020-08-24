@@ -280,7 +280,6 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         EGL14.eglTerminate(eglDisplay);
     }
 
-
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         log("surfaceCreated");

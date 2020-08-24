@@ -187,7 +187,7 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
             glProgramTexture->drawXStereoVertex(textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye,eye==GVR_LEFT_EYE);
         }
         if(!isExternalTexture && isNewFrame){
-            MLOGD<<"Latency of osd "<<MyTimeHelper::R(std::chrono::steady_clock::now()-timingInformation.startSubmitCommands);
+            //MLOGD<<"Latency of osd "<<MyTimeHelper::R(std::chrono::steady_clock::now()-timingInformation.startSubmitCommands);
         }
     }
     // Render the mesh that occludes everything except the part actually visible inside the headset
