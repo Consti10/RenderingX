@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="Adjust VR Scene"
+    android:summary="Change size of the VR scene and more">
+
+    <com.mapzen.prefsplusx.EditFloatPreference
+        android:key="@string/VR_SCENE_SCALE_PERCENTAGE"
+        android:title="@string/VR_SCENE_SCALE_PERCENTAGE"
+        android:defaultValue="100"
+        android:dialogTitle="Size of your VR Scene in %. Default 100, which means the video fills a fov of 60 degrees"/>
+
+    <com.mapzen.prefsplusx.EditFloatPreference
+        android:key="@string/VR_SCREEN_BRIGHTNESS_PERCENTAGE"
+        android:title="@string/VR_SCREEN_BRIGHTNESS_PERCENTAGE"
+        android:defaultValue="80"
+        android:dialogTitle="Screen Brightness in VR. Default 80 percent."/>
+
+    <com.mapzen.prefsplusx.IntListPreference
+        android:key="@string/VR_DISTORTION_CORRECTION_MODE"
+        android:title="@string/VR_DISTORTION_CORRECTION_MODE"
+        android:dialogTitle="enables/disables distortion correction."
+        android:entries="@array/entriesDistortionCorrection"
+        android:entryValues="@array/valuesDistortionCorrection"
+        android:defaultValue="1" />
+
+    <SwitchPreference
+        android:key="@string/VR_ENABLE_DEBUG"
+        android:title="@string/VR_ENABLE_DEBUG"
+        android:summary="@string/VR_ENABLE_DEBUG"
+        android:defaultValue="false"/>
+</androidx.preference.PreferenceScreen>
