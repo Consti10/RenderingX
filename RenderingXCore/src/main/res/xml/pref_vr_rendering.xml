@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
         android:title="Additional VR Settings" >
 
@@ -7,19 +7,19 @@
             android:title="Adjust VR Scene"
             android:summary="Change size of the VR scene and more">
 
-            <com.mapzen.prefsplus.EditFloatPreference
+            <com.mapzen.prefsplusx.EditFloatPreference
                 android:key="@string/VR_SCENE_SCALE_PERCENTAGE"
                 android:title="@string/VR_SCENE_SCALE_PERCENTAGE"
                 android:defaultValue="100"
                 android:dialogTitle="Size of your VR Scene in %. Default 100, which means the video fills a fov of 60 degrees"/>
 
-            <com.mapzen.prefsplus.EditFloatPreference
+            <com.mapzen.prefsplusx.EditFloatPreference
                 android:key="@string/VR_SCREEN_BRIGHTNESS_PERCENTAGE"
                 android:title="@string/VR_SCREEN_BRIGHTNESS_PERCENTAGE"
                 android:defaultValue="80"
                 android:dialogTitle="Screen Brightness in VR. Default 80 percent."/>
 
-            <com.mapzen.prefsplus.IntListPreference
+            <com.mapzen.prefsplusx.IntListPreference
                 android:key="@string/VR_DISTORTION_CORRECTION_MODE"
                 android:title="@string/VR_DISTORTION_CORRECTION_MODE"
                 android:dialogTitle="enables/disables distortion correction."
@@ -39,7 +39,7 @@
             android:summary="Configure HeadTracking.">
             <PreferenceCategory
                 android:title="Ground head tracking">
-                <com.mapzen.prefsplus.IntListPreference
+                <com.mapzen.prefsplusx.IntListPreference
                     android:title="@string/GroundHeadTrackingMode"
                     android:key="@string/GroundHeadTrackingMode"
                     android:summary="Select a head tracking mode for your VR headset at the ground"
@@ -75,7 +75,7 @@
             android:summary="Reduce latency and more">
             <PreferenceCategory
                 android:title="Performance">
-                <com.mapzen.prefsplus.IntListPreference
+                <com.mapzen.prefsplusx.IntListPreference
                     android:title="VR_RENDERING_MODE"
                     android:key="VR_RENDERING_MODE"
                     android:summary="Select a specialized VR rendering method"
@@ -86,7 +86,7 @@
 
             <PreferenceCategory
                 android:title="Quality">
-                <com.mapzen.prefsplus.IntListPreference
+                <com.mapzen.prefsplusx.IntListPreference
                     android:title="@string/MultiSampleAntiAliasing"
                     android:key="@string/MultiSampleAntiAliasing"
                     android:summary="@string/MSAADescription"
@@ -98,4 +98,4 @@
         </PreferenceScreen>
 
     </PreferenceCategory>
-</PreferenceScreen>
+</androidx.preference.PreferenceScreen>

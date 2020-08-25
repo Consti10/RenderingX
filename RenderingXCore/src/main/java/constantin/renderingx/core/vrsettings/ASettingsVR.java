@@ -4,14 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.preference.SwitchPreference;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
+import androidx.preference.SwitchPreference;
 
-import com.mapzen.prefsplus.IntListPreference;
+
+import com.mapzen.prefsplusx.IntListPreference;
 
 import java.util.ArrayList;
 
@@ -29,7 +30,7 @@ public class ASettingsVR extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // Display the fragment as the main content.
         FSettingsVR fSettingsVR = new FSettingsVR();
-        getFragmentManager().beginTransaction()
+        getSupportFragmentManager().beginTransaction()
                 .replace(android.R.id.content, fSettingsVR)
                 .commit();
     }
@@ -49,11 +50,11 @@ public class ASettingsVR extends AppCompatActivity {
         return context.getSharedPreferences("pref_vr_rendering",MODE_PRIVATE).getFloat(context.getString(R.string.VR_SCREEN_BRIGHTNESS_PERCENTAGE),80)/100.0f;
     }
 
-    public static class FSettingsVR extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener{
+    public static class FSettingsVR extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener{
+
 
         @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             PreferenceManager prefMgr = getPreferenceManager();
             prefMgr.setSharedPreferencesName("pref_vr_rendering");
             prefMgr.setSharedPreferencesMode(MODE_PRIVATE);

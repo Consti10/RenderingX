@@ -34,6 +34,7 @@ public:
         // Default to a size of 64x64
         setSize(64,64);
     }
+
     void setSize(int W,int H){
         if(WIDTH_PX==W && HEIGH_PX==H){
             return;
