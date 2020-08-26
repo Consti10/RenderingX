@@ -1,21 +1,10 @@
 package constantin.renderingx.core.vrsettings;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
-import androidx.preference.SwitchPreference;
-
-import com.mapzen.prefsplusx.IntListPreference;
-
-import java.util.ArrayList;
-
 import constantin.renderingx.core.R;
-import constantin.renderingx.core.gles_info.OpenGLESValues;
-
 import static android.content.Context.MODE_PRIVATE;
 
 public class FSettingsVR extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener{

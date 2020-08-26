@@ -19,7 +19,7 @@
         <Preference
             android:title="Performance"
             android:summary="Reduce latency and more"
-            app:fragment="constantin.renderingx.core.vrsettings.FSettingsVR2" />
+            app:fragment="constantin.renderingx.core.vrsettings.FSettingsVR3" />
 
     </PreferenceCategory>
 </androidx.preference.PreferenceScreen>

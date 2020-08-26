@@ -24,7 +24,9 @@ public class FSettingsVR3 extends PreferenceFragmentCompat implements SharedPref
         prefMgr.setSharedPreferencesName("pref_vr_rendering");
         prefMgr.setSharedPreferencesMode(MODE_PRIVATE);
         addPreferencesFromResource(R.xml.pref_vr_rendering3);
+        setupMSAALevelsPreference(requireActivity());
     }
+
     @Override
     public void onResume(){
         super.onResume();
