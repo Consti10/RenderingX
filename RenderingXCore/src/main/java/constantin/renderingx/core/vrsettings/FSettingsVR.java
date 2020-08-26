@@ -39,5 +39,4 @@ public class FSettingsVR extends PreferenceFragmentCompat implements SharedPrefe
         requireActivity().setResult(ASettingsVR.RESULT_CODE_SETTINGS_CHANGED_RESTART_REQUIRED,null);
     }
 
-
 }

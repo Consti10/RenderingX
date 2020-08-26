@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import constantin.renderingx.core.FullscreenHelper;
+import constantin.renderingx.core.MVrHeadsetParams;
 import constantin.renderingx.core.gles_info.AWriteGLESInfo;
 import constantin.renderingx.core.vrsettings.ASettingsVR;
 
@@ -19,9 +20,14 @@ public class VrActivity  extends AppCompatActivity {
     private static final String TAG="VrActivity";
     public static final int REQUEST_CODE_NOTIFY_IF_VR_SETTINGS_CHANGED =99;
 
+    private String currentlySelectedGvrViewerModel=null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // To find out if the model has changed
+        currentlySelectedGvrViewerModel= MVrHeadsetParams.getCurrentGvrViewerModel(this);
+
         // Make dialoque for permission
         /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             final boolean donNotAsk=PreferenceManager.getDefaultSharedPreferences(this).
@@ -59,7 +65,11 @@ public class VrActivity  extends AppCompatActivity {
         getWindow().setAttributes(layout);
         //if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M || Settings.System.canWrite(this)) {
         //}
+        if(!MVrHeadsetParams.getCurrentGvrViewerModel(this).contentEquals(currentlySelectedGvrViewerModel)){
+            createAlertDialogConfigChanged();
+        }
     }
+
     @Override
     protected void onPause(){
         super.onPause();
@@ -90,21 +100,26 @@ public class VrActivity  extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //Log.d(TAG,"Got onActivityResult "+requestCode+" "+resultCode);
+        // We get this message when the settings hold by the vr layout have changed
         if (requestCode == REQUEST_CODE_NOTIFY_IF_VR_SETTINGS_CHANGED) {
             if(resultCode==ASettingsVR.RESULT_CODE_SETTINGS_CHANGED_RESTART_REQUIRED){
-                Log.d(TAG,"Got result that we need to restart the activity");
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setCancelable(false);
-                builder.setTitle("Vr config changed").setMessage("Restart required");
-                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        recreate();
-                    }
-                });
-                builder.setNegativeButton("No",null);
-                AlertDialog dialog = builder.create();
-                dialog.show();
+               createAlertDialogConfigChanged();
             }
         }
+    }
+
+    private void createAlertDialogConfigChanged(){
+        Log.d(TAG,"Got result that we need to restart the activity");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setTitle("Vr config changed").setMessage("Restart required");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                recreate();
+            }
+        });
+        builder.setNegativeButton("No",null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

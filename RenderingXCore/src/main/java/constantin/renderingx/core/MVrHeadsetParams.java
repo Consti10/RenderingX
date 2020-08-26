@@ -27,6 +27,7 @@ public class MVrHeadsetParams {
     public MVrHeadsetParams(final Context context){
 
         GvrView view=new GvrView(context);
+
         final GvrViewerParams gvrViewerParams=view.getGvrViewerParams();
 
         fov[0]=gvrViewerParams.getLeftEyeMaxFov().getLeft();
@@ -45,5 +46,12 @@ public class MVrHeadsetParams {
         ScreenHeightPixels=view.getScreenParams().getHeight();
 
         view.shutdown();
+    }
+
+    public static String getCurrentGvrViewerModel(final Context context){
+        GvrView view=new GvrView(context);
+        String ret=view.getGvrViewerParams().getModel();
+        view.shutdown();
+        return ret;
     }
 }

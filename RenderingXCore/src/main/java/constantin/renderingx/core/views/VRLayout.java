@@ -30,8 +30,10 @@ import com.google.vr.cardboard.DisplaySynchronizer;
 import com.google.vr.ndk.base.GvrApi;
 import com.google.vr.ndk.base.GvrUiLayout;
 import com.google.vr.sdk.base.AndroidCompat;
+import com.google.vr.sdk.base.GvrView;
 
 import constantin.renderingx.core.FullscreenHelper;
+import constantin.renderingx.core.MVrHeadsetParams;
 import constantin.renderingx.core.R;
 import constantin.renderingx.core.vrsettings.ASettingsVR;
 
