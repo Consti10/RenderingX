@@ -3,7 +3,7 @@
 
 class IDVR{
 public:
-    static constexpr const char* GroundHeadTrackingMode="GroundHeadTrackingMode";
+    static constexpr const char* GroundHeadTrackingEnable="GroundHeadTrackingEnable";
     static constexpr const char* GroundHeadTrackingX="GroundHeadTrackingX";
     static constexpr const char* GroundHeadTrackingY="GroundHeadTrackingY";
     static constexpr const char* GroundHeadTrackingZ="GroundHeadTrackingZ";

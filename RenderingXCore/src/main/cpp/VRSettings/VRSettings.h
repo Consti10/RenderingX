@@ -19,7 +19,7 @@ public:
         return VR_DISTORTION_CORRECTION_MODE==1;
     }
     bool isHeadTrackingEnabled()const{
-        return GHT_MODE!=0;
+        return GroundHeadTrackingEnable;
     }
 public:
     //Stereo and VR Rendering
@@ -28,7 +28,7 @@ public:
     bool VR_ENABLE_DEBUG;
 public:
     //Head tracking
-    int GHT_MODE;
+    bool GroundHeadTrackingEnable;
     bool GHT_X;
     bool GHT_Y;
     bool GHT_Z;

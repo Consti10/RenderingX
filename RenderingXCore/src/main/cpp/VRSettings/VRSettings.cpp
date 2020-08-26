@@ -18,12 +18,12 @@ VRSettings::VRSettings(JNIEnv *env, jobject androidContext) {
     //
     VR_ENABLE_DEBUG=settingsN.getBoolean(IDVR::VR_ENABLE_DEBUG,false);
 
-
-    GHT_MODE=settingsN.getInt(IDVR::GroundHeadTrackingMode);
-    bool headTracking=GHT_MODE!=0;
-    GHT_X=settingsN.getBoolean(IDVR::GroundHeadTrackingX) && headTracking;
-    GHT_Y=settingsN.getBoolean(IDVR::GroundHeadTrackingY) && headTracking;
-    GHT_Z=settingsN.getBoolean(IDVR::GroundHeadTrackingZ) && headTracking;
+    //GHT_MODE=settingsN.getInt(IDVR::GroundHeadTrackingMode);
+    //bool headTracking=GHT_MODE!=0;
+    GroundHeadTrackingEnable=settingsN.getBoolean(IDVR::GroundHeadTrackingEnable);
+    GHT_X=settingsN.getBoolean(IDVR::GroundHeadTrackingX);
+    GHT_Y=settingsN.getBoolean(IDVR::GroundHeadTrackingY);
+    GHT_Z=settingsN.getBoolean(IDVR::GroundHeadTrackingZ);
 
     GHT_OSD_FIXED_TO_HEAD=settingsN.getBoolean(IDVR::GHT_OSD_FIXED_TO_HEAD,false);
 
