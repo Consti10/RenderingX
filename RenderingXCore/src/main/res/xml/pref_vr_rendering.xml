@@ -5,7 +5,8 @@
 
     <androidx.preference.PreferenceScreen
         android:title="Adjust VR Scene"
-        android:summary="Change size of the VR scene and more">
+        android:summary="Change size of the VR scene and more"
+        android:key="key1">
         <com.mapzen.prefsplusx.EditFloatPreference
             android:key="@string/VR_SCENE_SCALE_PERCENTAGE"
             android:title="@string/VR_SCENE_SCALE_PERCENTAGE"
@@ -35,7 +36,8 @@
 
     <androidx.preference.PreferenceScreen
         android:title="HeadTracking"
-        android:summary="Configure HeadTracking.">
+        android:summary="Configure HeadTracking."
+        android:key="key2">
         <SwitchPreference
             android:key="@string/GroundHeadTrackingEnable"
             android:title="@string/GroundHeadTrackingEnable"
@@ -65,7 +67,8 @@
 
     <androidx.preference.PreferenceScreen
         android:title="Reduce latency and more"
-        android:summary="To do">
+        android:summary="To do"
+        android:key="key3">
         <com.mapzen.prefsplusx.IntListPreference
             android:title="VR_RENDERING_MODE"
             android:key="VR_RENDERING_MODE"

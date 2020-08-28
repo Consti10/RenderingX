@@ -15,13 +15,13 @@ import static android.content.Context.MODE_PRIVATE;
 public class FSettingsVR extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener{
     // If created by the custom constructor taking a PreferenceScreen the fragment will be inflated using this preferenceScreen instead
     // Workaround for nested preference screens inside .xml file
-    private final PreferenceScreen preferenceScreen;
+    /*private final PreferenceScreen preferenceScreen;
     FSettingsVR(PreferenceScreen preferenceScreen){
         this.preferenceScreen=preferenceScreen;
     }
     FSettingsVR(){
         this.preferenceScreen=null;
-    }
+    }*/
     
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -29,12 +29,12 @@ public class FSettingsVR extends PreferenceFragmentCompat implements SharedPrefe
         PreferenceManager prefMgr = getPreferenceManager();
         prefMgr.setSharedPreferencesName("pref_vr_rendering");
         prefMgr.setSharedPreferencesMode(MODE_PRIVATE);
-        if(preferenceScreen==null){
-            addPreferencesFromResource(R.xml.pref_vr_rendering);
-            //setPreferencesFromResource(R.xml.pref_vr_rendering,rootKey);
-        }else{
-            setPreferenceScreen(preferenceScreen);
-        }
+        setPreferencesFromResource(R.xml.pref_vr_rendering,rootKey);
+        //if(preferenceScreen==null){
+            //addPreferencesFromResource(R.xml.pref_vr_rendering);
+        //}else{
+        //    setPreferenceScreen(preferenceScreen);
+        //}
     }
 
     @Override

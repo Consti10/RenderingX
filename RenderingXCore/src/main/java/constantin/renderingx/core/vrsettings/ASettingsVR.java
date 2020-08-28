@@ -34,10 +34,10 @@ public class ASettingsVR extends AppCompatActivity implements PreferenceFragment
     @Override
     public boolean onPreferenceStartScreen(PreferenceFragmentCompat caller, PreferenceScreen preferenceScreen) {
         //Log.d(TAG,"name is"+caller.getPreferenceManager().getSharedPreferencesName());
-        final FSettingsVR newSettingsFragment=new FSettingsVR(preferenceScreen);
-        //Bundle args = new Bundle();
-        //args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT,preferenceScreen.getKey());
-        //newSettingsFragment.setArguments(args);
+        final FSettingsVR newSettingsFragment=new FSettingsVR();
+        Bundle args = new Bundle();
+        args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT,preferenceScreen.getKey());
+        newSettingsFragment.setArguments(args);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(android.R.id.content,newSettingsFragment)
