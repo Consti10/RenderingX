@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="Additional VR Settings">
 
-    <PreferenceCategory
+    <androidx.preference.PreferenceScreen
         android:title="Adjust VR Scene"
         android:summary="Change size of the VR scene and more">
         <com.mapzen.prefsplusx.EditFloatPreference
@@ -31,9 +31,9 @@
             android:title="@string/VR_ENABLE_DEBUG"
             android:summary="@string/VR_ENABLE_DEBUG"
             android:defaultValue="false"/>
-    </PreferenceCategory>
+    </androidx.preference.PreferenceScreen>
 
-    <PreferenceCategory
+    <androidx.preference.PreferenceScreen
         android:title="HeadTracking"
         android:summary="Configure HeadTracking.">
         <SwitchPreference
@@ -61,9 +61,9 @@
             android:title="@string/GHT_OSD_FIXED_TO_HEAD"
             android:summary="If enabled, the OSD is fixed to the Head position,regardless of the video. Default false."
             android:defaultValue="false"/>
-    </PreferenceCategory>
+    </androidx.preference.PreferenceScreen>
 
-    <PreferenceCategory
+    <androidx.preference.PreferenceScreen
         android:title="Reduce latency and more"
         android:summary="To do">
         <com.mapzen.prefsplusx.IntListPreference
@@ -80,7 +80,7 @@
             android:entries="@array/entriesMSAADefault"
             android:entryValues="@array/valuesMSAADefault"
             android:defaultValue="0"/>
-    </PreferenceCategory>
+    </androidx.preference.PreferenceScreen>
 
 
 </androidx.preference.PreferenceScreen>

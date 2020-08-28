@@ -2,19 +2,37 @@ package constantin.renderingx.core.vrsettings;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
+import androidx.preference.PreferenceScreen;
+
 import constantin.renderingx.core.R;
 import static android.content.Context.MODE_PRIVATE;
 
 public class FSettingsVR extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener{
-
+    private final PreferenceScreen preferenceScreen;
+    FSettingsVR(PreferenceScreen preferenceScreen){
+        this.preferenceScreen=preferenceScreen;
+    }
+    FSettingsVR(){
+        this.preferenceScreen=null;
+    }
+    
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        //Log.d("LOL","name is"+getPreferenceManager().getSharedPreferencesName());
         PreferenceManager prefMgr = getPreferenceManager();
         prefMgr.setSharedPreferencesName("pref_vr_rendering");
         prefMgr.setSharedPreferencesMode(MODE_PRIVATE);
-        addPreferencesFromResource(R.xml.pref_vr_rendering);
+        if(preferenceScreen==null){
+            addPreferencesFromResource(R.xml.pref_vr_rendering);
+            //setPreferencesFromResource(R.xml.pref_vr_rendering,rootKey);
+        }else{
+            setPreferenceScreen(preferenceScreen);
+        }
     }
 
     @Override
