@@ -142,6 +142,7 @@ public class VRLayout extends FrameLayout implements LifecycleObserver , PopupMe
             Log.d(TAG,"Supports Vr high performance ");
         }
         enableSustainedPerformanceIfPossible((Activity)getContext());
+        //enableAndroidVRModeIfPossible((Activity)getContext());
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
@@ -149,6 +150,7 @@ public class VRLayout extends FrameLayout implements LifecycleObserver , PopupMe
         gvrApi.pauseTracking();
         if(displaySynchronizer!=null)displaySynchronizer.onPause();
         disableSustainedPerformanceIfEnabled((Activity)getContext());
+        //disableAndroidVRModeIfEnabled((Activity)getContext());
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
