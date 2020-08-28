@@ -33,7 +33,7 @@ public class ASettingsVR extends AppCompatActivity implements PreferenceFragment
 
     @Override
     public boolean onPreferenceStartScreen(PreferenceFragmentCompat caller, PreferenceScreen preferenceScreen) {
-        Log.d(TAG,"name is"+caller.getPreferenceManager().getSharedPreferencesName());
+        //Log.d(TAG,"name is"+caller.getPreferenceManager().getSharedPreferencesName());
         final FSettingsVR newSettingsFragment=new FSettingsVR(preferenceScreen);
         //Bundle args = new Bundle();
         //args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT,preferenceScreen.getKey());

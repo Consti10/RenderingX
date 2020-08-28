@@ -13,6 +13,8 @@ import constantin.renderingx.core.R;
 import static android.content.Context.MODE_PRIVATE;
 
 public class FSettingsVR extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener{
+    // If created by the custom constructor taking a PreferenceScreen the fragment will be inflated using this preferenceScreen instead
+    // Workaround for nested preference screens inside .xml file
     private final PreferenceScreen preferenceScreen;
     FSettingsVR(PreferenceScreen preferenceScreen){
         this.preferenceScreen=preferenceScreen;
