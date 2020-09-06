@@ -28,7 +28,6 @@ public class FSettingsVR extends PreferenceFragmentCompat implements SharedPrefe
         //Log.d("LOL","name is"+getPreferenceManager().getSharedPreferencesName());
         PreferenceManager prefMgr = getPreferenceManager();
         prefMgr.setSharedPreferencesName("pref_vr_rendering");
-        prefMgr.setSharedPreferencesMode(MODE_PRIVATE);
         setPreferencesFromResource(R.xml.pref_vr_rendering,rootKey);
         //if(preferenceScreen==null){
             //addPreferencesFromResource(R.xml.pref_vr_rendering);

@@ -11,7 +11,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0-rc01'
+        classpath 'com.android.tools.build:gradle:4.1.0-rc02'
         classpath 'com.google.gms:google-services:4.3.3'
         classpath 'io.fabric.tools:gradle:1.31.0'
         classpath 'com.google.firebase:perf-plugin:1.3.1'
@@ -34,7 +34,7 @@ allprojects {
         constraintlayoutVersion='2.0.0'
         androidxpreferenceVersion='1.1.1'
         mGvrVersion = '1.180.0'
-        myPrefsPlusVersion = '3.0.1'
+        myPrefsPlusVersion = '3.0.4'
     }
 }
 
