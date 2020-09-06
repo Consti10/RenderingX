@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.firebase.firebase-perf'
 
 android {
@@ -61,7 +61,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$rootProject.appcompatVersion"
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintlayoutVersion"
 
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     testImplementation 'junit:junit:4.13'
 
@@ -75,8 +75,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-perf:19.0.8'
 
     implementation project(path: ':RenderingXCore')
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0-rc03'
-    androidTestImplementation 'androidx.test:rules:1.3.0-rc03'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test:rules:1.3.0'
 
     //Use either the artifacts from jitpack or provide a path directly
     //(Requires also changes to the settings.gradle file)
