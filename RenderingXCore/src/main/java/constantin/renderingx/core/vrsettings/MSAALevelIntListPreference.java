@@ -2,6 +2,7 @@ package constantin.renderingx.core.vrsettings;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import com.mapzen.prefsplusx.IntListPreference;
 
@@ -24,11 +25,13 @@ public class MSAALevelIntListPreference extends IntListPreference {
 
     private void setEntriesAndEntryValues(Context context){
         ArrayList<Integer> allMSAALevels= OpenGLESValues.availableMSAALevels(context);
+        Log.d(TAG,"Available msaa levels "+allMSAALevels.toString());
         CharSequence[] msaaEntries =new CharSequence[allMSAALevels.size()];
         CharSequence[] msaaEntryValues =new CharSequence[allMSAALevels.size()];
         for(int i=0;i<allMSAALevels.size();i++){
-            msaaEntries[allMSAALevels.size()-1-i]=""+allMSAALevels.get(i)+"xMSAA";
-            msaaEntryValues[allMSAALevels.size()-1-i]=""+allMSAALevels.get(i);
+            final int msaaLevel=allMSAALevels.get(i);
+            msaaEntries[i]=""+msaaLevel+"xMSAA";
+            msaaEntryValues[i]=""+msaaLevel;
         }
         setEntries(msaaEntries);
         setEntryValues(msaaEntryValues);
