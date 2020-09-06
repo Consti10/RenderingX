@@ -5,10 +5,6 @@
         <item>Disable</item>
         <item>Enable (Default)</item>
     </string-array>
-    <string-array name="valuesDistortionCorrection" >
-        <item>0</item>
-        <item>1</item>
-    </string-array>
 
     <string-array name="entriesMSAADefault" >
         <item>0xMSAA</item>
@@ -32,18 +28,9 @@
         <item>1st person perspective</item>
         <item>3rd person perspective for gimbal</item>
     </string-array>
-    <string-array name="valuesGroundHeadTrackingMode" >
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
     <string-array name="entriesAirHeadTrackingMode" >
         <item>disable</item>
         <item>enable</item>
-    </string-array>
-    <string-array name="valuesAirHeadTrackingMode" >
-        <item>0</item>
-        <item>1</item>
     </string-array>
 
     <string-array name="entriesVR_RENDERING_MODE" >
@@ -51,12 +38,6 @@
         <item>Render on demand</item>
         <item>Super Sync</item>
         <item>Unlimited</item>
-    </string-array>
-    <string-array name="valuesVR_RENDERING_MODE" >
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
     </string-array>
 
 </resources>

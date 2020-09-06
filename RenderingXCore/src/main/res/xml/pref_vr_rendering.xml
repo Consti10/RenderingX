@@ -24,7 +24,6 @@
             android:title="@string/VR_DISTORTION_CORRECTION_MODE"
             android:dialogTitle="enables/disables distortion correction."
             android:entries="@array/entriesDistortionCorrection"
-            android:entryValues="@array/valuesDistortionCorrection"
             android:defaultValue="1" />
 
         <SwitchPreference
@@ -74,7 +73,6 @@
             android:key="VR_RENDERING_MODE"
             android:summary="Select a specialized VR rendering method"
             android:entries="@array/entriesVR_RENDERING_MODE"
-            android:entryValues="@array/valuesVR_RENDERING_MODE"
             android:defaultValue="0"/>
         <constantin.renderingx.core.vrsettings.MSAALevelIntListPreference
             android:title="@string/MultiSampleAntiAliasing"
