@@ -35,7 +35,7 @@ dependencies {
     //
     implementation("com.google.guava:guava:29.0-android")
     //
-    implementation 'com.github.Consti10:prefs-plus:3.0.3'
+    implementation "com.github.Consti10:prefs-plus:$rootProject.myPrefsPlusVersion"
 
     //For SuperSync, we rely on the GvrLayout provided by the GoogleVR library
     //But if wanted, this dependency could be removed without too much effort
