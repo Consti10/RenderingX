@@ -2,7 +2,6 @@ package constantin.renderingx.example.stereo.video360degree;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.SurfaceTexture;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,7 +13,7 @@ import constantin.renderingx.core.xglview.XGLSurfaceView;
 
 //See native code for documentation
 
-public class Renderer360Video implements XGLSurfaceView.FullscreenRendererWithSurfaceTexture, GLContextSurfaceLess.SecondarySharedContext {
+public class Renderer360Video implements XGLSurfaceView.FullscreenRendererWithSurfaceTexture, GLContextSurfaceLess.ISecondarySharedContext {
     static {
         System.loadLibrary("example-2");
     }

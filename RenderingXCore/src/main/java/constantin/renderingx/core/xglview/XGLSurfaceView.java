@@ -6,7 +6,6 @@ import android.opengl.EGLConfig;
 import android.opengl.EGLContext;
 import android.opengl.EGLDisplay;
 import android.opengl.EGLSurface;
-import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Process;
 import android.util.AttributeSet;
@@ -24,8 +23,6 @@ import androidx.lifecycle.OnLifecycleEvent;
 import com.google.common.primitives.Ints;
 
 import java.util.ArrayList;
-
-import javax.microedition.khronos.opengles.GL10;
 
 import constantin.renderingx.core.Extensions;
 import constantin.renderingx.core.views.VRLayout;
@@ -130,7 +127,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         }
     }
 
-    public void setmISecondaryContext(final GLContextSurfaceLess.SecondarySharedContext i){
+    public void setmISecondaryContext(final GLContextSurfaceLess.ISecondarySharedContext i){
         glContextSurfaceLess=new GLContextSurfaceLess(i);
     }
 
@@ -138,7 +135,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         @Override
         public void run() {
             Thread.currentThread().setName("XGLRendererM");
-            eglMakeCurrentSafe(eglDisplay,eglSurface,eglContext);
+            Helper.eglMakeCurrentSafe(eglDisplay,eglSurface,eglContext);
             if(DO_SUPERSYNC_MODS){
                 XEGLConfigChooser.setEglSurfaceAttrib(EGL14.EGL_RENDER_BUFFER,EGL14.EGL_SINGLE_BUFFER);
                 XEGLConfigChooser.setEglSurfaceAttrib(EGL_ANDROID_front_buffer_auto_refresh,EGL14.EGL_TRUE);
@@ -184,7 +181,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                     eglSwapBuffersSafe(eglDisplay,eglSurface);
                 }
             }
-            eglMakeCurrentSafe(eglDisplay,EGL_NO_SURFACE,EGL_NO_CONTEXT);
+            Helper.eglMakeCurrentSafe(eglDisplay,EGL_NO_SURFACE,EGL_NO_CONTEXT);
         }
     };
 
@@ -358,13 +355,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
             log("Cannot swap buffers");
         }
     }
-    private static void eglMakeCurrentSafe(final EGLDisplay eglDisplay, EGLSurface eglSurface,EGLContext eglContext) {
-        //log("makeCurrent");
-        boolean result= EGL14.eglMakeCurrent(eglDisplay,eglSurface,eglSurface,eglContext);
-        if(!result){
-            throw new AssertionError("Cannot make surface current "+eglSurface);
-        }
-    }
+
     private int eglQueryContext(int attribute){
         int[] ret=new int[1];
         EGL14.eglQueryContext(eglDisplay,eglContext,attribute,ret,0);

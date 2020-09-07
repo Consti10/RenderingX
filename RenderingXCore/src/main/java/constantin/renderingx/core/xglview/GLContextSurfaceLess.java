@@ -15,20 +15,22 @@ import static android.opengl.EGL14.EGL_NO_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_SURFACE;
 import static android.opengl.EGL14.EGL_WIDTH;
 
-// An OpenGL context that is never bound to a surface
-// When the proper EGL extension is found the context truly has no 'surface', else a fake off-screen surface is created
+/**
+ * An OpenGL context that is never bound to a surface
+ * When the proper EGL extension is found the context truly has no 'surface', else a fake off-screen surface is created
+ * Use create() and destroy() to manage the context
+ */
 public class GLContextSurfaceLess {
     private static final String TAG=" GLContextSurfaceLess";
     private EGLDisplay eglDisplay = EGL_NO_DISPLAY;
     private EGLSurface eglSurface = EGL_NO_SURFACE;
     private EGLContext eglContext = EGL_NO_CONTEXT;
-    private EGLConfig eglConfig = null;
 
     private Thread renderThread;
+    private final ISecondarySharedContext mISecondarySharedContext;
 
-    private final SecondarySharedContext secondarySharedContext;
-    public GLContextSurfaceLess(SecondarySharedContext i){
-        secondarySharedContext=i;
+    public GLContextSurfaceLess(ISecondarySharedContext i){
+        mISecondarySharedContext =i;
     }
 
     public void create(){
@@ -36,7 +38,7 @@ public class GLContextSurfaceLess {
         int[] major = new int[]{0};
         int[] minor = new int[]{0};
         EGL14.eglInitialize(eglDisplay, major, 0, minor, 0);
-        eglConfig = XEGLConfigChooser.chooseConfig(eglDisplay,new XSurfaceParams(8,0,false));
+        final EGLConfig eglConfig = XEGLConfigChooser.chooseConfig(eglDisplay, new XSurfaceParams(8, 0, false));
         final int[] contextAttributes = new int[]{
                 EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
                 EGL14.EGL_NONE
@@ -53,7 +55,7 @@ public class GLContextSurfaceLess {
             eglSurface=EGL_NO_SURFACE;
         }else{
             // The egl context surface less extension is not available on all devices. As a workaround, create a small but unused pbuffer if needed
-            eglSurface=createDefaultPBufferSurface(eglDisplay,eglConfig);
+            eglSurface=createDefaultPBufferSurface(eglDisplay, eglConfig);
         }
     }
 
@@ -90,35 +92,29 @@ public class GLContextSurfaceLess {
         @Override
         public void run() {
             Thread.currentThread().setName("SecondRenderer");
-            eglMakeCurrentSafe(eglDisplay,eglSurface,eglContext);
-            secondarySharedContext.onSecondaryContextCreated();
+            Helper.eglMakeCurrentSafe(eglDisplay,eglSurface,eglContext);
+            mISecondarySharedContext.onSecondaryContextCreated();
             while(!Thread.currentThread().isInterrupted()){
-                secondarySharedContext.onSecondaryContextDoWork();
+                mISecondarySharedContext.onSecondaryContextDoWork();
             }
-            eglMakeCurrentSafe(eglDisplay,EGL_NO_SURFACE,EGL_NO_CONTEXT);
+            Helper.eglMakeCurrentSafe(eglDisplay,EGL_NO_SURFACE,EGL_NO_CONTEXT);
         }
     };
 
-    // Create a small pbuffer surface for EGL context's that do not support surfaceless
+    // Create a small pixel buffer surface for EGL context's that do not support the proper EGL surface less extension
+    // Throws run time exception on error (should never happen,but then at least I get the proper message in the console)
     private static EGLSurface createDefaultPBufferSurface(final EGLDisplay eglDisplay,final EGLConfig eglConfig){
         int[] attrib_list = {EGL_WIDTH, 16, EGL_HEIGHT, 16, EGL_NONE };
         final EGLSurface eglSurface=EGL14.eglCreatePbufferSurface(eglDisplay,eglConfig,attrib_list,0);
         if(eglSurface==EGL_NO_SURFACE){
-            throw new AssertionError("Cannot create PBuffer surface");
+            throw new RuntimeException("Cannot create PBuffer surface");
         }
         return eglSurface;
     }
 
-    private static void eglMakeCurrentSafe(final EGLDisplay eglDisplay, EGLSurface eglSurface,EGLContext eglContext) {
-        //log("makeCurrent");
-        boolean result= EGL14.eglMakeCurrent(eglDisplay,eglSurface,eglSurface,eglContext);
-        if(!result){
-            throw new AssertionError("Cannot make surface current "+eglSurface);
-        }
-    }
 
-    public interface SecondarySharedContext{
-        public void onSecondaryContextCreated();
-        public void  onSecondaryContextDoWork();
+    public interface ISecondarySharedContext {
+        void onSecondaryContextCreated();
+        void  onSecondaryContextDoWork();
     }
 }
