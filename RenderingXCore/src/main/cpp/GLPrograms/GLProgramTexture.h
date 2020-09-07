@@ -6,7 +6,7 @@
 #include <jni.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <VDDC.h>
+#include <VDDC.hpp>
 #include <AbstractMesh.hpp>
 
 /*******************************************************************

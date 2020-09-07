@@ -27,6 +27,7 @@ public class MVrHeadsetParams {
     public MVrHeadsetParams(final Context context){
 
         GvrView view=new GvrView(context);
+        //GvrViewerParams.createFromUri()
 
         final GvrViewerParams gvrViewerParams=view.getGvrViewerParams();
 

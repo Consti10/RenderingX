@@ -2,8 +2,8 @@
 // Created by Consti10 on 31/10/2019.
 //
 
-#ifndef RENDERINGX_VDDC_H
-#define RENDERINGX_VDDC_H
+#ifndef RENDERINGX_VDDC_HPP
+#define RENDERINGX_VDDC_HPP
 
 #include <array>
 #include <string>
@@ -249,4 +249,4 @@ public:
 
 
 
-#endif //RENDERINGX_VDDC_H
+#endif //RENDERINGX_VDDC_HPP
