@@ -39,15 +39,13 @@ android {
             jniLibs.srcDirs = ['libs/google/gvr']
         }
     }
-    viewBinding {
-        enabled = true
-    }
     //Do not compress mp4 assets for MediaPlayer !
     aaptOptions {
         noCompress 'mp4'
     }
     buildFeatures {
         //prefab true
+        viewBinding=true
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
