@@ -87,7 +87,6 @@ public class GLContextSurfaceLess {
         return eglContext;
     }
 
-
     private final Runnable mOpenGLRunnable=new Runnable() {
         @Override
         public void run() {

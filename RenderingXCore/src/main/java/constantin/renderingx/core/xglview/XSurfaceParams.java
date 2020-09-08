@@ -4,7 +4,7 @@ package constantin.renderingx.core.xglview;
 public class XSurfaceParams {
     // R,G,B channels, default to 8 bits per channel
     final int mR=8,mG=8,mB=8;
-    // Alpha is optionally, use either RGBA_8888 or RGB_888 with alpha 0
+    // Alpha is optionally, use either RGBA_8888 or RGB_888 without alpha
     final int mA;
     int mWantedMSAALevel;
     boolean mUseMutableFlag;
