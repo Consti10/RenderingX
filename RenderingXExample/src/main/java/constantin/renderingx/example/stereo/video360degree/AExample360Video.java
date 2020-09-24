@@ -19,8 +19,8 @@ import constantin.renderingx.core.views.VrActivity;
 import constantin.renderingx.core.views.VrView;
 import constantin.renderingx.example.R;
 import constantin.video.core.gl.ISurfaceTextureAvailable;
-import constantin.video.core.video_player.VideoPlayer;
-import constantin.video.core.video_player.VideoSettings;
+import constantin.video.core.player.VideoPlayer;
+import constantin.video.core.player.VideoSettings;
 
 //Uses the LiveVideo10ms VideoCore lib which is intended for live streaming, not file playback.
 //I recommend using android MediaPlayer if only playback from file is needed

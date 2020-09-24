@@ -4,8 +4,8 @@ import android.os.Bundle;
 
 import constantin.renderingx.core.views.VrActivity;
 import constantin.renderingx.core.views.VrView;
-import constantin.video.core.video_player.VideoPlayer;
-import constantin.video.core.video_player.VideoSettings;
+import constantin.video.core.player.VideoPlayer;
+import constantin.video.core.player.VideoSettings;
 
 public class AExampleSuperSync extends VrActivity {
     private VrView mViewSuperSync;
