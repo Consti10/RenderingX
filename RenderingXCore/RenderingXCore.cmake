@@ -50,7 +50,11 @@ include_directories(${RX_CORE_CPP}/GeometryBuilder)
 include_directories(${RX_CORE_CPP}/GeometryBuilder/Sphere)
 include_directories(${RX_CORE_CPP}/GLHelper)
 include_directories(${RX_CORE_CPP}/GLPrograms)
-include_directories(${RX_CORE_CPP}/NDKHelper)
+
+set(DIR_VideoTelemetryShared ${CMAKE_CURRENT_LIST_DIR}/../../LiveVideo10ms/Shared/src/main/cpp)
+
+include_directories(${DIR_VideoTelemetryShared}/NDKHelper)
+
 include_directories(${RX_CORE_CPP}/Other)
 add_library( GLPrograms SHARED
         ${RX_CORE_CPP}/DistortionCorrection/PolynomialRadialDistortion/PolynomialRadialDistortion.cpp
