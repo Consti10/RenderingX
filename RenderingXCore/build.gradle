@@ -28,8 +28,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation('com.google.android.gms:play-services-location:17.1.0')
+    //implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "androidx.appcompat:appcompat:$rootProject.appcompatVersion"
     implementation "androidx.preference:preference:$rootProject.androidxpreferenceVersion"
     //
@@ -41,6 +40,8 @@ dependencies {
     //Since we already included gvr here, other projects should not use their own gvr versions, but also use this one (and the native code supplied here)
     // by using api instead of implementation modules that depend on RenderingXCore also get th gvr api
     //noinspection GradleDependency
+    //Do not update the Gvr version, since the native code does not compile with the newer one
+    //(This bug won't be fixed by google since they abandoned the lib)
     api "com.google.vr:sdk-base:$mGvrVersion"
     implementation project(path: ':VideoCore')
     //implementation "com.github.Consti10.LiveVideo10ms:VideoCore:99e86293"

@@ -1,4 +1,4 @@
-include  ':RenderingXCore'
+include ':RenderingXCore'
 include ':RenderingXExample'
 
 //Comment when using artifacts from jitpack
