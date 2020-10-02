@@ -72,6 +72,7 @@ void Renderer360Video::onDrawFrame(JNIEnv* env) {
     }
     Extensions::eglPresentationTimeANDROID(eglGetCurrentDisplay(),eglGetCurrentSurface(EGL_DRAW),std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
     GLHelper::checkGlError("Renderer360Video::onDrawFrame");
+    //eglSwapBuffers(eglGetCurrentDisplay(),eglGetCurrentSurface(EGL_DRAW));
 }
 
 void Renderer360Video::onSecondaryContextCreated(JNIEnv* env,jobject context) {

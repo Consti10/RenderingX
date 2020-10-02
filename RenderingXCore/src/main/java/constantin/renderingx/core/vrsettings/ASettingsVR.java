@@ -7,7 +7,7 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
-
+import android.content.SharedPreferences;
 import constantin.renderingx.core.R;
 
 public class ASettingsVR extends AppCompatActivity implements PreferenceFragmentCompat.OnPreferenceStartScreenCallback{
@@ -26,11 +26,6 @@ public class ASettingsVR extends AppCompatActivity implements PreferenceFragment
                 .commit();
     }
 
-    public static float getScreenBrightnessInRangeZeroTo1(final Context context){
-        // normalize the value
-        return context.getSharedPreferences("pref_vr_rendering",MODE_PRIVATE).getFloat(context.getString(R.string.VR_SCREEN_BRIGHTNESS_PERCENTAGE),80)/100.0f;
-    }
-
     @Override
     public boolean onPreferenceStartScreen(PreferenceFragmentCompat caller, PreferenceScreen preferenceScreen) {
         //Log.d(TAG,"name is"+caller.getPreferenceManager().getSharedPreferencesName());
@@ -47,5 +42,15 @@ public class ASettingsVR extends AppCompatActivity implements PreferenceFragment
         //f.setPreferenceScreen(pref);
         Log.d(TAG,"onPreferenceStartScreen "+preferenceScreen.getKey());
         return false;
+    }
+    public static SharedPreferences getVRSharedPreferences(final Context context){
+        return context.getSharedPreferences("pref_vr_rendering",MODE_PRIVATE);
+    }
+    public static float getScreenBrightnessInRangeZeroTo1(final Context context){
+        // normalize the value
+        return getVRSharedPreferences(context).getFloat(context.getString(R.string.VR_SCREEN_BRIGHTNESS_PERCENTAGE),80)/100.0f;
+    }
+    public static int getVR_RENDERING_MODE(final Context context){
+        return getVRSharedPreferences(context).getInt("VR_RENDERING_MODE",0);
     }
 }

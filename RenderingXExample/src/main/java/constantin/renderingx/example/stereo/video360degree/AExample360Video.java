@@ -49,6 +49,7 @@ public class AExample360Video extends VrActivity {
         final String VIDEO_FILENAME=bundle.getString(KEY_VIDEO_FILENAME);
         //start initialization
         final VrView mVrView=new VrView(this);
+        //mVrView.enableSuperSync();
 
         // Use one of both ! Default to the player from VideoCore
         if(USE_GOOGLE_EXO_PLAYER_INSTEAD){

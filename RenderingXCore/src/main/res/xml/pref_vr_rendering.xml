@@ -41,7 +41,7 @@
             android:key="@string/GroundHeadTrackingEnable"
             android:title="@string/GroundHeadTrackingEnable"
             android:summary="Enable/Disable head tracking for VR.Adjust specific axes below."
-            android:defaultValue="true" />
+            android:defaultValue="false" />
         <SwitchPreference
             android:dependency="@string/GroundHeadTrackingEnable"
             android:key="@string/GroundHeadTrackingX"
@@ -68,12 +68,30 @@
         android:title="Reduce latency and more"
         android:summary="To do"
         android:key="key3">
+        <Preference
+            android:title="Disable60FPSLock"
+            android:summary="@string/Disable60FPSLock_Summary"
+            android:selectable="false"/>
+
+        <Preference
+            android:title="@string/VR_RENDERING_MODES_WARNING"
+            android:summary="@string/VR_RENDERING_MODES_SUMMARY"
+            android:selectable="false"/>
+
+
+
+        <PreferenceCategory
+            android:title="@string/VR_RENDERING_MODES_WARNING"
+            android:summary="@string/VR_RENDERING_MODES_SUMMARY"
+            />
+
         <com.mapzen.prefsplusx.IntListPreference
             android:title="VR_RENDERING_MODE"
             android:key="VR_RENDERING_MODE"
             android:summary="Select a specialized VR rendering method"
             android:entries="@array/entriesVR_RENDERING_MODE"
             android:defaultValue="0"/>
+
         <constantin.renderingx.core.vrsettings.MSAALevelIntListPreference
             android:title="@string/MultiSampleAntiAliasing"
             android:key="@string/MultiSampleAntiAliasing"
@@ -81,6 +99,7 @@
             android:entries="@array/entriesMSAADefault"
             android:entryValues="@array/valuesMSAADefault"
             android:defaultValue="0"/>
+
     </androidx.preference.PreferenceScreen>
 
 

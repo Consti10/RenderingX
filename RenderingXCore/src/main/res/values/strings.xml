@@ -5,6 +5,22 @@
     <string name="PerformanceHacksDescription">PLEASE READ CAREFULLY BEFORE CHANGING VALUES !
     </string>
 
+    <string name="VR_RENDERING_MODES_WARNING">
+        PLEASE READ CAREFULLY BEFORE CHANGING VALUES
+    </string>
+    <string name="VR_RENDERING_MODES_SUMMARY">
+        To reduce latency in VR mode you can select one of the rendering modes below.\n
+        Disable60FPSLock: Trick the OS into rendering at >60fps without any screen tearing.\n
+        This works on most pixel devices Running Android 9 and above. If you get >60fps with this mode enabled (for 60hz screens)\n
+        This mode works and I recommend using it. Else, use a different one.\n
+    </string>
+
+    <string name="Disable60FPSLock_Summary">
+        Trick the OS into rendering at >60fps without any screen tearing.
+        This works on most Pixel devices running Android 9 and above. If you get >60fps with this mode enabled (for 60hz screens)
+        it works and I recommend using it. Else, use a different one.\n
+    </string>
+
     <string name="DisbaleLowPersistenceModeDescription">Low persistence mode slightly decreases your perceived display response time
         (and therefore latency) but makes your screen flickery. Disable it here if you dont like it. Only has an effect when SuperSync is enabled.
     </string>
