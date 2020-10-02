@@ -36,6 +36,8 @@ public:
     bool GHT_OSD_FIXED_TO_HEAD;
 public:
     static constexpr const float DEFAULT_FOV_FILLED_BY_SCENE=60;
+public:
+    int VR_RENDERING_MODE=0;
 };
 
 

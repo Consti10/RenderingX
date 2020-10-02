@@ -21,6 +21,8 @@ public:
     static constexpr const char* VR_SCENE_SCALE_PERCENTAGE="VR_SCENE_SCALE_PERCENTAGE";
     static constexpr const char* VR_DISTORTION_CORRECTION_MODE="VR_DISTORTION_CORRECTION_MODE";
     static constexpr const char* VR_ENABLE_DEBUG="VR_ENABLE_DEBUG";
+
+    static constexpr const char* VR_RENDERING_MODE="VR_RENDERING_MODE";
 };
 
 #endif //CONSTI_10_100_IDVR
