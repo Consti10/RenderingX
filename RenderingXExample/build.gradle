@@ -35,9 +35,10 @@ android {
         }
     }
     sourceSets {
-        main {
-            jniLibs.srcDirs = ['libs/google/gvr']
-        }
+        //https://developer.android.com/studio/releases/gradle-plugin?buildsystem=cmake#cmake-imported-targets
+        //main {
+        //    jniLibs.srcDirs = ['libs/google/gvr']
+        //}
     }
     //Do not compress mp4 assets for MediaPlayer !
     aaptOptions {
