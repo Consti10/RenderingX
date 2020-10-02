@@ -9,7 +9,6 @@ android {
         versionCode 6
         versionName "6.0"
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -17,9 +16,10 @@ android {
         }
     }
     sourceSets {
-        main {
-            jniLibs.srcDirs = ['libs/google/gvr']
-        }
+        //https://developer.android.com/studio/releases/gradle-plugin?buildsystem=cmake#cmake-imported-targets
+        //main {
+        //    jniLibs.srcDirs = ['libs/google/gvr']
+        //}
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
