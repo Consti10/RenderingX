@@ -10,6 +10,7 @@ import androidx.preference.PreferenceScreen;
 import android.content.SharedPreferences;
 import constantin.renderingx.core.R;
 
+// Simple Settings Activity that handles VR settings
 public class ASettingsVR extends AppCompatActivity implements PreferenceFragmentCompat.OnPreferenceStartScreenCallback{
     private static final String TAG=ASettingsVR.class.getSimpleName();
     // This one is written to  getActivity().setResult() if the vr settings have changed

@@ -68,7 +68,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:17.5.0'
     implementation 'com.google.firebase:firebase-perf:19.0.8'
 
-    implementation project(':RenderingXCore')
+    implementation project(path: ':RenderingXCore')
     //
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

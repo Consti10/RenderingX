@@ -11,6 +11,7 @@
 #include "AndroidLogger.hpp"
 #include "TimeHelper.hpp"
 
+// Deprecated. Use FrameTimeCalculator for same and more functionalities
 class FPSCalculator {
 private:
     const std::string NAME;
@@ -66,7 +67,7 @@ public:
         const auto deltaLastLog=now-lastLog;
         if(deltaLastLog>LOG_INTERVAL){
             currentFps=(float)1000.0f * 1000.0f/std::chrono::duration_cast<std::chrono::microseconds>(avgCalculator.getAvg()).count();
-            MLOGD<<NAME<<" "<<getCurrentFPS()<<" "<<avgCalculator.getAvgReadable();
+            MLOGD<<NAME<<" FPS: "<<getCurrentFPS()<<"FT: "<<avgCalculator.getAvgReadable();
             avgCalculator.reset();
             lastLog=std::chrono::steady_clock::now();
         }
@@ -84,7 +85,10 @@ public:
 class FrameTimeLimiter{
 public:
     using CLOCK=std::chrono::steady_clock;
+    static constexpr const auto FRAME_TIME_30_FPS=std::chrono::nanoseconds(33300000);
     static constexpr const auto FRAME_TIME_60_FPS=std::chrono::nanoseconds(16600000);
+    static constexpr const auto FRAME_TIME_90_FPS=std::chrono::nanoseconds(11100000);
+    static constexpr const auto FRAME_TIME_120_FPS=std::chrono::nanoseconds(8330000);
 private:
     const CLOCK::duration wantedAvgFrameTime;
     const std::chrono::steady_clock::duration RECALCULATION_INTERVAL=std::chrono::seconds(1);

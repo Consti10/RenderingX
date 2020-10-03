@@ -69,7 +69,7 @@ public:
     //
     void drawFramesToFrontBufferUnsynchronized(JNIEnv* env, VrCompositorRenderer& vrCompositorRenderer);
 private:
-    const bool CHANGE_CLEAR_COLOR_TO_MAKE_TEARING_OBSERVABLE=true;
+    const bool CHANGE_CLEAR_COLOR_TO_MAKE_TEARING_OBSERVABLE=false;
     const VSYNC& vsync;
     struct EyeChrono{
         Chronometer avgCPUTime{};

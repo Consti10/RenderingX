@@ -196,8 +196,8 @@ void FBRManager::drawEye(JNIEnv *env, const bool leftEye, VrCompositorRenderer &
 }
 
 void FBRManager::drawEyesToFrontBufferUnsynchronized(JNIEnv *env,VrCompositorRenderer &vrCompositorRenderer) {
-    JThread jThread(env);
-    while (!jThread.isInterrupted()){
+    //JThread jThread(env);
+    //while (!jThread.isInterrupted()){
         SurfaceTextureUpdate* surfaceTextureUpdate=std::get<SurfaceTextureUpdate*>(vrCompositorRenderer.getLayers().at(0).contentProvider);
         for(int eye=0;eye<2;eye++){
             surfaceTextureUpdate->updateAndCheck(env);
@@ -211,13 +211,13 @@ void FBRManager::drawEyesToFrontBufferUnsynchronized(JNIEnv *env,VrCompositorRen
             // Make sure that I do not submit eyes faster than the GPU is able to render them
             fenceSync->wait(std::chrono::milliseconds(100));
         }
-    }
+    //}
 }
 
 void FBRManager::drawFramesToFrontBufferUnsynchronized(JNIEnv *env,
                                                        VrCompositorRenderer &vrCompositorRenderer) {
-    JThread jThread(env);
-    while (!jThread.isInterrupted()){
+    //JThread jThread(env);
+    //while (!jThread.isInterrupted()){
         glClear(GLHelper::ALL_GL_BUFFERS);
         SurfaceTextureUpdate* surfaceTextureUpdate=std::get<SurfaceTextureUpdate*>(vrCompositorRenderer.getLayers().at(0).contentProvider);
         for(int eye=0;eye<2;eye++){
@@ -227,7 +227,7 @@ void FBRManager::drawFramesToFrontBufferUnsynchronized(JNIEnv *env,
             drawEye(env,isLeftEye,vrCompositorRenderer);
         }
         eglSwapBuffers(eglGetCurrentDisplay(),eglGetCurrentSurface(EGL_DRAW));
-    }
+    //}
 }
 
 
