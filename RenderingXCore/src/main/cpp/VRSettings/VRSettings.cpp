@@ -13,8 +13,8 @@ VRSettings::VRSettings(JNIEnv *env, jobject androidContext) {
     SharedPreferences settingsN(env,androidContext,"pref_vr_rendering");
 
     VR_SCENE_SCALE_PERCENTAGE=settingsN.getFloat(IDVR::VR_SCENE_SCALE_PERCENTAGE,100.0F);
-    //Default on (0==0ff, 1==On)
-    VR_DISTORTION_CORRECTION_MODE=settingsN.getInt(IDVR::VR_DISTORTION_CORRECTION_MODE,1);
+    //Default on (0==on, 1==off)
+    VR_DISTORTION_CORRECTION_MODE=settingsN.getInt(IDVR::VR_DISTORTION_CORRECTION_MODE,VR_DISTORTION_CORRECTION_MODE_ENABLED);
     //
     VR_ENABLE_DEBUG=settingsN.getBoolean(IDVR::VR_ENABLE_DEBUG,false);
 

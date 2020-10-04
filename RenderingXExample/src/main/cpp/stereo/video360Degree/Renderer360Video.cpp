@@ -17,7 +17,8 @@ Renderer360Video::Renderer360Video(JNIEnv *env, jobject androidContext, gvr_cont
         surfaceTextureUpdate(env),
         M_SPHERE_MODE(static_cast<SPHERE_MODE>(vSPHERE_MODE)),
         gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context)),
-        vrCompositorRenderer(env,androidContext,gvr_api_.get(),vrSettings.enableDistortionCorrection(),vrSettings.VR_ENABLE_DEBUG),
+        vrCompositorRenderer(env, androidContext, gvr_api_.get(),
+                             vrSettings.isVR_DISTORTION_CORRECTION_ENABLED(), vrSettings.VR_ENABLE_DEBUG),
         mFPSCalculator("OpenGL FPS", std::chrono::seconds(2)){
 }
 

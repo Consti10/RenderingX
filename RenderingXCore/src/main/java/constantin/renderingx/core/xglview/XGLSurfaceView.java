@@ -33,9 +33,6 @@ import static android.opengl.EGL14.EGL_NO_CONTEXT;
 import static android.opengl.EGL14.EGL_NO_DISPLAY;
 import static android.opengl.EGL14.EGL_NO_SURFACE;
 import static android.opengl.EGLExt.EGL_CONTEXT_FLAGS_KHR;
-import static constantin.renderingx.core.xglview.EGLContextPriority.EGL_CONTEXT_PRIORITY_HIGH_IMG;
-import static constantin.renderingx.core.xglview.EGLContextPriority.EGL_CONTEXT_PRIORITY_LEVEL_IMG;
-import static constantin.renderingx.core.xglview.XEGLConfigChooser.EGL_ANDROID_front_buffer_auto_refresh;
 
 // TODO in Development
 
@@ -138,7 +135,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
             Helper.eglMakeCurrentSafe(eglDisplay,eglSurface,eglContext);
             if(DO_SUPERSYNC_MODS){
                 XEGLConfigChooser.setEglSurfaceAttrib(EGL14.EGL_RENDER_BUFFER,EGL14.EGL_SINGLE_BUFFER);
-                XEGLConfigChooser.setEglSurfaceAttrib(EGL_ANDROID_front_buffer_auto_refresh,EGL14.EGL_TRUE);
+                XEGLConfigChooser.setEglSurfaceAttrib(XEGLConfigChooser.EGL_ANDROID_front_buffer_auto_refresh,EGL14.EGL_TRUE);
                 eglSwapBuffersSafe(eglDisplay,eglSurface);
                 Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
                 Process.setThreadPriority(-20);
@@ -213,8 +210,8 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
             contextAttributes.add(EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR);
         }
         if(ENABLE_HIGH_PRIORITY_CONTEXT){
-            contextAttributes.add(EGL_CONTEXT_PRIORITY_LEVEL_IMG);
-            contextAttributes.add(EGL_CONTEXT_PRIORITY_HIGH_IMG);
+            contextAttributes.add(EGLContextPriority.EGL_CONTEXT_PRIORITY_LEVEL_IMG);
+            contextAttributes.add(EGLContextPriority.EGL_CONTEXT_PRIORITY_HIGH_IMG);
         }
         contextAttributes.add( EGL14.EGL_NONE);
 
@@ -226,8 +223,8 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         }
         // check if we actually got a high priority context
         if(ENABLE_HIGH_PRIORITY_CONTEXT){
-            final int eglContextPriorityLevel=eglQueryContext(EGL_CONTEXT_PRIORITY_LEVEL_IMG);
-            if(eglContextPriorityLevel==EGL_CONTEXT_PRIORITY_HIGH_IMG){
+            final int eglContextPriorityLevel=eglQueryContext(EGLContextPriority.EGL_CONTEXT_PRIORITY_LEVEL_IMG);
+            if(eglContextPriorityLevel==EGLContextPriority.EGL_CONTEXT_PRIORITY_HIGH_IMG){
                 Log.d(TAG,"Got high prio context"+eglContextPriorityLevel);
             }else{
                 Log.d(TAG,"Cannot get high prio context"+eglContextPriorityLevel);
