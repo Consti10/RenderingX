@@ -1,4 +1,4 @@
-package constantin.renderingx.core.gles_info;
+package constantin.renderingx.core.deviceinfo;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

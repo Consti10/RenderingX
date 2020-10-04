@@ -1,4 +1,4 @@
-package constantin.renderingx.core.gles_info;
+package constantin.renderingx.core.deviceinfo;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -246,7 +246,6 @@ public class AWriteGLESInfo extends AppCompatActivity {
             GLES20.glClearColor(rgb[0], rgb[1], rgb[2], 1.0f);
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_STENCIL_BUFFER_BIT);
         }
-
     }
 
 }

@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import constantin.renderingx.core.FullscreenHelper;
 import constantin.renderingx.core.MVrHeadsetParams;
-import constantin.renderingx.core.gles_info.AWriteGLESInfo;
 import constantin.renderingx.core.vrsettings.ASettingsVR;
 
 // Specific implementation of AppCompatActivity that handles full screen and key events

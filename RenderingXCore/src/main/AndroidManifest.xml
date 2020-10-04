@@ -26,7 +26,7 @@
         android:required="false" />
 
     <application>
-        <activity android:name="constantin.renderingx.core.gles_info.AWriteGLESInfo"
+        <activity android:name="constantin.renderingx.core.deviceinfo.AWriteGLESInfo"
             android:screenOrientation="behind"/>
 
         <activity

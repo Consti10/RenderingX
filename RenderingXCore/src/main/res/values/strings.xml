@@ -8,6 +8,11 @@
     <string name="VR_RENDERING_MODES_WARNING">
         PLEASE READ CAREFULLY BEFORE CHANGING VALUES
     </string>
+
+    <string name="VR_RENDERING_MODE">
+        VR_RENDERING_MODE
+    </string>
+
     <string name="VR_RENDERING_MODES_SUMMARY">
         To reduce latency in VR mode you can select one of the rendering modes below.\n
         Disable60FPSLock: Trick the OS into rendering at >60fps without any screen tearing.\n
@@ -43,5 +48,6 @@
         Which MSAA level to choose depends on your GPU power, screen resolution and magnification of your VR headset.
         Most modern tile-based GPUs can handle up to 4xMSAA with only 10-20perc. performance loss, while increasing quality significantly.
     </string>
+
 
 </resources>

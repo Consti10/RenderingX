@@ -1,18 +1,19 @@
 package constantin.renderingx.core.vrsettings;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
-import androidx.preference.PreferenceScreen;
 
 import constantin.renderingx.core.R;
-import static android.content.Context.MODE_PRIVATE;
+import constantin.renderingx.core.deviceinfo.Extensions;
 
 public class FSettingsVR extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener{
+    private static final String TAG=FSettingsVR.class.getSimpleName();
     // If created by the custom constructor taking a PreferenceScreen the fragment will be inflated using this preferenceScreen instead
     // Workaround for nested preference screens inside .xml file
     /*private final PreferenceScreen preferenceScreen;
@@ -56,42 +57,41 @@ public class FSettingsVR extends PreferenceFragmentCompat implements SharedPrefe
     @Override
     public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
         requireActivity().setResult(ASettingsVR.RESULT_CODE_SETTINGS_CHANGED_RESTART_REQUIRED,null);
-        //validateUserInputRenderingModes(preferences,key);
+        if(key.contentEquals(getString(R.string.VR_RENDERING_MODE))){
+            validateUserInputRenderingModes(preferences,key);
+        }
     }
 
-    /*private void validateUserInputRenderingModes(final SharedPreferences pref_default,final String key){
-
-        if(key.contentEquals(getString(R.string.DisableVSYNC))&& pref_default.getBoolean(key,false)){
-
-            if(Extensions.available(getActivity(),Extensions.EGL_KHR_mutable_render_buffer)){
-                SwitchPreference sp=(SwitchPreference)findPreference(getString(R.string.Disable60FPSLock));
-                sp.setChecked(false);
-            }else{
-                String warn="This smartphone does not support disabling VSYNC\n";
-                warn+="EGL_KHR_mutable_render_bufferAvailable: false\n";
-                makeDialog(getActivity(),warn);
-                SwitchPreference sp=(SwitchPreference)findPreference(getString(R.string.DisableVSYNC));
-                sp.setChecked(false);
+    @SuppressLint("ApplySharedPref")
+    private void validateUserInputRenderingModes(final SharedPreferences pref_vr_rendering, final String rendereringModesKey){
+        final int wantedRenderingMode=pref_vr_rendering.getInt(rendereringModesKey,0);
+        Log.d(TAG,"Validating rendering mode "+wantedRenderingMode);
+        final Context context=requireActivity();
+        if(wantedRenderingMode==2 ){
+            // Unlimited
+            if(!(Extensions.available(context, Extensions.EGL_KHR_mutable_render_buffer)
+                    && Extensions.available(context,Extensions.EGL_ANDROID_front_buffer_auto_refresh)
+            )){
+                String warn="Cannot enable unlimited.";
+                warn+="\n-EGL_KHR_mutable_render_bufferAvailable: "+Extensions.available(context,Extensions.EGL_KHR_mutable_render_buffer);
+                warn+="\n-EGL_ANDROID_front_buffer_auto_refreshAvailable: "+Extensions.available(context,Extensions.EGL_ANDROID_front_buffer_auto_refresh );
+                Log.d(TAG,warn);
+                pref_vr_rendering.edit().putInt(rendereringModesKey,0).commit();
             }
-        }else if(key.contentEquals(getString(R.string.SuperSync)) && pref_default.getBoolean(key,false)){
-            //The user enabled the "SuperSync" option
-            if(!(Extensions.available(getActivity(),Extensions.EGL_KHR_mutable_render_buffer) &&
-                    Extensions.available(getActivity(),Extensions.EGL_ANDROID_front_buffer_auto_refresh ))){
-                String warn="This smartphone does not support enabling SuperSync.";
-                warn+="\n-EGL_KHR_mutable_render_bufferAvailable: "+Extensions.available(getActivity(),Extensions.EGL_KHR_mutable_render_buffer);
-                warn+="\n-EGL_ANDROID_front_buffer_auto_refreshAvailable: "+Extensions.available(getActivity(),Extensions.EGL_ANDROID_front_buffer_auto_refresh );
-                warn+="\n-EGL_KHR_reusable_syncAvailable: "+Extensions.available(getActivity(),Extensions.EGL_KHR_reusable_sync );
-                makeDialog(getActivity(),warn);
-                SwitchPreference sp=(SwitchPreference)findPreference(getString(R.string.SuperSync));
-                sp.setChecked(false);
-            }
-        }else if(key.contentEquals(getString(R.string.Disable60FPSLock))&& pref_default.getBoolean(key,false)){
-            //The user enabled the "disable60fpslock" option. Cannot be used simultaneous with "DisableVSYNC". / SuperSync
-            SwitchPreference p1=(SwitchPreference)findPreference(getString(R.string.DisableVSYNC));
-            p1.setChecked(false);
-            SwitchPreference p2=(SwitchPreference)findPreference(getString(R.string.SuperSync));
-            p2.setChecked(false);
         }
-    }*/
+        if(wantedRenderingMode==3){
+            if(!(Extensions.available(context, Extensions.EGL_KHR_mutable_render_buffer)
+                    && Extensions.available(context,Extensions.EGL_ANDROID_front_buffer_auto_refresh)
+                    && Extensions.available(context,Extensions.EGL_KHR_reusable_sync)
+            )){
+                String warn="Cannot enable SuperSync.";
+                warn+="\n-EGL_KHR_mutable_render_bufferAvailable: "+Extensions.available(context,Extensions.EGL_KHR_mutable_render_buffer);
+                warn+="\n-EGL_ANDROID_front_buffer_auto_refreshAvailable: "+Extensions.available(context,Extensions.EGL_ANDROID_front_buffer_auto_refresh );
+                warn+="\n-EGL_KHR_reusable_syncAvailable: "+Extensions.available(context,Extensions.EGL_KHR_reusable_sync );
+                Log.d(TAG,warn);
+                pref_vr_rendering.edit().putInt(rendereringModesKey,0).commit();
+            }
+        }
+    }
 
 }

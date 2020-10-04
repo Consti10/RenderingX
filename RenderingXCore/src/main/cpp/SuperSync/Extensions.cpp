@@ -136,7 +136,7 @@ void Extensions::initializeGL(){
 
 extern "C" {
 
-void Java_constantin_renderingx_core_Extensions_nativeSetThreadAffinity(JNIEnv *env, jclass jclass1,jint core) {
+void Java_constantin_renderingx_core_deviceinfo_Extensions_nativeSetThreadAffinity(JNIEnv *env, jclass jclass1,jint core) {
 CPUAffinityHelper::setAffinity(core);
 }
 

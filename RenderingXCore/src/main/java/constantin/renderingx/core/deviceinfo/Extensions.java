@@ -1,4 +1,4 @@
-package constantin.renderingx.core.gles_info;
+package constantin.renderingx.core.deviceinfo;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -49,4 +49,7 @@ public class Extensions {
     private static boolean available(final SharedPreferences sharedPreferences, final String extension){
         return sharedPreferences.getBoolean(extension,false);
     }
+
+    // Calls native code since doing so is only possible in c/c++ code
+    public static native void nativeSetThreadAffinity(final int cpuCore);
 }

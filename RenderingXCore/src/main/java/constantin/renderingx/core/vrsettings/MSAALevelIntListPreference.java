@@ -8,7 +8,7 @@ import com.mapzen.prefsplusx.IntListPreference;
 
 import java.util.ArrayList;
 
-import constantin.renderingx.core.gles_info.OpenGLESValues;
+import constantin.renderingx.core.deviceinfo.OpenGLESValues;
 
 // Allow the user to only select MSAA levels that are supported by this device
 public class MSAALevelIntListPreference extends IntListPreference {

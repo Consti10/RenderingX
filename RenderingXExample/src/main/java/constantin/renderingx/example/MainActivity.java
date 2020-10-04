@@ -11,8 +11,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import constantin.renderingx.core.gles_info.AWriteGLESInfo;
-import constantin.renderingx.core.gles_info.Extensions;
+import constantin.renderingx.core.deviceinfo.AWriteGLESInfo;
+import constantin.renderingx.core.deviceinfo.Extensions;
 import constantin.renderingx.example.mono.AExampleRendering;
 import constantin.renderingx.example.stereo.distortion.AExampleDistortion;
 import constantin.renderingx.example.stereo.video360degree.AExample360Video;

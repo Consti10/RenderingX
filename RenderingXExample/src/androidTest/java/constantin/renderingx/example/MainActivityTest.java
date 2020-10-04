@@ -10,7 +10,7 @@ import androidx.test.rule.GrantPermissionRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-import constantin.renderingx.core.gles_info.AWriteGLESInfo;
+import constantin.renderingx.core.deviceinfo.AWriteGLESInfo;
 import constantin.renderingx.example.mono.AExampleRendering;
 import constantin.renderingx.example.stereo.distortion.AExampleDistortion;
 import constantin.renderingx.example.stereo.video360degree.AExample360Video;

@@ -24,7 +24,7 @@ import com.google.common.primitives.Ints;
 
 import java.util.ArrayList;
 
-import constantin.renderingx.core.Extensions;
+import constantin.renderingx.core.deviceinfo.Extensions;
 import constantin.renderingx.core.views.VRLayout;
 import constantin.video.core.gl.ISurfaceTextureAvailable;
 
