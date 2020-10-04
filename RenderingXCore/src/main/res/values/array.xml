@@ -19,8 +19,8 @@
     <string-array name="entriesVR_RENDERING_MODE" >
         <item>Basic (default)</item>
         <item>Disable60FPSLock</item>
-        <item>Super Sync</item>
         <item>Unlimited</item>
+        <item>SuperSync</item>
     </string-array>
 
     <string-array name="entriesMSAADefault" >

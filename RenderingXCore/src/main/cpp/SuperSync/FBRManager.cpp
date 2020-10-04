@@ -151,11 +151,11 @@ void FBRManager::printLog() {
         avgLog<<"------------------------FBRManager Averages------------------------";
         avgLog << "\nCPU Time: "<<"leftEye: " << leChrono.avgCPUTime.getAvgReadable() << " | rightEye:" << reChrono.avgCPUTime.getAvgReadable();
         avgLog << "\nGPU time: "<<"leftEye: " << leChrono.avgGPUTime.getAvgReadable() << " | rightEye:" << reChrono.avgGPUTime.getAvgReadable()
-        <<" | left&right:" <<AvgCalculator::median(leChrono.avgGPUTime,reChrono.avgGPUTime).getAvgReadable();
+        <<" | left&right:" <<(leChrono.avgGPUTime+reChrono.avgGPUTime).getAvgReadable();
         avgLog<<"\nGPU % not measurable:"<<": leftEye:"<<leGPUTimeNotMeasurablePerc<<" | rightEye:"<<reGPUTimeNotMeasurablePerc
         <<" | left&right:"<<leAreGPUTimeNotMeasurablePerc;
         avgLog<<"\nVsync waitT:"<<" start: "<< vsyncWaitTime[0].getAvgReadable()<<" | middle: "<<vsyncWaitTime[1].getAvgReadable()
-        <<" | start&middle "<<AvgCalculator::median(vsyncWaitTime[0],vsyncWaitTime[1]).getAvgReadable();
+        <<" | start&middle "<<(vsyncWaitTime[0]+vsyncWaitTime[1]).getAvgReadable();
         avgLog<<"\n SurfaceTexture update "<<avgCPUTimeUpdateSurfaceTexture.getAvgReadable();
         //avgLog<<"\nDisplay refresh time ms:"<<DISPLAY_REFRESH_TIME/1000.0/1000.0;
         avgLog<<"\n----  -----  ----  ----  ----  ----  ----  ----  --- ---";
