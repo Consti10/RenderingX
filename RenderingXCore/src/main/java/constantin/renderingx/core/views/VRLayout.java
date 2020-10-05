@@ -59,6 +59,7 @@ public class VRLayout extends FrameLayout implements LifecycleObserver , PopupMe
     public VRLayout(Context context) {
         super(context);
         init((AppCompatActivity)context,false);
+
     }
 
     public VRLayout(Context context, AttributeSet attrs) {
