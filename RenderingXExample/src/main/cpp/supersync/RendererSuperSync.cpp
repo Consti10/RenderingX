@@ -28,7 +28,7 @@ RendererSuperSync::RendererSuperSync(JNIEnv *env, jobject androidContext, gvr_co
         mSurfaceTextureUpdate(env),
         gvr_api_(gvr::GvrApi::WrapNonOwned(gvr_context))
         ,vrCompositorRenderer(env,androidContext,gvr_api_.get(),true,false,false),
-        mFBRManager(VSYNC::native(vsync)){
+        mFBRManager(VSYNC::native(vsync),true){
 }
 
 void RendererSuperSync::onSurfaceCreated(JNIEnv *env, jobject androidContext,jobject surfaceTextureHolder,int width, int height) {

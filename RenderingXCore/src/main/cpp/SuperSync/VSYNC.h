@@ -36,6 +36,12 @@ public:
     static inline VSYNC *native(jlong ptr) {
         return reinterpret_cast<VSYNC*>(ptr);
     }
+    // When passed 0,create new VSYNC
+    // Else,convert to VSYNC*
+    static inline VSYNC *createFrom(jlong ptr){
+        if(ptr==0)return new VSYNC();
+        return native(ptr);
+    }
 private:
     // last registered VSYNC. Indirectly set by the callback, but it is not guaranteed that this is the last occurred VSYNC
     // The only thread writing the variable is the choreographer

@@ -59,7 +59,7 @@
 
 class FBRManager{
 public:
-    FBRManager(VSYNC* vsync);
+    FBRManager(VSYNC* vsync,bool CHANGE_CLEAR_COLOR_TO_MAKE_TEARING_OBSERVABLE);
     // Runs until the current thread is interrupted (java thread)
     // You can do optional processing in the optional callback that is called once per frame
     void enterWarping(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer,std::function<void(JNIEnv*)> optionalCallback=nullptr);

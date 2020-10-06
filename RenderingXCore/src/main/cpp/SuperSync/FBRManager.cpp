@@ -22,8 +22,8 @@ static std::chrono::steady_clock::duration ThisThreadSleepUntil(std::chrono::ste
     return now-tp;
 }
 
-FBRManager::FBRManager(VSYNC* vsync):
-vsync(*vsync){
+FBRManager::FBRManager(VSYNC* vsync,bool CHANGE_CLEAR_COLOR_TO_MAKE_TEARING_OBSERVABLE):
+vsync(*vsync),CHANGE_CLEAR_COLOR_TO_MAKE_TEARING_OBSERVABLE(CHANGE_CLEAR_COLOR_TO_MAKE_TEARING_OBSERVABLE){
     lastLog=steady_clock::now();
     resetTS();
 }
