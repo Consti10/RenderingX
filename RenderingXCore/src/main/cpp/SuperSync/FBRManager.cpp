@@ -28,7 +28,7 @@ vsync(*vsync){
     resetTS();
 }
 
-void FBRManager::enterWarping(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer){
+void FBRManager::enterWarping(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer,std::function<void(JNIEnv*)> optionalCallback){
     JThread jThread(env);
     Chronometer callJavaTime{"Call java isInterrupted()"};
     while (true){
@@ -38,6 +38,9 @@ void FBRManager::enterWarping(JNIEnv* env,VrCompositorRenderer& vrCompositorRend
         callJavaTime.printInIntervalls(std::chrono::seconds(3),false);
         if(isInterrupted)break;
         warpEyesToFrontBufferSynchronized(env,vrCompositorRenderer);
+        if(optionalCallback!= nullptr){
+            optionalCallback(env);
+        }
     }
 }
 

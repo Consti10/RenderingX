@@ -23,8 +23,8 @@ namespace DirectRender{
             Extensions::StartTilingQCOM(viewport);
             glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         }else{
-            const GLenum attachmentsSG[3] = { GL_COLOR_EXT, GL_DEPTH_EXT, GL_STENCIL_EXT};
-            Extensions::glInvalidateFramebuffer_( GL_FRAMEBUFFER, 3, attachmentsSG );
+            const GLenum attachmentsColorDepthStencil[3] = {GL_COLOR_EXT, GL_DEPTH_EXT, GL_STENCIL_EXT};
+            Extensions::glInvalidateFramebuffer_(GL_FRAMEBUFFER, 3, attachmentsColorDepthStencil );
         }
         setGlViewport(viewport);
         setGlScissor(viewport);
@@ -33,8 +33,8 @@ namespace DirectRender{
         if(Extensions::QCOM_tiled_rendering){
             Extensions::EndTilingQCOM();
         }else{
-            const GLenum attachmentsSG[2] = { GL_DEPTH_EXT, GL_STENCIL_EXT};
-            Extensions::glInvalidateFramebuffer_( GL_FRAMEBUFFER, 2, attachmentsSG );
+            const GLenum attachmentsDepthStencil[2] = {GL_DEPTH_EXT, GL_STENCIL_EXT};
+            Extensions::glInvalidateFramebuffer_(GL_FRAMEBUFFER, 2, attachmentsDepthStencil );
         }
     }
 };

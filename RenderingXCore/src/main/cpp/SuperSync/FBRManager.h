@@ -61,7 +61,8 @@ class FBRManager{
 public:
     FBRManager(VSYNC* vsync);
     // Runs until the current thread is interrupted (java thread)
-    void enterWarping(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer);
+    // You can do optional processing in the optional callback that is called once per frame
+    void enterWarping(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer,std::function<void(JNIEnv*)> optionalCallback=nullptr);
     // warp eyes at the right time into front buffer to avoid tearing
     void warpEyesToFrontBufferSynchronized(JNIEnv* env,VrCompositorRenderer& vrCompositorRenderer);
     //

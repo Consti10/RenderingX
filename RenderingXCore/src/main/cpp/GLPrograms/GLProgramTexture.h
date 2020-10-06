@@ -177,4 +177,12 @@ public:
     }
 };
 
+template<typename T>
+class LULA{
+public:
+    void lutsch();
+};
+
+
+
 #endif
