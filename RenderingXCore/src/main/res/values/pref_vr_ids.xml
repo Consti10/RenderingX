@@ -27,4 +27,6 @@
     <string name="VR_ENABLE_DEBUG">VR_ENABLE_DEBUG</string>
     <string name="VR_SCREEN_BRIGHTNESS_PERCENTAGE">VR_SCREEN_BRIGHTNESS_PERCENTAGE</string>
 
+    <string name="VR_RENDERING_MODE">VR_RENDERING_MODE</string>
+
 </resources>

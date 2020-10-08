@@ -38,8 +38,8 @@ public:
 public:
     static constexpr const float DEFAULT_FOV_FILLED_BY_SCENE=60;
 public:
-    int VR_RENDERING_MODE=0;
     static constexpr const int VR_RENDERING_MODE_DEFAULT=0;
+    int VR_RENDERING_MODE=VR_RENDERING_MODE_DEFAULT;
 };
 
 

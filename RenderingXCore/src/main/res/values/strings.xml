@@ -9,10 +9,6 @@
         PLEASE READ CAREFULLY BEFORE CHANGING VALUES
     </string>
 
-    <string name="VR_RENDERING_MODE">
-        VR_RENDERING_MODE
-    </string>
-
     <string name="VR_RENDERING_MODES_SUMMARY">
         To reduce latency in VR mode you can select one of the rendering modes below.\n
         Disable60FPSLock: Trick the OS into rendering at >60fps without any screen tearing.\n

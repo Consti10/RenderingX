@@ -14,27 +14,13 @@ import constantin.renderingx.core.deviceinfo.Extensions;
 
 public class FSettingsVR extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener{
     private static final String TAG=FSettingsVR.class.getSimpleName();
-    // If created by the custom constructor taking a PreferenceScreen the fragment will be inflated using this preferenceScreen instead
-    // Workaround for nested preference screens inside .xml file
-    /*private final PreferenceScreen preferenceScreen;
-    FSettingsVR(PreferenceScreen preferenceScreen){
-        this.preferenceScreen=preferenceScreen;
-    }
-    FSettingsVR(){
-        this.preferenceScreen=null;
-    }*/
-    
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         //Log.d("LOL","name is"+getPreferenceManager().getSharedPreferencesName());
         PreferenceManager prefMgr = getPreferenceManager();
-        prefMgr.setSharedPreferencesName("pref_vr_rendering");
+        prefMgr.setSharedPreferencesName(ASettingsVR.PREFERENCES_NAME);
         setPreferencesFromResource(R.xml.pref_vr_rendering,rootKey);
-        //if(preferenceScreen==null){
-            //addPreferencesFromResource(R.xml.pref_vr_rendering);
-        //}else{
-        //    setPreferenceScreen(preferenceScreen);
-        //}
     }
 
     @Override

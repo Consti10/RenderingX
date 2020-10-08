@@ -16,6 +16,7 @@ public class ASettingsVR extends AppCompatActivity implements PreferenceFragment
     // This one is written to  getActivity().setResult() if the vr settings have changed
     // such that the base VR application needs to be restarted
     public static final int RESULT_CODE_SETTINGS_CHANGED_RESTART_REQUIRED =321;
+    public static final String PREFERENCES_NAME="pref_vr_rendering";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,18 +41,22 @@ public class ASettingsVR extends AppCompatActivity implements PreferenceFragment
                 .addToBackStack(null)
                 .commit();
 
-        //f.setPreferenceScreen(pref);
         Log.d(TAG,"onPreferenceStartScreen "+preferenceScreen.getKey());
         return false;
     }
     public static SharedPreferences getVRSharedPreferences(final Context context){
-        return context.getSharedPreferences("pref_vr_rendering",MODE_PRIVATE);
+        return context.getSharedPreferences(PREFERENCES_NAME,MODE_PRIVATE);
     }
     public static float getScreenBrightnessInRangeZeroTo1(final Context context){
         // normalize the value
         return getVRSharedPreferences(context).getFloat(context.getString(R.string.VR_SCREEN_BRIGHTNESS_PERCENTAGE),80)/100.0f;
     }
     public static int getVR_RENDERING_MODE(final Context context){
-        return getVRSharedPreferences(context).getInt("VR_RENDERING_MODE",0);
+        return getVRSharedPreferences(context).getInt(context.getString(R.string.VR_RENDERING_MODE),0);
+    }
+
+    //@SuppressLint("ApplySharedPref")
+    public static void initializePreferences(final Context context,final boolean readAgain){
+        //PreferenceManager.setDefaultValues(context,PREFERENCES_NAME,MODE_PRIVATE, R.xml.pref_vr_rendering,readAgain);
     }
 }

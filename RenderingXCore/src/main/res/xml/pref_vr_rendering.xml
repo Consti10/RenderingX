@@ -86,8 +86,8 @@
             />
 
         <com.mapzen.prefsplusx.IntListPreference
-            android:title="VR_RENDERING_MODE"
-            android:key="VR_RENDERING_MODE"
+            android:title="@string/VR_RENDERING_MODE"
+            android:key="@string/VR_RENDERING_MODE"
             android:summary="Select a specialized VR rendering method"
             android:entries="@array/entriesVR_RENDERING_MODE"
             android:defaultValue="0"/>
