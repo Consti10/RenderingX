@@ -24,7 +24,7 @@
             android:title="@string/VR_DISTORTION_CORRECTION_MODE"
             android:dialogTitle="enables/disables distortion correction."
             android:entries="@array/entriesDistortionCorrection"
-            android:defaultValue="1" />
+            android:defaultValue="0" />
 
         <SwitchPreference
             android:key="@string/VR_ENABLE_DEBUG"
