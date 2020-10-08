@@ -7,6 +7,7 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
+import androidx.preference.PreferenceManager;
 import android.content.SharedPreferences;
 import constantin.renderingx.core.R;
 
@@ -57,6 +58,6 @@ public class ASettingsVR extends AppCompatActivity implements PreferenceFragment
 
     //@SuppressLint("ApplySharedPref")
     public static void initializePreferences(final Context context,final boolean readAgain){
-        //PreferenceManager.setDefaultValues(context,PREFERENCES_NAME,MODE_PRIVATE, R.xml.pref_vr_rendering,readAgain);
+        PreferenceManager.setDefaultValues(context,PREFERENCES_NAME,MODE_PRIVATE, R.xml.pref_vr_rendering,readAgain);
     }
 }
