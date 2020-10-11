@@ -17,7 +17,7 @@ set(RX_CORE_EXTERNAL_LIBS ${CMAKE_CURRENT_LIST_DIR}/libs)
 # gvr is a shared,imported library
 set(GVR_DIR ${RX_CORE_EXTERNAL_LIBS}/google/gvr)
 include_directories(${GVR_DIR}/headers)
-add_library( gvr-lib SHARED IMPORTED )
+add_library(gvr-lib SHARED IMPORTED )
 set_target_properties(gvr-lib PROPERTIES IMPORTED_LOCATION
         ${GVR_DIR}/jni/${ANDROID_ABI}/libgvr.so )
 # glm is header-only
@@ -51,9 +51,9 @@ include_directories(${RX_CORE_CPP}/GeometryBuilder/Sphere)
 include_directories(${RX_CORE_CPP}/GLHelper)
 include_directories(${RX_CORE_CPP}/GLPrograms)
 
-set(DIR_VideoTelemetryShared ${CMAKE_CURRENT_LIST_DIR}/../../LiveVideo10ms/Shared/src/main/cpp)
+set(DIR_Shared ${CMAKE_CURRENT_LIST_DIR}/../../LiveVideo10ms/Shared/src/main/cpp)
 
-include_directories(${DIR_VideoTelemetryShared}/NDKHelper)
+include_directories(${DIR_Shared}/NDKHelper)
 
 include_directories(${RX_CORE_CPP}/Other)
 add_library( GLPrograms SHARED
