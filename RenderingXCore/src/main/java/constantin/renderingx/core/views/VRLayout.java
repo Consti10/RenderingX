@@ -115,6 +115,7 @@ public class VRLayout extends FrameLayout implements LifecycleObserver , PopupMe
                gvrApi.recenterTracking();
            }
        });
+
        activity.getLifecycle().addObserver(this);
     }
 

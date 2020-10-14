@@ -1,9 +1,4 @@
 <resources>
-    <string name="RX_VR_PERMISSION_ACTION_MANAGE_WRITE_SETTINGS_DO_NOT_ASK">RX_VR_PERMISSION_ACTION_MANAGE_WRITE_SETTINGS_DO_NOT_ASK</string>
-
-
-    <string name="PerformanceHacksDescription">PLEASE READ CAREFULLY BEFORE CHANGING VALUES !
-    </string>
 
     <string name="VR_RENDERING_MODES_WARNING">
         PLEASE READ CAREFULLY BEFORE CHANGING VALUES
@@ -11,35 +6,14 @@
 
     <string name="VR_RENDERING_MODES_SUMMARY">
         To reduce latency in VR mode you can select one of the rendering modes below.\n
-        Disable60FPSLock: Trick the OS into rendering at >60fps without any screen tearing.\n
-        This works on most pixel devices Running Android 9 and above. If you get >60fps with this mode enabled (for 60hz screens)\n
-        This mode works and I recommend using it. Else, use a different one.\n
+        Disable60FPSLock: Trick the OS into rendering at >60fps without any screen tearing.
+        This works on most pixel devices Running Android 9 and above, but you should manually check your OGL fps in the VR OSD.\n
+        Unlimited: Render as fast as possible without VSYNC enabled. Decreases latency a lot but you might see artifacts.\n
+        SuperSync: Lowest latency without artifacts.Only works on select phones.\n
     </string>
 
-    <string name="Disable60FPSLock_Summary">
-        Trick the OS into rendering at >60fps without any screen tearing.
-        This works on most Pixel devices running Android 9 and above. If you get >60fps with this mode enabled (for 60hz screens)
-        it works and I recommend using it. Else, use a different one.\n
-    </string>
 
-    <string name="DisbaleLowPersistenceModeDescription">Low persistence mode slightly decreases your perceived display response time
-        (and therefore latency) but makes your screen flickery. Disable it here if you dont like it. Only has an effect when SuperSync is enabled.
-    </string>
-
-    <string name="SuperSyncDescription">Advanced VR rendering technique, modified for FPV-VR. Lowest input lag possible (8.3ms), without any visual imperfections
-        like tearing. Has high performance and hardware requirements, that are only fulfilled on high-end phones. I recommend a Daydream-ready device.
-        If you enable this technique on non-daydream ready phones, you might see stuttering and/or tearing.
-    </string>
-    <string name="DisableVSYNCDescription">
-        Disables VSYNC (Vertical Sync). Reduces input lag to ~16.6ms@120fps or less, depending on your hardware (higher fps->less latency).
-        WARNING: Has the negative side effect of Tearing (Visual imperfections) and wasted frames  It is up to you if you can live with tearing for a lower
-        latency, but I definitely recommend enabling this option if available.
-    </string>
-    <string name="Disable60FPSLockDescription">
-        VSYNC on (no tearing), but >60 OpenGL fps (lower latency). Input lag is at ~33.2ms@120fps.
-        WARNING: when your phone has trouble rendering at >60fps, enabling this option can increase latency. Also, disabling VSYNC gives much lower latency.
-    </string>
-    <string name="MSAADescription">
+    <string name="MSAA_LEVELS_DESCRIPTION">
         MSAA increases quality with very little performance loss.
         Which MSAA level to choose depends on your GPU power, screen resolution and magnification of your VR headset.
         Most modern tile-based GPUs can handle up to 4xMSAA with only 10-20perc. performance loss, while increasing quality significantly.

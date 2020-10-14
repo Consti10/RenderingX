@@ -66,24 +66,13 @@
 
     <androidx.preference.PreferenceScreen
         android:title="Reduce latency and more"
-        android:summary="To do"
+        android:summary="Configure rendering mode and MSAA"
         android:key="key3">
-        <Preference
-            android:title="Disable60FPSLock"
-            android:summary="@string/Disable60FPSLock_Summary"
-            android:selectable="false"/>
 
         <Preference
             android:title="@string/VR_RENDERING_MODES_WARNING"
             android:summary="@string/VR_RENDERING_MODES_SUMMARY"
             android:selectable="false"/>
-
-
-
-        <PreferenceCategory
-            android:title="@string/VR_RENDERING_MODES_WARNING"
-            android:summary="@string/VR_RENDERING_MODES_SUMMARY"
-            />
 
         <com.mapzen.prefsplusx.IntListPreference
             android:title="@string/VR_RENDERING_MODE"
@@ -95,7 +84,7 @@
         <constantin.renderingx.core.vrsettings.MSAALevelIntListPreference
             android:title="@string/MultiSampleAntiAliasing"
             android:key="@string/MultiSampleAntiAliasing"
-            android:summary="@string/MSAADescription"
+            android:summary="@string/MSAA_LEVELS_DESCRIPTION"
             android:entries="@array/entriesMSAADefault"
             android:entryValues="@array/valuesMSAADefault"
             android:defaultValue="0"/>
