@@ -17,7 +17,7 @@ import constantin.renderingx.example.mono.AExampleRendering;
 import constantin.renderingx.example.stereo.distortion.AExampleDistortion;
 import constantin.renderingx.example.stereo.video360degree.AExample360Video;
 import constantin.renderingx.example.supersync.AExampleSuperSync;
-import constantin.video.core.RequestPermissionHelper;
+import constantin.helper.RequestPermissionHelper;
 
 public class MainActivity extends AppCompatActivity {
     private Context context;

@@ -4,4 +4,6 @@
         android:title="ChangeHeadset" />
     <item android:id="@+id/other_vr_item"
         android:title="Other VR Settings" />
+    <item android:id="@+id/emulate_trigger_item"
+        android:title="Emulate Trigger" />
 </menu>

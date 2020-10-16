@@ -2,5 +2,7 @@ include ':RenderingXCore'
 include ':RenderingXExample'
 
 //Comment when using artifacts from jitpack
+include ':Shared'
+project(':Shared').projectDir=new File('..\\LiveVideo10ms\\Shared')
 include ':VideoCore'
 project(':VideoCore').projectDir=new File('..\\LiveVideo10ms\\VideoCore')

@@ -55,6 +55,7 @@ public class VRLayout extends FrameLayout implements LifecycleObserver , PopupMe
     private GvrApi gvrApi;
     private DisplaySynchronizer displaySynchronizer;
     private AppCompatActivity activity;
+    IEmulateTrigger mIOnEmulateTrigger=null;
 
     public VRLayout(Context context) {
         super(context);
@@ -134,6 +135,10 @@ public class VRLayout extends FrameLayout implements LifecycleObserver , PopupMe
 
     public void setPresentationView(View presentationView){
         addView(presentationView,0);
+    }
+
+    public void setIOnEmulateTrigger(final IEmulateTrigger iOnEmulateTrigger){
+        mIOnEmulateTrigger=iOnEmulateTrigger;
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -242,6 +247,10 @@ public class VRLayout extends FrameLayout implements LifecycleObserver , PopupMe
             activity.startActivityForResult(settingsI,VrActivity.REQUEST_CODE_NOTIFY_IF_VR_SETTINGS_CHANGED);
             //Toast.makeText(activity,"VR Headset changes require an activity restart",Toast.LENGTH_LONG).show();
             return true;
+        }else if(itemId ==R.id.emulate_trigger_item){
+            if(mIOnEmulateTrigger!=null){
+                mIOnEmulateTrigger.onEmulateTrigger();
+            }
         }
         return false;
     }
@@ -252,5 +261,9 @@ public class VRLayout extends FrameLayout implements LifecycleObserver , PopupMe
             return pm.hasSystemFeature(PackageManager.FEATURE_VR_MODE_HIGH_PERFORMANCE);
         }
         return false;
+    }
+
+    public interface IEmulateTrigger{
+        public void onEmulateTrigger();
     }
 }
