@@ -54,6 +54,7 @@ include_directories(${RX_CORE_CPP}/GLPrograms)
 set(DIR_Shared ${CMAKE_CURRENT_LIST_DIR}/../../LiveVideo10ms/Shared/src/main/cpp)
 
 include_directories(${DIR_Shared}/NDKHelper)
+include_directories(${DIR_Shared}/Helper)
 
 include_directories(${RX_CORE_CPP}/Other)
 add_library( GLPrograms SHARED
