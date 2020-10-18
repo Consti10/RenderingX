@@ -80,4 +80,10 @@ public class FSettingsVR extends PreferenceFragmentCompat implements SharedPrefe
         }
     }
 
+    public static boolean isSuperSyncSupported(final Context context){
+        return (Extensions.available(context, Extensions.EGL_KHR_mutable_render_buffer)
+                && Extensions.available(context,Extensions.EGL_ANDROID_front_buffer_auto_refresh)
+                && Extensions.available(context,Extensions.EGL_KHR_reusable_sync);
+    }
+
 }

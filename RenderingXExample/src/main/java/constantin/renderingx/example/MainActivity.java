@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import constantin.renderingx.core.deviceinfo.AWriteGLESInfo;
 import constantin.renderingx.core.deviceinfo.Extensions;
+import constantin.renderingx.core.vrsettings.FSettingsVR;
 import constantin.renderingx.example.mono.AExampleRendering;
 import constantin.renderingx.example.stereo.distortion.AExampleDistortion;
 import constantin.renderingx.example.stereo.video360degree.AExample360Video;
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean isSuperSyncSupported(){
-        return Extensions.available(context,Extensions.EGL_ANDROID_front_buffer_auto_refresh) && Extensions.available(context,Extensions.EGL_KHR_mutable_render_buffer);
+        return FSettingsVR.isSuperSyncSupported(context);
     }
 
 }
