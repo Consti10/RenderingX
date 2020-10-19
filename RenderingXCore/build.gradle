@@ -25,6 +25,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    buildFeatures {
+        //prefab true
+        viewBinding true
+    }
 }
 
 dependencies {
@@ -43,6 +47,7 @@ dependencies {
     //Do not update the Gvr version, since the native code does not compile with the newer one
     //(This bug won't be fixed by google since they abandoned the lib)
     api "com.google.vr:sdk-base:$mGvrVersion"
+    implementation project(path: ':Shared')
     implementation project(path: ':VideoCore')
     //implementation "com.github.Consti10.LiveVideo10ms:VideoCore:99e86293"
 }

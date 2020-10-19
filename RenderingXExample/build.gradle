@@ -70,11 +70,12 @@ dependencies {
 
     implementation project(path: ':RenderingXCore')
     //
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     androidTestImplementation 'androidx.test:rules:1.3.0'
 
     //Use either the artifacts from jitpack or provide a path directly
+    implementation project(path: ':Shared')
     implementation project(path: ':VideoCore')
     //implementation "com.github.Consti10.LiveVideo10ms:VideoCore:99e86293"
     //test

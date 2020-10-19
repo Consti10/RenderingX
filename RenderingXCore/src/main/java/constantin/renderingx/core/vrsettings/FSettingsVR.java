@@ -55,9 +55,7 @@ public class FSettingsVR extends PreferenceFragmentCompat implements SharedPrefe
         final Context context=requireActivity();
         if(wantedRenderingMode==2 ){
             // Unlimited
-            if(!(Extensions.available(context, Extensions.EGL_KHR_mutable_render_buffer)
-                    && Extensions.available(context,Extensions.EGL_ANDROID_front_buffer_auto_refresh)
-            )){
+            if(!isUnlimitedSupported(context)){
                 String warn="Cannot enable unlimited.";
                 warn+="\n-EGL_KHR_mutable_render_bufferAvailable: "+Extensions.available(context,Extensions.EGL_KHR_mutable_render_buffer);
                 warn+="\n-EGL_ANDROID_front_buffer_auto_refreshAvailable: "+Extensions.available(context,Extensions.EGL_ANDROID_front_buffer_auto_refresh );
@@ -66,10 +64,7 @@ public class FSettingsVR extends PreferenceFragmentCompat implements SharedPrefe
             }
         }
         if(wantedRenderingMode==3){
-            if(!(Extensions.available(context, Extensions.EGL_KHR_mutable_render_buffer)
-                    && Extensions.available(context,Extensions.EGL_ANDROID_front_buffer_auto_refresh)
-                    && Extensions.available(context,Extensions.EGL_KHR_reusable_sync)
-            )){
+            if(!isSuperSyncSupported(context)){
                 String warn="Cannot enable SuperSync.";
                 warn+="\n-EGL_KHR_mutable_render_bufferAvailable: "+Extensions.available(context,Extensions.EGL_KHR_mutable_render_buffer);
                 warn+="\n-EGL_ANDROID_front_buffer_auto_refreshAvailable: "+Extensions.available(context,Extensions.EGL_ANDROID_front_buffer_auto_refresh );
@@ -80,10 +75,15 @@ public class FSettingsVR extends PreferenceFragmentCompat implements SharedPrefe
         }
     }
 
+    public static boolean isUnlimitedSupported(final Context context){
+        return Extensions.available(context, Extensions.EGL_KHR_mutable_render_buffer)
+                && Extensions.available(context,Extensions.EGL_ANDROID_front_buffer_auto_refresh);
+    }
+
     public static boolean isSuperSyncSupported(final Context context){
         return (Extensions.available(context, Extensions.EGL_KHR_mutable_render_buffer)
                 && Extensions.available(context,Extensions.EGL_ANDROID_front_buffer_auto_refresh)
-                && Extensions.available(context,Extensions.EGL_KHR_reusable_sync);
+                && Extensions.available(context,Extensions.EGL_KHR_reusable_sync));
     }
 
 }
