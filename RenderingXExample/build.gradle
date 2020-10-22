@@ -58,6 +58,7 @@ dependencies {
     //implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "androidx.appcompat:appcompat:$rootProject.appcompatVersion"
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintlayoutVersion"
+    implementation "androidx.preference:preference:$rootProject.androidxpreferenceVersion"
     //
     //for touch input (scale/rotate text)
     implementation 'com.dinuscxj:multitouchgesturedetector:1.0.0'
