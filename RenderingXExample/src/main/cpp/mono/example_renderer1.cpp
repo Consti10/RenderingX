@@ -95,8 +95,9 @@ float seekBarValue3=10.0f;
 static void onSurfaceCreated(JNIEnv* env,jobject context){
     TEST_LOGGING_ON_ANDROID::test2();
     Extensions::initializeGL();
-    HelperKhrDebug::enable();
-
+    if(Extensions::KHR_debug){
+        HelperKhrDebug::enable();
+    }
     //Instantiate all our OpenGL rendering 'Programs'
     glProgramVC=new GLProgramVC();
     glProgramLine=new GLProgramLine();
