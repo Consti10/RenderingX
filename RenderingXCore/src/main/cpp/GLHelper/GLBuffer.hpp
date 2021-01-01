@@ -36,6 +36,18 @@ namespace GLBufferHelper {
         uploadGLBuffer(buff, (void *)data.data(), S * sizeof(T));
         return S;
     }
+    /*template<class T>
+    static std::size_t uploadGLBuffer(const GLuint buff, const std::vector<T> &data,GLenum usage=GL_STATIC_DRAW) {
+        const auto size = data.size();
+        uploadGLBuffer(buff, (void *) data.data(), size * sizeof(T));
+        return size;
+    }
+    template<class T>
+    static std::size_t uploadGLBuffer(const GLuint buff, const T::iterator &data,GLenum usage=GL_STATIC_DRAW) {
+        const auto size = data.size();
+        uploadGLBuffer(buff, (void *) data.data(), size * sizeof(T));
+        return size;
+    }*/
 };
 
 // Wrapper around an OpenGL buffer ID

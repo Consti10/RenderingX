@@ -14,7 +14,7 @@
 //Create vertex/index buffers for drawing colored geometry
 namespace ColoredGeometry {
     //Needs at least space for 2 more vertices at array*
-    static const void makeColoredLine(ColoredVertex* array, const glm::vec3& point1, const glm::vec3& point2,
+    static const void makeColoredLine(ColoredVertex array[], const glm::vec3& point1, const glm::vec3& point2,
                                       const TrueColor color1, const TrueColor color2){
         auto& p0=array[0];
         auto& p1=array[1];
@@ -27,6 +27,18 @@ namespace ColoredGeometry {
         p1.z=point2[2];
         p1.colorRGBA=color2;
     };
+    static const void makeColoredLine(ColoredVertex array[], const glm::vec2& point1, const glm::vec2& point2,
+                                      const TrueColor color1, const TrueColor color2){
+        makeColoredLine(array,glm::vec3(point1,0),glm::vec3(point2,0),color1,color2);
+    };
+    static const void makeColoredLineHorizontal(ColoredVertex array[], const glm::vec2& point1, const float w,const TrueColor color1){
+        makeColoredLine(array,point1,point1+glm::vec2(w,0),color1,color1);
+    }
+    static const void addColoredLineHorizontal(std::vector<ColoredVertex>& buff, const glm::vec2& point1, const float w,const TrueColor color1){
+        buff.resize(buff.size()+2);
+        makeColoredLineHorizontal(&buff[buff.size()-2],point1,w,color1);
+    }
+
     //Needs at least space for 3 more vertices at array*
     static const void makeColoredTriangle(ColoredVertex array[], const glm::vec3& point1, const glm::vec3& point2, const glm::vec3& point3,
                                           const TrueColor color1, const TrueColor color2, const TrueColor color3) {
@@ -46,6 +58,19 @@ namespace ColoredGeometry {
         p2.z = point3[2];
         p2.colorRGBA = color3;
     };
+    static const std::vector<ColoredVertex> makeColoredRectangle(const glm::vec3& point, const float w, const float h,const TrueColor color){
+        //p4    p1
+        //p3    p2
+        glm::vec3 p1=point+glm::vec3(w,h,0);
+        glm::vec3 p2=point+glm::vec3(w,0,0);
+        glm::vec3 p3=point+glm::vec3(0,0,0);
+        glm::vec3 p4=point+glm::vec3(0,h,0);
+        std::vector<ColoredVertex> ret(6);
+        makeColoredTriangle(&ret[0],p1,p2,p3,color,color,color);
+        makeColoredTriangle(&ret[3],p1,p3,p4,color,color,color);
+        return ret;
+    }
+
     //Needs at least space for 3 more vertices at array*
     static void makeColoredTriangle1(ColoredVertex array[],const glm::vec3& point,const float width,const float height,const TrueColor color) {
         glm::vec3 p1=glm::vec3(point[0],point[1],point[2]);

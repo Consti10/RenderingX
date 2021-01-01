@@ -120,5 +120,22 @@ void GLProgramLine::convertLineToRenderingData(const glm::vec3 &start, const glm
     writeColor(p6,baseColor,outlineColor);
 }
 
+std::vector<GLProgramLine::Vertex>
+GLProgramLine::makeLine(const glm::vec3 &start, const glm::vec3 &end, float lineWidth,
+                        TrueColor baseColor, TrueColor outlineColor) {
+    std::vector<GLProgramLine::Vertex> ret(6);
+    convertLineToRenderingData(start,end,lineWidth,ret.data(),0,baseColor,outlineColor);
+    return ret;
+}
+
+std::vector<GLProgramLine::Vertex>
+GLProgramLine::makeHorizontalLine(const glm::vec2 start, float width, float lineHeight,
+                                  TrueColor baseColor, TrueColor outlineColor) {
+    auto start1=glm::vec3(start,0.0f);
+    start1.y+=lineHeight/2.0f;
+    auto end=start1+glm::vec3(width,0,0);
+    return makeLine(start1,end,lineHeight,baseColor,outlineColor);
+}
+
 
 

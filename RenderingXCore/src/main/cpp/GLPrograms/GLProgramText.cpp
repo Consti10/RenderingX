@@ -171,6 +171,21 @@ int GLProgramText::convertStringToRenderingData(const float X, const float Y, co
     return nChars;
 }
 
+std::vector<GLProgramText::Character>
+GLProgramText::convertStringToRenderingData(float X, float Y, float Z, float charHeight,
+                                            const std::wstring &text, TrueColor color) {
+    std::vector<Character> ret(text.size());
+    convertStringToRenderingData(X,Y,Z,charHeight,text,color,ret.data(),0);
+    return ret;
+}
+
+void GLProgramText::appendString(std::vector<Character>& buff, float X, float Y, float Z,
+                                 float charHeight, const std::wstring &text, TrueColor color) {
+    const auto offset=buff.size();
+    buff.resize(buff.size()+text.length());
+    convertStringToRenderingData(X,Y,Z,charHeight,text,color,buff.data(),offset);
+}
+
 float GLProgramText::getStringLength(const std::wstring s, const float charHeight) {
     const float BOX_SIZE=charHeight*9.0f/8.0f;
     float l=0;
@@ -224,5 +239,4 @@ float GLProgramText::getFontWidthSafe(int idx) {
     }
     return FONTS_WIDTHS_U[idx];
 }
-
 

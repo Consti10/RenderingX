@@ -66,8 +66,18 @@ public:
     void draw(const glm::mat4x4& ProjM, int verticesOffset, int numberIndices) const;
     void afterDraw() const;
 public:
+    // converts the string into a data format that can be read by OpenGL
+    // and writes this content into @param array at position @param arrayOffset
+    // less safe (array has to be pre-allocated elsewhere) but sometimes needed for performance
     static int convertStringToRenderingData(float X, float Y, float Z, float charHeight,
                                             const std::wstring &text, TrueColor color, Character array[], int arrayOffset);
+    // same as above, but return a vector with the OpenGL data (more safe regarding pointers)
+    static std::vector<Character> convertStringToRenderingData(float X, float Y, float Z, float charHeight,
+                                            const std::wstring &text, TrueColor color);
+    // increases the size of buff accordingly and
+    // appends the rendering data at the current position
+    static void appendString(std::vector<Character>& buff,float X, float Y, float Z, float charHeight, const std::wstring &text, TrueColor color);
+    // returns the length in OpenGL coordinates of @param s for @param scale
     static float getStringLength(std::wstring s,float scale);
     static float getFontWidthSafe(int idx);
     static constexpr int ICONS_OFFSET=192;

@@ -13,6 +13,11 @@
 #include <TrueColor.hpp>
 #include <GLBuffer.hpp>
 
+/**
+ * Drawing a line with OpenGL can be more complicated than it seems at first.
+ * Most mobile SOCs don't support a line width bigger than N pixels (where N is most likely 6). Also, these lines are normally not anti-aliased unless MSAA is enabled.
+ * This shader can be used to draw an aliased line between two points with a base and outline color without the need for MSAA on the render surface
+ */
 class GLProgramLine {
 private:
     GLuint mProgram;
@@ -36,8 +41,14 @@ public:
     //convenient method for GLBuffer
     void drawX(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM,const GLBuffer<Vertex>& vb)const;
 public:
+    // creates and writes the data that can be rendered by OpenGL (this OpenGL shader)
     static void convertLineToRenderingData(const glm::vec3& start, const glm::vec3& end, float lineWidth,
                                            Vertex array[], int arrayOffset, TrueColor baseColor=TrueColor2::BLACK, TrueColor outlineColor=TrueColor2::WHITE);
+    // same as above, but returns the data in a std::vector instead of writing into a c-style buffer
+    static std::vector<GLProgramLine::Vertex> makeLine(const glm::vec3& start, const glm::vec3& end, float lineWidth,TrueColor baseColor=TrueColor2::BLACK, TrueColor outlineColor=TrueColor2::WHITE);
+    // create a horizontal line starting at @param start and having a width of @param width and a height of @param lineHeight
+    // the line extrudes half of @param lineHeight up and down from @param start, respectively
+    static std::vector<GLProgramLine::Vertex> makeHorizontalLine(const glm::vec2 start,float width,float lineHeight, TrueColor baseColor=TrueColor2::BLACK, TrueColor outlineColor=TrueColor2::WHITE);
 private:
     static constexpr auto VS=R"(
 uniform mat4 uMVMatrix;
