@@ -13,7 +13,7 @@
 
 //Create vertex/index buffers for drawing colored geometry
 namespace ColoredGeometry {
-    //Needs at least space for 2 more vertices at array*
+    //Needs at least space for 2 more vertices at array[]
     static const void makeColoredLine(ColoredVertex array[], const glm::vec3& point1, const glm::vec3& point2,
                                       const TrueColor color1, const TrueColor color2){
         auto& p0=array[0];
@@ -31,12 +31,19 @@ namespace ColoredGeometry {
                                       const TrueColor color1, const TrueColor color2){
         makeColoredLine(array,glm::vec3(point1,0),glm::vec3(point2,0),color1,color2);
     };
-    static const void makeColoredLineHorizontal(ColoredVertex array[], const glm::vec2& point1, const float w,const TrueColor color1){
-        makeColoredLine(array,point1,point1+glm::vec2(w,0),color1,color1);
-    }
-    static const void addColoredLineHorizontal(std::vector<ColoredVertex>& buff, const glm::vec2& point1, const float w,const TrueColor color1){
+    static const void addColoredLine(std::vector<ColoredVertex>& buff, const glm::vec2& point1, const glm::vec2& point2,
+                                      const TrueColor color1, const TrueColor color2){
         buff.resize(buff.size()+2);
-        makeColoredLineHorizontal(&buff[buff.size()-2],point1,w,color1);
+        makeColoredLine(&buff[buff.size()-2],point1,point2,color1,color2);
+    };
+
+    static const void addColoredLineHorizontal(std::vector<ColoredVertex>& buff, const glm::vec2& point1, const float w,const TrueColor color1){
+        auto point2=point1+glm::vec2(w,0);
+        addColoredLine(buff,point1,point2,color1,color1);
+    }
+    static const void addColoredLineVertical(std::vector<ColoredVertex>& buff, const glm::vec2& point1, const float h,const TrueColor color1){
+        auto point2=point1+glm::vec2(0,h);
+        addColoredLine(buff,point1,point2,color1,color1);
     }
 
     //Needs at least space for 3 more vertices at array*

@@ -52,7 +52,7 @@ namespace GLHelper{
         }
     }
     // Additional flags: for example "#define ENABLE_SOMETHING\n"
-    // Do not forget the new line
+    // Do not forget the new line at the end of @param additionalFlags
     static const GLuint loadShader(GLenum type,const std::string& shaderCode,const std::string& additionalFlags){
         GLuint shader = glCreateShader(type);
         // add the source code to the shader and compile it
