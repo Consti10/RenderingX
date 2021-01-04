@@ -124,8 +124,3 @@ void GLProgramTexture::drawXStereoVertex(GLuint texture,const glm::mat4x4& ViewM
     }
     afterDraw();
 }
-
-template<typename T>
-void LULA<T>::lutsch() {
-
-}
