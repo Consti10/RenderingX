@@ -45,6 +45,7 @@ void GLProgramLine::setOtherUniforms(float outlineWidth,float edge, float border
 
 void GLProgramLine::draw(const glm::mat4x4 &ViewM, const glm::mat4x4 &ProjM, int verticesOffset,
                          int numberVertices) const {
+    //const auto mvp=ViewM*ProjM;
     glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
     glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
     glDrawArrays(GL_TRIANGLES, verticesOffset, numberVertices);

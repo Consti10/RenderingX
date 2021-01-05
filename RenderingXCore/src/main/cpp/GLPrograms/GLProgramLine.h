@@ -62,9 +62,15 @@ varying vec3 vNormal;
 varying vec4 vBaseColor;
 varying vec4 vOutlineColor;
 vec4 extruded_pos;
+vec4 delta;
+vec4 pos;
 void main(){
+//delta = vec4(aNormal.xy * aLineWidth, 0.0, 0.0);
+//pos = uMVMatrix * vec4(aPosition.xy, 0.0, 1.0);
+//gl_Position = uPMatrix * (pos + delta);
 extruded_pos=aPosition+vec4(aNormal*aLineWidth,0.0);
 gl_Position = (uPMatrix*uMVMatrix)* extruded_pos;
+
 vNormal=aNormal;
 vBaseColor=aBaseColor;
 vOutlineColor=aOutlineColor;

@@ -63,7 +63,7 @@ public:
     //Outline with: 0==no outline, 0.2==default outline size
     void updateOutline(const glm::vec3 &outlineColor=glm::vec3(1,1,1), float outlineStrength=0.2f)const;
     void setOtherUniforms(float edge=0.1f,float borderEdge=0.1f)const;
-    void draw(const glm::mat4x4& ProjM, int verticesOffset, int numberIndices) const;
+    void draw(const glm::mat4x4& MVPMatrix, int verticesOffset, int numberIndices) const;
     void afterDraw() const;
 public:
     // converts the string into a data format that can be read by OpenGL

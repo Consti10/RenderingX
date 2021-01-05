@@ -88,11 +88,11 @@ void GLProgramText::updateOutline(const glm::vec3 &outlineColor, const float out
     glUniform1f(mOutlineStrengthHandle,outlineStrength);
 }
 
-void GLProgramText::draw(const glm::mat4x4& ProjM, const int verticesOffset, const int numberIndices) const {
+void GLProgramText::draw(const glm::mat4x4& MVPMatrix, const int verticesOffset, const int numberIndices) const {
     if(verticesOffset+numberIndices>INDEX_BUFFER_SIZE){
         MLOGE<<"n vert:"<<numberIndices<<" n Indices:"<<verticesOffset;
     }
-    glUniformMatrix4fv(uProjectionMatrix, 1, GL_FALSE, glm::value_ptr(ProjM));
+    glUniformMatrix4fv(uProjectionMatrix, 1, GL_FALSE, glm::value_ptr(MVPMatrix));
 #ifdef WIREFRAME
     glUniform1f(mOverrideColorHandle,1.0f);
     glLineWidth(1);

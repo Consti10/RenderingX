@@ -115,7 +115,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     mMeshColoredGeometry.setData(ColoredGeometry::makeTessellatedColoredRect(12, glm::vec3(0, 0, 0), {5.0, 5.0}, TrueColor2::RED));
     //some smooth lines
     //create 5 lines of increasing stroke width
-    std::vector<GLProgramLine::Vertex> lines(N_LINES*GLProgramLine::VERTICES_PER_LINE);
+    /*std::vector<GLProgramLine::Vertex> lines(N_LINES*GLProgramLine::VERTICES_PER_LINE);
     const float lineLength=4;
     float yOffset=TEXT_Y_OFFSET;
     for(int i=0;i<N_LINES;i++){
@@ -125,8 +125,17 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
         yOffset+=strokeWidth*3;
         GLProgramLine::convertLineToRenderingData({-lineLength/2,yOffset,0},{lineLength/2,yOffset,0},strokeWidth,lines.data(),i*GLProgramLine::VERTICES_PER_LINE,
                 baseColor,outlineColor);
+    }*/
+    std::vector<GLProgramLine::Vertex> lines;
+    const float lineLength=4;
+    float yOffset=TEXT_Y_OFFSET;
+    for(int i=0;i<10;i++){
+        auto tmp=GLProgramLine::makeHorizontalLine({-lineLength/2.0f,yOffset},lineLength,1.0f,TrueColor2::WHITE,TrueColor2::BLUE);
+        lines.insert(lines.end(),tmp.begin(),tmp.end());
+        yOffset+=1.0f;
     }
     glBufferLine.uploadGL(lines);
+
     //some smooth characters
     std::vector<GLProgramText::Character> charactersAsVertices(EXAMPLE_TEXT_LENGTH*EXAMPLE_TEXT_N_LINES);
     yOffset=TEXT_Y_OFFSET;
