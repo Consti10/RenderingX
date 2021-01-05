@@ -26,9 +26,9 @@ void GLProgramLine::beforeDraw(GLuint buffer) const {
     glUseProgram(mProgram);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glEnableVertexAttribArray(mPositionHandle);
-    glVertexAttribPointer(mPositionHandle, 3, GL_FLOAT, GL_FALSE,sizeof(Vertex), nullptr);
+    glVertexAttribPointer(mPositionHandle, 2, GL_FLOAT, GL_FALSE,sizeof(Vertex), nullptr);
     glEnableVertexAttribArray(mNormalHandle);
-    glVertexAttribPointer(mNormalHandle,3,GL_FLOAT,GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,normalX));
+    glVertexAttribPointer(mNormalHandle,2,GL_FLOAT,GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,normalX));
     glEnableVertexAttribArray(mLineWidthHandle);
     glVertexAttribPointer(mLineWidthHandle,1,GL_FLOAT,GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,lineW));
     glEnableVertexAttribArray(mBaseColorHandle);
@@ -66,33 +66,35 @@ void GLProgramLine::drawX(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM,co
     afterDraw();
 }
 
-static void writePos(GLProgramLine::Vertex &v,const glm::vec3 &pos){
+static void writePos(GLProgramLine::Vertex &v,const glm::vec2 &pos){
     v.x=pos.x;
     v.y=pos.y;
-    v.z=pos.z;
 }
 static void writeColor(GLProgramLine::Vertex &v, const TrueColor baseColor, const TrueColor outlineColor){
     v.baseColor=baseColor;
     v.outlineColor=outlineColor;
 }
-static void writeNormal(GLProgramLine::Vertex &v,const glm::vec3 &normal,const float lineWidth){
+static void writeNormal(GLProgramLine::Vertex &v,const glm::vec2 &normal,const float lineWidth){
     v.normalX=normal.x;
     v.normalY=normal.y;
-    v.normalZ=normal.z;
     v.lineW=lineWidth;
 }
 
-void GLProgramLine::convertLineToRenderingData(const glm::vec3 &start, const glm::vec3 &end, const float lineWidth,
+void GLProgramLine::convertLineToRenderingData(const glm::vec2 &start, const glm::vec2 &end, const float lineWidth,
                                                GLProgramLine::Vertex *array, int arrayOffset,
                                                const TrueColor baseColor, const TrueColor  outlineColor) {
-    const glm::vec3 dir=glm::normalize(glm::vec3(end-start));
-    const glm::vec3 normal=glm::vec3(dir.y,dir.x,dir.z);
+    //const glm::vec3 start=glm::vec3(start1.x,start1.y,0);
+    //const glm::vec3 end=glm::vec3(end1.x,end1.y,0);
+
+    const glm::vec2 dir=glm::normalize(glm::vec2(end-start));
+    // yes, we have to swap x and y here
+    const glm::vec2 normal=glm::vec2(dir.y,dir.x);
 
     //const float w=1.0f;
     //const glm::vec3 up=glm::vec3(0,w,0);
     //const glm::vec3 down=glm::vec3(0,-w,0);
-    const glm::vec3 up=normal;
-    const glm::vec3 down=-normal;
+    const glm::vec2 up=normal;
+    const glm::vec2 down=-normal;
     GLProgramLine::Vertex& p1=array[arrayOffset];
     GLProgramLine::Vertex& p2=array[arrayOffset+1];
     GLProgramLine::Vertex& p3=array[arrayOffset+2];
@@ -122,7 +124,7 @@ void GLProgramLine::convertLineToRenderingData(const glm::vec3 &start, const glm
 }
 
 std::vector<GLProgramLine::Vertex>
-GLProgramLine::makeLine(const glm::vec3 &start, const glm::vec3 &end, float lineWidth,
+GLProgramLine::makeLine(const glm::vec2 &start, const glm::vec2 &end, float lineWidth,
                         TrueColor baseColor, TrueColor outlineColor) {
     std::vector<GLProgramLine::Vertex> ret(6);
     convertLineToRenderingData(start,end,lineWidth,ret.data(),0,baseColor,outlineColor);
@@ -132,9 +134,9 @@ GLProgramLine::makeLine(const glm::vec3 &start, const glm::vec3 &end, float line
 std::vector<GLProgramLine::Vertex>
 GLProgramLine::makeHorizontalLine(const glm::vec2 start, float width, float lineHeight,
                                   TrueColor baseColor, TrueColor outlineColor) {
-    auto start1=glm::vec3(start,0.0f);
+    auto start1=glm::vec2(start);
     start1.y+=lineHeight/2.0f;
-    auto end=start1+glm::vec3(width,0,0);
+    auto end=start1+glm::vec2(width,0);
     return makeLine(start1,end,lineHeight,baseColor,outlineColor);
 }
 

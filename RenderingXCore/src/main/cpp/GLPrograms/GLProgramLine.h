@@ -26,8 +26,8 @@ private:
     GLuint uEdge,uBorderEdge,uOutlineStrength;
 public:
     struct Vertex{
-        float x,y,z;
-        float normalX,normalY,normalZ;
+        float x,y;
+        float normalX,normalY;
         float lineW;
         TrueColor baseColor;
         TrueColor outlineColor;
@@ -42,10 +42,11 @@ public:
     void drawX(const glm::mat4x4& ViewM, const  glm::mat4x4& ProjM,const GLBuffer<Vertex>& vb)const;
 public:
     // creates and writes the data that can be rendered by OpenGL (this OpenGL shader)
-    static void convertLineToRenderingData(const glm::vec3& start, const glm::vec3& end, float lineWidth,
+    static void convertLineToRenderingData(const glm::vec2& start, const glm::vec2& end, float lineWidth,
                                            Vertex array[], int arrayOffset, TrueColor baseColor=TrueColor2::BLACK, TrueColor outlineColor=TrueColor2::WHITE);
+public:
     // same as above, but returns the data in a std::vector instead of writing into a c-style buffer
-    static std::vector<GLProgramLine::Vertex> makeLine(const glm::vec3& start, const glm::vec3& end, float lineWidth,TrueColor baseColor=TrueColor2::BLACK, TrueColor outlineColor=TrueColor2::WHITE);
+    static std::vector<GLProgramLine::Vertex> makeLine(const glm::vec2& start, const glm::vec2& end, float lineWidth,TrueColor baseColor=TrueColor2::BLACK, TrueColor outlineColor=TrueColor2::WHITE);
     // create a horizontal line starting at @param start and having a width of @param width and a height of @param lineHeight
     // the line extrudes half of @param lineHeight up and down from @param start, respectively
     static std::vector<GLProgramLine::Vertex> makeHorizontalLine(const glm::vec2 start,float width,float lineHeight, TrueColor baseColor=TrueColor2::BLACK, TrueColor outlineColor=TrueColor2::WHITE);
@@ -53,23 +54,23 @@ private:
     static constexpr auto VS=R"(
 uniform mat4 uMVMatrix;
 uniform mat4 uPMatrix;
-attribute vec4 aPosition;
-attribute vec3 aNormal;
+attribute vec2 aPosition;
+attribute vec2 aNormal;
 attribute float aLineWidth;
 attribute vec4 aBaseColor;
 attribute vec4 aOutlineColor;
-varying vec3 vNormal;
+varying vec2 vNormal;
 varying vec4 vBaseColor;
 varying vec4 vOutlineColor;
-vec4 extruded_pos;
+vec2 extruded_pos;
 vec4 delta;
 vec4 pos;
 void main(){
 //delta = vec4(aNormal.xy * aLineWidth, 0.0, 0.0);
 //pos = uMVMatrix * vec4(aPosition.xy, 0.0, 1.0);
 //gl_Position = uPMatrix * (pos + delta);
-extruded_pos=aPosition+vec4(aNormal*aLineWidth,0.0);
-gl_Position = (uPMatrix*uMVMatrix)* extruded_pos;
+extruded_pos=aPosition+(aNormal*aLineWidth);
+gl_Position = (uPMatrix*uMVMatrix)* vec4(extruded_pos.xy,0.0,1.0);
 
 vNormal=aNormal;
 vBaseColor=aBaseColor;
@@ -78,7 +79,7 @@ vOutlineColor=aOutlineColor;
 )";
     static constexpr auto FS=R"(
 precision mediump float;
-varying vec3 vNormal;
+varying vec2 vNormal;
 varying vec4 vBaseColor;
 varying vec4 vOutlineColor;
 

@@ -106,6 +106,11 @@ namespace HelperKhrDebug{
         }
         Extensions::glDebugMessageCallbackKHR(on_gl_error, NULL);
     }
+    static void enableIfPossible(){
+        if(Extensions::KHR_debug){
+            enable();
+        }
+    }
 }
 
 class FenceSync{
