@@ -26,7 +26,7 @@ private:
     GLuint uEdge,uBorderEdge,uOutlineStrength;
 public:
     struct Vertex{
-        float x,y;
+        float x,y;//z is always 0
         float normalX,normalY;
         float lineW;
         TrueColor baseColor;

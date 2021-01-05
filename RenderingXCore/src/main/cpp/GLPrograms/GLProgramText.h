@@ -42,7 +42,7 @@ private:
     static constexpr int INDEX_BUFFER_SIZE=65535; //max size of GL unsigned short
     GLuint mGLIndicesB;
     struct Vertex{
-        float x,y;
+        float x,y;//z is always 0
         float u,v;
         TrueColor color;
     };
