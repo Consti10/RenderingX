@@ -133,7 +133,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     float textHeight=0.5f;
     for(int i=0;i<EXAMPLE_TEXT_N_LINES;i++){
         float textLength=GLProgramText::getStringLength({EXAMPLE_TEXT},textHeight);
-        GLProgramText::convertStringToRenderingData(-textLength/2.0f, yOffset, 0, textHeight, {EXAMPLE_TEXT}, TrueColor2::YELLOW, charactersAsVertices.data(), i * EXAMPLE_TEXT_LENGTH);
+        GLProgramText::convertStringToRenderingData(-textLength/2.0f, yOffset, textHeight, {EXAMPLE_TEXT}, TrueColor2::YELLOW, charactersAsVertices.data(), i * EXAMPLE_TEXT_LENGTH);
         yOffset+=textHeight;
         textHeight+=0.3;
     }
@@ -143,7 +143,7 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     yOffset=TEXT_Y_OFFSET;
     for(int i=0;i<N_ICONS;i++){
         const float textHeight=0.8F;
-        GLProgramText::convertStringToRenderingData(0, yOffset, 0, textHeight, {(wchar_t)GLProgramText::ICONS_OFFSET+i},
+        GLProgramText::convertStringToRenderingData(0, yOffset, textHeight, {(wchar_t)GLProgramText::ICONS_OFFSET+i},
                                                     TrueColor2::YELLOW, iconsAsVertices.data(), i);
         yOffset+=textHeight;
     }

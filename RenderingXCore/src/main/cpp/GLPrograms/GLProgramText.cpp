@@ -67,10 +67,13 @@ void GLProgramText::beforeDraw(const GLuint buffer) const{
     glUniform1i(mSamplerHandle,MY_SAMPLER_UNIT);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glEnableVertexAttribArray(mPositionHandle);
-    glVertexAttribPointer(mPositionHandle, 3/*3vertices*/, GL_FLOAT, GL_FALSE, sizeof(Vertex),nullptr);
+    // 2 vertices (x and y)
+    glVertexAttribPointer(mPositionHandle, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),nullptr);
     glEnableVertexAttribArray(mTextureHandle);
+    // 2 u,v values
     glVertexAttribPointer(mTextureHandle, 2/*uv*/,GL_FLOAT, GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,u));
     glEnableVertexAttribArray(mColorHandle);
+    // 4 rgba values (each of them 1 byte wide)
     glVertexAttribPointer(mColorHandle,4/*r,g,b,a*/,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,color));
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndicesB);
 }
@@ -109,7 +112,7 @@ void GLProgramText::afterDraw() const {
     //distortionManager.afterDraw();
 }
 
-int GLProgramText::convertStringToRenderingData(const float X, const float Y, const float Z, const float charHeight,
+int GLProgramText::convertStringToRenderingData(const float X, const float Y, const float charHeight,
                                                 const std::wstring &text, const TrueColor color, Character *array,
                                                 const int arrayOffset) {
 
@@ -118,7 +121,7 @@ int GLProgramText::convertStringToRenderingData(const float X, const float Y, co
 
     float x=X - PADDING_X_Y;
     const float y=Y - PADDING_X_Y;
-    const float z=Z;
+    //const float z=Z;
 
     int nChars=0;
     for (const auto character1 : text) {
@@ -139,28 +142,28 @@ int GLProgramText::convertStringToRenderingData(const float X, const float Y, co
         //0
         character->upperLeft.x = x;
         character->upperLeft.y = y + BOX_SIZE;
-        character->upperLeft.z = z;
+        //character->upperLeft.z = z;
         character->upperLeft.u = u;
         character->upperLeft.v = v;
         character->upperLeft.color = color;
         //1
         character->lowerLeft.x = x;
         character->lowerLeft.y = y;
-        character->lowerLeft.z = z;
+        //character->lowerLeft.z = z;
         character->lowerLeft.u = u;
         character->lowerLeft.v = v2;
         character->lowerLeft.color = color;
         //2
         character->lowerRight.x = x + BOX_SIZE;
         character->lowerRight.y = y;
-        character->lowerRight.z = z;
+        //character->lowerRight.z = z;
         character->lowerRight.u = u2;
         character->lowerRight.v = v2;
         character->lowerRight.color = color;
         //3
         character->upperRight.x = x + BOX_SIZE;
         character->upperRight.y  = y + BOX_SIZE;
-        character->upperRight.z  = z;
+        //character->upperRight.z  = z;
         character->upperRight.u  = u2;
         character->upperRight.v  = v;
         character->upperRight.color  = color;
@@ -172,18 +175,18 @@ int GLProgramText::convertStringToRenderingData(const float X, const float Y, co
 }
 
 std::vector<GLProgramText::Character>
-GLProgramText::convertStringToRenderingData(float X, float Y, float Z, float charHeight,
+GLProgramText::convertStringToRenderingData(float X, float Y,float charHeight,
                                             const std::wstring &text, TrueColor color) {
     std::vector<Character> ret(text.size());
-    convertStringToRenderingData(X,Y,Z,charHeight,text,color,ret.data(),0);
+    convertStringToRenderingData(X,Y,charHeight,text,color,ret.data(),0);
     return ret;
 }
 
-void GLProgramText::appendString(std::vector<Character>& buff, float X, float Y, float Z,
+void GLProgramText::appendString(std::vector<Character>& buff, float X, float Y,
                                  float charHeight, const std::wstring &text, TrueColor color) {
     const auto offset=buff.size();
     buff.resize(buff.size()+text.length());
-    convertStringToRenderingData(X,Y,Z,charHeight,text,color,buff.data(),offset);
+    convertStringToRenderingData(X,Y,charHeight,text,color,buff.data(),offset);
 }
 
 float GLProgramText::getStringLength(const std::wstring s, const float charHeight) {
