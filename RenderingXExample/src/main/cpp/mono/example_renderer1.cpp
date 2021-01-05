@@ -130,9 +130,9 @@ static void onSurfaceCreated(JNIEnv* env,jobject context){
     const float lineLength=4;
     float yOffset=TEXT_Y_OFFSET;
     for(int i=0;i<10;i++){
-        auto tmp=GLProgramLine::makeHorizontalLine({-lineLength/2.0f,yOffset},lineLength,1.0f,TrueColor2::WHITE,TrueColor2::BLUE);
+        auto tmp=GLProgramLine::makeHorizontalLine({-lineLength/2.0f,yOffset},lineLength,0.5f,TrueColor2::WHITE,TrueColor2::BLUE);
         lines.insert(lines.end(),tmp.begin(),tmp.end());
-        yOffset+=1.0f;
+        yOffset+=1.5f;
     }
     glBufferLine.uploadGL(lines);
 
