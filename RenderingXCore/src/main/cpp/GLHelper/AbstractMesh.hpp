@@ -56,7 +56,7 @@ public:
 
 // An abstract GL Mesh buffer is a wrapper around
 // One GL Vertex buffer and an optional GL Index buffer
-// NOTE: Copy constructor and more have been deleted by purpose - use AbstractMeshData if you want to modify the mesh data
+// NOTE: Copy constructor and move assignment have been deleted by purpose - use AbstractMeshData if you want to modify the mesh data
 template<typename VERTEX,typename INDEX>
 class AbstractGLMeshBuffer{
 private:

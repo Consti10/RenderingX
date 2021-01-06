@@ -36,6 +36,9 @@ protected:
     AGLProgramVC(const bool DO_MVP_MULTIPLICATION);
 public:
     void beforeDraw(GLuint buffer) const;
+    void beforeDraw(GLBuffer<ColoredVertex>& buffer)const{
+        beforeDraw(buffer.getGLBufferId());
+    }
     void afterDraw() const;
 private:
     static constexpr auto VS=R"(

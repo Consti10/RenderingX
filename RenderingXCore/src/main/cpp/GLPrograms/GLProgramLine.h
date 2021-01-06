@@ -35,6 +35,9 @@ public:
     static constexpr int VERTICES_PER_LINE=6;
     explicit GLProgramLine();
     void beforeDraw(GLuint buffer) const;
+    void beforeDraw(GLBuffer<Vertex>& buffer)const{
+        beforeDraw(buffer.getGLBufferId());
+    }
     void setOtherUniforms(float outlineWidth=0.4f,float edge=0.1f,float borderEdge=0.1f)const;
     void draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices) const;
     void afterDraw() const;

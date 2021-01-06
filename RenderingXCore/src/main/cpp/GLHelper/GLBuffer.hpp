@@ -83,7 +83,7 @@ private:
     // but might be an accident. Log debug message in this case;
     void checkSetAlreadyUploaded(){
         if(alreadyUploaded){
-            MLOGD2(getTAG())<<"uploadGL called twice";
+            MLOGD2(getTAG())<<"uploadGL called more than once";
         }
         alreadyUploaded=true;
     }
@@ -93,10 +93,10 @@ public:
         return "GLBuffer"+std::to_string(glBufferId);
     }
     // Calling uploadGL multiple times overrides any previous content
-    void uploadGL(const std::vector<T> &vertices){
+    void uploadGL(const std::vector<T> &vertices,GLenum usage=GL_STATIC_DRAW){
         createGLBufferIfNeeded();
         checkSetAlreadyUploaded();
-        count = GLBufferHelper::uploadGLBuffer(glBufferId, vertices);
+        count = GLBufferHelper::uploadGLBuffer(glBufferId, vertices,usage);
         GLHelper::checkGlError(getTAG()+"uploadGL");
         //MDebug::log("N vertices is "+std::to_string(nVertices));
     }

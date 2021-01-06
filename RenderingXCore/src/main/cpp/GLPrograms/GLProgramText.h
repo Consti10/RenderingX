@@ -25,6 +25,7 @@
 #include <string>
 #include "TextAssetsHelper.hpp"
 #include <TrueColor.hpp>
+#include "../GLHelper/GLBuffer.hpp"
 
 class GLProgramText {
 private:
@@ -60,6 +61,9 @@ public:
     explicit GLProgramText();
     void loadTextRenderingData(JNIEnv *env, jobject androidContext,const TextAssetsHelper::TEXT_STYLE& textStyle)const;
     void beforeDraw(GLuint buffer) const;
+    void beforeDraw(GLBuffer<Character>& buffer)const{
+        beforeDraw(buffer.getGLBufferId());
+    }
     //Outline with: 0==no outline, 0.2==default outline size
     void updateOutline(const glm::vec3 &outlineColor=glm::vec3(1,1,1), float outlineStrength=0.2f)const;
     void setOtherUniforms(float edge=0.1f,float borderEdge=0.1f)const;

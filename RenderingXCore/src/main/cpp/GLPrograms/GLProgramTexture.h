@@ -47,6 +47,9 @@ public:
      * Call beforeDraw(), draw() or drawIndexed() and afterDraw() to render a textured mesh
      */
     void beforeDraw(GLuint buffer,GLuint texture) const;
+    void beforeDraw(GLBuffer<Vertex>& buffer,GLuint texture)const{
+        beforeDraw(buffer.getGLBufferId(),texture);
+    }
     void draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLenum mode=GL_TRIANGLES) const;
     void drawIndexed(GLuint indexBuffer,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int indicesOffset, int numberIndices,GLenum mode) const;
     void afterDraw() const;
