@@ -12,7 +12,7 @@
 
 // A mesh always has vertices, optionally also has indices.
 // Mode is one of  GL_TRIANGLES, GL_TRIANGLE_STRIP ...
-// Use AbstractMeshData to create an AbstractGLMesh (which should be renderable via OpenGL)
+// Use AbstractMeshData to create an AGLMeshBuffer (which should be renderable via OpenGL)
 template<class VERTEX,class INDEX>
 class AMeshData{
     using VERTICES=std::vector<VERTEX>;
