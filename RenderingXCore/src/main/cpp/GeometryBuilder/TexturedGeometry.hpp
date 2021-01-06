@@ -13,7 +13,7 @@
 #include <optional>
 
 #include <utility>
-#include <AbstractMesh.hpp>
+#include <GLMeshBuffer.hpp>
 
 //Create vertex/index buffers for drawing textured geometry
 namespace TexturedGeometry {

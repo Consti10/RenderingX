@@ -2,8 +2,8 @@
 // Created by geier on 26/06/2020.
 //
 
-#ifndef FPV_VR_OS_ABSTRACTMESH_HPP
-#define FPV_VR_OS_ABSTRACTMESH_HPP
+#ifndef FPV_VR_OS_GLMESHBUFFER_HPP
+#define FPV_VR_OS_GLMESHBUFFER_HPP
 
 #include <optional>
 #include <GLBuffer.hpp>
@@ -111,4 +111,4 @@ public:
     }
 };
 
-#endif //FPV_VR_OS_ABSTRACTMESH_HPP
+#endif //FPV_VR_OS_GLMESHBUFFER_HPP

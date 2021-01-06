@@ -13,7 +13,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <TrueColor.hpp>
-#include <AbstractMesh.hpp>
+#include <GLMeshBuffer.hpp>
 
 struct ColoredVertex{
     float x,y,z;

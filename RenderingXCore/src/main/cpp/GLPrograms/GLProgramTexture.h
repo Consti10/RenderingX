@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <VDDC.hpp>
-#include <AbstractMesh.hpp>
+#include <GLMeshBuffer.hpp>
 
 /*******************************************************************
  * Abstraction for rendering textured vertices. Optionally samples from 'external texture' aka video texture.
