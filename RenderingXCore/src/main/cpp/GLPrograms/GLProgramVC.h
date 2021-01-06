@@ -20,8 +20,8 @@ struct ColoredVertex{
     TrueColor colorRGBA;
 };
 using COLORED_INDEX_DATA=GLuint;
-using ColoredMeshData=AbstractMeshData<ColoredVertex,COLORED_INDEX_DATA>;
-using ColoredGLMeshBuffer=AbstractGLMeshBuffer<ColoredVertex,COLORED_INDEX_DATA>;
+using ColoredMeshData=AMeshData<ColoredVertex,COLORED_INDEX_DATA>;
+using ColoredGLMeshBuffer=AGLMeshBuffer<ColoredVertex,COLORED_INDEX_DATA>;
 
 // Abstract class that loads the apropriate vertex and fragment shader for rendering colored geometry
 // See the 2 implementat

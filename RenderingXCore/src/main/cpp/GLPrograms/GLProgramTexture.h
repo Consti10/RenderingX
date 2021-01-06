@@ -33,8 +33,8 @@ public:
         float u,v;
     };
     using INDEX_DATA=GLuint;
-    using TexturedMeshData=AbstractMeshData<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
-    using TexturedGLMeshBuffer=AbstractGLMeshBuffer<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
+    using TexturedMeshData=AMeshData<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
+    using TexturedGLMeshBuffer=AGLMeshBuffer<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
     /**
      * Construct a GLProgramTexture which is a c++ representation of an OpenGL shader that renders textured vertices
      * @param USE_EXTERNAL_TEXTURE Sample from *External texture* ( aka SurfaceTexture, VideoTexture) or not
@@ -68,8 +68,8 @@ public:
         float u_left,v_left;
         float u_right,v_right;
     };
-    using TexturedStereoMeshData=AbstractMeshData<GLProgramTexture::StereoVertex,GLProgramTexture::INDEX_DATA>;
-    using TexturedStereoGLMeshBuffer=AbstractGLMeshBuffer<GLProgramTexture::StereoVertex,GLProgramTexture::INDEX_DATA>;
+    using TexturedStereoMeshData=AMeshData<GLProgramTexture::StereoVertex,GLProgramTexture::INDEX_DATA>;
+    using TexturedStereoGLMeshBuffer=AGLMeshBuffer<GLProgramTexture::StereoVertex,GLProgramTexture::INDEX_DATA>;
     void beforeDrawStereoVertex(GLuint buffer,GLuint texture,bool useLeftTextureCoords=false) const;
     void drawXStereoVertex(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const TexturedStereoGLMeshBuffer& mesh,bool useLeftTextureCoords=false)const;
 private:
