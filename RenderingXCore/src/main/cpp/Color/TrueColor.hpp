@@ -7,12 +7,11 @@
 
 
 #include <cstdint>
-#include <glm/vec4.hpp>
-#include <glm/vec3.hpp>
 #include <string>
 #include <sstream>
 #include <cstring>
-
+#include <glm/vec4.hpp>
+#include <glm/vec3.hpp>
 
 // True Color means 8 bit per channel. OpenGL Uses RGBA by default, so I also use that layout for the TrueColor class
 // 8 bits per channel * 4 channels = 32 bit / 4 bytes total
@@ -123,7 +122,7 @@ namespace TrueColorTest{
         TrueColor color2;
     }__attribute__((packed));
     static_assert(sizeof(ExampleVertex)==2*TRUE_COLOR_SIZE_BYTES+2*sizeof(float));
-    static void examle(){
+    static void example(){
         TrueColor c=TrueColor2::BLACK;
         glm::vec4 x=c;
     }
