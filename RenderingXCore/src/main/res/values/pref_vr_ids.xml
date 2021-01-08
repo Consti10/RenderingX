@@ -14,6 +14,8 @@
     <string name="AHTRefreshRateMs">AHTRefreshRateMs</string>
     //for 360° video the user can also differentiate between tracking of the world and the OSD
     <string name="GHT_OSD_FIXED_TO_HEAD">GHT_OSD_FIXED_TO_HEAD</string>
+    <!-- Rotate the whole scene by 180° for users with headsets that "put the phone into the holder the other way around" Note that it is not possible to use inverse landscape with SS enabled-->
+    <string name="VR_INVERT_LEFT_AND_RIGHT">VR_INVERT_LEFT_AND_RIGHT</string>
 
     //Performance "Hacks"
     <string name="SuperSync">SuperSync</string>

@@ -2,6 +2,7 @@ package constantin.renderingx.core.views;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -14,6 +15,7 @@ import constantin.renderingx.core.FullscreenHelper;
 import constantin.renderingx.core.MVrHeadsetParams;
 import constantin.renderingx.core.vrsettings.ASettingsVR;
 
+
 // Specific implementation of AppCompatActivity that handles full screen and key events
 public class VrActivity  extends AppCompatActivity {
     private static final String TAG="VrActivity";
@@ -24,6 +26,13 @@ public class VrActivity  extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(ASettingsVR.getVR_INVERT_LEFT_AND_RIGHT(this)){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+        }else{
+            // Landscape is the default
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+
         // To find out if the model has changed
         currentlySelectedGvrViewerModel= MVrHeadsetParams.getCurrentGvrViewerModel(this);
 

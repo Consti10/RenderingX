@@ -55,6 +55,9 @@ public class ASettingsVR extends AppCompatActivity implements PreferenceFragment
     public static int getVR_RENDERING_MODE(final Context context){
         return getVRSharedPreferences(context).getInt(context.getString(R.string.VR_RENDERING_MODE),0);
     }
+    public static boolean getVR_INVERT_LEFT_AND_RIGHT(final Context context){
+        return getVRSharedPreferences(context).getBoolean(context.getString(R.string.VR_INVERT_LEFT_AND_RIGHT),false);
+    }
 
     //@SuppressLint("ApplySharedPref")
     public static void initializePreferences(final Context context,final boolean readAgain){

@@ -62,6 +62,11 @@
             android:title="@string/GHT_OSD_FIXED_TO_HEAD"
             android:summary="If enabled, the OSD is fixed to the Head position,regardless of the video. Default false."
             android:defaultValue="false"/>
+        <SwitchPreference
+            android:key="@string/VR_INVERT_LEFT_AND_RIGHT"
+            android:title="@string/VR_INVERT_LEFT_AND_RIGHT"
+            android:summary="Enable if you can only place the phone into the VR Headset the other way around (usb on the right side is normal).Note: Supersync doesn't work with this option enabled."
+            android:defaultValue="false"/>
     </androidx.preference.PreferenceScreen>
 
     <androidx.preference.PreferenceScreen

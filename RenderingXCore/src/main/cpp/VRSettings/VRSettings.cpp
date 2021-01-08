@@ -24,7 +24,6 @@ VRSettings::VRSettings(JNIEnv *env, jobject androidContext) {
     GHT_X=settingsN.getBoolean(IDVR::GroundHeadTrackingX);
     GHT_Y=settingsN.getBoolean(IDVR::GroundHeadTrackingY);
     GHT_Z=settingsN.getBoolean(IDVR::GroundHeadTrackingZ);
-
     GHT_OSD_FIXED_TO_HEAD=settingsN.getBoolean(IDVR::GHT_OSD_FIXED_TO_HEAD,false);
 
     VR_RENDERING_MODE=settingsN.getInt(IDVR::VR_RENDERING_MODE,0);

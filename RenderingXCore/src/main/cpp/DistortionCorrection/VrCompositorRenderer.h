@@ -51,6 +51,9 @@ public:
     void updateLatestHeadSpaceFromStartSpaceRotation();
     // returns the latest 'cached' head rotation
     glm::mat4 GetLatestHeadSpaceFromStartSpaceRotation()const;
+    // rotate the whole scene by 180° around the z axis if you are using the phone in reverse landscape
+    // and have head tracking disabled
+    bool REVERSE_LANDSCAPE=false;
 // Head tracking end ---
 // V.D.D.C begin ---
 public:
@@ -156,9 +159,12 @@ public:
         //    MLOGD<<"Merging indices into vertices";
         //    tmp.mergeIndicesIntoVertices();
         //}
-        const int EYE_IDX=eye==GVR_LEFT_EYE ? 0 : 1;
         for(auto& vertex : tmp.vertices){
-            const glm::vec3 pos=glm::vec3(vertex.x,vertex.y,vertex.z);
+            glm::vec3 pos=glm::vec3(vertex.x,vertex.y,vertex.z);
+            if(REVERSE_LANDSCAPE){
+                const glm::mat3 rot=glm::rotate(glm::mat4(1.0f),glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+                pos=rot*pos;
+            }
             const glm::vec3 newPos= UndistortedCoordinatesFor3DPoint(eye, pos);
             vertex.x=newPos.x;
             vertex.y=newPos.y;
