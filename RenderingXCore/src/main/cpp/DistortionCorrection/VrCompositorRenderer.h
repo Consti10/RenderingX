@@ -98,14 +98,14 @@ public:
     // https://developer.oculus.com/documentation/unity/unity-ovroverlay/
     struct VRLayer{
         HEAD_TRACKING headTracking;
+        // By supplying the content provider updating the layer each frame is much easier
+        VrContentProvider contentProvider;
         // If head tracking is disabled for this layer we can pre-calculate the undistorted vertices
         // for both the left and right eye. Else, the vertex shader does the un-distortion and
         // we do not touch the mesh data.
         std::unique_ptr<GLProgramTexture::TexturedStereoGLMeshBuffer> meshLeftAndRightEye=nullptr;
         std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> optionalLeftEyeDistortedMesh=nullptr;
         std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> optionalRightEyeDistortedMesh=nullptr;
-        // By supplying the content provider updating the layer each frame is much easier
-        VrContentProvider contentProvider;
         // the time point when the data for this layer was created
     };
     // List of layer descriptions
@@ -188,11 +188,6 @@ public:
     void clearViewportUsingRenderedMesh(const bool blackOrYellow)const{
         mGLProgramVC2D->drawX(blackOrYellow ? solidRectangleBlack : solidRectangleYellow);
     }
-};
-
-class SwapChain{
-public:
-    std::vector<VrCompositorRenderer::VRLayer> layers;
 };
 
 #endif //FPV_VR_OS_VRCOMPOSITORRENDERER_H

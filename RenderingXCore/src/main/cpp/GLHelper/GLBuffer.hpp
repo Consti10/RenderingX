@@ -36,6 +36,24 @@ namespace GLBufferHelper {
         uploadGLBuffer(buff, (void *)data.data(), S * sizeof(T));
         return S;
     }
+   /* template<typename Container>
+    static std::size_t uploadGLBUffer(const GLuint buff, const Container &data,GLenum usage=GL_STATIC_DRAW){
+        const auto nElements=std::distance(std::begin(data),std::end(data));
+        if(nElements==0)return 0;
+        const auto sizeBytes=nElements*sizeof(data[0]);
+        uploadGLBuffer(buff,(const void *)std::begin(data),sizeBytes,usage);
+        return nElements;
+    }*/
+
+    /*template <template <typename, typename T> class Container>
+    static std::size_t uploadGLBUffer(const GLuint buff,const Container<T> & data,GLenum usage=GL_STATIC_DRAW){
+        const auto nElements=std::distance(std::begin(data),std::end(data));
+        if(nElements==0)return 0;
+        const auto sizeBytes=nElements*sizeof(data[0]);
+        uploadGLBuffer(buff,(const void *)std::begin(data),sizeBytes,usage);
+        return nElements;
+    }*/
+
     /*template<class T>
     static std::size_t uploadGLBuffer(const GLuint buff, const std::vector<T> &data,GLenum usage=GL_STATIC_DRAW) {
         const auto size = data.size();

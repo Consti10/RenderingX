@@ -50,6 +50,9 @@ public class XEGLConfigChooser{
                 EGL14.EGL_SAMPLES, surfaceParams.mWantedMSAALevel,
                 EGL14.EGL_NONE
         };
+        //If configs is NULL, no configs will be returned in configs. Instead, the total number of configs matching attrib_list will be returned in *num_config.
+        //In this case config_size is ignored. This form of eglChooseConfig is used to determine the number of matching frame buffer configurations,
+        // followed by allocating an array of EGLConfig to pass into another call to eglChooseConfig with all other parameters unchanged.
         int[] num_config = new int[1];
         if (!EGL14.eglChooseConfig(display,configSpec,0,null,0,0,num_config,0)) {
             throw new IllegalArgumentException("eglChooseConfig failed");
@@ -73,6 +76,13 @@ public class XEGLConfigChooser{
                                   EGLConfig[] configs,final XSurfaceParams surfaceParams) {
 
         for (EGLConfig config : configs) {
+            // seems to be a bug on some devices
+            // https://github.com/mapbox/mapbox-gl-native-android/issues/374
+            // https://github.com/mapbox/mapbox-gl-native-android/pull/389/files/594ab4fe7bb3a36c4eea95780149182c6b7702de
+            if(config==null){
+                Log.e(TAG,"selectConfig: Config is null for some reason");
+                continue;
+            }
             // We want at least as much r,g,b,a
             int r = findConfigAttrib(display, config,
                     EGL14.EGL_RED_SIZE, 0);
