@@ -35,6 +35,9 @@ public class GLContextSurfaceLess {
 
     public void create(){
         eglDisplay = EGL14.eglGetDisplay(EGL_DEFAULT_DISPLAY);
+        if(eglDisplay==null){
+            throw new AssertionError("EglDisplay is null (eglGetDisplay failed)");
+        }
         int[] major = new int[]{0};
         int[] minor = new int[]{0};
         EGL14.eglInitialize(eglDisplay, major, 0, minor, 0);
