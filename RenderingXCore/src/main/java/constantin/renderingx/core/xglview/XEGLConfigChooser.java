@@ -58,8 +58,8 @@ public class XEGLConfigChooser{
             throw new IllegalArgumentException("eglChooseConfig failed");
         }
         int numConfigs = num_config[0];
-        if (numConfigs <= 0) {
-            throw new IllegalArgumentException("No configs match configSpec");
+        if (numConfigs < 1) {
+            throw new IllegalArgumentException("No configs match configSpec"+numConfigs);
         }
         EGLConfig[] configs = new EGLConfig[numConfigs];
         if (!EGL14.eglChooseConfig(display,configSpec,0,configs,0,numConfigs,num_config,0)) {
