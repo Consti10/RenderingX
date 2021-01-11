@@ -37,7 +37,11 @@ public class XEGLConfigChooser{
         //then,disable the mutable flag and try again
         printDebug("Disabling mutable flag");
         surfaceParams.mUseMutableFlag=false;
-        return getExactMatch(display,surfaceParams);
+        try {
+            return getExactMatch(display,surfaceParams);
+        }catch (IllegalArgumentException unused){
+            throw new RuntimeException("Cannot find config that matches XSurfaceParams on this phone");
+        }
     }
 
     private static EGLConfig getExactMatch(EGLDisplay display,final XSurfaceParams surfaceParams) throws IllegalArgumentException{

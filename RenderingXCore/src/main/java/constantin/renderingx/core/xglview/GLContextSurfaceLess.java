@@ -40,7 +40,9 @@ public class GLContextSurfaceLess {
         }
         int[] major = new int[]{0};
         int[] minor = new int[]{0};
-        EGL14.eglInitialize(eglDisplay, major, 0, minor, 0);
+        if(!EGL14.eglInitialize(eglDisplay, major, 0, minor, 0)){
+            throw new AssertionError("eglInitialize() returned false");
+        }
         final EGLConfig eglConfig = XEGLConfigChooser.chooseConfig(eglDisplay, new XSurfaceParams(8, 0, false));
         final int[] contextAttributes = new int[]{
                 EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
