@@ -50,6 +50,7 @@ import static android.opengl.EGLExt.EGL_CONTEXT_FLAGS_KHR;
  * * *surface width/height only once
  * 3) The OpenGL context is preserved between onPause()/onResume().There are no devices anymore that only support one concurrent OpenGL context
  */
+
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, SurfaceHolder.Callback {
     private static final String TAG="XGLSurfaceView";
@@ -124,6 +125,9 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         }
     }
 
+    /**
+     * Adds another interface that is called from a second OpenGL thread that is shared with the primary OpenGL thread
+     */
     public void setmISecondaryContext(final GLContextSurfaceLess.ISecondarySharedContext i){
         glContextSurfaceLess=new GLContextSurfaceLess(i);
     }
@@ -289,6 +293,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         SURFACE_W=width;
         SURFACE_H=height;
         log("surfaceChanged");
+        // If the eglSurface is already created surfaceChanged() was called multiple times - this should not happen since in VR the Surface has a fixed size aka Screen Size
         if(eglSurface!=EGL_NO_SURFACE){
             throw new AssertionError("Changing Surface is not supported");
         }
@@ -338,7 +343,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         // Also, since the https://www.khronos.org/registry/EGL/extensions/KHR/EGL_KHR_surfaceless_context.txt
         // extension is not available on all devices, a Surface is always bound when
         // onContextCreated is called
-        // For a VR application, screen width and height do not change and are equal to the screen width and height
+        // For a VR application, surface width and height do not change and are equal to the screen width and height
         void onContextCreated(int screenWidth,int screenHeight);
         // Called repeatedly in between onResume() / onPause()
         void onDrawFrame();
@@ -352,12 +357,15 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         void onContextCreated(int screenWidth,int screenHeight,final SurfaceTextureHolder surfaceTextureHolder);
         void onDrawFrame();
     }
+
+    // logs a warning if eglSwapBuffers fails (it should basically never fail)
     private static void eglSwapBuffersSafe(final EGLDisplay eglDisplay,final EGLSurface eglSurface){
         if(!EGL14.eglSwapBuffers(eglDisplay,eglSurface)){
             log("Cannot swap buffers");
         }
     }
 
+    // Java-style declaration for eglQueryContext
     private int eglQueryContext(int attribute){
         int[] ret=new int[1];
         EGL14.eglQueryContext(eglDisplay,eglContext,attribute,ret,0);

@@ -87,7 +87,7 @@ public class XEGLConfigChooser{
     // same like EGL14 eglChooseConfig but with 2 differences:
     // 1) wraps the "C-Style declaration" into a more "java-style declaration"
     // 2) workaround for weird driver bug ?
-    private static EGLConfig[] helperEglChooseConfig(EGLDisplay display,final int[] configSpec){
+    private static EGLConfig[] helperEglChooseConfig(EGLDisplay display,final int[] configSpec) {
         try{
             int[] num_config = new int[1];
             //If configs is NULL, no configs will be returned in configs. Instead, the total number of configs matching attrib_list will be returned in *num_config.
@@ -191,7 +191,6 @@ public class XEGLConfigChooser{
             System.out.println("eglSurfaceAttrib() failed. attribute=" + attribute + " value=" + value);
         }
     }
-
 
     private static void printDebug(final String s){
         if(DEBUG){
