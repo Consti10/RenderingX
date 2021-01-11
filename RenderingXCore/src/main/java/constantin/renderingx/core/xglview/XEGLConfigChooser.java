@@ -6,6 +6,8 @@ import android.opengl.EGLDisplay;
 import android.opengl.EGLSurface;
 import android.util.Log;
 
+import javax.annotation.Nullable;
+
 
 public class XEGLConfigChooser{
     private static final String TAG="MyEGLConfigChooser";
@@ -18,6 +20,7 @@ public class XEGLConfigChooser{
     private static final int EGL_OPENGL_ES2_BIT = 0x0004;
 
     public static EGLConfig chooseConfig(EGLDisplay display,final XSurfaceParams surfaceParams) {
+        EGLConfig ret=null;
         try{
             return getExactMatch(display,surfaceParams);
         }catch (IllegalArgumentException unused){
@@ -50,10 +53,11 @@ public class XEGLConfigChooser{
                 EGL14.EGL_SAMPLES, surfaceParams.mWantedMSAALevel,
                 EGL14.EGL_NONE
         };
-        //If configs is NULL, no configs will be returned in configs. Instead, the total number of configs matching attrib_list will be returned in *num_config.
-        //In this case config_size is ignored. This form of eglChooseConfig is used to determine the number of matching frame buffer configurations,
-        // followed by allocating an array of EGLConfig to pass into another call to eglChooseConfig with all other parameters unchanged.
-        int[] num_config = new int[1];
+
+        //11.01.2021: I have the suspicion that some driver(s) crash when calling eglChooseConfig with @param configs==null even though the Khronos documentation says that it should
+        //be possible
+
+        /*int[] num_config = new int[1];
         if (!EGL14.eglChooseConfig(display,configSpec,0,null,0,0,num_config,0)) {
             throw new IllegalArgumentException("eglChooseConfig failed");
         }
@@ -64,7 +68,8 @@ public class XEGLConfigChooser{
         EGLConfig[] configs = new EGLConfig[numConfigs];
         if (!EGL14.eglChooseConfig(display,configSpec,0,configs,0,numConfigs,num_config,0)) {
             throw new IllegalArgumentException("eglChooseConfig#2 failed");
-        }
+        }*/
+        EGLConfig[] configs = helperEglChooseConfig(display,configSpec);
         EGLConfig config = selectConfig(display, configs, surfaceParams);
         if (config == null) {
             throw new IllegalArgumentException("No config chosen");
@@ -72,8 +77,52 @@ public class XEGLConfigChooser{
         return config;
     }
 
-    private static EGLConfig selectConfig(EGLDisplay display,
-                                  EGLConfig[] configs,final XSurfaceParams surfaceParams) {
+    // same like EGL14 eglChooseConfig but with 2 differences:
+    // 1) wraps the "C-Style declaration" into a more "java-style declaration"
+    // 2) workaround for weird driver bug ?
+    private static EGLConfig[] helperEglChooseConfig(EGLDisplay display,final int[] configSpec){
+        try{
+            int[] num_config = new int[1];
+            //If configs is NULL, no configs will be returned in configs. Instead, the total number of configs matching attrib_list will be returned in *num_config.
+            //In this case config_size is ignored. This form of eglChooseConfig is used to determine the number of matching frame buffer configurations,
+            // followed by allocating an array of EGLConfig to pass into another call to eglChooseConfig with all other parameters unchanged.
+            if (!EGL14.eglChooseConfig(display,configSpec,0,null,0,0,num_config,0)) {
+                throw new IllegalArgumentException("eglChooseConfig failed");
+            }
+            int numConfigs = num_config[0];
+            if (numConfigs < 1) {
+                throw new IllegalArgumentException("No configs match configSpec"+numConfigs);
+            }
+            // now allocate the array that will hold the possible configuration(s)
+            EGLConfig[] configs = new EGLConfig[numConfigs];
+            if (!EGL14.eglChooseConfig(display,configSpec,0,configs,0,numConfigs,num_config,0)) {
+                throw new IllegalArgumentException("eglChooseConfig#2 failed");
+            }
+            return configs;
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            Log.e(TAG,"Using weird workaround");
+            final int MAX_N_CONFIGS=100;
+            int[] num_config = new int[1];
+            EGLConfig[] configs = new EGLConfig[MAX_N_CONFIGS];
+            if (!EGL14.eglChooseConfig(display,configSpec,0,configs,0,MAX_N_CONFIGS,num_config,0)) {
+                throw new IllegalArgumentException("eglChooseConfig#2 failed");
+            }
+            if(num_config[0]<1){
+                throw new IllegalArgumentException("No configs match configSpec"+num_config[0]);
+            }
+            EGLConfig[] ret=new EGLConfig[num_config[0]];
+            for(int i=0;i<num_config[0];i++){
+                ret[i]=configs[i];
+            }
+            return ret;
+        }
+    }
+
+    // given an array of EGLConfigs return the first config where all parameters match exactly what was specified in XSurfaceParams
+    // If no such config can be found, return nullptr
+    private static @Nullable EGLConfig selectConfig(EGLDisplay display,
+                           EGLConfig[] configs, final XSurfaceParams surfaceParams) {
 
         for (EGLConfig config : configs) {
             // seems to be a bug on some devices
