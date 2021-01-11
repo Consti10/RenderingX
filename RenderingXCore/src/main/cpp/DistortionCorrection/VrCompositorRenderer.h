@@ -83,10 +83,10 @@ private:
     //this one is for drawing the occlusion mesh only, no V.D.D.C, source mesh holds NDC
     std::unique_ptr<GLProgramVC2D> mGLProgramVC2D;
     // Use NDC (normalized device coordinates), both for normal and ext texture
-    std::unique_ptr<AGLProgramTexture> mGLProgramTexture2D;
+    std::unique_ptr<GLProgramTexture> mGLProgramTexture2D;
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt2D;
     // Apply V.D.D.C to the 3d coordinates, both for normal and ext texture
-    std::unique_ptr<AGLProgramTexture> mGLProgramTextureVDDC;
+    std::unique_ptr<GLProgramTexture> mGLProgramTextureVDDC;
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExtVDDC;
 public:
     // NONE == position is fixed

@@ -19,9 +19,9 @@ VrCompositorRenderer::VrCompositorRenderer(JNIEnv* env,jobject androidContext,gv
 
 void VrCompositorRenderer::initializeGL() {
     mGLProgramVC2D=std::make_unique<GLProgramVC2D>();
-    mGLProgramTexture2D=std::make_unique<AGLProgramTexture>(false, false, true);
+    mGLProgramTexture2D=std::make_unique<GLProgramTexture>(false, true);
     mGLProgramTextureExt2D=std::make_unique<GLProgramTextureExt>(false,true,false);
-    mGLProgramTextureVDDC=std::make_unique<AGLProgramTexture>(false, true);
+    mGLProgramTextureVDDC=std::make_unique<GLProgramTexture>(true);
     mGLProgramTextureExtVDDC=std::make_unique<GLProgramTextureExt>(true, false);
     const TrueColor occlusionMeshColor=ENABLE_DEBUG ? TrueColor2::RED : TrueColor2::BLACK;
     CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(*this, occlusionMeshColor, mOcclusionMesh);
@@ -180,10 +180,10 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         if(layer.headTracking==HEAD_TRACKING::NONE){
             TexturedGLMeshBuffer* distortedMesh= eye == GVR_LEFT_EYE ? layer.optionalLeftEyeDistortedMesh.get() :
                     layer.optionalRightEyeDistortedMesh.get();
-            AGLProgramTexture* glProgramTexture2D= isExternalTexture ? mGLProgramTextureExt2D.get() : mGLProgramTexture2D.get();
+            AGLProgramTexture* glProgramTexture2D= isExternalTexture ? (AGLProgramTexture*) mGLProgramTextureExt2D.get() : (AGLProgramTexture*)mGLProgramTexture2D.get();
             glProgramTexture2D->drawX(textureId,glm::mat4(1.0f),glm::mat4(1.0f),*distortedMesh);
         }else{
-            AGLProgramTexture* glProgramTexture= isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
+            AGLProgramTexture* glProgramTexture= isExternalTexture ? (AGLProgramTexture*) mGLProgramTextureExtVDDC.get() : (AGLProgramTexture*) mGLProgramTextureVDDC.get();
             glProgramTexture->drawXStereoVertex(textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye,eye==GVR_LEFT_EYE);
         }
         if(!isExternalTexture && isNewFrame){
