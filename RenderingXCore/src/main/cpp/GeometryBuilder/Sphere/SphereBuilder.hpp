@@ -78,9 +78,9 @@ public:
     //
     static TexturedStereoMeshData
     createSphereEquirectangularMonoscopic(float radius=1.0f, int latitudes=64, int longitudes=32,UvSphere::MEDIA_FORMAT format=UvSphere::MEDIA_EQUIRECT_MONOSCOPIC) {
-        static_assert(sizeof(GLProgramTexture::StereoVertex)==sizeof(UvSphere::Vertex));
+        static_assert(sizeof(TexturedStereoVertex) == sizeof(UvSphere::Vertex));
         auto vertexDataAsInGvr=UvSphere::createUvSphere(radius,latitudes,longitudes,180,360,UvSphere::MEDIA_EQUIRECT_MONOSCOPIC,UvSphere::ROTATE_UNKNOWN);
-        auto vertexData= *reinterpret_cast<std::vector<GLProgramTexture::StereoVertex>*>(&vertexDataAsInGvr);
+        auto vertexData= *reinterpret_cast<std::vector<TexturedStereoVertex>*>(&vertexDataAsInGvr);
         return TexturedStereoMeshData(vertexData,GL_TRIANGLE_STRIP);
     }
 
@@ -91,10 +91,10 @@ public:
         float latitudes=128;
         float longitudes=36;
         const auto vertexDataAsInGvr=UvSphere::createUvSphere(radius,latitudes,longitudes,180,360,UvSphere::MEDIA_EQUIRECT_MONOSCOPIC,rot);
-        std::vector<GLProgramTexture::Vertex> ret;
+        std::vector<TexturedVertex> ret;
         for(const auto& vertex:vertexDataAsInGvr){
             const auto d=equirect_to_insta360(vertex.u_left,vertex.v_left);
-            GLProgramTexture::Vertex v{
+            TexturedVertex v{
                     vertex.x,vertex.y,vertex.z,d[0],d[1]
             };
             ret.push_back(v);
@@ -111,10 +111,10 @@ public:
         float latitudes=128;
         float longitudes=36;
         const auto vertexDataAsInGvr=UvSphere::createUvSphere(radius,latitudes,longitudes,180,360,UvSphere::MEDIA_EQUIRECT_MONOSCOPIC,rot);
-        std::vector<GLProgramTexture::Vertex> ret;
+        std::vector<TexturedVertex> ret;
         for(const auto& vertex:vertexDataAsInGvr){
             const auto d=equirect_to_fisheye(vertex.u_left,vertex.v_left,radiusx,radiusy,fov,x_shift,y_shift);
-            GLProgramTexture::Vertex v{
+            TexturedVertex v{
                     vertex.x,vertex.y,vertex.z,d[0],d[1]
             };
             ret.push_back(v);

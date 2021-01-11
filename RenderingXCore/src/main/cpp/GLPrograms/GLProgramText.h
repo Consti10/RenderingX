@@ -41,11 +41,12 @@ private:
     static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE0;
     static constexpr auto MY_SAMPLER_UNIT=0;
     static constexpr int INDEX_BUFFER_SIZE=65535; //max size of GL unsigned short
+    // Create one big index buffer that is used to draw all the text vertices
     GLuint mGLIndicesB;
     struct Vertex{
         float x,y;//z is always 0
-        float u,v;
-        TrueColor color;
+        float u,v;//texture coordinates
+        TrueColor color;// text base color
     };
 public:
     //Characters are indexed squares

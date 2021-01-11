@@ -130,12 +130,12 @@ public:
     //
     //GLushort instead of GLuint should be sufficient for index data and is used by GLProgramTexture
     //Also, convert to GLProgramTexture::Vertex
-    static void create_sphere(std::vector<GLProgramTexture::Vertex>& vertexData,std::vector<GLProgramTexture::INDEX_DATA >& indexData,int surf_w,int surf_h){
+    static void create_sphere(std::vector<TexturedVertex>& vertexData, std::vector<AGLProgramTexture::INDEX_DATA >& indexData, int surf_w, int surf_h){
         std::vector<GLfloat> tmpVertices;
         std::vector<GLuint> tmpIndices;
         create_sphere(tmpVertices,tmpIndices,surf_w,surf_h);
         for(int i=0;i<=tmpVertices.size()-5;i+=5){
-            GLProgramTexture::Vertex v;
+            TexturedVertex v;
             v.x=tmpVertices[i+0];
             v.y=tmpVertices[i+1];
             v.z=tmpVertices[i+2];
@@ -144,13 +144,13 @@ public:
             vertexData.push_back(v);
         }
         for(auto i=0;i<tmpIndices.size();i++){
-            indexData.push_back((GLProgramTexture::INDEX_DATA) tmpIndices.at(i));
+            indexData.push_back((AGLProgramTexture::INDEX_DATA) tmpIndices.at(i));
         }
     }
 
     static TexturedMeshData createSphereGL(int surf_w, int surf_h){
-        std::vector<GLProgramTexture::Vertex> vertices;
-        std::vector<GLProgramTexture::INDEX_DATA > indices;
+        std::vector<TexturedVertex> vertices;
+        std::vector<AGLProgramTexture::INDEX_DATA > indices;
         DualFisheyeSphere::create_sphere(vertices,indices,surf_w,surf_h);
         return TexturedMeshData(vertices, indices, GL_TRIANGLE_STRIP);
     }

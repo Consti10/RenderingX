@@ -19,9 +19,9 @@ namespace VerticalPlane{
      * Optionally use @param modelMatrix to place the plane in 3D space and use
      * @param textureMatrix to scale and translate the texture (u,v) coordinates
      */
-    static std::vector<GLProgramTexture::Vertex> createVerticesPlaneTextured(const unsigned int tessellation,
+    static std::vector<TexturedVertex> createVerticesPlaneTextured(const unsigned int tessellation,
             const glm::mat4& modelMatrix=glm::mat4(1.0f),const glm::mat4& textureMatrix= glm::mat4(1.0f),const bool invertUCoordinates=false,const bool invertVCoordinates=true){
-        std::vector<GLProgramTexture::Vertex> vertices((tessellation+1)*(tessellation+1));
+        std::vector<TexturedVertex> vertices((tessellation+1)*(tessellation+1));
         const int tessellationX=tessellation;
         const int tessellationY=tessellation;
         const float subW=1.0f/(float)tessellationX;
@@ -37,7 +37,7 @@ namespace VerticalPlane{
                 const glm::vec4 texture={tmpU,tmpV,0.0f,1.0f};
                 const glm::vec4 pos2=modelMatrix*pos;
                 const glm::vec4 texture2=textureMatrix*texture;
-                GLProgramTexture::Vertex& v=vertices.at(count);
+                TexturedVertex& v=vertices.at(count);
                 v.x=pos2.x;
                 v.y=pos2.y;
                 v.z=pos2.z;
@@ -123,7 +123,7 @@ namespace VerticalPlane{
     }
 
     // Reduced / simplified some parameters for FPV_VR, which does not rotate the plane (UI) and only modifies texture u values
-    static std::vector<GLProgramTexture::Vertex> createVerticesPlaneTextured(const unsigned int tessellation, const glm::vec3& translation,const glm::vec2& scale,
+    static std::vector<TexturedVertex> createVerticesPlaneTextured(const unsigned int tessellation, const glm::vec3& translation,const glm::vec2& scale,
                                                                              const float uOffset,const float uRange,const bool invertUCoordinates,const bool invertVCoordinates){
         auto modelMatrix=glm::translate(translation)*glm::scale(glm::vec3(scale.x,scale.y,1));
         auto textureMatrix=glm::translate(glm::vec3(uOffset,0,0))*glm::scale(glm::vec3(uRange,1,1));

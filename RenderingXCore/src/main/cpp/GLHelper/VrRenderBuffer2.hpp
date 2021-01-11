@@ -30,7 +30,7 @@ public:
     void loadDefaultTexture(JNIEnv* env,jobject androidContext){
         assert(defaultTextureUrl!=std::nullopt);
         glGenTextures(1, &defaultTexture);
-        GLProgramTexture::loadTexture(defaultTexture,env,androidContext,defaultTextureUrl->c_str());
+        AGLProgramTexture::loadTexture(defaultTexture, env, androidContext, defaultTextureUrl->c_str());
     }
 
     void initializeGL(){

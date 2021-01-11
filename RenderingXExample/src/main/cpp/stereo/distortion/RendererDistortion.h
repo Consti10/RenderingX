@@ -72,7 +72,7 @@ private:
     static constexpr int LINE_MESH_TESSELATION_FACTOR=12;
     static constexpr float LINE_WIDTH_BIG=8.0f;
     static constexpr float LINE_WIDTH_SMALL=4.0f;
-    GLProgramTexture::TexturedGLMeshBuffer mTestMesh2DWireframe;
+    TexturedGLMeshBuffer mTestMesh2DWireframe;
 public:
     VrCompositorRenderer vrCompositorRenderer;
     VrRenderBuffer2 vrRenderBufferWithGreenTexture{"ExampleTexture/green.png"};

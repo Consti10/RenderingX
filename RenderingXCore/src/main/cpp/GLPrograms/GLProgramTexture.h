@@ -14,7 +14,36 @@
  * Optionally applies V.D.D.C ( Vertex displacement distortion correction) to the Vertices
  *******************************************************************/
 
-class GLProgramTexture {
+// A textured vertex has x,y,z position and u,v texture positions
+struct TexturedVertex{
+    float x,y,z;
+    float u,v;
+};
+using TexturedMeshData=AMeshData<TexturedVertex,GLuint>;
+using TexturedGLMeshBuffer=AGLMeshBuffer<TexturedVertex,GLuint>;
+
+// Same as above, but for a so called 'Stereo Vertex* which is a Vertex with the same x,y,z coordinates for left and right eye
+// but different u,v values for left and right eye, respectively
+struct TexturedStereoVertex{
+    float x,y,z;
+    float u_left,v_left;
+    float u_right,v_right;
+};
+using TexturedStereoMeshData=AMeshData<TexturedStereoVertex,GLuint>;
+using TexturedStereoGLMeshBuffer=AGLMeshBuffer<TexturedStereoVertex,GLuint>;
+
+namespace TexturedStereoVertexHelper{
+    // convert TexturedMeshData to TexturedStereoMeshData duplicating the u,v coordinates for left and right eye
+    TexturedStereoMeshData convert(const TexturedMeshData& input);
+    // convert TexturedStereoMeshData to TexturedMeshData by selecting either the left or right eye u,v coordinates only
+    TexturedMeshData convert(const TexturedStereoMeshData& input,const bool left);
+}
+
+// Abstract GLProgram Texture. Abstract because there is a declaration for
+//1) Sample from "normal" texture -> GLProgramTexture
+//2) Sample from "external" texture -> GLProgramTextureExt below
+// TODO: I could make this templated
+class AGLProgramTexture {
 private:
     const bool USE_EXTERNAL_TEXTURE;
     const bool ENABLE_VDDC;
@@ -28,13 +57,7 @@ private:
     static constexpr auto MY_TEXTURE_UNIT=GL_TEXTURE1;
     static constexpr auto MY_SAMPLER_UNIT=1;
 public:
-    struct Vertex{
-        float x,y,z;
-        float u,v;
-    };
     using INDEX_DATA=GLuint;
-    using TexturedMeshData=AMeshData<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
-    using TexturedGLMeshBuffer=AGLMeshBuffer<GLProgramTexture::Vertex,GLProgramTexture::INDEX_DATA>;
     /**
      * Construct a GLProgramTexture which is a c++ representation of an OpenGL shader that renders textured vertices
      * @param USE_EXTERNAL_TEXTURE Sample from *External texture* ( aka SurfaceTexture, VideoTexture) or not
@@ -42,12 +65,12 @@ public:
      * @param USE_2D_COORDINATES
      * @param mapEquirectangularToInsta360 Experimental do not use
      */
-    explicit GLProgramTexture(const bool USE_EXTERNAL_TEXTURE, const bool ENABLE_VDDC=false, const bool USE_2D_COORDINATES=false, const bool mapEquirectangularToInsta360=false);
+    explicit AGLProgramTexture(const bool USE_EXTERNAL_TEXTURE,const bool ENABLE_VDDC=false, const bool USE_2D_COORDINATES=false, const bool mapEquirectangularToInsta360=false);
     /*
      * Call beforeDraw(), draw() or drawIndexed() and afterDraw() to render a textured mesh
      */
     void beforeDraw(GLuint buffer,GLuint texture) const;
-    void beforeDraw(GLBuffer<Vertex>& buffer,GLuint texture)const{
+    void beforeDraw(GLBuffer<TexturedVertex>& buffer,GLuint texture)const{
         beforeDraw(buffer.getGLBufferId(),texture);
     }
     void draw(const glm::mat4x4& ViewM, const glm::mat4x4& ProjM, int verticesOffset, int numberVertices,GLenum mode=GL_TRIANGLES) const;
@@ -61,15 +84,6 @@ public:
     // update the uniform values to perform VDDC for left or right eye
     void updateUnDistortionUniforms(bool leftEye, const VDDC::DataUnDistortion& dataUnDistortion)const;
 public:
-    // Same as above, but for a so called 'Stereo Vertex* which is a Vertex with different u,v values for
-    // left and right eye
-    struct StereoVertex{
-        float x,y,z;
-        float u_left,v_left;
-        float u_right,v_right;
-    };
-    using TexturedStereoMeshData=AMeshData<GLProgramTexture::StereoVertex,GLProgramTexture::INDEX_DATA>;
-    using TexturedStereoGLMeshBuffer=AGLMeshBuffer<GLProgramTexture::StereoVertex,GLProgramTexture::INDEX_DATA>;
     void beforeDrawStereoVertex(GLuint buffer,GLuint texture,bool useLeftTextureCoords=false) const;
     void drawXStereoVertex(GLuint texture,const glm::mat4x4& ViewM, const glm::mat4x4& ProjM,const TexturedStereoGLMeshBuffer& mesh,bool useLeftTextureCoords=false)const;
 private:
@@ -143,40 +157,21 @@ private:
         s<<"}\n";
         return s.str();
     }
+};
+
+// Sample from normal (not external) texture
+class GLProgramTexture: public AGLProgramTexture{
 public:
-    static TexturedStereoMeshData convert(const TexturedMeshData& input){
-        std::vector<GLProgramTexture::StereoVertex> vertices;
-        for(const auto& vertex:input.vertices){
-            vertices.push_back({vertex.x,vertex.y,vertex.z,vertex.u,vertex.v,vertex.u,vertex.v});
-        }
-        if(input.hasIndices()){
-            return TexturedStereoMeshData(vertices,*input.indices,input.mode);
-        }
-        return TexturedStereoMeshData(vertices,input.mode);
-    }
-    static TexturedMeshData convert(const TexturedStereoMeshData& input,const bool left){
-        std::vector<GLProgramTexture::Vertex> vertices;
-        for(const auto& vertex:input.vertices){
-            if(left){
-                vertices.push_back({vertex.x,vertex.y,vertex.z,vertex.u_left,vertex.v_left});
-            }else{
-                vertices.push_back({vertex.x,vertex.y,vertex.z,vertex.u_right,vertex.v_right});
-            }
-        }
-        if(input.hasIndices()){
-            return TexturedMeshData (vertices,*input.indices,input.mode);
-        }
-        return TexturedMeshData(vertices,input.mode);
+    GLProgramTexture(const bool ENABLE_VDDC=false, const bool USE_2D_COORDINATES=false, const bool mapEquirectangularToInsta360=false):
+            AGLProgramTexture(false,ENABLE_VDDC, USE_2D_COORDINATES, mapEquirectangularToInsta360){
     }
 };
-using TexturedMeshData=GLProgramTexture::TexturedMeshData;
-using TexturedGLMeshBuffer=GLProgramTexture::TexturedGLMeshBuffer;
-using TexturedStereoMeshData=GLProgramTexture::TexturedStereoMeshData;
-using TexturedStereoGLMeshBuffer=GLProgramTexture::TexturedStereoGLMeshBuffer;
-class GLProgramTextureExt: public GLProgramTexture{
+
+// Sample from external texture (aka video texture)
+class GLProgramTextureExt: public AGLProgramTexture{
 public:
     GLProgramTextureExt(const bool ENABLE_VDDC=false, const bool USE_2D_COORDINATES=false, const bool mapEquirectangularToInsta360=false):
-    GLProgramTexture(true, ENABLE_VDDC,USE_2D_COORDINATES,mapEquirectangularToInsta360){
+            AGLProgramTexture(true,ENABLE_VDDC, USE_2D_COORDINATES, mapEquirectangularToInsta360){
     }
 };
 

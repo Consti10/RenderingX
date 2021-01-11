@@ -113,6 +113,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     public void setRenderer(final FullscreenRenderer renderer){
         this.mRenderer1 =renderer;
     }
+
     /**
      * Set the renderer that also has a SurfaceTexture,e.g for video playback
      * @param iSurfaceTextureAvailable Configure your video player using this interface. When passing null for the ISurfaceTextureAvailable

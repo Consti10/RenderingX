@@ -19,9 +19,9 @@ VrCompositorRenderer::VrCompositorRenderer(JNIEnv* env,jobject androidContext,gv
 
 void VrCompositorRenderer::initializeGL() {
     mGLProgramVC2D=std::make_unique<GLProgramVC2D>();
-    mGLProgramTexture2D=std::make_unique<GLProgramTexture>(false,false,true);
+    mGLProgramTexture2D=std::make_unique<AGLProgramTexture>(false, false, true);
     mGLProgramTextureExt2D=std::make_unique<GLProgramTextureExt>(false,true,false);
-    mGLProgramTextureVDDC=std::make_unique<GLProgramTexture>(false, true);
+    mGLProgramTextureVDDC=std::make_unique<AGLProgramTexture>(false, true);
     mGLProgramTextureExtVDDC=std::make_unique<GLProgramTextureExt>(true, false);
     const TrueColor occlusionMeshColor=ENABLE_DEBUG ? TrueColor2::RED : TrueColor2::BLACK;
     CardboardViewportOcclusion::uploadOcclusionMeshLeftRight(*this, occlusionMeshColor, mOcclusionMesh);
@@ -134,8 +134,8 @@ void VrCompositorRenderer::addLayer(const TexturedStereoMeshData &meshData,VrCon
     //MLOGD<<"Add layer";
     VRLayer vrLayer;
     if(headTracking==HEAD_TRACKING::NONE){
-        TexturedMeshData distortedMeshData1=distortMesh(GVR_LEFT_EYE,GLProgramTexture::convert(meshData,true));
-        TexturedMeshData distortedMeshData2=distortMesh(GVR_RIGHT_EYE,GLProgramTexture::convert(meshData,false));
+        TexturedMeshData distortedMeshData1=distortMesh(GVR_LEFT_EYE, TexturedStereoVertexHelper::convert(meshData, true));
+        TexturedMeshData distortedMeshData2=distortMesh(GVR_RIGHT_EYE, TexturedStereoVertexHelper::convert(meshData, false));
         vrLayer.meshLeftAndRightEye=nullptr;
         vrLayer.optionalLeftEyeDistortedMesh=std::make_unique<TexturedGLMeshBuffer>(distortedMeshData1);
         vrLayer.optionalRightEyeDistortedMesh=std::make_unique<TexturedGLMeshBuffer>(distortedMeshData2);
@@ -180,10 +180,10 @@ void VrCompositorRenderer::drawLayers(gvr::Eye eye) {
         if(layer.headTracking==HEAD_TRACKING::NONE){
             TexturedGLMeshBuffer* distortedMesh= eye == GVR_LEFT_EYE ? layer.optionalLeftEyeDistortedMesh.get() :
                     layer.optionalRightEyeDistortedMesh.get();
-            GLProgramTexture* glProgramTexture2D=isExternalTexture ? mGLProgramTextureExt2D.get() : mGLProgramTexture2D.get();
+            AGLProgramTexture* glProgramTexture2D= isExternalTexture ? mGLProgramTextureExt2D.get() : mGLProgramTexture2D.get();
             glProgramTexture2D->drawX(textureId,glm::mat4(1.0f),glm::mat4(1.0f),*distortedMesh);
         }else{
-            GLProgramTexture* glProgramTexture= isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
+            AGLProgramTexture* glProgramTexture= isExternalTexture ? mGLProgramTextureExtVDDC.get() : mGLProgramTextureVDDC.get();
             glProgramTexture->drawXStereoVertex(textureId,viewM,mProjectionM[EYE_IDX],*layer.meshLeftAndRightEye,eye==GVR_LEFT_EYE);
         }
         if(!isExternalTexture && isNewFrame){

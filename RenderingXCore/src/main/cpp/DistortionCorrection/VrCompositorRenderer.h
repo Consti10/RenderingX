@@ -83,10 +83,10 @@ private:
     //this one is for drawing the occlusion mesh only, no V.D.D.C, source mesh holds NDC
     std::unique_ptr<GLProgramVC2D> mGLProgramVC2D;
     // Use NDC (normalized device coordinates), both for normal and ext texture
-    std::unique_ptr<GLProgramTexture> mGLProgramTexture2D;
+    std::unique_ptr<AGLProgramTexture> mGLProgramTexture2D;
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExt2D;
     // Apply V.D.D.C to the 3d coordinates, both for normal and ext texture
-    std::unique_ptr<GLProgramTexture> mGLProgramTextureVDDC;
+    std::unique_ptr<AGLProgramTexture> mGLProgramTextureVDDC;
     std::unique_ptr<GLProgramTextureExt> mGLProgramTextureExtVDDC;
 public:
     // NONE == position is fixed
@@ -103,16 +103,16 @@ public:
         // If head tracking is disabled for this layer we can pre-calculate the undistorted vertices
         // for both the left and right eye. Else, the vertex shader does the un-distortion and
         // we do not touch the mesh data.
-        std::unique_ptr<GLProgramTexture::TexturedStereoGLMeshBuffer> meshLeftAndRightEye=nullptr;
-        std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> optionalLeftEyeDistortedMesh=nullptr;
-        std::unique_ptr<GLProgramTexture::TexturedGLMeshBuffer> optionalRightEyeDistortedMesh=nullptr;
+        std::unique_ptr<TexturedStereoGLMeshBuffer> meshLeftAndRightEye=nullptr;
+        std::unique_ptr<TexturedGLMeshBuffer> optionalLeftEyeDistortedMesh=nullptr;
+        std::unique_ptr<TexturedGLMeshBuffer> optionalRightEyeDistortedMesh=nullptr;
         // the time point when the data for this layer was created
     };
     // List of layer descriptions
     std::vector<VRLayer> mVrLayerList;
-    void addLayer(const GLProgramTexture::TexturedStereoMeshData& meshData,VrContentProvider vrContentProvider, HEAD_TRACKING headTracking=FULL);
-    void addLayer(const GLProgramTexture::TexturedMeshData& meshData,VrContentProvider vrContentProvider, HEAD_TRACKING headTracking=FULL){
-        addLayer(GLProgramTexture::convert(meshData),vrContentProvider,headTracking);
+    void addLayer(const TexturedStereoMeshData& meshData, VrContentProvider vrContentProvider, HEAD_TRACKING headTracking=FULL);
+    void addLayer(const TexturedMeshData& meshData, VrContentProvider vrContentProvider, HEAD_TRACKING headTracking=FULL){
+        addLayer(TexturedStereoVertexHelper::convert(meshData), vrContentProvider, headTracking);
     }
     void removeLayers();
     void drawLayers(gvr::Eye eye);
