@@ -19,8 +19,11 @@ public class XEGLConfigChooser{
     private static final int EGL_OPENGL_ES3_BIT_KHR = 0x40;
     private static final int EGL_OPENGL_ES2_BIT = 0x0004;
 
+    // Try to find an EGLConfig that exactly matches what was specified in XSurfaceParams.
+    // If the first time fails, disable MSAA and try again
+    // If the second time fails, disable the "mutable" extension and try again
+    // Now, if the third time fails, there is no other solution than to crash the app
     public static EGLConfig chooseConfig(EGLDisplay display,final XSurfaceParams surfaceParams) {
-        EGLConfig ret=null;
         try{
             return getExactMatch(display,surfaceParams);
         }catch (IllegalArgumentException unused){
