@@ -43,7 +43,7 @@ public class XEGLConfigChooser{
         try {
             return getExactMatch(display,surfaceParams);
         }catch (IllegalArgumentException unused){
-            throw new RuntimeException("Cannot find config that matches XSurfaceParams on this phone");
+            throw new RuntimeException("Cannot find config that matches XSurfaceParams on this phone"+unused.getMessage());
         }
     }
 
