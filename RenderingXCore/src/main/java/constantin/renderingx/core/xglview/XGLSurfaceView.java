@@ -234,6 +234,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         if (eglContext==EGL_NO_CONTEXT) {
             throw new AssertionError("Cannot create eglContext");
         }
+        Log.d(TAG,"Successfully created OpenGL context");
         // check if we actually got a high priority context
         if(ENABLE_HIGH_PRIORITY_CONTEXT){
             final int eglContextPriorityLevel=eglQueryContext(EGLContextPriority.EGL_CONTEXT_PRIORITY_LEVEL_IMG);
@@ -311,6 +312,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        Log.d(TAG,"surfaceChanged");
         if(SURFACE_W!=width || SURFACE_H!=height){
             Log.e(TAG,"Got surfaceChanged() but screen width/height and surface width/height differ"+SURFACE_W+" "+SURFACE_H+" | "+width+" "+height);
         }

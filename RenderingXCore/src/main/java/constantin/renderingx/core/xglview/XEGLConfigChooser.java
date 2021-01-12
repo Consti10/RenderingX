@@ -3,6 +3,7 @@ package constantin.renderingx.core.xglview;
 import android.opengl.EGL14;
 import android.opengl.EGLConfig;
 import android.opengl.EGLDisplay;
+import android.opengl.EGLExt;
 import android.opengl.EGLSurface;
 import android.util.Log;
 
@@ -16,8 +17,6 @@ public class XEGLConfigChooser{
     public static final int EGL_ANDROID_front_buffer_auto_refresh = 0x314C;
 
     private static final int  EGL_KHR_mutable_render_buffer=0x1000;
-    private static final int EGL_OPENGL_ES3_BIT_KHR = 0x40;
-    private static final int EGL_OPENGL_ES2_BIT = 0x0004;
 
     // Try to find an EGLConfig that exactly matches what was specified in XSurfaceParams.
     // If the first time fails, disable MSAA and try again
@@ -53,11 +52,12 @@ public class XEGLConfigChooser{
                 EGL14.EGL_GREEN_SIZE, surfaceParams.mG,
                 EGL14.EGL_BLUE_SIZE, surfaceParams.mB,
                 EGL14.EGL_ALPHA_SIZE, surfaceParams.mA,
-                EGL14.EGL_RENDERABLE_TYPE, surfaceParams.mUseMutableFlag ? EGL_OPENGL_ES3_BIT_KHR : EGL_OPENGL_ES2_BIT, //when using mutable we request OpenGL ES 3.0
+                EGL14.EGL_RENDERABLE_TYPE, surfaceParams.mUseMutableFlag ? EGLExt.EGL_OPENGL_ES3_BIT_KHR : EGL14.EGL_OPENGL_ES2_BIT, //when using mutable we request OpenGL ES 3.0
                 EGL14.EGL_SURFACE_TYPE, surfaceParams.mUseMutableFlag  ? (EGL14.EGL_WINDOW_BIT | EGL_KHR_mutable_render_buffer): EGL14.EGL_WINDOW_BIT,
                 //
-                EGL14.EGL_SAMPLE_BUFFERS, (surfaceParams.mWantedMSAALevel>0) ? 1 : 0, //if we want msaa use 1, else 0
-                EGL14.EGL_SAMPLES, surfaceParams.mWantedMSAALevel,
+                EGL14.EGL_CONFORMANT,EGL14.EGL_OPENGL_ES2_BIT,
+                //EGL14.EGL_SAMPLE_BUFFERS, (surfaceParams.mWantedMSAALevel>0) ? 1 : 0, //if we want msaa use 1, else 0
+                //EGL14.EGL_SAMPLES, surfaceParams.mWantedMSAALevel,
                 EGL14.EGL_NONE
         };
 
@@ -78,6 +78,7 @@ public class XEGLConfigChooser{
         }*/
         EGLConfig[] configs = helperEglChooseConfig(display,configSpec);
         EGLConfig config = selectConfig(display, configs, surfaceParams);
+        Log.d(TAG,"Successfully selected a config");
         if (config == null) {
             throw new IllegalArgumentException("No config chosen");
         }
@@ -93,6 +94,7 @@ public class XEGLConfigChooser{
             //If configs is NULL, no configs will be returned in configs. Instead, the total number of configs matching attrib_list will be returned in *num_config.
             //In this case config_size is ignored. This form of eglChooseConfig is used to determine the number of matching frame buffer configurations,
             // followed by allocating an array of EGLConfig to pass into another call to eglChooseConfig with all other parameters unchanged.
+            // https://www.khronos.org/registry/EGL/sdk/docs/man/html/eglChooseConfig.xhtml
             if (!EGL14.eglChooseConfig(display,configSpec,0,null,0,0,num_config,0)) {
                 throw new IllegalArgumentException("eglChooseConfig failed");
             }
@@ -107,6 +109,8 @@ public class XEGLConfigChooser{
             }
             return configs;
         }catch (IllegalArgumentException e){
+            //12.01.2021: Yes, some drivers throw an IllegalArgumentException when calling eglChooseConfig() with @param configs==null
+            //An example for that is the Moto G (4), API level 23
             e.printStackTrace();
             Log.e(TAG,"Using weird workaround");
             final int MAX_N_CONFIGS=100;
@@ -118,6 +122,7 @@ public class XEGLConfigChooser{
             if(num_config[0]<1){
                 throw new IllegalArgumentException("No configs match configSpec"+num_config[0]);
             }
+            Log.d(TAG,"Actually got "+num_config[0]+" configs ");
             EGLConfig[] ret=new EGLConfig[num_config[0]];
             for(int i=0;i<num_config[0];i++){
                 ret[i]=configs[i];
@@ -163,7 +168,9 @@ public class XEGLConfigChooser{
             int mask=findConfigAttrib(display,config, EGL14.EGL_SURFACE_TYPE,0);
             final boolean mutableMaskSet=((mask & EGL_KHR_mutable_render_buffer) != 0);
             final boolean pbufferAllowed=((mask & EGL14.EGL_PBUFFER_BIT) != 0);
+            final boolean windowAllowed=((mask & EGL14.EGL_WINDOW_BIT) != 0);
             printDebug("Pixel buffer allowed :"+pbufferAllowed);
+            printDebug("Window allowed:"+windowAllowed);
             // It is possible that the mutable mask is set but not needed. This is not a problem !
             // However, it is a problem if we wanted the mutable flag but didn't get it !
             printDebug("Mutable mask -needed:"+surfaceParams.mUseMutableFlag+" set:"+mutableMaskSet);
