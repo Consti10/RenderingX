@@ -71,7 +71,7 @@ public class XEGLConfigChooser{
 
     // same like EGL14 eglChooseConfig but with 2 differences:
     // 1) wraps the "C-Style declaration" into a more "java-style declaration"
-    // 2) workaround for weird driver bug (see below)
+    // 2) workaround for weird driver bug (see below,12.01.2021)
     private static EGLConfig[] helperEglChooseConfig(EGLDisplay display,final int[] configSpec) {
         try{
             int[] num_config = new int[1];
