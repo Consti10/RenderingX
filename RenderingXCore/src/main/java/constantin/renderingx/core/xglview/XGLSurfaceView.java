@@ -302,7 +302,10 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         if(!activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)){
             throw new AssertionError("Got surface before onResume()");
         }
-        eglSurface = EGL14.eglCreateWindowSurface(eglDisplay, eglConfig,holder.getSurface(),null,0);
+        // if the driver has the bug at eglChooseConfig, it probably has the same bug for eglCreateWindowSurface
+        // (Specs say @param attrib_list can be null, but the driver itself throws an exception in this case)
+        final int[] attrib_list= {EGL14.EGL_NONE};
+        eglSurface = EGL14.eglCreateWindowSurface(eglDisplay, eglConfig,holder.getSurface(),attrib_list,0);
         if(eglSurface==EGL_NO_SURFACE){
             throw new AssertionError("Cannot create window surface");
         }
