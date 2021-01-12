@@ -85,8 +85,11 @@ public:
 private:
     // N of elements of type T stored inside OpenGL buffer.
     std::size_t count=0;
+    // the GL Buffer ID that is generated with the first call to uploadGL
     GLuint glBufferId;
+    // Holds true it the GL Buffer was already generated
     bool alreadyCreatedGLBuffer=false;
+    // Holds true if the content of the GL Buffer was already set at least once
     bool alreadyUploaded=false;
     // We have to 'delay' the creation of the buffer until we have a OpenGL context
     // Do nothing if buffer was already created
@@ -101,7 +104,7 @@ private:
     // but might be an accident. Log debug message in this case;
     void checkSetAlreadyUploaded(){
         if(alreadyUploaded){
-            MLOGD2(getTAG())<<"uploadGL called more than once";
+            MLOGD2(getTAG())<<"uploadGL called more than once,overwriting previous content";
         }
         alreadyUploaded=true;
     }
@@ -111,6 +114,7 @@ public:
         return "GLBuffer"+std::to_string(glBufferId);
     }
     // Calling uploadGL multiple times overrides any previous content
+    // Make sure you call this from the GL Thread only
     void uploadGL(const std::vector<T> &vertices,GLenum usage=GL_STATIC_DRAW){
         createGLBufferIfNeeded();
         checkSetAlreadyUploaded();
@@ -118,12 +122,15 @@ public:
         GLHelper::checkGlError(getTAG()+"uploadGL");
         //MDebug::log("N vertices is "+std::to_string(nVertices));
     }
-    template<size_t s>
-    void uploadGL(const std::array<T,s> &vertices){
-        const auto tmp=std::vector<T>(vertices.begin(),vertices.end());
-        GLBuffer::uploadGL(tmp);
+    // same as above but for different data type
+    template<size_t S>
+    void uploadGL(const std::array<T,S> &vertices,GLenum usage=GL_STATIC_DRAW){
+        createGLBufferIfNeeded();
+        checkSetAlreadyUploaded();
+        count = GLBufferHelper::uploadGLBuffer(glBufferId, vertices,usage);
+        GLHelper::checkGlError(getTAG()+"uploadGL");
     }
-    // Resize the GL Buffer to size 0 / respectively delete its content
+    // this doesn't delete the GLBuffer itself,but rather resizes the GL Buffer to size 0, deleting its previous content
     void freeDataGL(){
         uploadGL(std::vector<T>());
     }

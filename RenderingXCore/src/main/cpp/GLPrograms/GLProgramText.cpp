@@ -35,7 +35,7 @@ GLProgramText::GLProgramText(){
 #endif
     // = {0,1,2, // first triangle (bottom left - top left - top right)
     //  0,2,3}; // second triangle (bottom left - top right - bottom right)
-    INDEX_DATA indices[INDEX_BUFFER_SIZE];
+    std::vector<INDEX_DATA> indices(INDEX_BUFFER_SIZE);
     INDEX_DATA offset=0;
     for(INDEX_DATA i=0;i<INDEX_BUFFER_SIZE-5;i+=6){
         indices[i+0]=((GLushort)0)+offset;
@@ -46,11 +46,7 @@ GLProgramText::GLProgramText(){
         indices[i+5]=((GLushort)3)+offset;
         offset+=4;
     }
-    glGenBuffers(1,&mGLIndicesB);
-    glBindBuffer(GL_ARRAY_BUFFER,mGLIndicesB);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(indices),
-                 indices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    mGLIndicesB.uploadGL(indices,GL_STATIC_DRAW);
     //
     glGenTextures(1, &mTexture);
     glUseProgram(mProgram);
@@ -75,7 +71,7 @@ void GLProgramText::beforeDraw(const GLuint buffer) const{
     glEnableVertexAttribArray(mColorHandle);
     // 4 rgba values (each of them 1 byte wide)
     glVertexAttribPointer(mColorHandle,4/*r,g,b,a*/,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,color));
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndicesB);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndicesB.getGLBufferId());
 }
 
 void GLProgramText::setOtherUniforms(float edge, float borderEdge)const {

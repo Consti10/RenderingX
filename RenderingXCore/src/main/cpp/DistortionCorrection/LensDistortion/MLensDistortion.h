@@ -12,13 +12,12 @@
 
 #include <PolynomialRadialDistortion.h>
 #include <PolynomialRadialInverse.h>
+#include "MVrHeadsetParams.hpp"
 
 //Based on @cardboard/LensDistortion
 //CardboardLensDistortion
 
 constexpr float kDefaultBorderSizeMeters = 0.003f;
-
-#include "MVrHeadsetParams.hpp"
 
 // All values in tanangle units.
 //TODO could be namespace

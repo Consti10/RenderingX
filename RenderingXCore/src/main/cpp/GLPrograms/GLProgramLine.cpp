@@ -20,6 +20,20 @@ GLProgramLine::GLProgramLine(){
     setOtherUniforms();
     glUseProgram(0);
     GLHelper::checkGlError("GLProgramLine())");
+    // {0,1,2,
+    //  0,2,3}; and so on
+    /*std::vector<INDEX_DATA> indices(INDEX_BUFFER_SIZE);
+    INDEX_DATA offset=0;
+    for(INDEX_DATA i=0;i<INDEX_BUFFER_SIZE-5;i+=6){
+        indices[i+0]=((GLushort)0)+offset;
+        indices[i+1]=((GLushort)1)+offset;
+        indices[i+2]=((GLushort)2)+offset;
+        indices[i+3]=((GLushort)0)+offset;
+        indices[i+4]=((GLushort)2)+offset;
+        indices[i+5]=((GLushort)3)+offset;
+        offset+=4;
+    }
+    mGLIndicesB.uploadGL(indices,GL_STATIC_DRAW);*/
 }
 
 void GLProgramLine::beforeDraw(GLuint buffer) const {
@@ -35,6 +49,8 @@ void GLProgramLine::beforeDraw(GLuint buffer) const {
     glVertexAttribPointer(mBaseColorHandle,4,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,baseColor));
     glEnableVertexAttribArray(mOutlineColorHandle);
     glVertexAttribPointer(mOutlineColorHandle,4,GL_UNSIGNED_BYTE, GL_TRUE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,outlineColor));
+    //
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndicesB.getGLBufferId());
 }
 
 void GLProgramLine::setOtherUniforms(float outlineWidth,float edge, float borderEdge) const {
@@ -49,6 +65,7 @@ void GLProgramLine::draw(const glm::mat4x4 &ViewM, const glm::mat4x4 &ProjM, int
     glUniformMatrix4fv(mMVMatrixHandle, 1, GL_FALSE, glm::value_ptr(ViewM));
     glUniformMatrix4fv(mPMatrixHandle, 1, GL_FALSE, glm::value_ptr(ProjM));
     glDrawArrays(GL_TRIANGLES, verticesOffset, numberVertices);
+    //glDrawElements(GL_TRIANGLES,numberVertices,GL_UNSIGNED_SHORT, (void*)(sizeof(INDEX_DATA)*verticesOffset));
 }
 
 void GLProgramLine::afterDraw() const {
@@ -79,6 +96,15 @@ static void writeNormal(GLProgramLine::Vertex &v,const glm::vec2 &normal,const f
     v.normalY=normal.y;
     v.lineW=lineWidth;
 }
+static void writeVertex(GLProgramLine::Vertex& v,const glm::vec2 &pos,const glm::vec2 &normal,const float lineWidth,const TrueColor baseColor, const TrueColor outlineColor){
+    v.x=pos.x;
+    v.y=pos.y;
+    v.normalX=normal.x;
+    v.normalY=normal.y;
+    v.lineW=lineWidth;
+    v.baseColor=baseColor;
+    v.outlineColor=outlineColor;
+}
 
 void GLProgramLine::convertLineToRenderingData(const glm::vec2 &start, const glm::vec2 &end, const float lineWidth,
                                                GLProgramLine::Vertex *array, int arrayOffset,
@@ -102,31 +128,28 @@ void GLProgramLine::convertLineToRenderingData(const glm::vec2 &start, const glm
     GLProgramLine::Vertex& p5=array[arrayOffset+4];
     GLProgramLine::Vertex& p6=array[arrayOffset+5];
 
-    writePos(p1, start);
-    writeNormal(p1,up,lineWidth);
-    writeColor(p1,baseColor,outlineColor);
-    writePos(p2, end);
-    writeNormal(p2,up,lineWidth);
-    writeColor(p2,baseColor,outlineColor);
-    writePos(p3, start);
-    writeNormal(p3,down,lineWidth);
-    writeColor(p3,baseColor,outlineColor);
+    writeVertex(p1,start,up,lineWidth,baseColor,outlineColor);
+    writeVertex(p2,end,up,lineWidth,baseColor,outlineColor);
+    writeVertex(p3,start,down,lineWidth,baseColor,outlineColor);
     //
-    writePos(p4, start);
-    writeNormal(p4,down,lineWidth);
-    writeColor(p4,baseColor,outlineColor);
-    writePos(p5, end);
-    writeNormal(p5,up,lineWidth);
-    writeColor(p5,baseColor,outlineColor);
-    writePos(p6, end);
-    writeNormal(p6,down,lineWidth);
-    writeColor(p6,baseColor,outlineColor);
+    writeVertex(p4,start,down,lineWidth,baseColor,outlineColor);
+    writeVertex(p5,end,up,lineWidth,baseColor,outlineColor);
+    writeVertex(p6,end,down,lineWidth,baseColor,outlineColor);
+}
+
+void GLProgramLine::appendLineRenderingData(std::vector<GLProgramLine::Vertex> &data,
+                                            const glm::vec2 &start, const glm::vec2 &end,
+                                            float lineWidth, TrueColor baseColor,
+                                            TrueColor outlineColor) {
+    auto p=&data[data.size()];
+    data.resize(data.size()+GLProgramLine::VERTICES_PER_LINE);
+    convertLineToRenderingData(start,end,lineWidth,p,0,baseColor,outlineColor);
 }
 
 std::vector<GLProgramLine::Vertex>
 GLProgramLine::makeLine(const glm::vec2 &start, const glm::vec2 &end, float lineWidth,
                         TrueColor baseColor, TrueColor outlineColor) {
-    std::vector<GLProgramLine::Vertex> ret(6);
+    std::vector<GLProgramLine::Vertex> ret(GLProgramLine::VERTICES_PER_LINE);
     convertLineToRenderingData(start,end,lineWidth,ret.data(),0,baseColor,outlineColor);
     return ret;
 }
@@ -139,6 +162,7 @@ GLProgramLine::makeHorizontalLine(const glm::vec2 start, float width, float line
     auto end=start1+glm::vec2(width,0);
     return makeLine(start1,end,lineHeight,baseColor,outlineColor);
 }
+
 
 
 

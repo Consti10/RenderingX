@@ -24,7 +24,12 @@ private:
     GLuint mPositionHandle,mNormalHandle,mLineWidthHandle,mBaseColorHandle,mOutlineColorHandle;
     GLuint mMVMatrixHandle,mPMatrixHandle;
     GLuint uEdge,uBorderEdge,uOutlineStrength;
+    /*using INDEX_DATA=GLushort;
+    static constexpr int INDEX_BUFFER_SIZE=65535; //max size of GL unsigned short
+    // Create one big index buffer that is used to draw all the line vertices
+    GLBuffer<INDEX_DATA> mGLIndicesB;*/
 public:
+    // A line is constructed by 6 vertices that form 2 triangles
     struct Vertex{
         float x,y;//z is always 0
         float normalX,normalY;
@@ -32,7 +37,9 @@ public:
         TrueColor baseColor;
         TrueColor outlineColor;
     };
-    static constexpr int VERTICES_PER_LINE=6;
+    //static constexpr int VERTICES_PER_LINE=6;
+    static constexpr const int VERTICES_PER_LINE=6; //2 quads
+    static constexpr const int INDICES_PER_LINE=6;
     explicit GLProgramLine();
     void beforeDraw(GLuint buffer) const;
     void beforeDraw(GLBuffer<Vertex>& buffer)const{
@@ -47,6 +54,7 @@ public:
     // creates and writes the data that can be rendered by OpenGL (this OpenGL shader)
     static void convertLineToRenderingData(const glm::vec2& start, const glm::vec2& end, float lineWidth,
                                            Vertex array[], int arrayOffset, TrueColor baseColor=TrueColor2::BLACK, TrueColor outlineColor=TrueColor2::WHITE);
+    static void appendLineRenderingData(std::vector<GLProgramLine::Vertex>& data,const glm::vec2& start, const glm::vec2& end, float lineWidth,TrueColor baseColor=TrueColor2::BLACK, TrueColor outlineColor=TrueColor2::WHITE);
 public:
     // same as above, but returns the data in a std::vector instead of writing into a c-style buffer
     static std::vector<GLProgramLine::Vertex> makeLine(const glm::vec2& start, const glm::vec2& end, float lineWidth,TrueColor baseColor=TrueColor2::BLACK, TrueColor outlineColor=TrueColor2::WHITE);

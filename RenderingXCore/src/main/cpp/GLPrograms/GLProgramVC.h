@@ -23,8 +23,7 @@ using COLORED_INDEX_DATA=GLuint;
 using ColoredMeshData=AMeshData<ColoredVertex,COLORED_INDEX_DATA>;
 using ColoredGLMeshBuffer=AGLMeshBuffer<ColoredVertex,COLORED_INDEX_DATA>;
 
-// Abstract class that loads the apropriate vertex and fragment shader for rendering colored geometry
-// See the 2 implementat
+// Abstract class that loads the appropriate vertex and fragment shader for rendering colored geometry
 class AGLProgramVC {
 protected:
     // The MVP multiplication is optional.

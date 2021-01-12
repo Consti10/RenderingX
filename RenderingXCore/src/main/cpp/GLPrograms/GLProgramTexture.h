@@ -1,13 +1,13 @@
 #ifndef GLRENDERTEXTUREEXTERNAL
 #define GLRENDERTEXTUREEXTERNAL
 
+#include <VDDC.hpp>
+#include <GLMeshBuffer.hpp>
 #include <GLES2/gl2.h>
 #include <glm/mat4x4.hpp>
 #include <jni.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <VDDC.hpp>
-#include <GLMeshBuffer.hpp>
 
 /*******************************************************************
  * Abstraction for rendering textured vertices. Optionally samples from 'external texture' aka video texture.
@@ -42,6 +42,7 @@ namespace TexturedStereoVertexHelper{
 // Abstract GLProgram Texture. Abstract because there is a declaration for
 //1) Sample from "normal" texture -> GLProgramTexture
 //2) Sample from "external" texture -> GLProgramTextureExt below
+// e.g. you should use these constructor(s) instead
 // TODO: I could make this templated
 class AGLProgramTexture {
 private:
@@ -174,7 +175,6 @@ public:
             AGLProgramTexture(true,ENABLE_VDDC, USE_2D_COORDINATES, mapEquirectangularToInsta360){
     }
 };
-
 
 
 

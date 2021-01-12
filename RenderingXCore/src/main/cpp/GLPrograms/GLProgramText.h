@@ -42,7 +42,7 @@ private:
     static constexpr auto MY_SAMPLER_UNIT=0;
     static constexpr int INDEX_BUFFER_SIZE=65535; //max size of GL unsigned short
     // Create one big index buffer that is used to draw all the text vertices
-    GLuint mGLIndicesB;
+    GLBuffer<INDEX_DATA> mGLIndicesB;
     struct Vertex{
         float x,y;//z is always 0
         float u,v;//texture coordinates
@@ -50,14 +50,15 @@ private:
     };
 public:
     //Characters are indexed squares
+    // One Character is constructed out of 4 Vertices that form one rectangle (aka 2 triangles)
     struct Character{
         Vertex upperLeft;
         Vertex lowerLeft;
         Vertex lowerRight;
         Vertex upperRight;
     };
-    static constexpr const int VERTICES_PER_CHARACTER=4; //2 quads
-    static constexpr const int INDICES_PER_CHARACTER=6;
+    static constexpr const int VERTICES_PER_CHARACTER=4;
+    static constexpr const int INDICES_PER_CHARACTER=6; // 2 triangles
 public:
     explicit GLProgramText();
     void loadTextRenderingData(JNIEnv *env, jobject androidContext,const TextAssetsHelper::TEXT_STYLE& textStyle)const;
