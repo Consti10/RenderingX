@@ -55,27 +55,11 @@ public class XEGLConfigChooser{
                 EGL14.EGL_RENDERABLE_TYPE, surfaceParams.mUseMutableFlag ? EGLExt.EGL_OPENGL_ES3_BIT_KHR : EGL14.EGL_OPENGL_ES2_BIT, //when using mutable we request OpenGL ES 3.0
                 EGL14.EGL_SURFACE_TYPE, surfaceParams.mUseMutableFlag  ? (EGL14.EGL_WINDOW_BIT | EGL_KHR_mutable_render_buffer): EGL14.EGL_WINDOW_BIT,
                 //
-                EGL14.EGL_CONFORMANT,EGL14.EGL_OPENGL_ES2_BIT,
-                //EGL14.EGL_SAMPLE_BUFFERS, (surfaceParams.mWantedMSAALevel>0) ? 1 : 0, //if we want msaa use 1, else 0
-                //EGL14.EGL_SAMPLES, surfaceParams.mWantedMSAALevel,
+                EGL14.EGL_SAMPLE_BUFFERS, (surfaceParams.mWantedMSAALevel>0) ? 1 : 0, //if we want msaa use 1, else 0
+                EGL14.EGL_SAMPLES, surfaceParams.mWantedMSAALevel,
                 EGL14.EGL_NONE
         };
 
-        //11.01.2021: I have the suspicion that some driver(s) crash when calling eglChooseConfig with @param configs==null even though the Khronos documentation says that it should
-        //be possible
-
-        /*int[] num_config = new int[1];
-        if (!EGL14.eglChooseConfig(display,configSpec,0,null,0,0,num_config,0)) {
-            throw new IllegalArgumentException("eglChooseConfig failed");
-        }
-        int numConfigs = num_config[0];
-        if (numConfigs < 1) {
-            throw new IllegalArgumentException("No configs match configSpec"+numConfigs);
-        }
-        EGLConfig[] configs = new EGLConfig[numConfigs];
-        if (!EGL14.eglChooseConfig(display,configSpec,0,configs,0,numConfigs,num_config,0)) {
-            throw new IllegalArgumentException("eglChooseConfig#2 failed");
-        }*/
         EGLConfig[] configs = helperEglChooseConfig(display,configSpec);
         EGLConfig config = selectConfig(display, configs, surfaceParams);
         Log.d(TAG,"Successfully selected a config");
@@ -87,7 +71,7 @@ public class XEGLConfigChooser{
 
     // same like EGL14 eglChooseConfig but with 2 differences:
     // 1) wraps the "C-Style declaration" into a more "java-style declaration"
-    // 2) workaround for weird driver bug ?
+    // 2) workaround for weird driver bug (see below)
     private static EGLConfig[] helperEglChooseConfig(EGLDisplay display,final int[] configSpec) {
         try{
             int[] num_config = new int[1];
