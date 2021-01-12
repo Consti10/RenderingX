@@ -9,6 +9,7 @@ import android.opengl.EGLSurface;
 import android.os.Build;
 import android.os.Process;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -49,6 +50,7 @@ import static android.opengl.EGLExt.EGL_CONTEXT_FLAGS_KHR;
  * 2) The Callbacks have a slightly different naming. By having an onContextCreated callback it is easier to create OpenGL objects that are not affected by the
  * * *surface width/height only once
  * 3) The OpenGL context is preserved between onPause()/onResume().There are no devices anymore that only support one concurrent OpenGL context
+ * 4) Changing the Surface Width / Height is not supported. This view should only be used when the application always renders to a Full Screen Surface
  */
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -137,6 +139,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         @Override
         public void run() {
             Thread.currentThread().setName("XGLRendererM");
+            assert(eglDisplay!=null && eglSurface!=null && eglContext!=null);
             Helper.eglMakeCurrentSafe(eglDisplay,eglSurface,eglContext);
             if(DO_SUPERSYNC_MODS){
                 XEGLConfigChooser.setEglSurfaceAttrib(EGL14.EGL_RENDER_BUFFER,EGL14.EGL_SINGLE_BUFFER);
@@ -188,7 +191,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     };
 
     /**
-     * Create the OpenGL context, but not the EGL Surface since I have to wait for the
+     * Create the OpenGL context, but not the EGL Surface / the EGL rendering thread since I have to wait for the
      * android.view.SurfaceHolder.Callback until the native window is available
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
@@ -223,7 +226,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
             contextAttributes.add(EGLContextPriority.EGL_CONTEXT_PRIORITY_LEVEL_IMG);
             contextAttributes.add(EGLContextPriority.EGL_CONTEXT_PRIORITY_HIGH_IMG);
         }
-        contextAttributes.add( EGL14.EGL_NONE);
+        contextAttributes.add(EGL14.EGL_NONE);
 
         // https://www.khronos.org/registry/EGL/sdk/docs/man/html/eglCreateContext.xhtml
         eglContext = EGL14.eglCreateContext(eglDisplay, eglConfig, glContextSurfaceLess==null ? EGL_NO_CONTEXT : glContextSurfaceLess.getEglContext(),
@@ -240,8 +243,6 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
                 Log.d(TAG,"Cannot get high prio context"+eglContextPriorityLevel);
             }
         }
-        //if(ENABLE_EGL_KHR_DEBUG){
-        //}
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -286,19 +287,14 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        log("surfaceCreated");
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        SURFACE_W=width;
-        SURFACE_H=height;
-        log("surfaceChanged");
-        // If the eglSurface is already created surfaceChanged() was called multiple times - this should not happen since in VR the Surface has a fixed size aka Screen Size
-        if(eglSurface!=EGL_NO_SURFACE){
-            throw new AssertionError("Changing Surface is not supported");
-        }
-        // We should never get the Surface before onCreate() is called
+        Log.d(TAG,"surfaceCreated");
+        // This View is always Full Screen !
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((AppCompatActivity)getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        final int SCREEN_WIDTH = displayMetrics.widthPixels;
+        final int SCREEN_HEIGHT = displayMetrics.heightPixels;
+        SURFACE_W=SCREEN_WIDTH;
+        SURFACE_H=SCREEN_HEIGHT;
         if(!activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.CREATED)){
             throw new AssertionError("Got surface before onCreate()");
         }
@@ -314,6 +310,43 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     }
 
     @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        if(SURFACE_W!=width || SURFACE_H!=height){
+            Log.e(TAG,"Got surfaceChanged() but screen width/height and surface width/height differ"+SURFACE_W+" "+SURFACE_H+" | "+width+" "+height);
+        }
+        /*SURFACE_W=width;
+        SURFACE_H=height;
+        Log.d(TAG,"surfaceChanged");
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((AppCompatActivity)getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        final int SCREEN_WIDTH = displayMetrics.widthPixels;
+        final int SCREEN_HEIGHT = displayMetrics.heightPixels;
+        if(SCREEN_WIDTH!=width || SCREEN_HEIGHT!=height){
+            Log.e(TAG,"Got surface that is not full screen");
+        }
+        // If the eglSurface is not null surfaceChanged() was called multiple times without surfaceDestroyed() being called in between
+        // this seems to be a not uncommon OS bug
+        if(eglSurface!=EGL_NO_SURFACE){
+            //throw new AssertionError("Changing Surface is not supported");
+            Log.e(TAG,"Got surfaceChanged() but eglSurface is not null");
+            return;
+        }
+        // We should never get the Surface before onCreate() is called
+        if(!activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.CREATED)){
+            throw new AssertionError("Got surface before onCreate()");
+        }
+        if(!activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)){
+            throw new AssertionError("Got surface before onResume()");
+        }
+        eglSurface = EGL14.eglCreateWindowSurface(eglDisplay, eglConfig,holder.getSurface(),null,0);
+        if(eglSurface==EGL_NO_SURFACE){
+            throw new AssertionError("Cannot create window surface");
+        }
+        mOpenGLThread=new Thread(mOpenGLRunnable);
+        mOpenGLThread.start();*/
+    }
+
+    @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         log("surfaceDestroyed");
         // We should never have to destroy the surface before onPause() is called
@@ -325,7 +358,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     }
 
     static void log(String message){
-        Log.d("MyGLView",message);
+        Log.d(TAG,message);
     }
 
     /**
