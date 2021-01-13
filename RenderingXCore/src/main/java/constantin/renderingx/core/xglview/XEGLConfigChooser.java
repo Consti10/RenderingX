@@ -75,10 +75,11 @@ public class XEGLConfigChooser{
     private static EGLConfig[] helperEglChooseConfig(EGLDisplay display,final int[] configSpec) {
         try{
             int[] num_config = new int[1];
+            // This is what was written in the specs (https://www.khronos.org/registry/EGL/sdk/docs/man/html/eglChooseConfig.xhtml):
             //If configs is NULL, no configs will be returned in configs. Instead, the total number of configs matching attrib_list will be returned in *num_config.
             //In this case config_size is ignored. This form of eglChooseConfig is used to determine the number of matching frame buffer configurations,
             // followed by allocating an array of EGLConfig to pass into another call to eglChooseConfig with all other parameters unchanged.
-            // https://www.khronos.org/registry/EGL/sdk/docs/man/html/eglChooseConfig.xhtml
+            // However,see below about the driver bug
             if (!EGL14.eglChooseConfig(display,configSpec,0,null,0,0,num_config,0)) {
                 throw new IllegalArgumentException("eglChooseConfig failed");
             }

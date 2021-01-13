@@ -72,7 +72,7 @@ public class AExample360Video extends VrActivity {
         };
         Renderer360Video renderer = new Renderer360Video(this,mVrView.getGvrApi(), SPHERE_MODE);
         mVrView.getPresentationView().setRenderer(renderer,USE_GOOGLE_EXO_PLAYER_INSTEAD ? iSurfaceTextureAvailableExoPlayer : videoPlayer.configure2());
-        mVrView.getPresentationView().setmISecondaryContext(renderer);
+        mVrView.getPresentationView().setISecondaryContext(renderer);
         setContentView(mVrView);
     }
 

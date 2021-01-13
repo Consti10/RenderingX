@@ -131,7 +131,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
     /**
      * Adds another interface that is called from a second OpenGL thread that is shared with the primary OpenGL thread
      */
-    public void setmISecondaryContext(final GLContextSurfaceLess.ISecondarySharedContext i){
+    public void setISecondaryContext(final GLContextSurfaceLess.ISecondarySharedContext i){
         glContextSurfaceLess=new GLContextSurfaceLess(i);
     }
 
@@ -260,6 +260,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         log("onPause");
         // We have to make sure that the OpenGL thread is not running or the context is not bound since
         // after onPause() the surface might have to be destroyed
+        // If the OpenGL thread was started, it was started from the onSurfaceCreated() callback
         if(mOpenGLThread!=null){
             mOpenGLThread.interrupt();
             try {
@@ -296,6 +297,8 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
         final int SCREEN_HEIGHT = displayMetrics.heightPixels;
         SURFACE_W=SCREEN_WIDTH;
         SURFACE_H=SCREEN_HEIGHT;
+        // This callback must not be called before onCreate() since in onCreate() the  eglContext is created
+        // ( If this callback is called before onCreate(), there is something wrong with the OS implementation of android view )
         if(!activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.CREATED)){
             throw new AssertionError("Got surface before onCreate()");
         }
