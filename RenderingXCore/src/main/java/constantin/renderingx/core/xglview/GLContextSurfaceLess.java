@@ -70,6 +70,10 @@ public class GLContextSurfaceLess {
     }
 
     public void pauseWork(){
+        if(renderThread==null){
+            Log.d(TAG,"Called pauseWork() before resumeWork()");
+            return;
+        }
         renderThread.interrupt();
         try {
             renderThread.join();
