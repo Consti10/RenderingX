@@ -19,6 +19,12 @@ import static android.opengl.EGL14.EGL_WIDTH;
  * An OpenGL context that is never bound to a surface
  * When the proper EGL extension is found the context truly has no 'surface', else a fake off-screen surface is created
  * Use create() and destroy() to manage the context
+ * Lifecycle is as follows:
+ * create()
+ *  -> resumeWork / pauseWork
+ * destroy()
+ * If the lifecycle is in the "resumed" state,
+ * @GLContextSurfaceless.ISecondarySharedContext.onSecondaryContextDoWork() is called in a loop.
  */
 public class GLContextSurfaceLess {
     private static final String TAG=" GLContextSurfaceLess";

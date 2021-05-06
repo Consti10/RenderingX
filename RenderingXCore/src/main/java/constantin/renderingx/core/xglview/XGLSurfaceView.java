@@ -396,7 +396,7 @@ public class XGLSurfaceView extends SurfaceView implements LifecycleObserver, Su
 
     // Same as above but the GLSurfaceView also creates and manages a SurfaceTexture aka VideoTexture
     public interface FullscreenRendererWithSurfaceTexture {
-        void onContextCreated(int screenWidth,int screenHeight,final SurfaceTextureHolder surfaceTextureHolder);
+        void onContextCreated(int screenWidth,int screenHeight,final @Nullable SurfaceTextureHolder surfaceTextureHolder);
         void onDrawFrame();
     }
 

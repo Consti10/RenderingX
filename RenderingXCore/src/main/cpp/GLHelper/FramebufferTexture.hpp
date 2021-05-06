@@ -28,13 +28,15 @@ public:
     GLuint framebuffer;
     GLuint texture;
     GLuint WIDTH_PX=0,HEIGH_PX=0;
+    // call this once the OpenGL context is available
     void initializeGL(){
         glGenTextures(1, &texture);
         glGenFramebuffers(1, &framebuffer);
         // Default to a size of 64x64
         setSize(64,64);
     }
-
+    // can be called as often as needed. If wanted size is already set,
+    // this does nothing
     void setSize(int W,int H){
         if(WIDTH_PX==W && HEIGH_PX==H){
             return;
