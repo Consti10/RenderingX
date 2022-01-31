@@ -4,7 +4,7 @@ apply plugin: 'com.google.firebase.firebase-perf'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
-    ndkVersion rootProject.myNdkVersion
+    //ndkVersion rootProject.myNdkVersion
     defaultConfig {
         applicationId "constantin.renderingx.example"
         minSdkVersion rootProject.minSdkVersion
