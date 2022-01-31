@@ -6,7 +6,10 @@ public class XSurfaceParams {
     final int mR=8,mG=8,mB=8;
     // Alpha is optionally, use either RGBA_8888 or RGB_888 without alpha
     final int mA;
+    // If not 0, enables MSAA on the surface. Note that not all devices support all levels of MSAA,
+    // query availability first
     int mWantedMSAALevel;
+    // add the "EGL_KHR_mutable_render_buffer" flag to switch on/off direct screen rendering
     boolean mUseMutableFlag;
     public XSurfaceParams(final int a, final int msaaLevel, final boolean useMutable){
         mA=a;
