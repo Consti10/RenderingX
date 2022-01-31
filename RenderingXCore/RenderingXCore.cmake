@@ -6,6 +6,9 @@
 find_library( log-lib
         log )
 
+# set the path for the helper files (they come from LiveVideo10ms/Shared)
+set(DIR_Shared ${CMAKE_CURRENT_LIST_DIR}/../../LiveVideo10ms/Shared/src/main/cpp)
+
 #Set the path where all the native (cpp) code is
 set(RX_CORE_CPP ${CMAKE_CURRENT_LIST_DIR}/src/main/cpp)
 #set the path where external libs are stored (google vr and glm)
@@ -50,8 +53,6 @@ include_directories(${RX_CORE_CPP}/GeometryBuilder)
 include_directories(${RX_CORE_CPP}/GeometryBuilder/Sphere)
 include_directories(${RX_CORE_CPP}/GLHelper)
 include_directories(${RX_CORE_CPP}/GLPrograms)
-
-set(DIR_Shared ${CMAKE_CURRENT_LIST_DIR}/../../LiveVideo10ms/Shared/src/main/cpp)
 
 include_directories(${DIR_Shared}/NDKHelper)
 include_directories(${DIR_Shared}/Helper)
