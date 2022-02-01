@@ -76,9 +76,9 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.4.0'
 
     //Use either the artifacts from jitpack or provide a path directly
-    implementation project(path: ':Shared')
-    implementation project(path: ':VideoCore')
-    //implementation "com.github.Consti10.LiveVideo10ms:VideoCore:99e86293"
+//    implementation project(path: ':Shared')
+//    implementation project(path: ':VideoCore')
+    implementation "com.github.Consti10.LiveVideo10ms:VideoCore:99e86293"
     //test
     //implementation 'com.android.ndk.thirdparty:curl:7.68.0-alpha-1'
     //implementation 'com.android.ndk.thirdparty:jsoncpp:1.8.4-alpha-1'
