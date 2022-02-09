@@ -1,5 +1,6 @@
 # RenderingX
-![android_build_windows_workflow](https://github.com/Consti10/RenderingX/actions/workflows/android.yml/badge.svg)
+![git_ci_build](https://github.com/Consti10/RenderingX/actions/workflows/Android-CI.yml/badge.svg)
+[![circle_ci_build](https://circleci.com/gh/Consti10/RenderingX.svg?style=svg)](https://circleci.com/gh/Consti10/RenderingX)
 
 Core library (with example) for rendering smooth lines and Text with OpenGL.
 Vertex displacment distortion correction
