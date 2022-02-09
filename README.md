@@ -19,23 +19,11 @@ SuperSync
 | <img src="Screenshots/example_distortion_vertex_displacement.png"> | <img src="Screenshots/example_distortion_360.png"> |
 
 
-**Setup Dependencies** \
-This project uses both .java and .cpp code. I recommend forking the whole project (Example and Core) and modifying Example to your need.
-But If you want to include RenderingXCore in your own project, you can add the java code via gradle and cpp code via CMake:
-* To your top level settings.gradle file, add
-```
-include ':RenderingXCore'
-project(':RenderingXCore').projectDir=new File('..\\RenderingX\\RenderingXCore')
-```
-and modify the path according to your download file
-* To your app level gradle file add
-```
-implementation project(':RenderingXCore')
-```
-* To your CMakeLists.txt file add
-```
-include(${CMAKE_SOURCE_DIR}/../RenderingXCore/RenderingXCore.cmake)
-```
+**Building** \
+This project depends on both JAVA and CPP code that is included in [LiveVideo10ms](https://github.com/Consti10/LiveVideo10ms)
+To build this as a standalone project, clone this repository with submodules included and (possibly) modify the settings.gradle file
+(See comments in settings.gradle). Make sure to select the main repository folder (RenderingX) when opening the project in Android Studio.
 
-See [FPV-VR](https://github.com/Consti10/FPV_VR_OS) as an example how to add dependencies.
+**Include as Submodule** \
+If you want to use RenderingXCore as a module in your own project,see [FPV-VR](https://github.com/Consti10/FPV_VR_OS) as an example how to add dependencies.
 
