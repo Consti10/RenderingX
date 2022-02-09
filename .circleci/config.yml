@@ -29,7 +29,7 @@ jobs:
       #    command: |
       #      git submodule init && git submodule update
 
-      run:
+      run1:
         name: Install Submodules
         command: git submodule sync && git submodule update --init
 
