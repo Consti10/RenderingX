@@ -24,10 +24,10 @@ jobs:
     steps:
       # Checkout the code as the first step.
       - checkout
-      - post:
-          name: Fetch submodule
-          command: |
-            git submodule init && git submodule update
+      #- post:
+      #    name: Fetch submodule
+      #    command: |
+      #      git submodule init && git submodule update
 
       # The next step will run the unit tests
       #- android/run-tests:
