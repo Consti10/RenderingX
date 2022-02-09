@@ -2,7 +2,13 @@ include ':RenderingXCore'
 include ':RenderingXExample'
 
 //Comment when using artifacts from jitpack
+//include ':Shared'
+//project(':Shared').projectDir=new File('..\\LiveVideo10ms\\Shared')
+//include ':VideoCore'
+//project(':VideoCore').projectDir=new File('..\\LiveVideo10ms\\VideoCore')
+
+// comment above and uncomment here to build with submodule
 include ':Shared'
-project(':Shared').projectDir=new File('..\\LiveVideo10ms\\Shared')
+project(':Shared').projectDir=new File('LiveVideo10ms\\Shared')
 include ':VideoCore'
-project(':VideoCore').projectDir=new File('..\\LiveVideo10ms\\VideoCore')
+project(':VideoCore').projectDir=new File('LiveVideo10ms\\VideoCore')
