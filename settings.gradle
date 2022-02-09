@@ -1,14 +1,16 @@
 include ':RenderingXCore'
 include ':RenderingXExample'
 
-//Comment when using artifacts from jitpack
+// Building for FPV_VR (without submodules) begin
 //include ':Shared'
 //project(':Shared').projectDir=new File('..\\LiveVideo10ms\\Shared')
 //include ':VideoCore'
 //project(':VideoCore').projectDir=new File('..\\LiveVideo10ms\\VideoCore')
+// Building for FPV_VR (without submodules) end
 
-// comment above and uncomment here to build with submodule
+// Building with git submodules begin
 include ':Shared'
 project(':Shared').projectDir=new File('LiveVideo10ms\\Shared')
 include ':VideoCore'
 project(':VideoCore').projectDir=new File('LiveVideo10ms\\VideoCore')
+// Building with git submodules end
