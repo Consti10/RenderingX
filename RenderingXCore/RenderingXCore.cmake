@@ -7,7 +7,8 @@ find_library( log-lib
         log )
 
 # set the path for the helper files (they come from LiveVideo10ms/Shared)
-set(DIR_Shared ${CMAKE_CURRENT_LIST_DIR}/../../LiveVideo10ms/Shared/src/main/cpp)
+#set(DIR_Shared ${CMAKE_CURRENT_LIST_DIR}/../../LiveVideo10ms/Shared/src/main/cpp)
+set(DIR_Shared ${SHARED_DIR}/src/main/cpp)
 
 #Set the path where all the native (cpp) code is
 set(RX_CORE_CPP ${CMAKE_CURRENT_LIST_DIR}/src/main/cpp)

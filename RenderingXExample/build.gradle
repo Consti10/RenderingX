@@ -14,7 +14,9 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++17"
-                arguments "-DANDROID_STL=c++_static"
+                arguments "-DANDROID_STL=c++_static",
+                        //Pass trough the location for cmake to find native (cpp) code of the "Shared" cpp code
+                        "-DSHARED_DIR=${project(':Shared').getProjectDir().getAbsolutePath().replace("\\", "/")}"
             }
         }
         ndk {
