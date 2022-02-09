@@ -24,7 +24,10 @@ jobs:
     steps:
       # Checkout the code as the first step.
       - checkout
-
+      - post:
+          - git submodule sync --recursive
+          - git submodule update --recursive --init
+          
       # The next step will run the unit tests
       #- android/run-tests:
       #    test-command: ./gradlew lint testDebug --continue
