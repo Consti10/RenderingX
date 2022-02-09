@@ -20,7 +20,7 @@ SuperSync
 
 
 **Building** \
-This project depends on both JAVA and CPP code that is included in [LiveVideo10ms](https://github.com/Consti10/LiveVideo10ms)
+This project depends on both JAVA and CPP code that is included in [LiveVideo10ms](https://github.com/Consti10/LiveVideo10ms). \
 To build this as a standalone project, clone this repository with submodules included and (possibly) modify the settings.gradle file
 (See comments in settings.gradle). Make sure to select the main repository folder (RenderingX) when opening the project in Android Studio.
 
