@@ -1,5 +1,4 @@
 # RenderingX
-
 ![android_build_windows_workflow](https://github.com/Consti10/RenderingX/actions/workflows/android.yml/badge.svg)
 
 Core library (with example) for rendering smooth lines and Text with OpenGL.
