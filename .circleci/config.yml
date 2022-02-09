@@ -24,10 +24,10 @@ jobs:
     steps:
       # Checkout the code as the first step.
       - checkout
-      - post:
-          command: |
-            git submodule sync --recursive
-            git submodule update --recursive --init
+      #- post:
+      #    command: |
+      #      git submodule sync --recursive
+      #      git submodule update --recursive --init
 
       # The next step will run the unit tests
       #- android/run-tests:
