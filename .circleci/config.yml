@@ -30,9 +30,9 @@ jobs:
       #    command: |
       #      git submodule init && git submodule update
 
-      run1:
-        name: Install Submodules
-        command: git submodule sync && git submodule update --init
+      - run1:
+          name: Install Submodules
+          command: git submodule sync && git submodule update --init
 
       # Then start the emulator and run the Instrumentation tests!
       #- android/start-emulator-and-run-tests:
