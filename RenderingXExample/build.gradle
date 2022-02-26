@@ -43,9 +43,6 @@ android {
         //}
     }
     //Do not compress mp4 assets for MediaPlayer !
-    aaptOptions {
-        noCompress 'mp4'
-    }
     buildFeatures {
         //prefab true
         viewBinding=true
@@ -53,6 +50,9 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    androidResources {
+        noCompress 'mp4'
     }
 }
 
