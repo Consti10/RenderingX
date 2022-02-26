@@ -69,9 +69,17 @@ public:
         }
         // Validate the new VSYNC value.
         // A value in the future is not possible (e.g. we should only get VSYNC events from the past)
-        assert((CLOCK::now() - newVSYNC) >= 0ns);
+        //assert((CLOCK::now() - newVSYNC) >= 0ns);
+        if((CLOCK::now() - newVSYNC) >=0ns){
+            MLOGE<<"Got VSYNC in the future\n";
+            return;
+        }
         // Also the VSYNC values should be strictly increasing
-        assert(newVSYNC > tmp.base);
+        //assert(newVSYNC > tmp.base);
+        if(newVSYNC > tmp.base){
+            MLOGE<<"Got non strictly increasing VSYNC\n";
+            return;
+        }
 
         const auto deltaBetweenVSYNCs= newVSYNC-tmp.base;
 
