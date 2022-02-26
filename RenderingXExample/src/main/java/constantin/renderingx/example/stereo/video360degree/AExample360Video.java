@@ -6,14 +6,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Surface;
 
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.RawResourceDataSource;
-import com.google.android.exoplayer2.util.Util;
 
 import constantin.renderingx.core.views.VrActivity;
 import constantin.renderingx.core.views.VrView;
@@ -39,7 +35,7 @@ public class AExample360Video extends VrActivity {
     // ExoPlayer is the better choice for file playback, but my VideoPlayer
     // Is the better choice for low latency h264 live video playback
     private VideoPlayer videoPlayer;
-    private SimpleExoPlayer simpleExoPlayer;
+    private ExoPlayer simpleExoPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,11 +59,11 @@ public class AExample360Video extends VrActivity {
         final ISurfaceTextureAvailable iSurfaceTextureAvailableExoPlayer=new ISurfaceTextureAvailable() {
             @Override
             public void surfaceTextureCreated(SurfaceTexture surfaceTexture, Surface surface) {
-                simpleExoPlayer.getVideoComponent().setVideoSurface(surface);
+                simpleExoPlayer.setVideoSurface(surface);
             }
             @Override
             public void surfaceTextureDestroyed() {
-                simpleExoPlayer.getVideoComponent().setVideoSurface(null);
+                simpleExoPlayer.setVideoSurface(null);
             }
         };
         Renderer360Video renderer = new Renderer360Video(this,mVrView.getGvrApi(), SPHERE_MODE);
@@ -91,19 +87,15 @@ public class AExample360Video extends VrActivity {
         }
     }
 
-
     // ExoPlayer is a better choice than the Android MediaPlayer
-    private static SimpleExoPlayer createAndConfigureExoPlayer(final Context context){
-        SimpleExoPlayer simpleExoPlayer = new SimpleExoPlayer.Builder(context).build();
+    private static ExoPlayer createAndConfigureExoPlayer(final Context context){
+        ExoPlayer exoPlayer=new ExoPlayer.Builder(context).build();
         final Uri uri = RawResourceDataSource.buildRawResourceUri(R.raw.test_room1_1920mono);
-        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context,
-                Util.getUserAgent(context, "VideoExample"));
-        MediaSource videoSource =
-                new ProgressiveMediaSource.Factory(dataSourceFactory)
-                        .createMediaSource(uri);
-        simpleExoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
-        simpleExoPlayer.prepare(videoSource);
-        return simpleExoPlayer;
+        final MediaItem mediaItem = MediaItem.fromUri(uri);
+        exoPlayer.setMediaItem(mediaItem);
+        exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
+        exoPlayer.prepare();
+        return exoPlayer;
     }
 
 }
